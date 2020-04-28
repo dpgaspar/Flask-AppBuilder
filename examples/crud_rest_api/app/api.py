@@ -1,4 +1,4 @@
-from flask_appbuilder import ModelRestApi, ModelView
+from flask_appbuilder import ModelRestApi
 from flask_appbuilder.api import BaseApi, expose
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.filters import BaseFilter
@@ -27,7 +27,7 @@ class GreetingApi(BaseApi):
     openapi_spec_methods = {
         "greeting": {
             "get": {
-               "description": "Override description",
+                "description": "Override description",
             }
         }
     }
@@ -72,15 +72,6 @@ class ContactModelApi(ModelRestApi):
     datamodel = SQLAInterface(Contact)
     allow_browser_login = True
 
-    list_columns = [
-        "name",
-        "tags.id",
-        "tags.name",
-        "contact_group.id",
-        "contact_group.name",
-        "address"
-    ]
-
     search_filters = {"name": [CustomFilter]}
     openapi_spec_methods = {
         "get_list": {
@@ -109,9 +100,3 @@ class ModelOMParentApi(ModelRestApi):
 
 
 appbuilder.add_api(ModelOMParentApi)
-
-class ContactModelView(ModelView):
-    datamodel = SQLAInterface(Contact)
-    list_columns = ["id", "name"]
-
-appbuilder.add_view(ContactModelView, "Contact")

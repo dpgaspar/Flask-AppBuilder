@@ -1,27 +1,10 @@
 import datetime
 
 from flask_appbuilder import Model
-from sqlalchemy import Column, Date, ForeignKey, Integer, String, Table
+from sqlalchemy import Column, Date, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, backref
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
-
-
-class Tag(Model):
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique=True, nullable=False)
-
-    def __repr__(self):
-        return self.name
-
-
-assoc_tag_contact = Table(
-    "tags_contact",
-    Model.metadata,
-    Column("id", Integer, primary_key=True),
-    Column("tag_id", Integer, ForeignKey("tag.id")),
-    Column("contact_id", Integer, ForeignKey("contact.id")),
-)
 
 
 class ContactGroup(Model):
@@ -51,9 +34,6 @@ class Contact(Model):
     contact_group = relationship("ContactGroup")
     gender_id = Column(Integer, ForeignKey("gender.id"), nullable=False)
     gender = relationship("Gender")
-    tags = relationship(
-        "Tag", secondary=assoc_tag_contact, backref="contact"
-    )
 
     def __repr__(self):
         return self.name
@@ -82,4 +62,3 @@ class ModelOMChild(Model):
         backref=backref("children", cascade="all, delete-orphan"),
         foreign_keys=[parent_id],
     )
-
