@@ -133,6 +133,7 @@ class ModelMMChild(Model):
     __tablename__ = "child"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
+    field_integer = Column(Integer())
 
 
 assoc_parent_child_required = Table(
@@ -292,6 +293,7 @@ def insert_data(session, count):
     for i in range(1, 4):
         model = ModelMMChild()
         model.field_string = str(i)
+        model.field_integer = i
         children.append(model)
         session.add(model)
         session.commit()

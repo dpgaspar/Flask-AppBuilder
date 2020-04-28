@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
+from typing import Tuple, List
 
+from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Load
+from sqlalchemy.orm import Load, aliased
 from sqlalchemy.orm.descriptor_props import SynonymProperty
+from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy_utils.types.uuid import UUIDType
 
+from flask_appbuilder import Model
 from . import filters
 from ..base import BaseInterface
 from ..group import GroupByCol, GroupByDateMonth, GroupByDateYear
@@ -95,7 +99,17 @@ class SQLAInterface(BaseInterface):
                 query = query.order_by(self._get_attr(order_column).desc())
         return query
 
-    def _query_join_dotted_column(self, query, column: str) -> (object, list):
+    def _query_join_dotted_column(
+        self, query: BaseQuery, column: str
+    ) -> Tuple[BaseQuery, List[Tuple[Model, object]]]:
+        """
+            Helper function that applies necessary joins for dotted columns on a
+            SQLAlchemy query object
+
+        :param query: SQLAlchemy query object
+        :param column: column, will do nothing if it's not dotted notated
+        :return: A list of tuples of related model and the join to apply
+        """
         relations = list()
         if len(column.split(".")) >= 2:
             for join_relation in column.split(".")[:-1]:
@@ -104,12 +118,11 @@ class SQLAInterface(BaseInterface):
 
                 for relation in relations:
                     model_relation, relation_join = relation
-                    # STILL A HACK support multiple joins for the same table
+                    # Support multiple joins for the same table
                     if self.is_model_already_joined(query, model_relation):
-                        from sqlalchemy.orm import aliased
-                        from sqlalchemy.sql.elements import BinaryExpression
-
+                        # Since the join already exists apply a new aliased one
                         model_relation = aliased(model_relation)
+                        # The binary expression needs to be inverted
                         relation_join = BinaryExpression(
                             relation_join.left,
                             model_relation.id,
@@ -118,25 +131,27 @@ class SQLAInterface(BaseInterface):
                     query = query.join(model_relation, relation_join, isouter=True)
         return query, relations
 
-    def _query_select_options(self, query, select_columns=None):
+    def _query_select_options(
+        self, query: BaseQuery, select_columns: List[str] = None
+    ) -> BaseQuery:
         """
             Add select load options to query. The goal
-            is to only SQL select what is requested
+            is to only SQL select what is requested and join all the necessary
+            models when dotted notation is used
 
-        :param query: SQLAlchemy Query obj
+        :param query: SQLAlchemy Query obj to apply joins and selects
         :param select_columns: (list) of columns
-        :return: SQLAlchemy Query obj
+        :return: Transformed SQLAlchemy Query obj
         """
-        joined_models = list()
         if select_columns:
-            _load_options = list()
+            load_options = list()
+            joined_models = list()
             for column in select_columns:
-                relations = [(None, None)]
                 if len(column.split(".")) >= 2:
                     if column.split(".")[0] not in joined_models:
                         query, relations = self._query_join_dotted_column(query, column)
                         joined_models.append(column.split(".")[0])
-                    _load_options.append(
+                    load_options.append(
                         (
                             Load(self.obj)
                             .joinedload(column.split(".")[0])
@@ -151,10 +166,10 @@ class SQLAInterface(BaseInterface):
                     elif not self.is_relation(column) and not hasattr(
                         getattr(self.obj, column), "__call__"
                     ):
-                        _load_options.append(Load(self.obj).load_only(column))
+                        load_options.append(Load(self.obj).load_only(column))
                     else:
-                        _load_options.append(Load(self.obj))
-            query = query.options(*tuple(_load_options))
+                        load_options.append(Load(self.obj))
+            query = query.options(*tuple(load_options))
         return query
 
     def query(
@@ -541,10 +556,10 @@ class SQLAInterface(BaseInterface):
                         return None
                 return value
 
-    def get_related_model(self, col_name):
+    def get_related_model(self, col_name: str) -> Model:
         return self.list_properties[col_name].mapper.class_
 
-    def get_related_model_and_join(self, col_name):
+    def get_related_model_and_join(self, col_name: str) -> List[Tuple[Model, object]]:
         relation = self.list_properties[col_name]
         if relation.direction.name == "MANYTOMANY":
             return [
