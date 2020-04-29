@@ -10,7 +10,7 @@ class TreeNode:
         self.childs = list()
 
     def __repr__(self):
-        return "{}.{}".format(self.data, str(self.childs))
+        return f"{self.data}.{str(self.childs)}"
 
 
 class Tree:
@@ -175,16 +175,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             if column.data in self.validators_columns:
                 field.validate.append(self.validators_columns[column.data])
             return field
-
-    @staticmethod
-    def get_column_child_model(column):
-        if "." in column:
-            return column.split(".")[0]
-        return column
-
-    @staticmethod
-    def is_column_dotted(column):
-        return "." in column
 
     def convert(self, columns, model=None, nested=True, enum_dump_by_name=False):
         """
