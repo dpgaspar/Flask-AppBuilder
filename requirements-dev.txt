@@ -11,5 +11,6 @@ Pillow>=7.0.0, <8.0.0
 mockldap>=0.3.0
 psycopg2-binary==2.7.5
 mysqlclient>=1.4.2, < 2.0.0
+cython==0.29.17
 pymssql==2.1.4
 black==19.3b0
