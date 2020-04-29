@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
+from typing import List, Tuple
 
+from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Load
+from sqlalchemy.orm import aliased, Load
 from sqlalchemy.orm.descriptor_props import SynonymProperty
+from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy_utils.types.uuid import UUIDType
 
-from . import filters
+from . import filters, Model
 from ..base import BaseInterface
 from ..group import GroupByCol, GroupByDateMonth, GroupByDateYear
 from ..mixins import FileColumn, ImageColumn
@@ -23,6 +26,7 @@ from ...const import (
     LOGMSG_WAR_DBI_EDIT_INTEGRITY,
 )
 from ...filemanager import FileManager, ImageManager
+from ...utils.base import get_column_leaf, get_column_root_relation, is_column_dotted
 
 log = logging.getLogger(__name__)
 
@@ -95,33 +99,69 @@ class SQLAInterface(BaseInterface):
                 query = query.order_by(self._get_attr(order_column).desc())
         return query
 
-    def _query_join_dotted_column(self, query, column) -> (object, tuple):
-        relation_tuple = tuple()
-        if len(column.split(".")) >= 2:
-            for join_relation in column.split(".")[:-1]:
-                relation_tuple = self.get_related_model_and_join(join_relation)
-                model_relation, relation_join = relation_tuple
-                if not self.is_model_already_joined(query, model_relation):
-                    query = query.join(model_relation, relation_join, isouter=True)
-        return query, relation_tuple
-
-    def _query_select_options(self, query, select_columns=None):
+    def _query_join_relation(self, query: BaseQuery, root_relation: str) -> BaseQuery:
         """
-            Add select load options to query. The goal
-            is to only SQL select what is requested
+        Helper function that applies necessary joins for dotted columns on a
+        SQLAlchemy query object
 
-        :param query: SQLAlchemy Query obj
+        :param query: SQLAlchemy query object
+        :param root_relation: The root part of a dotted column, so the root relation
+        :return: Transformed SQLAlchemy Query
+        """
+        relations = self.get_related_model_and_join(root_relation)
+
+        for relation in relations:
+            model_relation, relation_join = relation
+            # Support multiple joins for the same table
+            if self.is_model_already_joined(query, model_relation):
+                # Since the join already exists apply a new aliased one
+                model_relation = aliased(model_relation)
+                # The binary expression needs to be inverted
+                relation_join = BinaryExpression(
+                    relation_join.left, model_relation.id, relation_join.operator
+                )
+            query = query.join(model_relation, relation_join, isouter=True)
+        return query
+
+    def _query_join_dotted_column(self, query: BaseQuery, column: str) -> BaseQuery:
+        """
+
+        :param query: SQLAlchemy query object
+        :param column: If the column is dotted will join the root relation
+        :return: Transformed SQLAlchemy Query
+        """
+        if is_column_dotted(column):
+            return self._query_join_relation(query, get_column_root_relation(column))
+        return query
+
+    def _query_select_options(
+        self, query: BaseQuery, select_columns: List[str] = None
+    ) -> BaseQuery:
+        """
+        Add select load options to query. The goal
+        is to only SQL select what is requested and join all the necessary
+        models when dotted notation is used
+
+        :param query: SQLAlchemy Query obj to apply joins and selects
         :param select_columns: (list) of columns
-        :return: SQLAlchemy Query obj
+        :return: Transformed SQLAlchemy Query
         """
         if select_columns:
-            _load_options = list()
+            load_options = list()
+            joined_models = list()
             for column in select_columns:
-                query, relation_tuple = self._query_join_dotted_column(query, column)
-                model_relation, relation_join = relation_tuple or (None, None)
-                if model_relation:
-                    _load_options.append(
-                        Load(model_relation).load_only(column.split(".")[1])
+                if is_column_dotted(column):
+                    root_relation = get_column_root_relation(column)
+                    leaf_column = get_column_leaf(column)
+                    if root_relation not in joined_models:
+                        query = self._query_join_relation(query, root_relation)
+                        joined_models.append(root_relation)
+                    load_options.append(
+                        (
+                            Load(self.obj)
+                            .joinedload(root_relation)
+                            .load_only(leaf_column)
+                        )
                     )
                 else:
                     # is a custom property method field?
@@ -131,10 +171,11 @@ class SQLAInterface(BaseInterface):
                     elif not self.is_relation(column) and not hasattr(
                         getattr(self.obj, column), "__call__"
                     ):
-                        _load_options.append(Load(self.obj).load_only(column))
+                        load_options.append(Load(self.obj).load_only(column))
+                    # it's a normal column
                     else:
-                        _load_options.append(Load(self.obj))
-            query = query.options(*tuple(_load_options))
+                        load_options.append(Load(self.obj))
+            query = query.options(*tuple(load_options))
         return query
 
     def query(
@@ -147,21 +188,21 @@ class SQLAInterface(BaseInterface):
         select_columns=None,
     ):
         """
-            QUERY
-            :param filters:
-                dict with filters {<col_name>:<value,...}
-            :param order_column:
-                name of the column to order
-            :param order_direction:
-                the direction to order <'asc'|'desc'>
-            :param page:
-                the current page
-            :param page_size:
-                the current page size
+        Returns the results for a model query, applies filters, sorting and pagination
 
+        :param filters:
+            dict with filters {<col_name>:<value,...}
+        :param order_column:
+            name of the column to order
+        :param order_direction:
+            the direction to order <'asc'|'desc'>
+        :param page:
+            the current page
+        :param page_size:
+            the current page size
         """
         query = self.session.query(self.obj)
-        query, relation_tuple = self._query_join_dotted_column(query, order_column)
+        query = self._query_join_dotted_column(query, order_column)
         query = self._query_select_options(query, select_columns)
         query_count = self.session.query(func.count("*")).select_from(self.obj)
 
@@ -521,12 +562,17 @@ class SQLAInterface(BaseInterface):
                         return None
                 return value
 
-    def get_related_model(self, col_name):
+    def get_related_model(self, col_name: str) -> Model:
         return self.list_properties[col_name].mapper.class_
 
-    def get_related_model_and_join(self, col_name):
+    def get_related_model_and_join(self, col_name: str) -> List[Tuple[Model, object]]:
         relation = self.list_properties[col_name]
-        return relation.mapper.class_, relation.primaryjoin
+        if relation.direction.name == "MANYTOMANY":
+            return [
+                (relation.secondary, relation.primaryjoin),
+                (relation.mapper.class_, relation.secondaryjoin),
+            ]
+        return [(relation.mapper.class_, relation.primaryjoin)]
 
     def query_model_relation(self, col_name):
         model = self.get_related_model(col_name)

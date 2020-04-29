@@ -276,6 +276,13 @@ class APITestCase(FABTestCase):
 
         self.appbuilder.add_api(ModelMMApi)
 
+        class ModelDottedMMApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelMMParent)
+            list_columns = ["field_string", "children.field_integer"]
+            show_columns = ["field_string", "children.field_integer"]
+
+        self.appbuilder.add_api(ModelDottedMMApi)
+
         class ModelOMParentApi(ModelRestApi):
             datamodel = SQLAInterface(ModelOMParent)
 
@@ -793,15 +800,37 @@ class APITestCase(FABTestCase):
 
         # We can't get a base filtered item
         pk = 1
-        rv = self.auth_client_get(client, token, "api/v1/modelmmapi/{}".format(pk))
+        rv = self.auth_client_get(client, token, f"api/v1/modelmmapi/{pk}")
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 200)
         expected_rel_field = [
-            {"field_string": "1", "id": 1},
-            {"field_string": "2", "id": 2},
-            {"field_string": "3", "id": 3},
+            {"field_string": "1", "field_integer": 1, "id": 1},
+            {"field_string": "2", "field_integer": 2, "id": 2},
+            {"field_string": "3", "field_integer": 3, "id": 3},
         ]
         self.assertEqual(data[API_RESULT_RES_KEY]["children"], expected_rel_field)
+
+    def test_get_item_dotted_mm_field(self):
+        """
+            REST Api: Test get item with dotted N-N related field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # We can't get a base filtered item
+        pk = 1
+        rv = self.auth_client_get(client, token, f"api/v1/modeldottedmmapi/{pk}")
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        expected_result = {
+            "field_string": "0",
+            "children": [
+                {"field_integer": 1},
+                {"field_integer": 2},
+                {"field_integer": 3},
+            ],
+        }
+        self.assertEqual(data[API_RESULT_RES_KEY], expected_result)
 
     def test_get_item_om_field(self):
         """
@@ -859,6 +888,26 @@ class APITestCase(FABTestCase):
             data[API_RESULT_RES_KEY][i],
             {"field_string": "test0", "group": {"field_string": "test0"}},
         )
+
+    def test_get_list_dotted_mm_field(self):
+        """
+            REST Api: Test get list with dotted N-N related field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        arguments = {"order_column": "field_string", "order_direction": "asc"}
+        uri = (
+            f"api/v1/modeldottedmmapi/?" f"{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        )
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        i = 0
+        self.assertEqual(data[API_RESULT_RES_KEY][i]["field_string"], "0")
+        self.assertIn({"field_integer": 1}, data[API_RESULT_RES_KEY][i]["children"])
+        self.assertIn({"field_integer": 2}, data[API_RESULT_RES_KEY][i]["children"])
+        self.assertIn({"field_integer": 3}, data[API_RESULT_RES_KEY][i]["children"])
 
     def test_get_list_dotted_order(self):
         """
