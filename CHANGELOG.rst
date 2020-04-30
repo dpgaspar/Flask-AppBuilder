@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.3.4
+-----------------------------------
+
+- Fix, [api] SQL selects and many to many joins (#1361)
+- Fix, [frontend] Revert "Bump jQuery to 3.5 (#1351)" (#1363)
+
 Improvements and Bug fixes on 2.3.3
 -----------------------------------
 
