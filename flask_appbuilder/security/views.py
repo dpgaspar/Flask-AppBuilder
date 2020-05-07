@@ -336,7 +336,7 @@ class RoleModelView(ModelView):
     edit_columns = list_columns
     add_columns = list_columns
     order_columns = ['name']
-    base_filters = [['name', FilterInList, ('System - Admin', 'Data - Admin', 'Creator', 'Viewer')]]
+    base_filters = [['name', FilterInList, ('Admin - System', 'Admin - Data', 'Creator', 'Viewer')]]
 
     @action("Copy Role", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-copy', single=False)
     def copy_role(self, items):
