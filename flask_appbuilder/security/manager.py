@@ -25,6 +25,7 @@ from .views import (
     AuthOAuthView,
     AuthOIDView,
     AuthRemoteUserView,
+    AuthPAMView,
     PermissionModelView,
     PermissionViewModelView,
     RegisterUserModelView,
@@ -37,6 +38,7 @@ from .views import (
     UserOAuthModelView,
     UserOIDModelView,
     UserRemoteUserModelView,
+    UserPAMModelView,
     UserStatsChartView,
     ViewMenuModelView,
 )
@@ -168,6 +170,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own user OAuth view """
     userremoteusermodelview = UserRemoteUserModelView
     """ Override if you want your own user REMOTE_USER view """
+    userpammodelview = UserPAMModelView
+    """ Override if you want your own user PAM view """
     registerusermodelview = RegisterUserModelView
 
     authdbview = AuthDBView
@@ -180,6 +184,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Authentication OAuth view """
     authremoteuserview = AuthRemoteUserView
     """ Override if you want your own Authentication REMOTE_USER view """
+    authpamview = AuthPAMView
+    """ Override if you want your own Authentication PAM view """
 
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
@@ -620,13 +626,16 @@ class BaseSecurityManager(AbstractSecurityManager):
         elif self.auth_type == AUTH_REMOTE_USER:
             self.user_view = self.userremoteusermodelview
             self.auth_view = self.authremoteuserview()
-        else:
+        elif self.auth_type == AUTH_OID:
             self.user_view = self.useroidmodelview
             self.auth_view = self.authoidview()
             if self.auth_user_registration:
                 pass
                 # self.registeruser_view = self.registeruseroidview()
                 # self.appbuilder.add_view_no_menu(self.registeruser_view)
+        else:
+            self.user_view = self.userpammodelview
+            self.auth_view = self.authpamview()
 
         self.appbuilder.add_view_no_menu(self.auth_view)
 
@@ -1031,6 +1040,58 @@ class BaseSecurityManager(AbstractSecurityManager):
                 log.error("Error creating a new OAuth user %s" % userinfo["username"])
                 return None
         self.update_user_auth_stat(user)
+        return user
+
+    @staticmethod
+    def pam_authenticate(username, password, service="login"):
+        import pamela
+        try:
+            pamela.authenticate(username, password, service=service, encoding='utf-8')
+        except pamela.PAMError:
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED, username)
+            return False
+        return True
+
+    def auth_user_pam(self, username, password, service="login"):
+        """
+            Method for authenticating user, auth pam style
+
+            :param username:
+                The username or registered email address
+            :param password:
+                The user will be tested against PAM authentication
+            :param service:
+                Service used to perform pam authentication
+        """
+        if username is None or username == "" or password is None or password == "":
+            return None
+        user = self.find_user(username=username)
+        if username == 'admin':
+            if not check_password_hash(user.password, password):
+                self.update_user_auth_stat(user, False)
+                return None
+            self.update_user_auth_stat(user, True)
+            return user
+
+        if not self.pam_authenticate(username, password, service):
+            if user:
+                self.update_user_auth_stat(user, False)
+                return None
+
+        # User does not exist, create one if self registration.
+        if user is None:
+            user = self.add_user(
+                username=username,
+                first_name=username,
+                last_name="",
+                email="",
+                role=self.find_role(self.auth_user_registration_role),
+            )
+            if not user:
+                log.error("Error creating a new user %s" % username)
+                return None
+
+        self.update_user_auth_stat(user, True)
         return user
 
     """

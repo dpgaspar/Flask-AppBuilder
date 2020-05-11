@@ -11,6 +11,7 @@ Supported Authentication Types
        It's the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
        is configured to use kerberos, no need for the user to login with username and password on F.A.B.
 :OAUTH: Authentication using OAUTH (v1 or v2). You need to install flask-oauthlib.
+:PAM: Authentication using PAM. You need to install pamela.
 
 Configure the authentication type on config.py, take a look at :doc:`config`
 
@@ -598,6 +599,7 @@ If you're using:
 :AUTH_REMOTE_USER: Extend UserRemoteUserModelView
 :AUTH_OID: Extend UserOIDModelView
 :AUTH_OAUTH: Extend UserOAuthModelView
+:AUTH_PAM: Extend UserPAMModelView
 
 So using AUTH_DB::
 
@@ -673,6 +675,7 @@ Note that this is for AUTH_DB, so if you're using:
 :AUTH_LDAP: Override userldapmodelview
 :AUTH_REMOTE_USER: Override userremoteusermodelview
 :AUTH_OID: Override useroidmodelview
+:AUTH_PAM: Override userpammodelview
 
 Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
 **AppBuilder** (on __init__.py)::

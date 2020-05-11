@@ -272,6 +272,16 @@ class UserRemoteUserModelView(UserModelView):
     pass
 
 
+class UserPAMModelView(UserModelView):
+    """
+        View that add PAM specifics to User view.
+        Override to implement your own custom view.
+        Then override userpammodelview property on SecurityManager
+    """
+
+    pass
+
+
 class UserDBModelView(UserModelView):
     """
         View that add DB specifics to User view.
@@ -490,6 +500,28 @@ class AuthDBView(AuthView):
         form = LoginForm_db()
         if form.validate_on_submit():
             user = self.appbuilder.sm.auth_user_db(
+                form.username.data, form.password.data
+            )
+            if not user:
+                flash(as_unicode(self.invalid_login_message), "warning")
+                return redirect(self.appbuilder.get_url_for_login)
+            login_user(user, remember=False)
+            return redirect(self.appbuilder.get_url_for_index)
+        return self.render_template(
+            self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
+        )
+
+
+class AuthPAMView(AuthView):
+    login_template = "appbuilder/general/security/login_pam.html"
+
+    @expose("/login/", methods=["GET", "POST"])
+    def login(self):
+        if g.user is not None and g.user.is_authenticated:
+            return redirect(self.appbuilder.get_url_for_index)
+        form = LoginForm_db()
+        if form.validate_on_submit():
+            user = self.appbuilder.sm.auth_user_pam(
                 form.username.data, form.password.data
             )
             if not user:
