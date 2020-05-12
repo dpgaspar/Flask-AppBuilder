@@ -3,6 +3,8 @@ import datetime
 import logging
 import math
 from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
+from flask_appbuilder.fieldwidgets import BS3TextFieldWidget
+from wtforms.fields import TextField
 from werkzeug.security import generate_password_hash
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
@@ -320,7 +322,11 @@ class UserStatsChartView(DirectByChartView):
         }
 
     ]
-
+class BS3TextFieldROWidget(BS3TextFieldWidget):
+    def __call__(self, field, **kwargs):
+        kwargs['readonly'] = 'true'
+        return super(BS3TextFieldROWidget, self).__call__(field,
+**kwargs)
 
 class RoleModelView(ModelView):
     from flask_appbuilder.models.sqla.filters import FilterInList
@@ -333,6 +339,8 @@ class RoleModelView(ModelView):
 
     label_columns = {'name': lazy_gettext('Name'), 'permissions': lazy_gettext('Permissions')}
     list_columns = ['name', 'permissions']
+    edit_form_extra_fields = {'name': TextField('name',
+                                                widget=BS3TextFieldROWidget())}
     edit_columns = list_columns
     add_columns = list_columns
     order_columns = ['name']
