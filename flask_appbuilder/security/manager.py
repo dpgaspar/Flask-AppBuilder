@@ -545,7 +545,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                                              icon="fa-group", label=_('List Roles'),
                                              category="Security", category_icon="fa-lock")
         # role_view = self.appbuilder.add_view_no_menu(self.rolemodelview)
-        role_view.related_views = [self.user_view.__class__]
+        # role_view.related_views = [self.user_view.__class__]
 
         # self.appbuilder.add_view(self.userstatschartview,
         #                          "User's Statistics", icon="fa-bar-chart-o",

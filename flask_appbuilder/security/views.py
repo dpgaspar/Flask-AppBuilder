@@ -341,6 +341,7 @@ class RoleModelView(ModelView):
     list_columns = ['name', 'permissions']
     edit_form_extra_fields = {'name': TextField('name',
                                                 widget=BS3TextFieldROWidget())}
+    show_columns = list_columns
     edit_columns = list_columns
     add_columns = list_columns
     order_columns = ['name']
