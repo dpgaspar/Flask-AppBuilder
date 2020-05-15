@@ -1045,8 +1045,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     @staticmethod
     def pam_authenticate(username, password, service="login"):
         import pamela
+
         try:
-            pamela.authenticate(username, password, service=service, encoding='utf-8')
+            pamela.authenticate(username, password, service=service, encoding="utf-8")
         except pamela.PAMError:
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED, username)
             return False
@@ -1066,7 +1067,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if username is None or username == "" or password is None or password == "":
             return None
         user = self.find_user(username=username)
-        if username == 'admin':
+        if username == "admin":
             if not check_password_hash(user.password, password):
                 self.update_user_auth_stat(user, False)
                 return None
