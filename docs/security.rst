@@ -348,7 +348,7 @@ Authentication Methods
 ----------------------
 
 We are now looking at the authentication methods, and how you can configure them and customize them.
-The framework has 5 authentication methods and you choose one of them, you configure the method to be used
+The framework has 6 authentication methods and you choose one of them, you configure the method to be used
 on the **config.py** (when using the create-app, or following the proposed app structure). First the
 configuration imports the constants for the authentication methods::
 
@@ -357,6 +357,7 @@ configuration imports the constants for the authentication methods::
         AUTH_LDAP,
         AUTH_OAUTH,
         AUTH_OID,
+        AUTH_PAM,
         AUTH_REMOTE_USER
     )
 
@@ -523,6 +524,15 @@ receive the following: **sm** is F.A.B's SecurityManager class, **provider** is 
 this provider with, **response** is the response.
 
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
+
+Authentication: PAM
+----------------------
+
+This method will authenticate the users against their UNIX accounts with PAM. This authentication method uses
+`pamela <https://github.com/minrk/pamela>`_.
+
+After the user authenticates, it will check for user with given username on User Model.
+If user does not exists, it will create a new user entry in the model given self auth registration.
 
 Your Custom Security
 --------------------
