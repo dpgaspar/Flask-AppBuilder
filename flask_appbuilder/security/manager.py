@@ -7,8 +7,8 @@ from typing import Dict, List, Set
 
 from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
-from flask_jwt_extended import JWTManager
 from flask_jwt_extended import current_user as current_user_jwt
+from flask_jwt_extended import JWTManager
 from flask_login import current_user, LoginManager
 from flask_openid import OpenID
 from werkzeug.security import check_password_hash, generate_password_hash
