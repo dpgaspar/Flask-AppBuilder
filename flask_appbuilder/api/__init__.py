@@ -1523,7 +1523,8 @@ class ModelRestApi(BaseModelApi):
             required: true
             content:
               application/json:
-                $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
+                schema:
+                  $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
           responses:
             201:
               description: Item inserted
@@ -1597,7 +1598,8 @@ class ModelRestApi(BaseModelApi):
             required: true
             content:
               application/json:
-                $ref: '#/components/schemas/{{self.__class__.__name__}}.put'
+                schema:
+                  $ref: '#/components/schemas/{{self.__class__.__name__}}.put'
           responses:
             200:
               description: Item changed
