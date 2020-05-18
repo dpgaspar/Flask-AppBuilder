@@ -83,9 +83,14 @@ class BaseInterface(object):
                 return value.value
             return value
 
-    def get_filters(self, search_columns=None):
+    def get_filters(self, search_columns=None, search_filters=None):
         search_columns = search_columns or []
-        return Filters(self.filter_converter_class, self, search_columns)
+        return Filters(
+            self.filter_converter_class,
+            self,
+            search_columns=search_columns,
+            search_filters=search_filters,
+        )
 
     def get_values_item(self, item, show_columns):
         return [self._get_attr_value(item, col) for col in show_columns]

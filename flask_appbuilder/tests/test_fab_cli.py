@@ -8,6 +8,7 @@ from flask_appbuilder.cli import (
     create_user,
     list_users,
     list_views,
+    reset_password,
 )
 
 from .base import FABTestCase
@@ -28,7 +29,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_create_app(self):
         """
-            Test create app
+            Test create app, create-user
         """
         os.environ["FLASK_APP"] = "app:app"
         runner = CliRunner()
@@ -55,7 +56,9 @@ class FlaskTestCase(FABTestCase):
             result = runner.invoke(list_users, [])
             self.assertIn("bob", result.output)
 
-            result = runner.invoke(create_permissions, [])
+            runner.invoke(create_permissions, [])
+
+            runner.invoke(reset_password, ["--username=bob", "--password=bar"])
 
     def test_list_views(self):
         """

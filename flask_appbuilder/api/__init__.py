@@ -750,6 +750,10 @@ class BaseModelApi(BaseApi):
                 search_columns = ['name', 'address']
 
     """
+    search_filters = None
+    """
+        Override default search filters for columns
+    """
     search_exclude_columns = None
     """
         List with columns to exclude from search. Search includes all possible
@@ -846,7 +850,6 @@ class BaseModelApi(BaseApi):
                 x for x in search_columns if x not in self.search_exclude_columns
             ]
         self._gen_labels_columns(self.datamodel.get_columns_list())
-        self._filters = self.datamodel.get_filters(self.search_columns)
 
     def _init_titles(self):
         pass
@@ -1114,7 +1117,9 @@ class ModelRestApi(BaseModelApi):
             ]
         self._gen_labels_columns(self.list_columns)
         self._gen_labels_columns(self.show_columns)
-        self._filters = self.datamodel.get_filters(self.search_columns)
+        self._filters = self.datamodel.get_filters(
+            search_columns=self.search_columns, search_filters=self.search_filters
+        )
         self.edit_query_rel_fields = self.edit_query_rel_fields or dict()
         self.add_query_rel_fields = self.add_query_rel_fields or dict()
 

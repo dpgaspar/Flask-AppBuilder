@@ -1,6 +1,37 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.3.4
+-----------------------------------
+
+- Fix, [api] SQL selects and many to many joins (#1361)
+- Fix, [frontend] Revert "Bump jQuery to 3.5 (#1351)" (#1363)
+
+Improvements and Bug fixes on 2.3.3
+-----------------------------------
+
+- New, [cli] Fix, reset-password cli option (#1347)
+- New, Bump jQuery to 3.5 (#1351)
+- New, [menu] fix, add translation lookup in menu.get_data (#1352)
+- Fix, [menu] add translation lookup in menu.get_data (#1352)
+- Fix, [menu] translations on menu v2 (#1355)
+- Fix, [dependencies] include email_validator for new wtforms (#1360)
+
+Improvements and Bug fixes on 2.3.2
+-----------------------------------
+
+- New, [deploy] Add release script
+- New, [i18n] Add italian translation (#1324)
+- New, [api] Add custom filters to search (#1327)
+- Fix, [style] Better formatting on jinja template (#1321)
+- New, [examples] integrate Dash by Plotly in FAB (#1330)
+- Fix, [api] [mvc] Make like filters case insensitive (#1338)
+
+Improvements and Bug fixes on 2.3.1
+-----------------------------------
+
+[dependencies] Fix, marshmallow 3 breaks compat (#1333)
+
 Improvements and Bug fixes on 2.3.0
 -----------------------------------
 
