@@ -339,7 +339,7 @@ class RoleModelView(ModelView):
 
     label_columns = {'name': lazy_gettext('Name'), 'permissions': lazy_gettext('Permissions')}
     list_columns = ['name', 'permissions']
-    edit_form_extra_fields = {'name': TextField('name',
+    edit_form_extra_fields = {'name': TextField('Name',
                                                 widget=BS3TextFieldROWidget())}
     show_columns = list_columns
     edit_columns = list_columns
