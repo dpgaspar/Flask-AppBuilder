@@ -485,6 +485,7 @@ class BaseApi(object):
         return self.blueprint
 
     def add_api_spec(self, api_spec):
+        self.add_apispec_components(api_spec)
         for attr_name in dir(self):
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
@@ -509,25 +510,17 @@ class BaseApi(object):
                             self.openapi_spec_tag or self.__class__.__name__
                         )
                         api_spec._paths[path][operation]["tags"] = [openapi_spec_tag]
-        self.add_apispec_components(api_spec)
 
     def add_apispec_components(self, api_spec):
+        from apispec.exceptions import DuplicateComponentNameError
+
         for k, v in self.responses.items():
             api_spec.components._responses[k] = v
         for k, v in self._apispec_parameter_schemas.items():
-            if k not in api_spec.components._parameters:
-                _v = {
-                    "in": "query",
-                    "name": API_URI_RIS_KEY,
-                    "content": {
-                        "application/json": {
-                            "schema": {"$ref": "#/components/schemas/{}".format(k)}
-                        }
-                    },
-                }
-                # Using private because parameter method does not behave correctly
-                api_spec.components._schemas[k] = v
-                api_spec.components._parameters[k] = _v
+            try:
+                api_spec.components.schema(k, v)
+            except DuplicateComponentNameError:
+                pass
 
     def _register_urls(self):
         for attr_name in dir(self):
@@ -1248,7 +1241,12 @@ class ModelRestApi(BaseModelApi):
         ---
         get:
           parameters:
-          - $ref: '#/components/parameters/get_info_schema'
+          - in: query
+            name: q
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/get_info_schema'
           responses:
             200:
               description: Item from Model
@@ -1328,7 +1326,12 @@ class ModelRestApi(BaseModelApi):
             schema:
               type: integer
             name: pk
-          - $ref: '#/components/parameters/get_item_schema'
+          - in: query
+            name: q
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/get_item_schema'
           responses:
             200:
               description: Item from Model
@@ -1428,7 +1431,12 @@ class ModelRestApi(BaseModelApi):
         ---
         get:
           parameters:
-          - $ref: '#/components/parameters/get_list_schema'
+          - in: query
+            name: q
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/get_list_schema'
           responses:
             200:
               description: Items from Model
@@ -1515,8 +1523,7 @@ class ModelRestApi(BaseModelApi):
             required: true
             content:
               application/json:
-                schema:
-                  $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
+                $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
           responses:
             201:
               description: Item inserted
@@ -1590,8 +1597,7 @@ class ModelRestApi(BaseModelApi):
             required: true
             content:
               application/json:
-                schema:
-                  $ref: '#/components/schemas/{{self.__class__.__name__}}.put'
+                $ref: '#/components/schemas/{{self.__class__.__name__}}.put'
           responses:
             200:
               description: Item changed
