@@ -4,7 +4,7 @@
 #
 #    pip-compile 
 #
-apispec[yaml]==1.1.1
+apispec[yaml]==3.3.0
 attrs==19.1.0             # via jsonschema
 babel==2.6.0              # via flask-babel
 click==7.0
