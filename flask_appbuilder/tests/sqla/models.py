@@ -45,7 +45,10 @@ def validate_field_string(n):
 
 
 class Model1CustomSchema(Schema):
-    name = fields.Str(validate=validate_name)
+    field_string = fields.String(validate=validate_name)
+    field_integer = fields.Integer(allow_none=True)
+    field_float = fields.Float(allow_none=True)
+    field_date = fields.Date(allow_none=True)
 
     @post_load
     def process(self, data):

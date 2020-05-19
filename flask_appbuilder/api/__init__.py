@@ -1492,19 +1492,15 @@ class ModelRestApi(BaseModelApi):
         except ValidationError as err:
             return self.response_422(message=err.messages)
         # This validates custom Schema with custom validations
-        if isinstance(item.data, dict):
-            return self.response_422(message=item.errors)
-        self.pre_add(item.data)
+        self.pre_add(item)
         try:
-            self.datamodel.add(item.data, raise_exception=True)
-            self.post_add(item.data)
+            self.datamodel.add(item, raise_exception=True)
+            self.post_add(item)
             return self.response(
                 201,
                 **{
-                    API_RESULT_RES_KEY: self.add_model_schema.dump(
-                        item.data, many=False
-                    ),
-                    "id": self.datamodel.get_pk_value(item.data),
+                    API_RESULT_RES_KEY: self.add_model_schema.dump(item, many=False),
+                    "id": self.datamodel.get_pk_value(item),
                 },
             )
         except IntegrityError as e:
@@ -1565,17 +1561,13 @@ class ModelRestApi(BaseModelApi):
         # This validates custom Schema with custom validations
         if isinstance(item.data, dict):
             return self.response_422(message=item.errors)
-        self.pre_update(item.data)
+        self.pre_update(item)
         try:
-            self.datamodel.edit(item.data, raise_exception=True)
+            self.datamodel.edit(item, raise_exception=True)
             self.post_update(item)
             return self.response(
                 200,
-                **{
-                    API_RESULT_RES_KEY: self.edit_model_schema.dump(
-                        item.data, many=False
-                    )
-                },
+                **{API_RESULT_RES_KEY: self.edit_model_schema.dump(item, many=False)},
             )
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))

@@ -2127,7 +2127,7 @@ class APITestCase(FABTestCase):
             field_float=float(MODEL1_DATA_SIZE + 1),
             field_date=None,
         )
-        uri = "api/v1/model1customvalidationapi/"
+        uri = "api/v1/model1apicustomschema/"
         rv = self.auth_client_post(client, token, uri, item)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 422)
