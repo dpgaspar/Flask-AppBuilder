@@ -3,6 +3,8 @@ import datetime
 import logging
 import math
 from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
+from flask_appbuilder.fieldwidgets import BS3TextFieldWidget
+from wtforms.fields import TextField
 from werkzeug.security import generate_password_hash
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
@@ -126,7 +128,7 @@ class UserModelView(ModelView):
     label_columns = {'get_full_name': lazy_gettext('Full Name'),
                      'first_name': lazy_gettext('First Name'),
                      'last_name': lazy_gettext('Last Name'),
-                     'username': lazy_gettext('User Name'),
+                     'username': lazy_gettext('Username'),
                      'password': lazy_gettext('Password'),
                      'active': lazy_gettext('Enable'),
                      'email': lazy_gettext('E-Mail'),
@@ -152,11 +154,11 @@ class UserModelView(ModelView):
                                'The user role on the application, this will associate with a list of permissions'),
                            'conf_password': lazy_gettext('Please rewrite the user\'s password to confirm')}
 
-    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles', 'status']
+    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'status']
 
     show_fieldsets = [
         (lazy_gettext('User info'),
-         {'fields': ['username', 'active', 'roles', 'login_count']}),
+         {'fields': ['username', 'active', 'login_count']}),
         (lazy_gettext('Personal Info'),
          {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
         (lazy_gettext('Audit Info'),
@@ -166,15 +168,15 @@ class UserModelView(ModelView):
 
     user_show_fieldsets = [
         (lazy_gettext('User info'),
-         {'fields': ['username', 'active', 'roles', 'login_count']}),
+         {'fields': ['username', 'active', 'login_count']}),
         (lazy_gettext('Personal Info'),
          {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
     ]
 
     search_exclude_columns = ['password']
 
-    add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles']
-    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles']
+    add_columns = ['first_name', 'last_name', 'username', 'active', 'email']
+    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email']
     user_info_title = lazy_gettext("Your user information")
 
     @expose('/userinfo/')
@@ -320,9 +322,14 @@ class UserStatsChartView(DirectByChartView):
         }
 
     ]
-
+class BS3TextFieldROWidget(BS3TextFieldWidget):
+    def __call__(self, field, **kwargs):
+        kwargs['readonly'] = 'true'
+        return super(BS3TextFieldROWidget, self).__call__(field,
+**kwargs)
 
 class RoleModelView(ModelView):
+    from flask_appbuilder.models.sqla.filters import FilterInList
     route_base = '/roles'
 
     list_title = lazy_gettext('List Roles')
@@ -332,7 +339,13 @@ class RoleModelView(ModelView):
 
     label_columns = {'name': lazy_gettext('Name'), 'permissions': lazy_gettext('Permissions')}
     list_columns = ['name', 'permissions']
+    edit_form_extra_fields = {'name': TextField('Name',
+                                                widget=BS3TextFieldROWidget())}
+    show_columns = list_columns
+    edit_columns = list_columns
+    add_columns = list_columns
     order_columns = ['name']
+    base_filters = [['name', FilterInList, ('Admin - System', 'Admin - Data', 'Creator', 'Viewer')]]
 
     @action("Copy Role", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-copy', single=False)
     def copy_role(self, items):
