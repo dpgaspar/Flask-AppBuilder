@@ -1558,9 +1558,6 @@ class ModelRestApi(BaseModelApi):
             item = self.edit_model_schema.load(data, instance=item)
         except ValidationError as err:
             return self.response_422(message=err.messages)
-        # This validates custom Schema with custom validations
-        if isinstance(item.data, dict):
-            return self.response_422(message=item.errors)
         self.pre_update(item)
         try:
             self.datamodel.edit(item, raise_exception=True)

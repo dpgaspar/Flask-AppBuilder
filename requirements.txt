@@ -24,7 +24,7 @@ itsdangerous==1.1.0       # via flask
 jinja2==2.10.1            # via flask, flask-babel
 jsonschema==3.0.1
 markupsafe==1.1.1         # via jinja2
-marshmallow-enum==1.4.1
+marshmallow-enum==1.5.1
 marshmallow-sqlalchemy==0.23.0
 marshmallow==3.5.1
 prison==0.1.3

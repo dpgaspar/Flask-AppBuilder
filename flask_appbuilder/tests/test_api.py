@@ -2193,12 +2193,6 @@ class APITestCase(FABTestCase):
         uri = "api/v1/model1apiexcludecols/"
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 201)
-        item = dict(
-            field_string="test{}".format(MODEL1_DATA_SIZE + 2),
-            field_integer=MODEL1_DATA_SIZE + 2,
-        )
-        rv = self.auth_client_post(client, token, uri, item)
-        self.assertEqual(rv.status_code, 201)
         model = (
             self.db.session.query(Model1)
             .filter_by(field_string=f"test{MODEL1_DATA_SIZE + 1}")
@@ -2207,6 +2201,16 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_integer, None)
         self.assertEqual(model.field_float, None)
         self.assertEqual(model.field_date, None)
+
+        item = dict(
+            field_string="test{}".format(MODEL1_DATA_SIZE + 2),
+            field_integer=MODEL1_DATA_SIZE + 2,
+        )
+        rv = self.auth_client_post(client, token, uri, item)
+        self.assertEqual(rv.status_code, 422)
+        data = json.loads(rv.data.decode("utf-8"))
+        expected_response = {"message": {"field_integer": ["Unknown field."]}}
+        self.assertEqual(data, expected_response)
 
         # Revert test data
         self.appbuilder.get_session.query(Model1).filter_by(
