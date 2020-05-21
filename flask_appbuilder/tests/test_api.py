@@ -847,7 +847,7 @@ class APITestCase(FABTestCase):
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 200)
         expected_rel_field = [
-            {"field_string": f"text0.{i}", "id": i, "parent": 1} for i in range(1, 4)
+            {"field_string": f"text0.{i}", "id": i} for i in range(1, 4)
         ]
         self.assertEqual(data[API_RESULT_RES_KEY]["children"], expected_rel_field)
 
@@ -2011,7 +2011,7 @@ class APITestCase(FABTestCase):
             .one_or_none()
         )
         pk = model1.id
-        item = dict(field_string="test_Put", field_integer=1000)
+        item = dict(field_string="test_Put")
         uri = f"api/v1/model1apiexcludecols/{pk}"
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 200)
@@ -2019,6 +2019,15 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_integer, 0)
         self.assertEqual(model.field_float, 0.0)
         self.assertEqual(model.field_date, None)
+        self.assertEqual(model.field_string, "test_Put")
+
+        item = dict(field_string="test_Put", field_integer=1000)
+        uri = f"api/v1/model1apiexcludecols/{pk}"
+        rv = self.auth_client_put(client, token, uri, item)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 422)
+        expected_response = {"message": {"field_integer": ["Unknown field."]}}
+        self.assertEqual(expected_response, data)
 
         # Revert data changes
         insert_model1(self.appbuilder.get_session, i=pk - 1)
