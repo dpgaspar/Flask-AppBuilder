@@ -37,7 +37,7 @@ class Product(Model):
         else:
             return Markup(
                 '<a href="' +
-                + url_for("ProductPubView.show", pk=str(self.id)) +
+                url_for("ProductPubView.show", pk=str(self.id)) +
                 '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive">'
                 '</a>'
             )
