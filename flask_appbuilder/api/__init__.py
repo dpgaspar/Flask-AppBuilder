@@ -6,7 +6,8 @@ import traceback
 from typing import Dict, Optional
 import urllib.parse
 
-from apispec import yaml_utils
+from apispec import yaml_utils, APISpec
+from apispec.exceptions import DuplicateComponentNameError
 from flask import Blueprint, current_app, jsonify, make_response, request, Response
 from flask_babel import lazy_gettext as _
 import jsonschema
@@ -484,7 +485,7 @@ class BaseApi(object):
         self._register_urls()
         return self.blueprint
 
-    def add_api_spec(self, api_spec):
+    def add_api_spec(self, api_spec: APISpec) -> None:
         self.add_apispec_components(api_spec)
         for attr_name in dir(self):
             attr = getattr(self, attr_name)
@@ -511,9 +512,7 @@ class BaseApi(object):
                         )
                         api_spec._paths[path][operation]["tags"] = [openapi_spec_tag]
 
-    def add_apispec_components(self, api_spec):
-        from apispec.exceptions import DuplicateComponentNameError
-
+    def add_apispec_components(self, api_spec: APISpec) -> None:
         for k, v in self.responses.items():
             api_spec.components._responses[k] = v
         for k, v in self._apispec_parameter_schemas.items():
@@ -522,7 +521,7 @@ class BaseApi(object):
             except DuplicateComponentNameError:
                 pass
 
-    def _register_urls(self):
+    def _register_urls(self) -> None:
         for attr_name in dir(self):
             if (
                 self.include_route_methods is not None
@@ -540,9 +539,11 @@ class BaseApi(object):
                     )
                     self.blueprint.add_url_rule(url, attr_name, attr, methods=methods)
 
-    def path_helper(self, path=None, operations=None, **kwargs):
+    def path_helper(
+        self, path: str = None, operations: Dict[str, Dict] = None, **kwargs
+    ) -> str:
         """
-            Works like a apispec plugin
+            Works like an apispec plugin
             May return a path as string and mutate operations dict.
 
         :param str path: Path to the resource
@@ -554,7 +555,7 @@ class BaseApi(object):
         """
         RE_URL = re.compile(r"<(?:[^:<>]+:)?([^<>]+)>")
         path = RE_URL.sub(r"{\1}", path)
-        return "/{}{}".format(self.resource_name, path)
+        return f"/{self.resource_name}{path}"
 
     def operation_helper(
         self, path=None, operations=None, methods=None, func=None, **kwargs
