@@ -1308,6 +1308,7 @@ group names that start with a capital "A"::
 Note that `BaseModelSchema` extends marshmallow `Schema` class, to support automatic SQLAlchemy model creation and
 update, it's a lighter version of marshmallow-sqlalchemy `ModelSchema`. Declare your SQLAlchemy model on `model_cls`
 so that a model is created on schema load.
+
 Then on our Api class::
 
     class GroupModelRestApi(ModelRestApi):
