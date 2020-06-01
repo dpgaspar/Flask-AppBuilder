@@ -33,7 +33,7 @@ class Permission(Model):
 class ViewMenu(Model):
     __tablename__ = "ab_view_menu"
     id = Column(Integer, Sequence("ab_view_menu_id_seq"), primary_key=True)
-    name = Column(String(100), unique=True, nullable=False)
+    name = Column(String(250), unique=True, nullable=False)
 
     def __eq__(self, other):
         return (isinstance(other, self.__class__)) and (self.name == other.name)

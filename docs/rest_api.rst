@@ -543,8 +543,8 @@ The previous example will enable cookie sessions on the all class::
         def private(self)
             ....
 
-On the previous example, we are enabling signed cookies on the ``private`` method. Not that event then
-valid a valid JWT is also accepted.
+On the previous example, we are enabling signed cookies on the ``private`` method. Note that even then 
+a valid JWT is also accepted.
 
 Model REST API
 --------------
@@ -581,10 +581,10 @@ so you can get free documentation for you API's.
 
 FAB will create all possible permissions and add them to the ``AUTH_ROLE_ADMIN`` config key
 that defaults to **Admin**. you can completely override the default inferred permissions
-and reduce the level of granularity, for mode detail about this read the :doc:`security` chapter.
+and reduce the level of granularity, for more detail about this read the :doc:`security` chapter.
 
 Let's dive into a simple example using the quickhowto.
-The quickhowto example as a Contact's Model and a Group Model,
+The quickhowto example has a Contact's Model and a Group Model,
 so each Contact belongs to a Group.
 
 First let's define a CRUD REST Api for our Group model resource::
