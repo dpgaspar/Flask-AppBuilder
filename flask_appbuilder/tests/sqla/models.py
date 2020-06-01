@@ -46,7 +46,7 @@ def validate_field_string(n):
 
 
 class Model1CustomSchema(BaseModelSchema):
-    model_class = Model1
+    model_cls = Model1
     field_string = fields.String(validate=validate_name)
     field_integer = fields.Integer(allow_none=True)
     field_float = fields.Float(allow_none=True)

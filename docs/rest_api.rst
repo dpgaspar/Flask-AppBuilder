@@ -1302,11 +1302,12 @@ group names that start with a capital "A"::
             raise ValidationError('Name must start with an A')
 
     class GroupCustomSchema(BaseModelSchema):
-        model_class = ContactGroup
+        model_cls = ContactGroup
         name = fields.Str(validate=validate_name)
 
 Note that `BaseModelSchema` extends marshmallow `Schema` class, to support automatic SQLAlchemy model creation and
-update, it's a lighter version of marshmallow-sqlalchemy `ModelSchema`.
+update, it's a lighter version of marshmallow-sqlalchemy `ModelSchema`. Declare your SQLAlchemy model on `model_cls`
+so that a model is created on schema load.
 Then on our Api class::
 
     class GroupModelRestApi(ModelRestApi):

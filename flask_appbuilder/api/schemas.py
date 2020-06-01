@@ -24,7 +24,13 @@ from ..const import (
 
 
 class BaseModelSchema(Schema):
-    model_class = None
+    """
+    Extends marshmallow Schema to add functionality similar to marshmallow-sqlalchemy
+    for creating and updating SQLAlchemy models on load
+    """
+
+    model_cls = None
+    """Declare the SQLAlchemy model when creating a new model on load"""
 
     def __init__(self, *arg, **kwargs):
         super().__init__()
@@ -36,7 +42,7 @@ class BaseModelSchema(Schema):
             for key, value in data.items():
                 setattr(self.instance, key, value)
             return self.instance
-        return self.model_class(**data)
+        return self.model_cls(**data)
 
     def load(self, data, *, instance=None, **kwargs):
         self.instance = instance
