@@ -68,7 +68,7 @@ class Model2(Model):
         return str(self.field_string)
 
     def field_method(self):
-        return "field_method_value"
+        return f"{self.field_string}_field_method"
 
 
 class Model3(Model):

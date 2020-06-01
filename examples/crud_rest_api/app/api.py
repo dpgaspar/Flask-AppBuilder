@@ -1,6 +1,5 @@
 from flask_appbuilder import ModelRestApi
 from flask_appbuilder.api import BaseApi, expose
-from flask_appbuilder.api.schemas import BaseModelSchema
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.filters import BaseFilter
 from sqlalchemy import or_
@@ -72,8 +71,7 @@ class ContactModelApi(ModelRestApi):
     resource_name = "contact"
     datamodel = SQLAInterface(Contact)
     allow_browser_login = True
-    list_columns = ["name", "year"]
-    add_exclude_columns = ["address"]
+
     search_filters = {"name": [CustomFilter]}
     openapi_spec_methods = {
         "get_list": {
@@ -87,27 +85,10 @@ class ContactModelApi(ModelRestApi):
 appbuilder.add_api(ContactModelApi)
 
 
-from marshmallow import ValidationError, fields
-from marshmallow.validate import Length
-
-
-def validate_name(n):
-    print("----------- VALIDATE")
-    if n[0] != "A":
-        raise ValidationError("Name must start with an A")
-
-
-class Model1CustomSchema(BaseModelSchema):
-    model_class = ContactGroup
-    name = fields.String(validate=[Length(0, 25), validate_name])
-
-
 class GroupModelApi(ModelRestApi):
     resource_name = "group"
     datamodel = SQLAInterface(ContactGroup)
     allow_browser_login = True
-    edit_model_schema = Model1CustomSchema()
-    validators_columns = {"name": validate_name}
 
 
 appbuilder.add_api(GroupModelApi)

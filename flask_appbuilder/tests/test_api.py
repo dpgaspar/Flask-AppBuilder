@@ -329,6 +329,13 @@ class APITestCase(FABTestCase):
         self.model2apifilteredrelfields = Model2ApiFilteredRelFields
         self.appbuilder.add_api(Model2ApiFilteredRelFields)
 
+        class Model2CallableColApi(ModelRestApi):
+            datamodel = SQLAInterface(Model2)
+            list_columns = ["field_string", "field_integer", "field_method"]
+            show_columns = list_columns
+
+        self.appbuilder.add_api(Model2CallableColApi)
+
         class Model1PermOverride(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             class_permission_name = "api"
@@ -2445,6 +2452,26 @@ class APITestCase(FABTestCase):
         for i in range(1, self.model1api.page_size):
             item = data[API_RESULT_RES_KEY][i - 1]
             self.assertEqual(item["custom_property"], f"{item['field_string']}_custom")
+
+    def test_get_list_col_callable(self):
+        """
+            REST Api: Test get list of objects with columns as callable
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "api/v1/model2callablecolapi/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        self.assertEqual(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        self.assertEqual(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        results = data[API_RESULT_RES_KEY]
+        for i, item in enumerate(results):
+            self.assertEqual(
+                item["field_method"], f"{item['field_string']}_field_method"
+            )
 
     def test_openapi(self):
         """
