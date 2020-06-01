@@ -1856,6 +1856,57 @@ class APITestCase(FABTestCase):
         # Revert data changes
         insert_model1(self.appbuilder.get_session, i=pk - 1)
 
+    def test_update_item_custom_schema(self):
+        """
+            REST Api: Test update item custom schema
+        """
+        from .sqla.models import Model1CustomSchema
+
+        class Model1ApiCustomSchema(self.model1api):
+            edit_model_schema = Model1CustomSchema()
+
+        self.appbuilder.add_api(Model1ApiCustomSchema)
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        # Test custom validation item must start with a capital A
+        item = dict(
+            field_string=f"test{MODEL1_DATA_SIZE + 1}",
+            field_integer=MODEL1_DATA_SIZE + 1,
+            field_float=float(MODEL1_DATA_SIZE + 1),
+            field_date=None,
+        )
+        uri = "api/v1/model1apicustomschema/1"
+        rv = self.auth_client_put(client, token, uri, item)
+        self.assertEqual(rv.status_code, 422)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(
+            data, {"message": {"field_string": ["Name must start with an A"]}}
+        )
+
+        # Test normal update with custom schema
+        item = dict(
+            field_string=f"Atest{MODEL1_DATA_SIZE + 1}",
+            field_integer=MODEL1_DATA_SIZE + 1,
+            field_float=float(MODEL1_DATA_SIZE + 1),
+            field_date=None,
+        )
+        uri = "api/v1/model1apicustomschema/1"
+        rv = self.auth_client_put(client, token, uri, item)
+        self.assertEqual(rv.status_code, 200)
+
+        model = (
+            self.db.session.query(Model1)
+            .filter_by(field_string="Atest{}".format(MODEL1_DATA_SIZE + 1))
+            .first()
+        )
+        self.assertEqual(model.field_string, f"Atest{MODEL1_DATA_SIZE + 1}")
+        self.assertEqual(model.field_integer, MODEL1_DATA_SIZE + 1)
+        self.assertEqual(model.field_float, float(MODEL1_DATA_SIZE + 1))
+
+        # Revert data changes
+        insert_model1(self.appbuilder.get_session, i=0)
+
     def test_update_item_base_filters(self):
         """
             REST Api: Test update item with base filters
@@ -2130,6 +2181,7 @@ class APITestCase(FABTestCase):
 
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        # Test custom validation item must start with a capital A
         item = dict(
             field_string=f"test{MODEL1_DATA_SIZE + 1}",
             field_integer=MODEL1_DATA_SIZE + 1,
@@ -2143,6 +2195,30 @@ class APITestCase(FABTestCase):
         self.assertEqual(
             data, {"message": {"field_string": ["Name must start with an A"]}}
         )
+
+        item = dict(
+            field_string=f"Atest{MODEL1_DATA_SIZE + 1}",
+            field_integer=MODEL1_DATA_SIZE + 1,
+            field_float=float(MODEL1_DATA_SIZE + 1),
+            field_date=None,
+        )
+        uri = "api/v1/model1apicustomschema/"
+        rv = self.auth_client_post(client, token, uri, item)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 201)
+
+        model = (
+            self.db.session.query(Model1)
+            .filter_by(field_string="Atest{}".format(MODEL1_DATA_SIZE + 1))
+            .first()
+        )
+        self.assertEqual(model.field_string, f"Atest{MODEL1_DATA_SIZE + 1}")
+        self.assertEqual(model.field_integer, MODEL1_DATA_SIZE + 1)
+        self.assertEqual(model.field_float, float(MODEL1_DATA_SIZE + 1))
+
+        # Revert data changes
+        self.appbuilder.get_session.delete(model)
+        self.appbuilder.get_session.commit()
 
     def test_create_item_val_size(self):
         """

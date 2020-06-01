@@ -1294,20 +1294,19 @@ And we get an HTTP 422 (Unprocessable Entity).
 How to add custom validation? On our next example we only allow
 group names that start with a capital "A"::
 
-    from marshmallow import Schema, fields, ValidationError, post_load
+    from flask_appbuilder.api.schemas import BaseModelSchema
 
 
     def validate_name(n):
         if n[0] != 'A':
             raise ValidationError('Name must start with an A')
 
-    class GroupCustomSchema(Schema):
+    class GroupCustomSchema(BaseModelSchema):
+        model_class = ContactGroup
         name = fields.Str(validate=validate_name)
 
-        @post_load
-        def process(self, data):
-            return ContactGroup(**data)
-
+Note that `BaseModelSchema` extends marshmallow `Schema` class, to support automatic SQLAlchemy model creation and
+update, it's a lighter version of marshmallow-sqlalchemy `ModelSchema`.
 Then on our Api class::
 
     class GroupModelRestApi(ModelRestApi):

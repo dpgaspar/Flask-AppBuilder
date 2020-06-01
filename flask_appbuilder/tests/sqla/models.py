@@ -2,7 +2,8 @@ import datetime
 import enum
 
 from flask_appbuilder import Model
-from marshmallow import fields, post_load, Schema, ValidationError
+from flask_appbuilder.api.schemas import BaseModelSchema
+from marshmallow import fields, ValidationError
 from sqlalchemy import (
     Column,
     Date,
@@ -44,15 +45,12 @@ def validate_field_string(n):
         raise ValidationError("Name must start with an A")
 
 
-class Model1CustomSchema(Schema):
+class Model1CustomSchema(BaseModelSchema):
+    model_class = Model1
     field_string = fields.String(validate=validate_name)
     field_integer = fields.Integer(allow_none=True)
     field_float = fields.Float(allow_none=True)
     field_date = fields.Date(allow_none=True)
-
-    @post_load
-    def process(self, data):
-        return Model1(**data)
 
 
 class Model2(Model):

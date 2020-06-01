@@ -6,7 +6,7 @@ import traceback
 from typing import Dict, Optional
 import urllib.parse
 
-from apispec import yaml_utils, APISpec
+from apispec import APISpec, yaml_utils
 from apispec.exceptions import DuplicateComponentNameError
 from flask import Blueprint, current_app, jsonify, make_response, request, Response
 from flask_babel import lazy_gettext as _

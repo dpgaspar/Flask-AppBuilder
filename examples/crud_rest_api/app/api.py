@@ -1,5 +1,6 @@
 from flask_appbuilder import ModelRestApi
 from flask_appbuilder.api import BaseApi, expose
+from flask_appbuilder.api.schemas import BaseModelSchema
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.filters import BaseFilter
 from sqlalchemy import or_
@@ -86,7 +87,7 @@ class ContactModelApi(ModelRestApi):
 appbuilder.add_api(ContactModelApi)
 
 
-from marshmallow import Schema, ValidationError, fields, post_load
+from marshmallow import ValidationError, fields
 from marshmallow.validate import Length
 
 
@@ -96,19 +97,16 @@ def validate_name(n):
         raise ValidationError("Name must start with an A")
 
 
-class Model1CustomSchema(Schema):
+class Model1CustomSchema(BaseModelSchema):
+    model_class = ContactGroup
     name = fields.String(validate=[Length(0, 25), validate_name])
-
-    @post_load
-    def process(self, data, **kwargs):
-        return ContactGroup(**data)
 
 
 class GroupModelApi(ModelRestApi):
     resource_name = "group"
     datamodel = SQLAInterface(ContactGroup)
     allow_browser_login = True
-    #add_model_schema = Model1CustomSchema()
+    edit_model_schema = Model1CustomSchema()
     validators_columns = {"name": validate_name}
 
 
