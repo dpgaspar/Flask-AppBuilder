@@ -1,6 +1,16 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.0.0
+-----------------------------------
+
+- Fix, [docs] Possible typos in the documentation (#1375)
+- Fix, name column resizing in ab_view_menu table #1367 (#1368) (ab_view_menu changed from 100 to 250)
+- Fix, [mvc] add a panel body to panel_begin/panel_end macros (#1377)
+- Fix, [examples] Update models.py (#1380)
+- Fix, hardcoded url on oauth (#1331)
+- BREAKING CHANGES New, [api] support marshmallow 3 (#1334)
+
 Improvements and Bug fixes on 2.3.4
 -----------------------------------
 
