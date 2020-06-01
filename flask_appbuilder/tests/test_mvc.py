@@ -1160,7 +1160,7 @@ class MVCTestCase(BaseMVCTestCase):
         rv = client.get("/model2view/list/")
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        self.assertIn("field_method_value", data)
+        self.assertIn("_field_method", data)
 
     def test_compactCRUDMixin(self):
         """
