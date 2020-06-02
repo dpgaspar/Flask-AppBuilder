@@ -27,7 +27,7 @@ class GreetingApi(BaseApi):
     openapi_spec_methods = {
         "greeting": {
             "get": {
-               "description": "Override description",
+                "description": "Override description",
             }
         }
     }

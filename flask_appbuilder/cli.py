@@ -59,6 +59,14 @@ def create_admin(username, firstname, lastname, email, password):
             fg="green",
         )
     )
+    user = current_app.appbuilder.sm.find_user(username=username)
+    if user:
+        click.echo(click.style(f"Error! User already exists {username}", fg="red"))
+        return
+    user = current_app.appbuilder.sm.find_user(email=email)
+    if user:
+        click.echo(click.style(f"Error! User already exists {username}", fg="red"))
+        return
     role_admin = current_app.appbuilder.sm.find_role(
         current_app.appbuilder.sm.auth_role_admin
     )
@@ -83,7 +91,18 @@ def create_user(role, username, firstname, lastname, email, password):
     """
         Create a user
     """
+    user = current_app.appbuilder.sm.find_user(username=username)
+    if user:
+        click.echo(click.style(f"Error! User already exists {username}", fg="red"))
+        return
+    user = current_app.appbuilder.sm.find_user(email=email)
+    if user:
+        click.echo(click.style(f"Error! User already exists {username}", fg="red"))
+        return
     role_object = current_app.appbuilder.sm.find_role(role)
+    if not role_object:
+        click.echo(click.style(f"Error! Role not found {role}", fg="red"))
+        return
     user = current_app.appbuilder.sm.add_user(
         username, firstname, lastname, email, role_object, password
     )
@@ -91,6 +110,27 @@ def create_user(role, username, firstname, lastname, email, password):
         click.echo(click.style("User {0} created.".format(username), fg="green"))
     else:
         click.echo(click.style("Error! No user created", fg="red"))
+
+
+@fab.command("reset-password")
+@click.option(
+    "--username",
+    default="admin",
+    prompt="The username",
+    help="Resets the password for a particular user.",
+)
+@click.password_option()
+@with_appcontext
+def reset_password(username, password):
+    """
+        Resets a user's password
+    """
+    user = current_app.appbuilder.sm.find_user(username=username)
+    if not user:
+        click.echo("User {0} not found.".format(username))
+    else:
+        current_app.appbuilder.sm.reset_password(user.id, password)
+        click.echo(click.style("User {0} reseted.".format(username), fg="green"))
 
 
 @fab.command("create-db")

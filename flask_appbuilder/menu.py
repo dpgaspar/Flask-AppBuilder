@@ -1,6 +1,7 @@
 from typing import List
 
 from flask import current_app, url_for
+from flask_babel import gettext as __
 
 from .api import BaseApi, expose
 from .basemanager import BaseManager
@@ -73,7 +74,7 @@ class Menu(object):
                     {
                         "name": item.name,
                         "icon": item.icon,
-                        "label": str(item.label),
+                        "label": __(str(item.label)),
                         "childs": self.get_data(menu=item.childs),
                     }
                 )
@@ -82,7 +83,7 @@ class Menu(object):
                     {
                         "name": item.name,
                         "icon": item.icon,
-                        "label": str(item.label),
+                        "label": __(str(item.label)),
                         "url": item.get_url(),
                     }
                 )

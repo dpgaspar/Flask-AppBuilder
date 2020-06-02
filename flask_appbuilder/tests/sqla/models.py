@@ -2,7 +2,8 @@ import datetime
 import enum
 
 from flask_appbuilder import Model
-from marshmallow import fields, post_load, Schema, ValidationError
+from flask_appbuilder.api.schemas import BaseModelSchema
+from marshmallow import fields, ValidationError
 from sqlalchemy import (
     Column,
     Date,
@@ -44,12 +45,12 @@ def validate_field_string(n):
         raise ValidationError("Name must start with an A")
 
 
-class Model1CustomSchema(Schema):
-    name = fields.Str(validate=validate_name)
-
-    @post_load
-    def process(self, data):
-        return Model1(**data)
+class Model1CustomSchema(BaseModelSchema):
+    model_cls = Model1
+    field_string = fields.String(validate=validate_name)
+    field_integer = fields.Integer(allow_none=True)
+    field_float = fields.Float(allow_none=True)
+    field_date = fields.Date(allow_none=True)
 
 
 class Model2(Model):
@@ -67,7 +68,7 @@ class Model2(Model):
         return str(self.field_string)
 
     def field_method(self):
-        return "field_method_value"
+        return f"{self.field_string}_field_method"
 
 
 class Model3(Model):
@@ -133,6 +134,7 @@ class ModelMMChild(Model):
     __tablename__ = "child"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
+    field_integer = Column(Integer())
 
 
 assoc_parent_child_required = Table(
@@ -292,6 +294,7 @@ def insert_data(session, count):
     for i in range(1, 4):
         model = ModelMMChild()
         model.field_string = str(i)
+        model.field_integer = i
         children.append(model)
         session.add(model)
         session.commit()

@@ -6,7 +6,8 @@ import traceback
 from typing import Dict, Optional
 import urllib.parse
 
-from apispec import yaml_utils
+from apispec import APISpec, yaml_utils
+from apispec.exceptions import DuplicateComponentNameError
 from flask import Blueprint, current_app, jsonify, make_response, request, Response
 from flask_babel import lazy_gettext as _
 import jsonschema
@@ -484,7 +485,8 @@ class BaseApi(object):
         self._register_urls()
         return self.blueprint
 
-    def add_api_spec(self, api_spec):
+    def add_api_spec(self, api_spec: APISpec) -> None:
+        self.add_apispec_components(api_spec)
         for attr_name in dir(self):
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
@@ -509,27 +511,17 @@ class BaseApi(object):
                             self.openapi_spec_tag or self.__class__.__name__
                         )
                         api_spec._paths[path][operation]["tags"] = [openapi_spec_tag]
-        self.add_apispec_components(api_spec)
 
-    def add_apispec_components(self, api_spec):
+    def add_apispec_components(self, api_spec: APISpec) -> None:
         for k, v in self.responses.items():
             api_spec.components._responses[k] = v
         for k, v in self._apispec_parameter_schemas.items():
-            if k not in api_spec.components._parameters:
-                _v = {
-                    "in": "query",
-                    "name": API_URI_RIS_KEY,
-                    "content": {
-                        "application/json": {
-                            "schema": {"$ref": "#/components/schemas/{}".format(k)}
-                        }
-                    },
-                }
-                # Using private because parameter method does not behave correctly
-                api_spec.components._schemas[k] = v
-                api_spec.components._parameters[k] = _v
+            try:
+                api_spec.components.schema(k, v)
+            except DuplicateComponentNameError:
+                pass
 
-    def _register_urls(self):
+    def _register_urls(self) -> None:
         for attr_name in dir(self):
             if (
                 self.include_route_methods is not None
@@ -547,9 +539,11 @@ class BaseApi(object):
                     )
                     self.blueprint.add_url_rule(url, attr_name, attr, methods=methods)
 
-    def path_helper(self, path=None, operations=None, **kwargs):
+    def path_helper(
+        self, path: str = None, operations: Dict[str, Dict] = None, **kwargs
+    ) -> str:
         """
-            Works like a apispec plugin
+            Works like an apispec plugin
             May return a path as string and mutate operations dict.
 
         :param str path: Path to the resource
@@ -561,7 +555,7 @@ class BaseApi(object):
         """
         RE_URL = re.compile(r"<(?:[^:<>]+:)?([^<>]+)>")
         path = RE_URL.sub(r"{\1}", path)
-        return "/{}{}".format(self.resource_name, path)
+        return f"/{self.resource_name}{path}"
 
     def operation_helper(
         self, path=None, operations=None, methods=None, func=None, **kwargs
@@ -1248,7 +1242,12 @@ class ModelRestApi(BaseModelApi):
         ---
         get:
           parameters:
-          - $ref: '#/components/parameters/get_info_schema'
+          - in: query
+            name: q
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/get_info_schema'
           responses:
             200:
               description: Item from Model
@@ -1306,7 +1305,7 @@ class ModelRestApi(BaseModelApi):
             _show_model_schema = self.show_model_schema
 
         _response["id"] = pk
-        _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False).data
+        _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False)
         self.pre_get(_response)
         return self.response(200, **_response)
 
@@ -1328,7 +1327,12 @@ class ModelRestApi(BaseModelApi):
             schema:
               type: integer
             name: pk
-          - $ref: '#/components/parameters/get_item_schema'
+          - in: query
+            name: q
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/get_item_schema'
           responses:
             200:
               description: Item from Model
@@ -1407,7 +1411,7 @@ class ModelRestApi(BaseModelApi):
             select_columns=query_select_columns,
         )
         pks = self.datamodel.get_keys(lst)
-        _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True).data
+        _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True)
         _response["ids"] = pks
         _response["count"] = count
         self.pre_get_list(_response)
@@ -1428,7 +1432,12 @@ class ModelRestApi(BaseModelApi):
         ---
         get:
           parameters:
-          - $ref: '#/components/parameters/get_list_schema'
+          - in: query
+            name: q
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/get_list_schema'
           responses:
             200:
               description: Items from Model
@@ -1484,19 +1493,15 @@ class ModelRestApi(BaseModelApi):
         except ValidationError as err:
             return self.response_422(message=err.messages)
         # This validates custom Schema with custom validations
-        if isinstance(item.data, dict):
-            return self.response_422(message=item.errors)
-        self.pre_add(item.data)
+        self.pre_add(item)
         try:
-            self.datamodel.add(item.data, raise_exception=True)
-            self.post_add(item.data)
+            self.datamodel.add(item, raise_exception=True)
+            self.post_add(item)
             return self.response(
                 201,
                 **{
-                    API_RESULT_RES_KEY: self.add_model_schema.dump(
-                        item.data, many=False
-                    ).data,
-                    "id": self.datamodel.get_pk_value(item.data),
+                    API_RESULT_RES_KEY: self.add_model_schema.dump(item, many=False),
+                    "id": self.datamodel.get_pk_value(item),
                 },
             )
         except IntegrityError as e:
@@ -1554,20 +1559,13 @@ class ModelRestApi(BaseModelApi):
             item = self.edit_model_schema.load(data, instance=item)
         except ValidationError as err:
             return self.response_422(message=err.messages)
-        # This validates custom Schema with custom validations
-        if isinstance(item.data, dict):
-            return self.response_422(message=item.errors)
-        self.pre_update(item.data)
+        self.pre_update(item)
         try:
-            self.datamodel.edit(item.data, raise_exception=True)
+            self.datamodel.edit(item, raise_exception=True)
             self.post_update(item)
             return self.response(
                 200,
-                **{
-                    API_RESULT_RES_KEY: self.edit_model_schema.dump(
-                        item.data, many=False
-                    ).data
-                },
+                **{API_RESULT_RES_KEY: self.edit_model_schema.dump(item, many=False)},
             )
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))
@@ -1828,7 +1826,7 @@ class ModelRestApi(BaseModelApi):
         :param data: python data structure
         :return: python data structure
         """
-        data_item = self.edit_model_schema.dump(model_item, many=False).data
+        data_item = self.edit_model_schema.dump(model_item, many=False)
         for _col in self.edit_columns:
             if _col not in data.keys():
                 data[_col] = data_item[_col]
