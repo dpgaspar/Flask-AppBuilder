@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+  postgres:
+    container_name: fab-postgres
+    image: postgres:10
+    env_file: .env
+    command: postgres -c 'max_connections=500'
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
+    external: false
