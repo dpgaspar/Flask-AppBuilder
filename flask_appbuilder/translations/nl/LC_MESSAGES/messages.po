@@ -565,7 +565,7 @@ msgstr "Bladgrootte"
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:83
 msgid "Order by"
-msgstr ""
+msgstr "Volgorde"
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:282
 msgid "Record Count"
