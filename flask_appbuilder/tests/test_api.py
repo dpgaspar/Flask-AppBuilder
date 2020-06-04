@@ -2,7 +2,6 @@ import json
 import logging
 import os
 
-from marshmallow import Schema, fields
 
 from flask_appbuilder import ModelRestApi, SQLA
 from flask_appbuilder.const import (
@@ -33,6 +32,7 @@ from flask_appbuilder.const import (
 )
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from marshmallow import fields, Schema
 import prison
 from sqlalchemy.sql.expression import func
 
