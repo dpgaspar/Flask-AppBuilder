@@ -186,6 +186,7 @@ class SQLAInterface(BaseInterface):
         page=None,
         page_size=None,
         select_columns=None,
+        base_query=None,
     ):
         """
         Returns the results for a model query, applies filters, sorting and pagination
@@ -200,10 +201,15 @@ class SQLAInterface(BaseInterface):
             the current page
         :param page_size:
             the current page size
+        :param base_query
+            the base SQLAlchemy Query to run to build the list view
         """
-        query = self.session.query(self.obj)
+        if base_query:
+            query = base_query(self.session)
+        else:
+            query = self.session.query(self.obj)
+            query = self._query_select_options(query, select_columns)
         query = self._query_join_dotted_column(query, order_column)
-        query = self._query_select_options(query, select_columns)
         query_count = self.session.query(func.count("*")).select_from(self.obj)
 
         query_count = self._get_base_query(query=query_count, filters=filters)

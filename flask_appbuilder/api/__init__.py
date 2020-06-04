@@ -871,6 +871,12 @@ class ModelRestApi(BaseModelApi):
         'Edit ' with pretty model name
     """
 
+    list_query = None
+    """
+    A base query to use as the query object when building
+    the list page.
+    """
+
     list_columns = None
     """
         A list of columns (or model's methods) to be displayed on the list view.
@@ -1004,7 +1010,7 @@ class ModelRestApi(BaseModelApi):
         "get_list_schema": get_list_schema,
     }
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         super(ModelRestApi, self).__init__()
         self.validators_columns = self.validators_columns or {}
         self.model2schemaconverter = self.model2schemaconverter(
@@ -1409,6 +1415,7 @@ class ModelRestApi(BaseModelApi):
             page=page_index,
             page_size=page_size,
             select_columns=query_select_columns,
+            base_query=self.list_query,
         )
         pks = self.datamodel.get_keys(lst)
         _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True)

@@ -2,6 +2,8 @@ import json
 import logging
 import os
 
+from marshmallow import Schema, fields
+
 from flask_appbuilder import ModelRestApi, SQLA
 from flask_appbuilder.const import (
     API_ADD_COLUMNS_RES_KEY,
@@ -61,7 +63,6 @@ from .sqla.models import (
     validate_name,
 )
 
-
 log = logging.getLogger(__name__)
 
 
@@ -92,7 +93,6 @@ class APICSRFTestCase(FABTestCase):
 
 
 class APIDisableSecViewTestCase(FABTestCase):
-
     base_fab_endpoint = [
         "IndexView.index",
         "appbuilder.static",
@@ -182,6 +182,39 @@ class APITestCase(FABTestCase):
 
         self.model1api = Model1Api
         self.appbuilder.add_api(Model1Api)
+
+        class Model1ListModelSchema(Schema):
+            field_integer = fields.Integer()
+            field_float = fields.Float()
+            field_string = fields.String()
+            field_date = fields.Date()
+            model_2_count = fields.Integer()
+
+        def custom_list_query(_cls, session):
+            return session.query(
+                Model1.id.label("id"),
+                Model1.field_integer.label("field_integer"),
+                Model1.field_float.label("field_float"),
+                Model1.field_string.label("field_string"),
+                Model1.field_date.label("field_date"),
+                func.count(Model2.id).label("model_2_count")
+            ).outerjoin(Model2).group_by(Model1)
+
+        class Model1ApiBaseQuery(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+
+            list_query = custom_list_query
+            list_model_schema = Model1ListModelSchema()
+            list_columns = [
+                "field_integer",
+                "field_float",
+                "field_string",
+                "field_date",
+                "model_2_count"
+            ]
+
+        self.model1apibasequery = Model1ApiBaseQuery
+        self.appbuilder.add_api(Model1ApiBaseQuery)
 
         class CustomFilter(BaseFilter):
             name = "Custom Filter"
@@ -689,8 +722,8 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model2 = (
             self.appbuilder.get_session.query(Model2)
-            .filter_by(field_string="test0")
-            .one_or_none()
+                .filter_by(field_string="test0")
+                .one_or_none()
         )
         pk = model2.id
         uri = f"api/v1/model2dottednotationapi/{pk}"
@@ -780,8 +813,8 @@ class APITestCase(FABTestCase):
         # We can't get a base filtered item
         model2 = (
             self.appbuilder.get_session.query(Model2)
-            .filter_by(field_string="test0")
-            .one_or_none()
+                .filter_by(field_string="test0")
+                .one_or_none()
         )
         pk = model2.id
         rv = self.auth_client_get(client, token, f"api/v1/model2api/{pk}")
@@ -1067,6 +1100,29 @@ class APITestCase(FABTestCase):
             },
         )
 
+    def test_get_list_custom_base_query(self):
+        """
+            REST Api: Test get list with a base query
+            defined on the API for the list endpoint
+        """
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # test string order asc
+        rv = self.auth_client_get(client, token, "api/v1/model1apibasequery/")
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(
+            data[API_RESULT_RES_KEY][0],
+            {
+                "field_date": None,
+                "field_float": 0.0,
+                "field_integer": 0,
+                "field_string": "test0",
+                "model_2_count": 1,
+            },
+        )
+
     def test_get_list_page(self):
         """
             REST Api: Test get list page params
@@ -1280,13 +1336,13 @@ class APITestCase(FABTestCase):
 
         parent_ = (
             session.query(ModelMMParent)
-            .filter_by(field_string="test_tmp")
-            .one_or_none()
+                .filter_by(field_string="test_tmp")
+                .one_or_none()
         )
         child_ = (
             session.query(ModelMMChild)
-            .filter_by(field_string="test_child_tmp")
-            .one_or_none()
+                .filter_by(field_string="test_child_tmp")
+                .one_or_none()
         )
 
         session.delete(parent_)
@@ -1750,8 +1806,8 @@ class APITestCase(FABTestCase):
 
         model = (
             self.appbuilder.get_session.query(Model2)
-            .filter_by(field_string="test2")
-            .one_or_none()
+                .filter_by(field_string="test2")
+                .one_or_none()
         )
         pk = model.id
         uri = f"api/v1/model2api/{pk}"
@@ -1772,8 +1828,8 @@ class APITestCase(FABTestCase):
 
         model = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string="test0")
-            .one_or_none()
+                .filter_by(field_string="test0")
+                .one_or_none()
         )
         pk = model.id
         uri = f"api/v1/model1api/{pk}"
@@ -1804,8 +1860,8 @@ class APITestCase(FABTestCase):
 
         model = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_integer=2)
-            .one_or_none()
+                .filter_by(field_integer=2)
+                .one_or_none()
         )
 
         # Try to delete a filtered item
@@ -1822,8 +1878,8 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string="test2")
-            .one_or_none()
+                .filter_by(field_string="test2")
+                .one_or_none()
         )
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
@@ -1846,8 +1902,8 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string="test2")
-            .one_or_none()
+                .filter_by(field_string="test2")
+                .one_or_none()
         )
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
@@ -1904,8 +1960,8 @@ class APITestCase(FABTestCase):
 
         model = (
             self.db.session.query(Model1)
-            .filter_by(field_string="Atest{}".format(MODEL1_DATA_SIZE + 1))
-            .first()
+                .filter_by(field_string="Atest{}".format(MODEL1_DATA_SIZE + 1))
+                .first()
         )
         self.assertEqual(model.field_string, f"Atest{MODEL1_DATA_SIZE + 1}")
         self.assertEqual(model.field_integer, MODEL1_DATA_SIZE + 1)
@@ -1922,8 +1978,8 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_integer=3)
-            .one_or_none()
+                .filter_by(field_integer=3)
+                .one_or_none()
         )
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=3, field_float=3.0)
@@ -1941,8 +1997,8 @@ class APITestCase(FABTestCase):
         # We can't update an item that is base filtered
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_integer=1)
-            .one_or_none()
+                .filter_by(field_integer=1)
+                .one_or_none()
         )
         pk = model1.id
         uri = f"api/v1/model1apifiltered/{pk}"
@@ -1971,8 +2027,8 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string=f"test0")
-            .one_or_none()
+                .filter_by(field_string=f"test0")
+                .one_or_none()
         )
         pk = model1.id
         field_string = "a" * 51
@@ -2002,9 +2058,9 @@ class APITestCase(FABTestCase):
 
         child_id = (
             session.query(ModelMMChild)
-            .filter_by(field_string="update_m,m")
-            .one_or_none()
-            .id
+                .filter_by(field_string="update_m,m")
+                .one_or_none()
+                .id
         )
         item = dict(children=[child_id])
         client = self.app.test_client()
@@ -2035,8 +2091,8 @@ class APITestCase(FABTestCase):
 
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string="test0")
-            .one_or_none()
+                .filter_by(field_string="test0")
+                .one_or_none()
         )
         pk = model1.id
         item = dict(
@@ -2065,8 +2121,8 @@ class APITestCase(FABTestCase):
 
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string="test0")
-            .one_or_none()
+                .filter_by(field_string="test0")
+                .one_or_none()
         )
         pk = model1.id
         item = dict(field_string="test_Put")
@@ -2109,8 +2165,8 @@ class APITestCase(FABTestCase):
         self.assertEqual(data[API_RESULT_RES_KEY], item)
         model = (
             self.db.session.query(Model1)
-            .filter_by(field_string="test{}".format(MODEL1_DATA_SIZE + 1))
-            .first()
+                .filter_by(field_string="test{}".format(MODEL1_DATA_SIZE + 1))
+                .first()
         )
         self.assertEqual(model.field_string, f"test{MODEL1_DATA_SIZE + 1}")
         self.assertEqual(model.field_integer, MODEL1_DATA_SIZE + 1)
@@ -2216,8 +2272,8 @@ class APITestCase(FABTestCase):
 
         model = (
             self.db.session.query(Model1)
-            .filter_by(field_string="Atest{}".format(MODEL1_DATA_SIZE + 1))
-            .first()
+                .filter_by(field_string="Atest{}".format(MODEL1_DATA_SIZE + 1))
+                .first()
         )
         self.assertEqual(model.field_string, f"Atest{MODEL1_DATA_SIZE + 1}")
         self.assertEqual(model.field_integer, MODEL1_DATA_SIZE + 1)
@@ -2287,8 +2343,8 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 201)
         model = (
             self.db.session.query(Model1)
-            .filter_by(field_string=f"test{MODEL1_DATA_SIZE + 1}")
-            .first()
+                .filter_by(field_string=f"test{MODEL1_DATA_SIZE + 1}")
+                .first()
         )
         self.assertEqual(model.field_integer, None)
         self.assertEqual(model.field_float, None)
@@ -2372,13 +2428,13 @@ class APITestCase(FABTestCase):
         # Rollback data changes
         model1 = (
             self.appbuilder.get_session.query(ModelMMParent)
-            .filter_by(field_string="new1")
-            .one_or_none()
+                .filter_by(field_string="new1")
+                .one_or_none()
         )
         model2 = (
             self.appbuilder.get_session.query(ModelMMParent)
-            .filter_by(field_string="new2")
-            .one_or_none()
+                .filter_by(field_string="new2")
+                .one_or_none()
         )
         self.appbuilder.get_session.delete(model1)
         self.appbuilder.get_session.delete(model2)
@@ -2408,8 +2464,8 @@ class APITestCase(FABTestCase):
         # Rollback data changes
         model1 = (
             self.appbuilder.get_session.query(ModelOMParent)
-            .filter_by(field_string="new1")
-            .one_or_none()
+                .filter_by(field_string="new1")
+                .one_or_none()
         )
 
         self.appbuilder.get_session.delete(model1)
