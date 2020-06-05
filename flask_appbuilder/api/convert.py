@@ -1,7 +1,7 @@
 from marshmallow import fields
 from marshmallow_enum import EnumField
 from marshmallow_sqlalchemy import field_for
-from marshmallow_sqlalchemy.schema import ModelSchema
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 
 class TreeNode:
@@ -92,19 +92,21 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         _model = model
         if columns:
 
-            class MetaSchema(ModelSchema, class_mixin):
+            class MetaSchema(SQLAlchemyAutoSchema, class_mixin):
                 class Meta:
                     model = _model
                     fields = columns
                     strict = True
+                    load_instance = True
                     sqla_session = self.datamodel.session
 
         else:
 
-            class MetaSchema(ModelSchema, class_mixin):
+            class MetaSchema(SQLAlchemyAutoSchema, class_mixin):
                 class Meta:
                     model = _model
                     strict = True
+                    load_instance = True
                     sqla_session = self.datamodel.session
 
         return MetaSchema
@@ -168,12 +170,18 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         # is custom property method field?
         if hasattr(getattr(_model, column.data), "fget"):
             return fields.Raw(dump_only=True)
+        # its a model function
+        if hasattr(getattr(_model, column.data), "__call__"):
+            return fields.Function(getattr(_model, column.data), dump_only=True)
         # is a normal model field not a function?
         if not hasattr(getattr(_model, column.data), "__call__"):
             field = field_for(_model, column.data)
             field.unique = datamodel.is_unique(column.data)
             if column.data in self.validators_columns:
+                if field.validate is None:
+                    field.validate = []
                 field.validate.append(self.validators_columns[column.data])
+                field.validators.append(self.validators_columns[column.data])
             return field
 
     def convert(self, columns, model=None, nested=True, enum_dump_by_name=False):
