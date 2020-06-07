@@ -7,7 +7,7 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import aliased, contains_eager, load_only
+from sqlalchemy.orm import aliased, contains_eager, load_only, Load
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy_utils.types.uuid import UUIDType
@@ -159,11 +159,23 @@ class SQLAInterface(BaseInterface):
                 if is_column_dotted(column):
                     root_relation = get_column_root_relation(column)
                     leaf_column = get_column_leaf(column)
-                    if root_relation not in joined_models:
+                    if (self.is_relation_many_to_many(root_relation) or
+                            self.is_relation_many_to_one(root_relation)):
+                        load_options.append(
+                            (
+                                Load(self.obj)
+                                    .joinedload(root_relation)
+                                    .load_only(leaf_column)
+                            )
+                        )
+                        continue
+                    elif root_relation not in joined_models:
                         query = self._query_join_relation(query, root_relation)
                         joined_models.append(root_relation)
                     load_options.append(
-                        contains_eager(root_relation).load_only(leaf_column)
+                        (
+                            contains_eager(root_relation).load_only(leaf_column)
+                        )
                     )
                 else:
                     # is a custom property method field?
