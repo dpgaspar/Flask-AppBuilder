@@ -160,7 +160,7 @@ class SQLAInterface(BaseInterface):
                     root_relation = get_column_root_relation(column)
                     leaf_column = get_column_leaf(column)
                     if (self.is_relation_many_to_many(root_relation) or
-                            self.is_relation_many_to_one(root_relation)):
+                            self.is_relation_one_to_many(root_relation)):
                         load_options.append(
                             (
                                 Load(self.obj)
