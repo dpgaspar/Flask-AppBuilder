@@ -14,6 +14,7 @@ from sqlalchemy_utils.types.uuid import UUIDType
 
 from . import filters, Model
 from ..base import BaseInterface
+from ..filters import Filters
 from ..group import GroupByCol, GroupByDateMonth, GroupByDateYear
 from ..mixins import FileColumn, ImageColumn
 from ..._compat import as_unicode
@@ -176,6 +177,16 @@ class SQLAInterface(BaseInterface):
             query = query.options(*tuple(load_options))
         return query
 
+    def _get_non_dotted_filters(self, filters):
+        dotted_filters = Filters(self.filter_converter_class, self, [], [])
+        _filters = []
+        if filters:
+            for flt, value in zip(filters.filters, filters.values):
+                if not is_column_dotted(flt.column_name):
+                    _filters.append((flt.column_name, flt.__class__, value))
+            dotted_filters.add_filter_list(_filters)
+        return dotted_filters
+
     def query(
         self,
         filters=None,
@@ -216,6 +227,7 @@ class SQLAInterface(BaseInterface):
 
         # If order by is not dotted (related) we need to apply it first
         if not is_column_dotted(order_column):
+            query = self._get_non_dotted_filters(filters).apply_all(query)
             query = self._apply_query_order(query, order_column, order_direction)
 
         # Pagination comes first
