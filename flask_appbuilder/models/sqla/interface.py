@@ -7,7 +7,7 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import aliased, Load
+from sqlalchemy.orm import aliased, contains_eager, load_only
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy_utils.types.uuid import UUIDType
@@ -82,11 +82,9 @@ class SQLAInterface(BaseInterface):
     def is_model_already_joined(query, model):
         return model in [mapper.class_ for mapper in query._join_entities]
 
-    def _get_base_query(
-        self, query=None, filters=None, order_column="", order_direction=""
-    ):
-        if filters:
-            query = filters.apply_all(query)
+    def _apply_query_order(
+        self, query, order_column: str, order_direction: str
+    ) -> BaseQuery:
         if order_column != "":
             # if Model has custom decorator **renders('<COL_NAME>')**
             # this decorator will add a property to the method named *_col_name*
@@ -98,6 +96,13 @@ class SQLAInterface(BaseInterface):
             else:
                 query = query.order_by(self._get_attr(order_column).desc())
         return query
+
+    def _get_base_query(
+        self, query=None, filters=None, order_column="", order_direction=""
+    ):
+        if filters:
+            query = filters.apply_all(query)
+        return self._apply_query_order(query, order_column, order_direction)
 
     def _query_join_relation(self, query: BaseQuery, root_relation: str) -> BaseQuery:
         """
@@ -157,11 +162,7 @@ class SQLAInterface(BaseInterface):
                         query = self._query_join_relation(query, root_relation)
                         joined_models.append(root_relation)
                     load_options.append(
-                        (
-                            Load(self.obj)
-                            .joinedload(root_relation)
-                            .load_only(leaf_column)
-                        )
+                        contains_eager(root_relation).load_only(leaf_column)
                     )
                 else:
                     # is a custom property method field?
@@ -171,10 +172,7 @@ class SQLAInterface(BaseInterface):
                     elif not self.is_relation(column) and not hasattr(
                         getattr(self.obj, column), "__call__"
                     ):
-                        load_options.append(Load(self.obj).load_only(column))
-                    # it's a normal column
-                    else:
-                        load_options.append(Load(self.obj))
+                        load_options.append(load_only(column))
             query = query.options(*tuple(load_options))
         return query
 
@@ -202,8 +200,6 @@ class SQLAInterface(BaseInterface):
             the current page size
         """
         query = self.session.query(self.obj)
-        query = self._query_join_dotted_column(query, order_column)
-        query = self._query_select_options(query, select_columns)
         query_count = self.session.query(func.count("*")).select_from(self.obj)
 
         query_count = self._get_base_query(query=query_count, filters=filters)
@@ -218,6 +214,22 @@ class SQLAInterface(BaseInterface):
             pk_name = self.get_pk_name()
             query = query.order_by(pk_name)
 
+        # If order by is not dotted (related) we need to apply it first
+        if not is_column_dotted(order_column):
+            query = self._apply_query_order(query, order_column, order_direction)
+
+        # Pagination comes first
+        if page and page_size:
+            query = query.offset(page * page_size)
+        if page_size:
+            query = query.limit(page_size)
+
+        if select_columns and order_column:
+            # Use from self strategy
+            select_columns = select_columns + [order_column]
+        # Everything uses an inner query because of joins to m/m m/1
+        query = self._query_select_options(query.from_self(), select_columns)
+
         query = self._get_base_query(
             query=query,
             filters=filters,
@@ -226,11 +238,6 @@ class SQLAInterface(BaseInterface):
         )
 
         count = query_count.scalar()
-
-        if page and page_size:
-            query = query.offset(page * page_size)
-        if page_size:
-            query = query.limit(page_size)
         return count, query.all()
 
     def query_simple_group(
