@@ -7,7 +7,7 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import aliased, contains_eager, load_only, Load
+from sqlalchemy.orm import aliased, contains_eager, Load, load_only
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy_utils.types.uuid import UUIDType
@@ -40,9 +40,9 @@ def _include_filters(obj):
 
 def _is_sqla_type(obj, sa_type):
     return (
-            isinstance(obj, sa_type)
-            or isinstance(obj, sa.types.TypeDecorator)
-            and isinstance(obj.impl, sa_type)
+        isinstance(obj, sa_type)
+        or isinstance(obj, sa.types.TypeDecorator)
+        and isinstance(obj.impl, sa_type)
     )
 
 
@@ -84,7 +84,7 @@ class SQLAInterface(BaseInterface):
         return model in [mapper.class_ for mapper in query._join_entities]
 
     def _apply_query_order(
-            self, query, order_column: str, order_direction: str
+        self, query, order_column: str, order_direction: str
     ) -> BaseQuery:
         if order_column != "":
             # if Model has custom decorator **renders('<COL_NAME>')**
@@ -99,7 +99,7 @@ class SQLAInterface(BaseInterface):
         return query
 
     def _get_base_query(
-            self, query=None, filters=None, order_column="", order_direction=""
+        self, query=None, filters=None, order_column="", order_direction=""
     ):
         if filters:
             query = filters.apply_all(query)
@@ -141,7 +141,7 @@ class SQLAInterface(BaseInterface):
         return query
 
     def _query_select_options(
-            self, query: BaseQuery, select_columns: List[str] = None
+        self, query: BaseQuery, select_columns: List[str] = None
     ) -> BaseQuery:
         """
         Add select load options to query. The goal
@@ -159,13 +159,14 @@ class SQLAInterface(BaseInterface):
                 if is_column_dotted(column):
                     root_relation = get_column_root_relation(column)
                     leaf_column = get_column_leaf(column)
-                    if (self.is_relation_many_to_many(root_relation) or
-                            self.is_relation_one_to_many(root_relation)):
+                    if self.is_relation_many_to_many(
+                        root_relation
+                    ) or self.is_relation_one_to_many(root_relation):
                         load_options.append(
                             (
                                 Load(self.obj)
-                                    .joinedload(root_relation)
-                                    .load_only(leaf_column)
+                                .joinedload(root_relation)
+                                .load_only(leaf_column)
                             )
                         )
                         continue
@@ -173,9 +174,7 @@ class SQLAInterface(BaseInterface):
                         query = self._query_join_relation(query, root_relation)
                         joined_models.append(root_relation)
                     load_options.append(
-                        (
-                            contains_eager(root_relation).load_only(leaf_column)
-                        )
+                        (contains_eager(root_relation).load_only(leaf_column))
                     )
                 else:
                     # is a custom property method field?
@@ -183,7 +182,7 @@ class SQLAInterface(BaseInterface):
                         pass
                     # is not a relation and not a function?
                     elif not self.is_relation(column) and not hasattr(
-                            getattr(self.obj, column), "__call__"
+                        getattr(self.obj, column), "__call__"
                     ):
                         load_options.append(load_only(column))
             query = query.options(*tuple(load_options))
@@ -200,13 +199,13 @@ class SQLAInterface(BaseInterface):
         return dotted_filters
 
     def query(
-            self,
-            filters=None,
-            order_column="",
-            order_direction="",
-            page=None,
-            page_size=None,
-            select_columns=None,
+        self,
+        filters=None,
+        order_column="",
+        order_direction="",
+        page=None,
+        page_size=None,
+        select_columns=None,
     ):
         """
         Returns the results for a model query, applies filters, sorting and pagination
@@ -229,10 +228,10 @@ class SQLAInterface(BaseInterface):
 
         # MSSQL exception page/limit must have an order by
         if (
-                page
-                and page_size
-                and not order_column
-                and self.session.bind.dialect.name == "mssql"
+            page
+            and page_size
+            and not order_column
+            and self.session.bind.dialect.name == "mssql"
         ):
             pk_name = self.get_pk_name()
             query = query.order_by(pk_name)
@@ -265,7 +264,7 @@ class SQLAInterface(BaseInterface):
         return count, query.all()
 
     def query_simple_group(
-            self, group_by="", aggregate_func=None, aggregate_col=None, filters=None
+        self, group_by="", aggregate_func=None, aggregate_col=None, filters=None
     ):
         query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
@@ -293,82 +292,82 @@ class SQLAInterface(BaseInterface):
     -----------------------------------------
     """
 
-    def is_image(self, col_name):
+    def is_image(self, col_name: str) -> bool:
         try:
             return isinstance(self.list_columns[col_name].type, ImageColumn)
         except Exception:
             return False
 
-    def is_file(self, col_name):
+    def is_file(self, col_name: str) -> bool:
         try:
             return isinstance(self.list_columns[col_name].type, FileColumn)
         except Exception:
             return False
 
-    def is_string(self, col_name):
+    def is_string(self, col_name: str) -> bool:
         try:
             return (
-                    _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
-                    or self.list_columns[col_name].type.__class__ == UUIDType
+                _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
+                or self.list_columns[col_name].type.__class__ == UUIDType
             )
         except Exception:
             return False
 
-    def is_text(self, col_name):
+    def is_text(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Text)
         except Exception:
             return False
 
-    def is_binary(self, col_name):
+    def is_binary(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.LargeBinary)
         except Exception:
             return False
 
-    def is_integer(self, col_name):
+    def is_integer(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Integer)
         except Exception:
             return False
 
-    def is_numeric(self, col_name):
+    def is_numeric(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Numeric)
         except Exception:
             return False
 
-    def is_float(self, col_name):
+    def is_float(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Float)
         except Exception:
             return False
 
-    def is_boolean(self, col_name):
+    def is_boolean(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Boolean)
         except Exception:
             return False
 
-    def is_date(self, col_name):
+    def is_date(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Date)
         except Exception:
             return False
 
-    def is_datetime(self, col_name):
+    def is_datetime(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.DateTime)
         except Exception:
             return False
 
-    def is_enum(self, col_name):
+    def is_enum(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Enum)
         except Exception:
             return False
 
-    def is_relation(self, col_name):
+    def is_relation(self, col_name: str) -> bool:
         try:
             return isinstance(
                 self.list_properties[col_name], sa.orm.properties.RelationshipProperty
@@ -376,35 +375,35 @@ class SQLAInterface(BaseInterface):
         except Exception:
             return False
 
-    def is_relation_many_to_one(self, col_name):
+    def is_relation_many_to_one(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "MANYTOONE"
         except Exception:
             return False
 
-    def is_relation_many_to_many(self, col_name):
+    def is_relation_many_to_many(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "MANYTOMANY"
         except Exception:
             return False
 
-    def is_relation_one_to_one(self, col_name):
+    def is_relation_one_to_one(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "ONETOONE"
         except Exception:
             return False
 
-    def is_relation_one_to_many(self, col_name):
+    def is_relation_one_to_many(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "ONETOMANY"
         except Exception:
             return False
 
-    def is_nullable(self, col_name):
+    def is_nullable(self, col_name: str) -> bool:
         if self.is_relation_many_to_one(col_name):
             col = self.get_relation_fk(col_name)
             return col.nullable
@@ -413,28 +412,37 @@ class SQLAInterface(BaseInterface):
         except Exception:
             return False
 
-    def is_unique(self, col_name):
+    def is_unique(self, col_name: str) -> bool:
         try:
             return self.list_columns[col_name].unique is True
         except Exception:
             return False
 
-    def is_pk(self, col_name):
+    def is_pk(self, col_name: str) -> bool:
         try:
             return self.list_columns[col_name].primary_key
         except Exception:
             return False
 
-    def is_pk_composite(self):
+    def is_pk_composite(self) -> bool:
         return len(self.obj.__mapper__.primary_key) > 1
 
-    def is_fk(self, col_name):
+    def is_fk(self, col_name: str) -> bool:
         try:
             return self.list_columns[col_name].foreign_keys
         except Exception:
             return False
 
-    def get_max_length(self, col_name):
+    def is_property(self, col_name: str) -> bool:
+        return hasattr(getattr(self.obj, col_name), "fget")
+
+    def is_function(self, col_name: str) -> bool:
+        return hasattr(getattr(self.obj, col_name), "__call__")
+
+    def is_property_or_function(self, col_name: str) -> bool:
+        return self.is_property(col_name) or self.is_function(col_name)
+
+    def get_max_length(self, col_name: str) -> int:
         try:
             if self.is_enum(col_name):
                 return -1
@@ -659,10 +667,10 @@ class SQLAInterface(BaseInterface):
             if not self.is_relation(col_name):
                 tmp_prop = self.get_property_first_col(col_name).name
                 if (
-                        (not self.is_pk(tmp_prop))
-                        and (not self.is_fk(tmp_prop))
-                        and (not self.is_image(col_name))
-                        and (not self.is_file(col_name))
+                    (not self.is_pk(tmp_prop))
+                    and (not self.is_fk(tmp_prop))
+                    and (not self.is_image(col_name))
+                    and (not self.is_file(col_name))
                 ):
                     ret_lst.append(col_name)
             else:
@@ -682,7 +690,7 @@ class SQLAInterface(BaseInterface):
             if not self.is_relation(col_name):
                 if hasattr(self.obj, col_name):
                     if not hasattr(getattr(self.obj, col_name), "__call__") or hasattr(
-                            getattr(self.obj, col_name), "_col_name"
+                        getattr(self.obj, col_name), "_col_name"
                     ):
                         ret_lst.append(col_name)
                 else:
