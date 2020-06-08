@@ -7,7 +7,7 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import aliased, contains_eager, load_only
+from sqlalchemy.orm import aliased, contains_eager, Load, load_only
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy_utils.types.uuid import UUIDType
@@ -159,20 +159,27 @@ class SQLAInterface(BaseInterface):
                 if is_column_dotted(column):
                     root_relation = get_column_root_relation(column)
                     leaf_column = get_column_leaf(column)
-                    if root_relation not in joined_models:
+                    if self.is_relation_many_to_many(
+                        root_relation
+                    ) or self.is_relation_one_to_many(root_relation):
+                        load_options.append(
+                            (
+                                Load(self.obj)
+                                .joinedload(root_relation)
+                                .load_only(leaf_column)
+                            )
+                        )
+                        continue
+                    elif root_relation not in joined_models:
                         query = self._query_join_relation(query, root_relation)
                         joined_models.append(root_relation)
                     load_options.append(
-                        contains_eager(root_relation).load_only(leaf_column)
+                        (contains_eager(root_relation).load_only(leaf_column))
                     )
                 else:
-                    # is a custom property method field?
-                    if hasattr(getattr(self.obj, column), "fget"):
-                        pass
-                    # is not a relation and not a function?
-                    elif not self.is_relation(column) and not hasattr(
-                        getattr(self.obj, column), "__call__"
-                    ):
+                    if not self.is_relation(
+                        column
+                    ) and not self.is_property_or_function(column):
                         load_options.append(load_only(column))
             query = query.options(*tuple(load_options))
         return query
@@ -281,19 +288,19 @@ class SQLAInterface(BaseInterface):
     -----------------------------------------
     """
 
-    def is_image(self, col_name):
+    def is_image(self, col_name: str) -> bool:
         try:
             return isinstance(self.list_columns[col_name].type, ImageColumn)
         except Exception:
             return False
 
-    def is_file(self, col_name):
+    def is_file(self, col_name: str) -> bool:
         try:
             return isinstance(self.list_columns[col_name].type, FileColumn)
         except Exception:
             return False
 
-    def is_string(self, col_name):
+    def is_string(self, col_name: str) -> bool:
         try:
             return (
                 _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
@@ -302,61 +309,61 @@ class SQLAInterface(BaseInterface):
         except Exception:
             return False
 
-    def is_text(self, col_name):
+    def is_text(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Text)
         except Exception:
             return False
 
-    def is_binary(self, col_name):
+    def is_binary(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.LargeBinary)
         except Exception:
             return False
 
-    def is_integer(self, col_name):
+    def is_integer(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Integer)
         except Exception:
             return False
 
-    def is_numeric(self, col_name):
+    def is_numeric(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Numeric)
         except Exception:
             return False
 
-    def is_float(self, col_name):
+    def is_float(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Float)
         except Exception:
             return False
 
-    def is_boolean(self, col_name):
+    def is_boolean(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Boolean)
         except Exception:
             return False
 
-    def is_date(self, col_name):
+    def is_date(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Date)
         except Exception:
             return False
 
-    def is_datetime(self, col_name):
+    def is_datetime(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.DateTime)
         except Exception:
             return False
 
-    def is_enum(self, col_name):
+    def is_enum(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Enum)
         except Exception:
             return False
 
-    def is_relation(self, col_name):
+    def is_relation(self, col_name: str) -> bool:
         try:
             return isinstance(
                 self.list_properties[col_name], sa.orm.properties.RelationshipProperty
@@ -364,35 +371,35 @@ class SQLAInterface(BaseInterface):
         except Exception:
             return False
 
-    def is_relation_many_to_one(self, col_name):
+    def is_relation_many_to_one(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "MANYTOONE"
         except Exception:
             return False
 
-    def is_relation_many_to_many(self, col_name):
+    def is_relation_many_to_many(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "MANYTOMANY"
         except Exception:
             return False
 
-    def is_relation_one_to_one(self, col_name):
+    def is_relation_one_to_one(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "ONETOONE"
         except Exception:
             return False
 
-    def is_relation_one_to_many(self, col_name):
+    def is_relation_one_to_many(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "ONETOMANY"
         except Exception:
             return False
 
-    def is_nullable(self, col_name):
+    def is_nullable(self, col_name: str) -> bool:
         if self.is_relation_many_to_one(col_name):
             col = self.get_relation_fk(col_name)
             return col.nullable
@@ -401,28 +408,37 @@ class SQLAInterface(BaseInterface):
         except Exception:
             return False
 
-    def is_unique(self, col_name):
+    def is_unique(self, col_name: str) -> bool:
         try:
             return self.list_columns[col_name].unique is True
         except Exception:
             return False
 
-    def is_pk(self, col_name):
+    def is_pk(self, col_name: str) -> bool:
         try:
             return self.list_columns[col_name].primary_key
         except Exception:
             return False
 
-    def is_pk_composite(self):
+    def is_pk_composite(self) -> bool:
         return len(self.obj.__mapper__.primary_key) > 1
 
-    def is_fk(self, col_name):
+    def is_fk(self, col_name: str) -> bool:
         try:
             return self.list_columns[col_name].foreign_keys
         except Exception:
             return False
 
-    def get_max_length(self, col_name):
+    def is_property(self, col_name: str) -> bool:
+        return hasattr(getattr(self.obj, col_name), "fget")
+
+    def is_function(self, col_name: str) -> bool:
+        return hasattr(getattr(self.obj, col_name), "__call__")
+
+    def is_property_or_function(self, col_name: str) -> bool:
+        return self.is_property(col_name) or self.is_function(col_name)
+
+    def get_max_length(self, col_name: str) -> int:
         try:
             if self.is_enum(col_name):
                 return -1
