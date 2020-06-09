@@ -38,6 +38,8 @@ class SecurityApi(BaseApi):
         """Login endpoint for the API returns a JWT and optionally a refresh token
         ---
         post:
+          description: >-
+            Authenticate and get a JWT access and refresh token
           requestBody:
             required: true
             content:
@@ -46,15 +48,23 @@ class SecurityApi(BaseApi):
                   type: object
                   properties:
                     username:
+                      description: The username for authentication
+                      example: admin
                       type: string
                     password:
+                      description: The username's password for authentication
+                      example: complex-password
                       type: string
                     provider:
+                      description: Choose an authentication provider
+                      example: db
                       type: string
                       enum:
                       - db
                       - ldap
                     refresh:
+                      description: If true a refresh token is provided also
+                      example: true
                       type: boolean
           responses:
             200:
@@ -115,6 +125,8 @@ class SecurityApi(BaseApi):
             token without forcing the user to login again
         ---
         post:
+          description: >-
+            Use the refresh token to get a new JWT access token
           responses:
             200:
               description: Refresh Successful
@@ -124,6 +136,7 @@ class SecurityApi(BaseApi):
                     type: object
                     properties:
                       access_token:
+                        description: A new refreshed access token
                         type: string
             401:
               $ref: '#/components/responses/401'
