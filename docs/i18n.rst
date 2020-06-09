@@ -6,6 +6,7 @@ Introduction
 
 F.A.B. has support for seven languages (planning for some more):
  - Chinese
+ - Dutch
  - English
  - French
  - German
