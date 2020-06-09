@@ -85,7 +85,7 @@ class User(Model):
     last_name = Column(String(64), nullable=False)
     username = Column(String(64), unique=True, nullable=False)
     password = Column(String(256))
-    active = Column(Boolean)
+    active = Column(Boolean, default=True)
     status = Column(Enum(status), default=status.offline)
     email = Column(String(64), unique=True, nullable=False)
     last_login = Column(DateTime)
