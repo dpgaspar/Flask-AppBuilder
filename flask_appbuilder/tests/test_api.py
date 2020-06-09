@@ -318,6 +318,7 @@ class APITestCase(FABTestCase):
             list_columns = ["field_string", "children.field_integer"]
             show_columns = ["field_string", "children.field_integer"]
 
+        self.modeldottedmmapi = ModelDottedMMApi
         self.appbuilder.add_api(ModelDottedMMApi)
 
         class ModelOMParentApi(ModelRestApi):
@@ -947,8 +948,11 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 200)
+        self.assertEqual(data["count"], MODEL2_DATA_SIZE)
+        self.assertEqual(len(data[API_RESULT_RES_KEY]), self.modeldottedmmapi.page_size)
         i = 0
         self.assertEqual(data[API_RESULT_RES_KEY][i]["field_string"], "0")
+        self.assertEqual(len(data[API_RESULT_RES_KEY][i]["children"]), 3)
         self.assertIn({"field_integer": 1}, data[API_RESULT_RES_KEY][i]["children"])
         self.assertIn({"field_integer": 2}, data[API_RESULT_RES_KEY][i]["children"])
         self.assertIn({"field_integer": 3}, data[API_RESULT_RES_KEY][i]["children"])

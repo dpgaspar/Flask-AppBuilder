@@ -59,7 +59,7 @@ setup(
         "jsonschema>=3.0.1, <4",
         "marshmallow>=3, <4",
         "marshmallow-enum>=1.5.1, <2",
-        "marshmallow-sqlalchemy>=0.16.1, <1",
+        "marshmallow-sqlalchemy>=0.22.0, <1",
         "python-dateutil>=2.3, <3",
         "prison>=0.1.3, <1.0.0",
         "PyJWT>=1.7.1",
