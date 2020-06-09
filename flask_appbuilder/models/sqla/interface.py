@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -80,22 +80,47 @@ class SQLAInterface(BaseInterface):
         return self.obj.__name__
 
     @staticmethod
-    def is_model_already_joined(query, model):
+    def is_model_already_joined(query: BaseQuery, model: Model) -> bool:
         return model in [mapper.class_ for mapper in query._join_entities]
+
+    def _apply_pagination(
+        self, query: BaseQuery, page: int, page_size: int
+    ) -> BaseQuery:
+        if page and page_size:
+            query = query.offset(page * page_size)
+        if page_size:
+            query = query.limit(page_size)
+        return query
+
+    def _apply_engine_specific_hack(
+        self, query: BaseQuery, page, page_size, order_column
+    ) -> BaseQuery:
+        # MSSQL exception page/limit must have an order by
+        if (
+            page
+            and page_size
+            and not order_column
+            and self.session.bind.dialect.name == "mssql"
+        ):
+            pk_name = self.get_pk_name()
+            return query.order_by(pk_name)
 
     def _apply_query_order(
         self, query, order_column: str, order_direction: str
     ) -> BaseQuery:
+        from sqlalchemy import asc, desc
+
         if order_column != "":
             # if Model has custom decorator **renders('<COL_NAME>')**
             # this decorator will add a property to the method named *_col_name*
             if hasattr(self.obj, order_column):
                 if hasattr(getattr(self.obj, order_column), "_col_name"):
                     order_column = getattr(self._get_attr(order_column), "_col_name")
+            _order_column = self._get_attr(order_column) or order_column
             if order_direction == "asc":
-                query = query.order_by(self._get_attr(order_column).asc())
+                query = query.order_by(asc(_order_column))
             else:
-                query = query.order_by(self._get_attr(order_column).desc())
+                query = query.order_by(desc(_order_column))
         return query
 
     def _get_base_query(
@@ -196,13 +221,13 @@ class SQLAInterface(BaseInterface):
 
     def query(
         self,
-        filters=None,
-        order_column="",
-        order_direction="",
-        page=None,
-        page_size=None,
-        select_columns=None,
-        base_query=None,
+        filters: Filters = None,
+        order_column: str = "",
+        order_direction: str = "",
+        page: int = None,
+        page_size: int = None,
+        select_columns: List[str] = None,
+        base_query: Callable = None,
     ):
         """
         Returns the results for a model query, applies filters, sorting and pagination
@@ -217,26 +242,23 @@ class SQLAInterface(BaseInterface):
             the current page
         :param page_size:
             the current page size
+        :param select_columns:
+            A list of columns to pin on the final SQL statement
         :param base_query
             the base SQLAlchemy Query to run to build the list view
         """
         if base_query:
             query = base_query(self.session)
-            query_count = query(func.count("*"))
+            query_count = self._get_base_query(query=query, filters=filters)
+            count = query_count.from_self().count()
         else:
             query = self.session.query(self.obj)
             query_count = self.session.query(func.count("*")).select_from(self.obj)
             query_count = self._get_base_query(query=query_count, filters=filters)
+            count = query_count.scalar()
 
         # MSSQL exception page/limit must have an order by
-        if (
-            page
-            and page_size
-            and not order_column
-            and self.session.bind.dialect.name == "mssql"
-        ):
-            pk_name = self.get_pk_name()
-            query = query.order_by(pk_name)
+        self._apply_engine_specific_hack(query, page, page_size, order_column)
 
         # If order by is not dotted (related) we need to apply it first
         if not is_column_dotted(order_column):
@@ -244,25 +266,22 @@ class SQLAInterface(BaseInterface):
             query = self._apply_query_order(query, order_column, order_direction)
 
         # Pagination comes first
-        if page and page_size:
-            query = query.offset(page * page_size)
-        if page_size:
-            query = query.limit(page_size)
+        query = self._apply_pagination(query, page, page_size)
 
         if select_columns and order_column:
             # Use from self strategy
             select_columns = select_columns + [order_column]
         # Everything uses an inner query because of joins to m/m m/1
-        query = self._query_select_options(query.from_self(), select_columns)
+        if not base_query:
+            query = self._query_select_options(query.from_self(), select_columns)
 
-        query = self._get_base_query(
-            query=query,
-            filters=filters,
-            order_column=order_column,
-            order_direction=order_direction,
-        )
+            query = self._get_base_query(
+                query=query,
+                filters=filters,
+                order_column=order_column,
+                order_direction=order_direction,
+            )
 
-        count = query_count.scalar()
         return count, query.all()
 
     def query_simple_group(
