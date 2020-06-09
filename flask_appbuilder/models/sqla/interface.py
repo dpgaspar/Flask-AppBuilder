@@ -104,6 +104,7 @@ class SQLAInterface(BaseInterface):
         ):
             pk_name = self.get_pk_name()
             return query.order_by(pk_name)
+        return query
 
     def _apply_query_order(
         self, query, order_column: str, order_direction: str
