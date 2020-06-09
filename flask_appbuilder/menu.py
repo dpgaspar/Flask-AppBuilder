@@ -195,7 +195,7 @@ class MenuApi(BaseApi):
                               description: Pretty name for the menu item
                               type: string
                             icon:
-                              description: icon name to show for this menu item
+                              description: Icon name to show for this menu item
                               type: string
                             url:
                               description: The URL for the menu item
