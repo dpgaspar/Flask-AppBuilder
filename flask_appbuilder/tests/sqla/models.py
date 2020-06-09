@@ -263,7 +263,7 @@ def insert_model_with_enums(session, i=0):
     return model
 
 
-def insert_data(session, count):
+def insert_data(session, count, child_count=4):
     model1_collection = list()
     # Fill model1
     for i in range(count):
@@ -291,7 +291,7 @@ def insert_data(session, count):
 
     children = list()
     children_required = list()
-    for i in range(1, 4):
+    for i in range(1, child_count):
         model = ModelMMChild()
         model.field_string = str(i)
         model.field_integer = i
@@ -329,7 +329,7 @@ def insert_data(session, count):
         model_oo_parents.append(model)
 
     for i in range(count):
-        for j in range(1, 4):
+        for j in range(1, child_count):
             model = ModelOMChild()
             model.field_string = f"text{i}.{j}"
             model.parent = model_oo_parents[i]

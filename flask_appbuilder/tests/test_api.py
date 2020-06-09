@@ -41,6 +41,7 @@ from .const import (
     MAX_PAGE_SIZE,
     MODEL1_DATA_SIZE,
     MODEL2_DATA_SIZE,
+    MODELOMCHILD_DATA_SIZE,
     PASSWORD_ADMIN,
     PASSWORD_READONLY,
     USERNAME_ADMIN,
@@ -183,39 +184,27 @@ class APITestCase(FABTestCase):
         self.model1api = Model1Api
         self.appbuilder.add_api(Model1Api)
 
-        class Model1ListModelSchema(Schema):
-            field_integer = fields.Integer()
-            field_float = fields.Float()
+        class ModelOMParentListModelSchema(Schema):
             field_string = fields.String()
-            field_date = fields.Date()
-            model_2_count = fields.Integer()
+            model_child_count = fields.Integer()
 
         def custom_list_query(_cls, session):
             return (
                 session.query(
-                    Model1.id.label("id"),
-                    Model1.field_integer.label("field_integer"),
-                    Model1.field_float.label("field_float"),
-                    Model1.field_string.label("field_string"),
-                    Model1.field_date.label("field_date"),
-                    func.count(Model2.id).label("model_2_count"),
+                    ModelOMParent.id.label("id"),
+                    ModelOMParent.field_string.label("field_string"),
+                    func.count(ModelOMChild.id).label("model_child_count"),
                 )
-                .outerjoin(Model2)
-                .group_by(Model1)
+                .outerjoin(ModelOMChild)
+                .group_by(ModelOMParent)
             )
 
         class Model1ApiBaseQuery(ModelRestApi):
-            datamodel = SQLAInterface(Model1)
+            datamodel = SQLAInterface(ModelOMParent)
 
             list_query = custom_list_query
-            list_model_schema = Model1ListModelSchema()
-            list_columns = [
-                "field_integer",
-                "field_float",
-                "field_string",
-                "field_date",
-                "model_2_count",
-            ]
+            list_model_schema = ModelOMParentListModelSchema()
+            list_columns = ["field_string", "model_child_count"]
 
         self.model1apibasequery = Model1ApiBaseQuery
         self.appbuilder.add_api(Model1ApiBaseQuery)
@@ -1108,28 +1097,87 @@ class APITestCase(FABTestCase):
             },
         )
 
-    def test_get_list_custom_base_query(self):
+    def test_get_list_simple_custom_list_query(self):
         """
-            REST Api: Test get list with a base query
-            defined on the API for the list endpoint
+            REST Api: Test get list simple custom list query
         """
-
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        # test string order asc
         rv = self.auth_client_get(client, token, "api/v1/model1apibasequery/")
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(
             data[API_RESULT_RES_KEY][0],
-            {
-                "field_date": None,
-                "field_float": 0.0,
-                "field_integer": 0,
-                "field_string": "test0",
-                "model_2_count": 1,
-            },
+            {"field_string": "text0", "model_child_count": MODELOMCHILD_DATA_SIZE - 1},
         )
+
+    def test_get_list_custom_list_query_filters(self):
+        """
+            REST Api: Test get list custom query filters
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # test multiple filters
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {"col": "field_string", "opr": "sw", "value": "text1"},
+                {"col": "field_string", "opr": "ew", "value": "4"},
+            ],
+            "order_column": "field_string",
+            "order_direction": "asc",
+        }
+        uri = f"api/v1/model1apibasequery/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data["count"], 1)
+        expected_result = [
+            {"field_string": "text14", "model_child_count": MODELOMCHILD_DATA_SIZE - 1}
+        ]
+        self.assertEqual(data[API_RESULT_RES_KEY], expected_result)
+
+    def test_get_list_custom_list_query_pages(self):
+        """
+            REST Api: Test get list custom query pages
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # test filters and pagination
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {"col": "field_string", "opr": "sw", "value": "text1"}
+            ],
+            "order_column": "field_string",
+            "order_direction": "asc",
+            "page": 0,
+            "page_size": 2,
+        }
+        uri = f"api/v1/model1apibasequery/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data["count"], 11)
+        self.assertEqual(len(data[API_RESULT_RES_KEY]), 2)
+
+    def test_get_list_custom_list_query_order_by(self):
+        """
+            REST Api: Test get list custom query order by
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # test order by count related field
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {"col": "field_string", "opr": "sw", "value": "text1"}
+            ],
+            "order_column": "model_child_count",
+            "order_direction": "asc",
+        }
+        uri = f"api/v1/model1apibasequery/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data["count"], 11)
 
     def test_get_list_page(self):
         """

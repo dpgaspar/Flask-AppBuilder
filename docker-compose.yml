@@ -3,13 +3,44 @@ services:
   postgres:
     container_name: fab-postgres
     image: postgres:10
+    restart: unless-stopped
     env_file: .env
     command: postgres -c 'max_connections=500'
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_PASSWORD: pguserpassword
+      POSTGRES_USER: pguser
     ports:
       - 5432:5432
-    volumes:
-      - postgres:/var/lib/postgresql/data
 
-volumes:
-  postgres:
-    external: false
+  mysql:
+    container_name: fab-mysql
+    image: mysql:5.7
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: app
+      MYSQL_USER: mysqluser
+      MYSQL_PASSWORD: mysqluserpassword
+      MYSQL_ROOT_PASSWORD: root-password
+    networks:
+      - default
+    ports:
+      - 3306:3306
+
+  mssql:
+    container_name: fab-mssql
+    image: mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: Password_123
+    ports:
+      - 1433:1433
+
+  mongo:
+    image: mongo:4.2.1
+    restart: unless-stopped
+    ports:
+      - 27017:27017

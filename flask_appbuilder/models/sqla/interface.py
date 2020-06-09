@@ -229,7 +229,7 @@ class SQLAInterface(BaseInterface):
         page_size: int = None,
         select_columns: List[str] = None,
         base_query: Callable = None,
-    ):
+    ) -> Tuple[int, List[Model]]:
         """
         Returns the results for a model query, applies filters, sorting and pagination
 
