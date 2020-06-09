@@ -52,7 +52,7 @@ class SecurityApi(BaseApi):
                       example: admin
                       type: string
                     password:
-                      description: The username's password for authentication
+                      description: The password for authentication
                       example: complex-password
                       type: string
                     provider:
