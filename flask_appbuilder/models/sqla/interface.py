@@ -258,7 +258,7 @@ class SQLAInterface(BaseInterface):
             count = query_count.scalar()
 
         # MSSQL exception page/limit must have an order by
-        self._apply_engine_specific_hack(query, page, page_size, order_column)
+        query = self._apply_engine_specific_hack(query, page, page_size, order_column)
 
         # If order by is not dotted (related) we need to apply it first
         if not is_column_dotted(order_column):
