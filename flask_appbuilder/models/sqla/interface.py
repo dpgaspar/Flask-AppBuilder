@@ -5,7 +5,7 @@ from typing import List, Tuple
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
-from sqlalchemy import func
+from sqlalchemy import asc, desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import aliased, contains_eager, Load, load_only
 from sqlalchemy.orm.descriptor_props import SynonymProperty
@@ -92,11 +92,17 @@ class SQLAInterface(BaseInterface):
             if hasattr(self.obj, order_column):
                 if hasattr(getattr(self.obj, order_column), "_col_name"):
                     order_column = getattr(self._get_attr(order_column), "_col_name")
+            _order_column = self._get_attr(order_column) or order_column
             if order_direction == "asc":
-                query = query.order_by(self._get_attr(order_column).asc())
+                query = query.order_by(asc(_order_column))
             else:
-                query = query.order_by(self._get_attr(order_column).desc())
+                query = query.order_by(desc(_order_column))
         return query
+
+    def apply_inner_order_by(
+        self, query: BaseQuery, order_column: str, order_direction: str
+    ) -> BaseQuery:
+        return self._apply_query_order(query, order_column, order_direction)
 
     def _get_base_query(
         self, query=None, filters=None, order_column="", order_direction=""
@@ -184,15 +190,113 @@ class SQLAInterface(BaseInterface):
             query = query.options(*tuple(load_options))
         return query
 
-    def _get_non_dotted_filters(self, filters):
-        dotted_filters = Filters(self.filter_converter_class, self, [], [])
+    def apply_inner_pagination(
+        self, query: BaseQuery, page: int, page_size: int
+    ) -> BaseQuery:
+        if page and page_size:
+            query = query.offset(page * page_size)
+        if page_size:
+            query = query.limit(page_size)
+        return query
+
+    def apply_inner_filters(self, query: BaseQuery, filters: Filters) -> BaseQuery:
+        if filters:
+            return filters.apply_all(query)
+        return query
+
+    def apply_inner_select_joins(
+        self, query: BaseQuery, select_columns: List[str] = None
+    ) -> BaseQuery:
+        """
+        Add select load options to query. The goal
+        is to only SQL select what is requested and join all the necessary
+        models when dotted notation is used. Inner implies non dotted columns
+        and one to many and one to one
+
+        :param query:
+        :param select_columns:
+        :return:
+        """
+        if not select_columns:
+            return query
+        load_options = list()
+        joined_models = list()
+        for column in select_columns:
+            if is_column_dotted(column):
+                root_relation = get_column_root_relation(column)
+                leaf_column = get_column_leaf(column)
+                if self.is_relation_many_to_one(
+                    root_relation
+                ) or self.is_relation_one_to_one(root_relation):
+                    if root_relation not in joined_models:
+                        query = self._query_join_relation(query, root_relation)
+                        related_model = self.get_related_model(root_relation)
+                        query = query.add_entity(related_model)
+                        joined_models.append(root_relation)
+                    load_options.append(
+                        (contains_eager(root_relation).load_only(leaf_column))
+                    )
+            else:
+                if not self.is_relation(column) and not self.is_property_or_function(
+                    column
+                ):
+                    load_options.append(Load(self.obj).load_only(column))
+        query = query.options(*tuple(load_options))
+        return query
+
+    def apply_outer_select_joins(
+        self, query: BaseQuery, select_columns: List[str] = None
+    ) -> BaseQuery:
+        if not select_columns:
+            return query
+        load_options = list()
+        for column in select_columns:
+            if is_column_dotted(column):
+                root_relation = get_column_root_relation(column)
+                leaf_column = get_column_leaf(column)
+                if self.is_relation_many_to_many(
+                    root_relation
+                ) or self.is_relation_one_to_many(root_relation):
+                    load_options.append(
+                        (
+                            Load(self.obj)
+                            .joinedload(root_relation)
+                            .load_only(leaf_column)
+                        )
+                    )
+                else:
+                    related_model = self.get_related_model(root_relation)
+                    load_options.append((Load(related_model).load_only(leaf_column)))
+            else:
+                if not self.is_relation(column) and not self.is_property_or_function(
+                    column
+                ):
+                    load_options.append(Load(self.obj).load_only(column))
+        query = query.options(*tuple(load_options))
+        return query
+
+    def get_inner_filters(self, filters: Filters) -> Filters:
+        """
+        Inner filters are non dotted columns and
+        one to many or one to one relations
+
+        :param filters: All filters
+        :return: New filtered filters to apply to an inner query
+        """
+        inner_filters = Filters(self.filter_converter_class, self, [], [])
         _filters = []
         if filters:
             for flt, value in zip(filters.filters, filters.values):
+                print(f"F1: {flt.column_name}")
                 if not is_column_dotted(flt.column_name):
                     _filters.append((flt.column_name, flt.__class__, value))
-            dotted_filters.add_filter_list(_filters)
-        return dotted_filters
+                elif self.is_relation_many_to_one(
+                    flt.column_name
+                ) or self.is_relation_one_to_one(flt.column_name):
+                    _filters.append((flt.column_name, flt.__class__, value))
+            print(f"FILTERS: {_filters}")
+            inner_filters.add_filter_list(_filters)
+        return inner_filters
 
     def query(
         self,
@@ -218,46 +322,34 @@ class SQLAInterface(BaseInterface):
             the current page size
         """
         query = self.session.query(self.obj)
-        query_count = self.session.query(func.count("*")).select_from(self.obj)
 
-        query_count = self._get_base_query(query=query_count, filters=filters)
+        inner_filters = self.get_inner_filters(filters)
+        inner_query = self.apply_inner_select_joins(query, select_columns)
+        inner_query = self.apply_inner_filters(inner_query, inner_filters)
 
-        # MSSQL exception page/limit must have an order by
-        if (
-            page
-            and page_size
-            and not order_column
-            and self.session.bind.dialect.name == "mssql"
-        ):
-            pk_name = self.get_pk_name()
-            query = query.order_by(pk_name)
+        count = inner_query.count()
+        inner_query = self.apply_inner_order_by(
+            inner_query, order_column, order_direction
+        )
+        inner_query = self.apply_inner_pagination(inner_query, page, page_size)
 
-        # If order by is not dotted (related) we need to apply it first
-        if not is_column_dotted(order_column):
-            query = self._get_non_dotted_filters(filters).apply_all(query)
-            query = self._apply_query_order(query, order_column, order_direction)
-
-        # Pagination comes first
-        if page and page_size:
-            query = query.offset(page * page_size)
-        if page_size:
-            query = query.limit(page_size)
+        outer_query = inner_query.from_self()
 
         if select_columns and order_column:
-            # Use from self strategy
             select_columns = select_columns + [order_column]
-        # Everything uses an inner query because of joins to m/m m/1
-        query = self._query_select_options(query.from_self(), select_columns)
-
-        query = self._get_base_query(
-            query=query,
-            filters=filters,
-            order_column=order_column,
-            order_direction=order_direction,
+        outer_query = self.apply_outer_select_joins(outer_query, select_columns)
+        outer_query = self.apply_inner_order_by(
+            outer_query, order_column, order_direction
         )
 
-        count = query_count.scalar()
-        return count, query.all()
+        result = list()
+        results = outer_query.all()
+        for item in results:
+            if hasattr(item, self.obj.__name__):
+                result.append(getattr(item, self.obj.__name__))
+            else:
+                return count, results
+        return count, result
 
     def query_simple_group(
         self, group_by="", aggregate_func=None, aggregate_col=None, filters=None
