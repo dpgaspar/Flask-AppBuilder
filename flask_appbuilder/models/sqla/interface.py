@@ -99,6 +99,20 @@ class SQLAInterface(BaseInterface):
                 query = query.order_by(desc(_order_column))
         return query
 
+    def apply_engine_specific_hack(
+        self, query: BaseQuery, page, page_size, order_column
+    ) -> BaseQuery:
+        # MSSQL exception page/limit must have an order by
+        if (
+            page
+            and page_size
+            and not order_column
+            and self.session.bind.dialect.name == "mssql"
+        ):
+            pk_name = self.get_pk_name()
+            return query.order_by(pk_name)
+        return query
+
     def apply_inner_order_by(
         self, query: BaseQuery, order_column: str, order_direction: str
     ) -> BaseQuery:
@@ -328,6 +342,10 @@ class SQLAInterface(BaseInterface):
         inner_query = self.apply_inner_filters(inner_query, inner_filters)
 
         count = inner_query.count()
+
+        inner_query = self.apply_engine_specific_hack(
+            inner_query, page, page_size, order_column
+        )
         inner_query = self.apply_inner_order_by(
             inner_query, order_column, order_direction
         )
