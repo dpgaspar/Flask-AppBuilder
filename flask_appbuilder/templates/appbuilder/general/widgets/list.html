@@ -73,9 +73,17 @@
                             {% else %}
                               {{ item[value]|safe }}
                             {% endif %}
+                          {% elif item[value] == True %}
+                            <div class = 'permissions-box' style=width:60px;>
+                                {{ item[value]|safe }}
+                            </div>
                           {% else %}
                             <div class = 'permissions-box'>
-                              {{ item[value]|safe }}
+                                {% if item[value] in ['Admin-Data', 'Admin-System'] %}
+                                    <span style=white-space:nowrap;>{{ item[value]|safe }}</span>
+                                {% else %}
+                                  {{ item[value]|safe }}
+                                {% endif %}
                             </div>
                           {% endif %}
                         </td>
