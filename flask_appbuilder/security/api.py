@@ -1,5 +1,4 @@
 from bson.objectid import ObjectId
-
 from flask import request
 from flask_jwt_extended import (
     create_access_token,
