@@ -1,3 +1,5 @@
+from bson.objectid import ObjectId
+
 from flask import request
 from flask_jwt_extended import (
     create_access_token,
@@ -95,14 +97,18 @@ class SecurityApi(BaseApi):
         if not user:
             return self.response_401()
 
+        user_id = user.id
+        if isinstance(user_id, ObjectId):
+            user_id = str(user_id)
+
         # Identity can be any data that is json serializable
         resp = dict()
         resp[API_SECURITY_ACCESS_TOKEN_KEY] = create_access_token(
-            identity=user.id, fresh=True
+            identity=user_id, fresh=True
         )
         if refresh:
             resp[API_SECURITY_REFRESH_TOKEN_KEY] = create_refresh_token(
-                identity=user.id
+                identity=user_id
             )
         return self.response(200, **resp)
 
