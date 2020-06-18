@@ -113,7 +113,7 @@ class SQLAInterface(BaseInterface):
             return query.order_by(pk_name)
         return query
 
-    def apply_inner_order_by(
+    def apply_order_by(
         self, query: BaseQuery, order_column: str, order_direction: str
     ) -> BaseQuery:
         return self._apply_query_order(query, order_column, order_direction)
@@ -204,7 +204,7 @@ class SQLAInterface(BaseInterface):
             query = query.options(*tuple(load_options))
         return query
 
-    def apply_inner_pagination(
+    def apply_pagination(
         self, query: BaseQuery, page: int, page_size: int
     ) -> BaseQuery:
         if page and page_size:
@@ -213,10 +213,16 @@ class SQLAInterface(BaseInterface):
             query = query.limit(page_size)
         return query
 
-    def apply_inner_filters(self, query: BaseQuery, filters: Filters) -> BaseQuery:
+    def apply_filters(self, query: BaseQuery, filters: Filters) -> BaseQuery:
         if filters:
             return filters.apply_all(query)
         return query
+
+    def _apply_normal_col_select_option(self, query, column) -> BaseQuery:
+        if not self.is_relation(column) and not self.is_property_or_function(
+                column
+        ):
+            return query.options(Load(self.obj).load_only(column))
 
     def apply_inner_select_joins(
         self, query: BaseQuery, select_columns: List[str] = None
@@ -233,7 +239,6 @@ class SQLAInterface(BaseInterface):
         """
         if not select_columns:
             return query
-        load_options = list()
         joined_models = list()
         for column in select_columns:
             if is_column_dotted(column):
@@ -247,15 +252,11 @@ class SQLAInterface(BaseInterface):
                         related_model = self.get_related_model(root_relation)
                         query = query.add_entity(related_model)
                         joined_models.append(root_relation)
-                    load_options.append(
+                    query = query.options(
                         (contains_eager(root_relation).load_only(leaf_column))
                     )
             else:
-                if not self.is_relation(column) and not self.is_property_or_function(
-                    column
-                ):
-                    load_options.append(Load(self.obj).load_only(column))
-        query = query.options(*tuple(load_options))
+                query = self._apply_normal_col_select_option(query, column)
         return query
 
     def apply_outer_select_joins(
@@ -263,7 +264,6 @@ class SQLAInterface(BaseInterface):
     ) -> BaseQuery:
         if not select_columns:
             return query
-        load_options = list()
         for column in select_columns:
             if is_column_dotted(column):
                 root_relation = get_column_root_relation(column)
@@ -271,22 +271,16 @@ class SQLAInterface(BaseInterface):
                 if self.is_relation_many_to_many(
                     root_relation
                 ) or self.is_relation_one_to_many(root_relation):
-                    load_options.append(
-                        (
-                            Load(self.obj)
-                            .joinedload(root_relation)
-                            .load_only(leaf_column)
-                        )
+                    query = query.options(
+                        Load(self.obj).joinedload(root_relation).load_only(leaf_column)
                     )
                 else:
                     related_model = self.get_related_model(root_relation)
-                    load_options.append((Load(related_model).load_only(leaf_column)))
+                    query = query.options(
+                        Load(related_model).load_only(leaf_column)
+                    )
             else:
-                if not self.is_relation(column) and not self.is_property_or_function(
-                    column
-                ):
-                    load_options.append(Load(self.obj).load_only(column))
-        query = query.options(*tuple(load_options))
+                query = self._apply_normal_col_select_option(query, column)
         return query
 
     def get_inner_filters(self, filters: Filters) -> Filters:
@@ -339,24 +333,22 @@ class SQLAInterface(BaseInterface):
 
         inner_filters = self.get_inner_filters(filters)
         inner_query = self.apply_inner_select_joins(query, select_columns)
-        inner_query = self.apply_inner_filters(inner_query, inner_filters)
+        inner_query = self.apply_filters(inner_query, inner_filters)
 
         count = inner_query.count()
 
         inner_query = self.apply_engine_specific_hack(
             inner_query, page, page_size, order_column
         )
-        inner_query = self.apply_inner_order_by(
-            inner_query, order_column, order_direction
-        )
-        inner_query = self.apply_inner_pagination(inner_query, page, page_size)
+        inner_query = self.apply_order_by(inner_query, order_column, order_direction)
+        inner_query = self.apply_pagination(inner_query, page, page_size)
 
         outer_query = inner_query.from_self()
 
         if select_columns and order_column:
             select_columns = select_columns + [order_column]
         outer_query = self.apply_outer_select_joins(outer_query, select_columns)
-        outer_query = self.apply_inner_order_by(
+        outer_query = self.apply_order_by(
             outer_query, order_column, order_direction
         )
 
