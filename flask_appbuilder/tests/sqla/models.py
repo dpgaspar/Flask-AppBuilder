@@ -2,7 +2,8 @@ import datetime
 import enum
 
 from flask_appbuilder import Model
-from marshmallow import fields, post_load, Schema, ValidationError
+from flask_appbuilder.api.schemas import BaseModelSchema
+from marshmallow import fields, ValidationError
 from sqlalchemy import (
     Column,
     Date,
@@ -15,7 +16,7 @@ from sqlalchemy import (
     Table,
     UniqueConstraint,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 
 
 def validate_name(n):
@@ -44,12 +45,12 @@ def validate_field_string(n):
         raise ValidationError("Name must start with an A")
 
 
-class Model1CustomSchema(Schema):
-    name = fields.Str(validate=validate_name)
-
-    @post_load
-    def process(self, data):
-        return Model1(**data)
+class Model1CustomSchema(BaseModelSchema):
+    model_cls = Model1
+    field_string = fields.String(validate=validate_name)
+    field_integer = fields.Integer(allow_none=True)
+    field_float = fields.Float(allow_none=True)
+    field_date = fields.Date(allow_none=True)
 
 
 class Model2(Model):
@@ -67,7 +68,7 @@ class Model2(Model):
         return str(self.field_string)
 
     def field_method(self):
-        return "field_method_value"
+        return f"{self.field_string}_field_method"
 
 
 class Model3(Model):
@@ -133,6 +134,7 @@ class ModelMMChild(Model):
     __tablename__ = "child"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
+    field_integer = Column(Integer())
 
 
 assoc_parent_child_required = Table(
@@ -160,6 +162,23 @@ class ModelMMChildRequired(Model):
     __tablename__ = "child_required"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
+
+
+class ModelOMParent(Model):
+    __tablename__ = "model_om_parent"
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+
+
+class ModelOMChild(Model):
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+    parent_id = Column(Integer, ForeignKey("model_om_parent.id"))
+    parent = relationship(
+        "ModelOMParent",
+        backref=backref("children", cascade="all, delete-orphan"),
+        foreign_keys=[parent_id],
+    )
 
     """ ---------------------------------
             TEST HELPER FUNCTIONS
@@ -194,6 +213,7 @@ def insert_model2(session, i=0, model1_collection=None):
     model.group = model1
 
     import random
+
     year = random.choice(range(1900, 2012))
     month = random.choice(range(1, 12))
     day = random.choice(range(1, 28))
@@ -263,7 +283,7 @@ def insert_data(session, count):
     # Fill Model4
     for i in range(count):
         model = Model4()
-        model.field_string = "test{}".format(i)
+        model.field_string = f"test{i}"
         model.model1_1 = model1_collection[i]
         model.model1_2 = model1_collection[i]
         session.add(model)
@@ -274,6 +294,7 @@ def insert_data(session, count):
     for i in range(1, 4):
         model = ModelMMChild()
         model.field_string = str(i)
+        model.field_integer = i
         children.append(model)
         session.add(model)
         session.commit()
@@ -298,3 +319,19 @@ def insert_data(session, count):
         model.field_string = str(i)
         session.add(model)
         session.commit()
+
+    model_oo_parents = list()
+    for i in range(count):
+        model = ModelOMParent()
+        model.field_string = f"text{i}"
+        session.add(model)
+        session.commit()
+        model_oo_parents.append(model)
+
+    for i in range(count):
+        for j in range(1, 4):
+            model = ModelOMChild()
+            model.field_string = f"text{i}.{j}"
+            model.parent = model_oo_parents[i]
+            session.add(model)
+            session.commit()

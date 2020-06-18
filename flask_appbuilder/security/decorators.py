@@ -1,15 +1,7 @@
 import functools
 import logging
 
-from flask import (
-    current_app,
-    flash,
-    jsonify,
-    make_response,
-    redirect,
-    request,
-    url_for
-)
+from flask import current_app, flash, jsonify, make_response, redirect, request, url_for
 from flask_jwt_extended import verify_jwt_in_request
 from flask_login import current_user
 
@@ -17,7 +9,7 @@ from .._compat import as_unicode
 from ..const import (
     FLAMSG_ERR_SEC_ACCESS_DENIED,
     LOGMSG_ERR_SEC_ACCESS_DENIED,
-    PERMISSION_PREFIX
+    PERMISSION_PREFIX,
 )
 
 log = logging.getLogger(__name__)
@@ -48,7 +40,7 @@ def protect(allow_browser_login=False):
     """
 
     def _protect(f):
-        if hasattr(f, '_permission_name'):
+        if hasattr(f, "_permission_name"):
             permission_str = f._permission_name
         else:
             permission_str = f.__name__
@@ -64,29 +56,25 @@ def protect(allow_browser_login=False):
             if permission_str not in self.base_permissions:
                 return self.response_401()
             if current_app.appbuilder.sm.is_item_public(
-                    permission_str,
-                    class_permission_name
+                permission_str, class_permission_name
             ):
                 return f(self, *args, **kwargs)
             if not (self.allow_browser_login or allow_browser_login):
                 verify_jwt_in_request()
             if current_app.appbuilder.sm.has_access(
-                    permission_str,
-                    class_permission_name
+                permission_str, class_permission_name
             ):
                 return f(self, *args, **kwargs)
             elif self.allow_browser_login or allow_browser_login:
                 if not current_user.is_authenticated:
                     verify_jwt_in_request()
                 if current_app.appbuilder.sm.has_access(
-                        permission_str,
-                        class_permission_name
+                    permission_str, class_permission_name
                 ):
                     return f(self, *args, **kwargs)
             log.warning(
                 LOGMSG_ERR_SEC_ACCESS_DENIED.format(
-                    permission_str,
-                    class_permission_name
+                    permission_str, class_permission_name
                 )
             )
             return self.response_401()
@@ -104,7 +92,7 @@ def has_access(f):
 
         By default the permission's name is the methods name.
     """
-    if hasattr(f, '_permission_name'):
+    if hasattr(f, "_permission_name"):
         permission_str = f._permission_name
     else:
         permission_str = f.__name__
@@ -115,24 +103,21 @@ def has_access(f):
             _permission_name = self.method_permission_name.get(f.__name__)
             if _permission_name:
                 permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
-        if (permission_str in self.base_permissions and
-                self.appbuilder.sm.has_access(
-                    permission_str,
-                    self.class_permission_name
-                )):
+        if permission_str in self.base_permissions and self.appbuilder.sm.has_access(
+            permission_str, self.class_permission_name
+        ):
             return f(self, *args, **kwargs)
         else:
             log.warning(
                 LOGMSG_ERR_SEC_ACCESS_DENIED.format(
-                    permission_str,
-                    self.__class__.__name__
+                    permission_str, self.__class__.__name__
                 )
             )
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
         return redirect(
             url_for(
                 self.appbuilder.sm.auth_view.__class__.__name__ + ".login",
-                next=request.url
+                next=request.url,
             )
         )
 
@@ -149,7 +134,7 @@ def has_access_api(f):
 
         this will return a message and HTTP 401 is case of unauthorized access.
     """
-    if hasattr(f, '_permission_name'):
+    if hasattr(f, "_permission_name"):
         permission_str = f._permission_name
     else:
         permission_str = f.__name__
@@ -160,29 +145,23 @@ def has_access_api(f):
             _permission_name = self.method_permission_name.get(f.__name__)
             if _permission_name:
                 permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
-        if (permission_str in self.base_permissions and
-                self.appbuilder.sm.has_access(
-                    permission_str,
-                    self.class_permission_name
-                )):
+        if permission_str in self.base_permissions and self.appbuilder.sm.has_access(
+            permission_str, self.class_permission_name
+        ):
             return f(self, *args, **kwargs)
         else:
             log.warning(
                 LOGMSG_ERR_SEC_ACCESS_DENIED.format(
-                    permission_str,
-                    self.__class__.__name__
+                    permission_str, self.__class__.__name__
                 )
             )
             response = make_response(
                 jsonify(
-                    {
-                        'message': str(FLAMSG_ERR_SEC_ACCESS_DENIED),
-                        'severity': 'danger'
-                    }
+                    {"message": str(FLAMSG_ERR_SEC_ACCESS_DENIED), "severity": "danger"}
                 ),
-                401
+                401,
             )
-            response.headers['Content-Type'] = "application/json"
+            response.headers["Content-Type"] = "application/json"
             return response
 
     f._permission_name = permission_str

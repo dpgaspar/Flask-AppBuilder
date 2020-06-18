@@ -1,24 +1,103 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.3.4
+-----------------------------------
+
+- Fix, [api] SQL selects and many to many joins (#1361)
+- Fix, [frontend] Revert "Bump jQuery to 3.5 (#1351)" (#1363)
+
+Improvements and Bug fixes on 2.3.3
+-----------------------------------
+
+- New, [cli] Fix, reset-password cli option (#1347)
+- New, Bump jQuery to 3.5 (#1351)
+- New, [menu] fix, add translation lookup in menu.get_data (#1352)
+- Fix, [menu] add translation lookup in menu.get_data (#1352)
+- Fix, [menu] translations on menu v2 (#1355)
+- Fix, [dependencies] include email_validator for new wtforms (#1360)
+
+Improvements and Bug fixes on 2.3.2
+-----------------------------------
+
+- New, [deploy] Add release script
+- New, [i18n] Add italian translation (#1324)
+- New, [api] Add custom filters to search (#1327)
+- Fix, [style] Better formatting on jinja template (#1321)
+- New, [examples] integrate Dash by Plotly in FAB (#1330)
+- Fix, [api] [mvc] Make like filters case insensitive (#1338)
+
+Improvements and Bug fixes on 2.3.1
+-----------------------------------
+
+[dependencies] Fix, marshmallow 3 breaks compat (#1333)
+
+Improvements and Bug fixes on 2.3.0
+-----------------------------------
+
+- New, [i18n] Add korean language (#1297)
+- New, [api] support one to many relations (#1307)
+- Fix, [mvc] reverts select2 to version 3.5.2 (#1308)
+- Fix, [mvc] Upgrade to Jquery 3 and select2 4
+- Fix, [api] List filters validation schema (#1303)
+- Fix, [api] Soften marshmallow version restriction (#1295)
+- Fix, [mvc] GET delete and action endpoints (#1294)
+- Fix, [style] impose black code style (#1292)
+
+Improvements and Bug fixes on 2.2.4
+-----------------------------------
+
+- Fix, [docs] read the docs requirements (#1288)
+- New, [mvc] [security] toggle pvm, perm and vm mvc views config options (#1259)
+- Fix, [docs] Update actions.rst (#1277)
+- Fix, [docs] changelog formatting (#1286)
+- Fix, [mvc] Use os.path.join for downloads (#1281)
+- Fix, [filemanager] Fix, use a sane mode for directories (#1282)
+- Fix, [docs] add missing import (#1278)
+- Fix, [mvc] Use formatters_columns with show_fieldsets (#1280)
+
+Improvements and Bug fixes on 2.2.3
+-----------------------------------
+
+- Fix, [dependencies] update requirements (#1272)
+- Fix, [dependencies] Update version of Flask-Babel to support Werkzeug 1.0 (#1266)
+- Fix, [api] set api jwt user on flask g (#1270)
+- Fix, [api] make REST API easier to override (#1264)
+- New, [auth] make CI optional (#1263)
+- New, [auth] make CI optional (#1263)
+- Fix, [api] many to many filters (#1256)
+- New, [api] override merge openapi docs specs (#1252)
+
+Improvements and Bug fixes on 2.2.2
+-----------------------------------
+
+- Fix, [mvc] List page's pagination start with 1 (#1216)
+- Fix, AttributeError in manager.py when a permission is null (#1217)
+- Fix, [api] using default method name when unspecified in method_permission_name (#1235)
+- New, [api] New, http 403 forbidden on default responses (#1237)
+- New, [mvc] [api] exclude and include route methods (#1234)
+- New, [mvc] [security] make userstatschartview optional (#1239)
+- New, [mvc] Disable old API flag and tests (#1244)
+- Fix, [mvc] jinja2 crashes with defined actions and removed action routes (#1245)
+
 Improvements and Bug fixes on 2.2.1
 -----------------------------------
 
- - Fix, [api] OpenAPI method and config exclusions (#1211)
- - Fix, [mvc] default page size out of sync with jinja macro (#1209)
- - New, [api] Support for json encoded content on URI parameter (#1205)
- - Fix, [api] Re-allow filtering by booleans (default generated list) (#1204)
- - Fix, [api] [menu] openapi spec (#1203)
- - New, [api] Exclude route methods from ModelRestApi (#1202)
- - Fix, [api] Don't crash on invalid filters (#1200)
- - Fix, authentication error when using oracle (#1193)
- - Fix, [api] openapi spec for the info endpoint (#1197)
- - Fix, New, Show widget template: Add some basic blocks (#1158)
- - New, State reason for LDAP login failure (#1164)
- - Fix, [docs] Get list result (#1196)
- - Fix, [examples] Update views.py (#1165)
- - Fix, create filters even when search_columns is empty (#1173)
- - Fix, jwt refresh endpoint should return new access_token (#1187)
+- Fix, [api] OpenAPI method and config exclusions (#1211)
+- Fix, [mvc] default page size out of sync with jinja macro (#1209)
+- New, [api] Support for json encoded content on URI parameter (#1205)
+- Fix, [api] Re-allow filtering by booleans (default generated list) (#1204)
+- Fix, [api] [menu] openapi spec (#1203)
+- New, [api] Exclude route methods from ModelRestApi (#1202)
+- Fix, [api] Don't crash on invalid filters (#1200)
+- Fix, authentication error when using oracle (#1193)
+- Fix, [api] openapi spec for the info endpoint (#1197)
+- Fix, New, Show widget template: Add some basic blocks (#1158)
+- New, State reason for LDAP login failure (#1164)
+- Fix, [docs] Get list result (#1196)
+- Fix, [examples] Update views.py (#1165)
+- Fix, create filters even when search_columns is empty (#1173)
+- Fix, jwt refresh endpoint should return new access_token (#1187)
 
 Improvements and Bug fixes on 2.2.0
 -----------------------------------

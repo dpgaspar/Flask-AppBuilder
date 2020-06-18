@@ -13,8 +13,9 @@ Just use the @action decorator on your own functions. Here's an example
 ::
 
     from flask_appbuilder.actions import action
-    from flask_appbuilder import ModeView
+    from flask_appbuilder import ModelView
     from flask_appbuilder.models.sqla.interface import SQLAInterface
+    from flask import redirect
 
     class GroupModelView(ModelView):
         datamodel = SQLAInterface(Group)

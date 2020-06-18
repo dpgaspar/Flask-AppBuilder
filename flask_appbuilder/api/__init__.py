@@ -3,10 +3,12 @@ import json
 import logging
 import re
 import traceback
+from typing import Dict, Optional
 import urllib.parse
 
-from apispec import yaml_utils
-from flask import Blueprint, current_app, jsonify, make_response, request
+from apispec import APISpec, yaml_utils
+from apispec.exceptions import DuplicateComponentNameError
+from flask import Blueprint, current_app, jsonify, make_response, request, Response
 from flask_babel import lazy_gettext as _
 import jsonschema
 from marshmallow import ValidationError
@@ -314,6 +316,17 @@ class BaseApi(object):
                 }
             },
         },
+        "403": {
+            "description": "Forbidden",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {"message": {"type": "string"}},
+                    }
+                }
+            },
+        },
         "404": {
             "description": "Not found",
             "content": {
@@ -358,11 +371,45 @@ class BaseApi(object):
         example::
 
             class ContactModelView(ModelRestApi):
-                datamodel = SQLAModel(Contact)
-                exclude_route_methods = ("info", "get_list", "get")
+                datamodel = SQLAInterface(Contact)
+                exclude_route_methods = {"info", "get_list", "get"}
 
 
         The previous examples will only register the `put`, `post` and `delete` routes
+    """
+    include_route_methods = None
+    """
+        If defined will assume a white list setup, where all endpoints are excluded
+        except those define on this attribute
+        example::
+
+            class ContactModelView(ModelRestApi):
+                datamodel = SQLAInterface(Contact)
+                include_route_methods = {"list"}
+
+
+        The previous example will exclude all endpoints except the `list` endpoint
+    """
+    openapi_spec_methods: Dict = {}
+    """
+        Merge OpenAPI spec defined on the method's doc.
+        For example to merge/override `get_list`::
+
+
+            class GreetingApi(BaseApi):
+                resource_name = "greeting"
+                openapi_spec_methods = {
+                    "greeting": {
+                        "get": {
+                           "description": "Override description",
+                        }
+                    }
+                }
+    """
+    openapi_spec_tag: Optional[str] = None
+    """
+        By default all endpoints will be tagged (grouped) to their class name.
+        Use this attribute to override the tag name
     """
 
     def __init__(self):
@@ -398,6 +445,12 @@ class BaseApi(object):
             self.base_permissions = set()
             is_add_base_permissions = True
         for attr_name in dir(self):
+            # If include_route_methods is not None white list
+            if (
+                self.include_route_methods is not None
+                and attr_name not in self.include_route_methods
+            ):
+                continue
             # Don't create permission for excluded routes
             if attr_name in self.exclude_route_methods:
                 continue
@@ -432,11 +485,18 @@ class BaseApi(object):
         self._register_urls()
         return self.blueprint
 
-    def add_api_spec(self, api_spec):
+    def add_api_spec(self, api_spec: APISpec) -> None:
+        self.add_apispec_components(api_spec)
         for attr_name in dir(self):
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
+                    # If include_route_methods is not None white list
+                    if (
+                        self.include_route_methods is not None
+                        and attr_name not in self.include_route_methods
+                    ):
+                        continue
                     if attr_name in self.exclude_route_methods:
                         log.info(f"Not registering api spec for method {attr_name}")
                         continue
@@ -447,31 +507,27 @@ class BaseApi(object):
                     )
                     api_spec.path(path=path, operations=operations)
                     for operation in operations:
-                        api_spec._paths[path][operation]["tags"] = [
-                            self.__class__.__name__
-                        ]
-        self.add_apispec_components(api_spec)
+                        openapi_spec_tag = (
+                            self.openapi_spec_tag or self.__class__.__name__
+                        )
+                        api_spec._paths[path][operation]["tags"] = [openapi_spec_tag]
 
-    def add_apispec_components(self, api_spec):
+    def add_apispec_components(self, api_spec: APISpec) -> None:
         for k, v in self.responses.items():
             api_spec.components._responses[k] = v
         for k, v in self._apispec_parameter_schemas.items():
-            if k not in api_spec.components._parameters:
-                _v = {
-                    "in": "query",
-                    "name": API_URI_RIS_KEY,
-                    "content": {
-                        "application/json": {
-                            "schema": {"$ref": "#/components/schemas/{}".format(k)}
-                        }
-                    },
-                }
-                # Using private because parameter method does not behave correctly
-                api_spec.components._schemas[k] = v
-                api_spec.components._parameters[k] = _v
+            try:
+                api_spec.components.schema(k, v)
+            except DuplicateComponentNameError:
+                pass
 
-    def _register_urls(self):
+    def _register_urls(self) -> None:
         for attr_name in dir(self):
+            if (
+                self.include_route_methods is not None
+                and attr_name not in self.include_route_methods
+            ):
+                continue
             if attr_name in self.exclude_route_methods:
                 log.info(f"Not registering route for method {attr_name}")
                 continue
@@ -483,9 +539,11 @@ class BaseApi(object):
                     )
                     self.blueprint.add_url_rule(url, attr_name, attr, methods=methods)
 
-    def path_helper(self, path=None, operations=None, **kwargs):
+    def path_helper(
+        self, path: str = None, operations: Dict[str, Dict] = None, **kwargs
+    ) -> str:
         """
-            Works like a apispec plugin
+            Works like an apispec plugin
             May return a path as string and mutate operations dict.
 
         :param str path: Path to the resource
@@ -497,7 +555,7 @@ class BaseApi(object):
         """
         RE_URL = re.compile(r"<(?:[^:<>]+:)?([^<>]+)>")
         path = RE_URL.sub(r"{\1}", path)
-        return "/{}{}".format(self.resource_name, path)
+        return f"/{self.resource_name}{path}"
 
     def operation_helper(
         self, path=None, operations=None, methods=None, func=None, **kwargs
@@ -508,6 +566,11 @@ class BaseApi(object):
         :param list methods: A list of methods registered for this path
         """
         for method in methods:
+            try:
+                # Check if method openapi spec is overridden
+                override_method_spec = self.openapi_spec_methods[func.__name__]
+            except KeyError:
+                override_method_spec = {}
             yaml_doc_string = yaml_utils.load_operations_from_docstring(func.__doc__)
             yaml_doc_string = yaml.safe_load(
                 str(yaml_doc_string).replace(
@@ -516,6 +579,8 @@ class BaseApi(object):
             )
             if yaml_doc_string:
                 operation_spec = yaml_doc_string.get(method.lower(), {})
+                # Merge docs spec and override spec
+                operation_spec.update(override_method_spec.get(method.lower(), {}))
                 if self.get_method_permission(func.__name__):
                     operation_spec["security"] = [{"jwt": []}]
                 operations[method.lower()] = operation_spec
@@ -564,7 +629,7 @@ class BaseApi(object):
             Returns the permission name for a method
         """
         if self.method_permission_name:
-            return self.method_permission_name.get(method_name)
+            return self.method_permission_name.get(method_name, method_name)
         else:
             if hasattr(getattr(self, method_name), "_permission_name"):
                 return getattr(getattr(self, method_name), "_permission_name")
@@ -589,7 +654,7 @@ class BaseApi(object):
         ]
 
     @staticmethod
-    def response(code, **kwargs):
+    def response(code, **kwargs) -> Response:
         """
             Generic HTTP JSON response method
 
@@ -602,7 +667,7 @@ class BaseApi(object):
         resp.headers["Content-Type"] = "application/json; charset=utf-8"
         return resp
 
-    def response_400(self, message=None):
+    def response_400(self, message: str = None) -> Response:
         """
             Helper method for HTTP 400 response
 
@@ -612,7 +677,7 @@ class BaseApi(object):
         message = message or "Arguments are not correct"
         return self.response(400, **{"message": message})
 
-    def response_422(self, message=None):
+    def response_422(self, message: str = None) -> Response:
         """
             Helper method for HTTP 422 response
 
@@ -622,7 +687,7 @@ class BaseApi(object):
         message = message or "Could not process entity"
         return self.response(422, **{"message": message})
 
-    def response_401(self):
+    def response_401(self) -> Response:
         """
             Helper method for HTTP 401 response
 
@@ -631,7 +696,16 @@ class BaseApi(object):
         """
         return self.response(401, **{"message": "Not authorized"})
 
-    def response_404(self):
+    def response_403(self) -> Response:
+        """
+            Helper method for HTTP 403 response
+
+        :param message: Error message (str)
+        :return: HTTP Json response
+        """
+        return self.response(403, **{"message": "Forbidden"})
+
+    def response_404(self) -> Response:
         """
             Helper method for HTTP 404 response
 
@@ -640,7 +714,7 @@ class BaseApi(object):
         """
         return self.response(404, **{"message": "Not found"})
 
-    def response_500(self, message=None):
+    def response_500(self, message: str = None) -> Response:
         """
             Helper method for HTTP 500 response
 
@@ -669,6 +743,10 @@ class BaseModelApi(BaseApi):
                 datamodel = SQLAInterface(MyTable)
                 search_columns = ['name', 'address']
 
+    """
+    search_filters = None
+    """
+        Override default search filters for columns
     """
     search_exclude_columns = None
     """
@@ -766,7 +844,6 @@ class BaseModelApi(BaseApi):
                 x for x in search_columns if x not in self.search_exclude_columns
             ]
         self._gen_labels_columns(self.datamodel.get_columns_list())
-        self._filters = self.datamodel.get_filters(self.search_columns)
 
     def _init_titles(self):
         pass
@@ -1034,7 +1111,9 @@ class ModelRestApi(BaseModelApi):
             ]
         self._gen_labels_columns(self.list_columns)
         self._gen_labels_columns(self.show_columns)
-        self._filters = self.datamodel.get_filters(self.search_columns)
+        self._filters = self.datamodel.get_filters(
+            search_columns=self.search_columns, search_filters=self.search_filters
+        )
         self.edit_query_rel_fields = self.edit_query_rel_fields or dict()
         self.add_query_rel_fields = self.add_query_rel_fields or dict()
 
@@ -1136,6 +1215,15 @@ class ModelRestApi(BaseModelApi):
     def merge_show_title(self, response, **kwargs):
         response[API_SHOW_TITLE_RES_KEY] = self.show_title
 
+    def info_headless(self, **kwargs) -> Response:
+        """
+            response for CRUD REST meta data
+        """
+        _response = dict()
+        _args = kwargs.get("rison", {})
+        self.set_response_key_mappings(_response, self.info, _args, **_args)
+        return self.response(200, **_response)
+
     @expose("/_info", methods=["GET"])
     @protect()
     @safe
@@ -1154,7 +1242,12 @@ class ModelRestApi(BaseModelApi):
         ---
         get:
           parameters:
-          - $ref: '#/components/parameters/get_info_schema'
+          - in: query
+            name: q
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/get_info_schema'
           responses:
             200:
               description: Item from Model
@@ -1182,9 +1275,38 @@ class ModelRestApi(BaseModelApi):
             500:
               $ref: '#/components/responses/500'
         """
+        return self.info_headless(**kwargs)
+
+    def get_headless(self, pk, **kwargs) -> Response:
+        """
+            Get an item from Model
+
+        :param pk: Item primary key
+        :param kwargs: Query string parameter arguments
+        :return: HTTP Response
+        """
+        item = self.datamodel.get(pk, self._base_filters)
+        if not item:
+            return self.response_404()
+
         _response = dict()
         _args = kwargs.get("rison", {})
-        self.set_response_key_mappings(_response, self.info, _args, **_args)
+        select_cols = _args.get(API_SELECT_COLUMNS_RIS_KEY, [])
+        _pruned_select_cols = [col for col in select_cols if col in self.show_columns]
+        self.set_response_key_mappings(
+            _response,
+            self.get,
+            _args,
+            **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols},
+        )
+        if _pruned_select_cols:
+            _show_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
+        else:
+            _show_model_schema = self.show_model_schema
+
+        _response["id"] = pk
+        _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False)
+        self.pre_get(_response)
         return self.response(200, **_response)
 
     @expose("/<int:pk>", methods=["GET"])
@@ -1205,7 +1327,12 @@ class ModelRestApi(BaseModelApi):
             schema:
               type: integer
             name: pk
-          - $ref: '#/components/parameters/get_item_schema'
+          - in: query
+            name: q
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/get_item_schema'
           responses:
             200:
               description: Item from Model
@@ -1239,84 +1366,11 @@ class ModelRestApi(BaseModelApi):
             500:
               $ref: '#/components/responses/500'
         """
-        item = self.datamodel.get(pk, self._base_filters)
-        if not item:
-            return self.response_404()
+        return self.get_headless(pk, **kwargs)
 
-        _response = dict()
-        _args = kwargs.get("rison", {})
-        select_cols = _args.get(API_SELECT_COLUMNS_RIS_KEY, [])
-        _pruned_select_cols = [col for col in select_cols if col in self.show_columns]
-        self.set_response_key_mappings(
-            _response,
-            self.get,
-            _args,
-            **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols},
-        )
-        if _pruned_select_cols:
-            _show_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
-        else:
-            _show_model_schema = self.show_model_schema
-
-        _response["id"] = pk
-        _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False).data
-        self.pre_get(_response)
-        return self.response(200, **_response)
-
-    @expose("/", methods=["GET"])
-    @protect()
-    @safe
-    @permission_name("get")
-    @rison(get_list_schema)
-    @merge_response_func(merge_order_columns, API_ORDER_COLUMNS_RIS_KEY)
-    @merge_response_func(merge_list_label_columns, API_LABEL_COLUMNS_RIS_KEY)
-    @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
-    @merge_response_func(merge_list_columns, API_LIST_COLUMNS_RIS_KEY)
-    @merge_response_func(merge_list_title, API_LIST_TITLE_RIS_KEY)
-    def get_list(self, **kwargs):
-        """Get list of items from Model
-        ---
-        get:
-          parameters:
-          - $ref: '#/components/parameters/get_list_schema'
-          responses:
-            200:
-              description: Items from Model
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      label_columns:
-                        type: object
-                      list_columns:
-                        type: array
-                        items:
-                          type: string
-                      description_columns:
-                        type: object
-                      list_title:
-                        type: string
-                      ids:
-                        type: array
-                        items:
-                          type: string
-                      order_columns:
-                        type: array
-                        items:
-                          type: string
-                      result:
-                          type: array
-                          items:
-                            $ref: '#/components/schemas/{{self.__class__.__name__}}.get_list'  # noqa
-            400:
-              $ref: '#/components/responses/400'
-            401:
-              $ref: '#/components/responses/401'
-            422:
-              $ref: '#/components/responses/422'
-            500:
-              $ref: '#/components/responses/500'
+    def get_list_headless(self, **kwargs) -> Response:
+        """
+            Get list of items from Model
         """
         _response = dict()
         _args = kwargs.get("rison", {})
@@ -1357,11 +1411,101 @@ class ModelRestApi(BaseModelApi):
             select_columns=query_select_columns,
         )
         pks = self.datamodel.get_keys(lst)
-        _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True).data
+        _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True)
         _response["ids"] = pks
         _response["count"] = count
         self.pre_get_list(_response)
         return self.response(200, **_response)
+
+    @expose("/", methods=["GET"])
+    @protect()
+    @safe
+    @permission_name("get")
+    @rison(get_list_schema)
+    @merge_response_func(merge_order_columns, API_ORDER_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_list_label_columns, API_LABEL_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_list_columns, API_LIST_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_list_title, API_LIST_TITLE_RIS_KEY)
+    def get_list(self, **kwargs):
+        """Get list of items from Model
+        ---
+        get:
+          parameters:
+          - in: query
+            name: q
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/get_list_schema'
+          responses:
+            200:
+              description: Items from Model
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      label_columns:
+                        type: object
+                      list_columns:
+                        type: array
+                        items:
+                          type: string
+                      description_columns:
+                        type: object
+                      list_title:
+                        type: string
+                      ids:
+                        type: array
+                        items:
+                          type: string
+                      count:
+                        type: number
+                      order_columns:
+                        type: array
+                        items:
+                          type: string
+                      result:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/{{self.__class__.__name__}}.get_list'  # noqa
+            400:
+              $ref: '#/components/responses/400'
+            401:
+              $ref: '#/components/responses/401'
+            422:
+              $ref: '#/components/responses/422'
+            500:
+              $ref: '#/components/responses/500'
+        """
+        return self.get_list_headless(**kwargs)
+
+    def post_headless(self) -> Response:
+        """
+            POST/Add item to Model
+        :return:
+        """
+        if not request.is_json:
+            return self.response_400(message="Request is not JSON")
+        try:
+            item = self.add_model_schema.load(request.json)
+        except ValidationError as err:
+            return self.response_422(message=err.messages)
+        # This validates custom Schema with custom validations
+        self.pre_add(item)
+        try:
+            self.datamodel.add(item, raise_exception=True)
+            self.post_add(item)
+            return self.response(
+                201,
+                **{
+                    API_RESULT_RES_KEY: self.add_model_schema.dump(item, many=False),
+                    "id": self.datamodel.get_pk_value(item),
+                },
+            )
+        except IntegrityError as e:
+            return self.response_422(message=str(e.orig))
 
     @expose("/", methods=["POST"])
     @protect()
@@ -1399,27 +1543,29 @@ class ModelRestApi(BaseModelApi):
             500:
               $ref: '#/components/responses/500'
         """
+        return self.post_headless()
+
+    def put_headless(self, pk) -> Response:
+        """
+            PUT/Edit item to Model
+        """
+        item = self.datamodel.get(pk, self._base_filters)
         if not request.is_json:
-            return self.response_400(message="Request is not JSON")
+            return self.response(400, **{"message": "Request is not JSON"})
+        if not item:
+            return self.response_404()
         try:
-            item = self.add_model_schema.load(request.json)
+            data = self._merge_update_item(item, request.json)
+            item = self.edit_model_schema.load(data, instance=item)
         except ValidationError as err:
             return self.response_422(message=err.messages)
-        # This validates custom Schema with custom validations
-        if isinstance(item.data, dict):
-            return self.response_422(message=item.errors)
-        self.pre_add(item.data)
+        self.pre_update(item)
         try:
-            self.datamodel.add(item.data, raise_exception=True)
-            self.post_add(item.data)
+            self.datamodel.edit(item, raise_exception=True)
+            self.post_update(item)
             return self.response(
-                201,
-                **{
-                    API_RESULT_RES_KEY: self.add_model_schema.dump(
-                        item.data, many=False
-                    ).data,
-                    "id": self.datamodel.get_pk_value(item.data),
-                },
+                200,
+                **{API_RESULT_RES_KEY: self.edit_model_schema.dump(item, many=False)},
             )
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))
@@ -1465,31 +1611,20 @@ class ModelRestApi(BaseModelApi):
             500:
               $ref: '#/components/responses/500'
         """
+        return self.put_headless(pk)
+
+    def delete_headless(self, pk) -> Response:
+        """
+            Delete item from Model
+        """
         item = self.datamodel.get(pk, self._base_filters)
-        if not request.is_json:
-            return self.response(400, **{"message": "Request is not JSON"})
         if not item:
             return self.response_404()
+        self.pre_delete(item)
         try:
-            data = self._merge_update_item(item, request.json)
-            item = self.edit_model_schema.load(data, instance=item)
-        except ValidationError as err:
-            return self.response_422(message=err.messages)
-        # This validates custom Schema with custom validations
-        if isinstance(item.data, dict):
-            return self.response_422(message=item.errors)
-        self.pre_update(item.data)
-        try:
-            self.datamodel.edit(item.data, raise_exception=True)
-            self.post_update(item)
-            return self.response(
-                200,
-                **{
-                    API_RESULT_RES_KEY: self.edit_model_schema.dump(
-                        item.data, many=False
-                    ).data
-                },
-            )
+            self.datamodel.delete(item, raise_exception=True)
+            self.post_delete(item)
+            return self.response(200, message="OK")
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))
 
@@ -1523,16 +1658,7 @@ class ModelRestApi(BaseModelApi):
             500:
               $ref: '#/components/responses/500'
         """
-        item = self.datamodel.get(pk, self._base_filters)
-        if not item:
-            return self.response_404()
-        self.pre_delete(item)
-        try:
-            self.datamodel.delete(item, raise_exception=True)
-            self.post_delete(item)
-            return self.response(200, message="OK")
-        except IntegrityError as e:
-            return self.response_422(message=str(e.orig))
+        return self.delete_headless(pk)
 
     """
     ------------------------------------------------
@@ -1629,7 +1755,7 @@ class ModelRestApi(BaseModelApi):
         ret["type"] = field.__class__.__name__
         ret["required"] = field.required
         # When using custom marshmallow schemas fields don't have unique property
-        ret["unique"] = getattr(field, 'unique', False)
+        ret["unique"] = getattr(field, "unique", False)
         return ret
 
     def _get_fields_info(self, cols, model_schema, filter_rel_fields, **kwargs):
@@ -1700,7 +1826,7 @@ class ModelRestApi(BaseModelApi):
         :param data: python data structure
         :return: python data structure
         """
-        data_item = self.edit_model_schema.dump(model_item, many=False).data
+        data_item = self.edit_model_schema.dump(model_item, many=False)
         for _col in self.edit_columns:
             if _col not in data.keys():
                 data[_col] = data_item[_col]

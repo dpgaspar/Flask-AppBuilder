@@ -4,6 +4,7 @@ import uuid
 
 from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import generate_password_hash
 
 from .models import (
@@ -60,7 +61,8 @@ class SecurityManager(BaseSecurityManager):
         elif self.auth_type == c.AUTH_REMOTE_USER:
             self.userremoteusermodelview.datamodel = user_datamodel
 
-        self.userstatschartview.datamodel = user_datamodel
+        if self.userstatschartview:
+            self.userstatschartview.datamodel = user_datamodel
         if self.auth_user_registration:
             self.registerusermodelview.datamodel = SQLAInterface(
                 self.registeruser_model
@@ -148,15 +150,34 @@ class SecurityManager(BaseSecurityManager):
             Finds user by username or email
         """
         if username:
-            return (
-                self.get_session.query(self.user_model)
-                .filter(func.lower(self.user_model.username) == func.lower(username))
-                .first()
-            )
+            try:
+                if self.auth_username_ci:
+                    return (
+                        self.get_session.query(self.user_model)
+                        .filter(
+                            func.lower(self.user_model.username) == func.lower(username)
+                        )
+                        .one_or_none()
+                    )
+                else:
+                    return (
+                        self.get_session.query(self.user_model)
+                        .filter(self.user_model.username == username)
+                        .one_or_none()
+                    )
+            except MultipleResultsFound:
+                log.error(f"Multiple results found for user {username}")
+                return None
         elif email:
-            return (
-                self.get_session.query(self.user_model).filter_by(email=email).first()
-            )
+            try:
+                return (
+                    self.get_session.query(self.user_model)
+                    .filter_by(email=email)
+                    .one_or_none()
+                )
+            except MultipleResultsFound:
+                log.error(f"Multiple results found for user with email {email}")
+                return None
 
     def get_all_users(self):
         return self.get_session.query(self.user_model).all()
@@ -278,10 +299,7 @@ class SecurityManager(BaseSecurityManager):
         )
 
     def exist_permission_on_roles(
-            self,
-            view_name: str,
-            permission_name: str,
-            role_ids: List[int],
+        self, view_name: str, permission_name: str, role_ids: List[int]
     ) -> bool:
         """
             Method to efficiently check if a certain permission exists
@@ -297,8 +315,10 @@ class SecurityManager(BaseSecurityManager):
             .join(
                 assoc_permissionview_role,
                 and_(
-                    (self.permissionview_model.id ==
-                     assoc_permissionview_role.c.permission_view_id),
+                    (
+                        self.permissionview_model.id
+                        == assoc_permissionview_role.c.permission_view_id
+                    )
                 ),
             )
             .join(self.role_model)
@@ -316,14 +336,18 @@ class SecurityManager(BaseSecurityManager):
             return self.appbuilder.get_session.query(literal(True)).filter(q).scalar()
         return self.appbuilder.get_session.query(q).scalar()
 
-    def find_roles_permission_view_menus(self, permission_name: str, role_ids: List[int]):
+    def find_roles_permission_view_menus(
+        self, permission_name: str, role_ids: List[int]
+    ):
         return (
             self.appbuilder.get_session.query(self.permissionview_model)
             .join(
                 assoc_permissionview_role,
                 and_(
-                    (self.permissionview_model.id ==
-                     assoc_permissionview_role.c.permission_view_id),
+                    (
+                        self.permissionview_model.id
+                        == assoc_permissionview_role.c.permission_view_id
+                    )
                 ),
             )
             .join(self.role_model)
@@ -331,7 +355,8 @@ class SecurityManager(BaseSecurityManager):
             .join(self.viewmenu_model)
             .filter(
                 self.permission_model.name == permission_name,
-                self.role_model.id.in_(role_ids))
+                self.role_model.id.in_(role_ids),
+            )
         ).all()
 
     def add_permission(self, name):
@@ -366,9 +391,11 @@ class SecurityManager(BaseSecurityManager):
             log.warning(c.LOGMSG_WAR_SEC_DEL_PERMISSION.format(name))
             return False
         try:
-            pvms = self.get_session.query(self.permissionview_model).filter(
-                self.permissionview_model.permission == perm
-            ).all()
+            pvms = (
+                self.get_session.query(self.permissionview_model)
+                .filter(self.permissionview_model.permission == perm)
+                .all()
+            )
             if pvms:
                 log.warning(c.LOGMSG_WAR_SEC_DEL_PERM_PVM.format(perm, pvms))
                 return False
@@ -426,9 +453,11 @@ class SecurityManager(BaseSecurityManager):
             log.warning(c.LOGMSG_WAR_SEC_DEL_VIEWMENU.format(name))
             return False
         try:
-            pvms = self.get_session.query(self.permissionview_model).filter(
-                self.permissionview_model.view_menu == view_menu
-            ).all()
+            pvms = (
+                self.get_session.query(self.permissionview_model)
+                .filter(self.permissionview_model.view_menu == view_menu)
+                .all()
+            )
             if pvms:
                 log.warning(c.LOGMSG_WAR_SEC_DEL_VIEWMENU_PVM.format(view_menu, pvms))
                 return False
@@ -483,10 +512,7 @@ class SecurityManager(BaseSecurityManager):
         """
         if not (permission_name and view_menu_name):
             return None
-        pv = self.find_permission_view_menu(
-            permission_name,
-            view_menu_name
-        )
+        pv = self.find_permission_view_menu(permission_name, view_menu_name)
         if pv:
             return pv
         vm = self.add_view_menu(view_menu_name)
@@ -508,9 +534,11 @@ class SecurityManager(BaseSecurityManager):
         pv = self.find_permission_view_menu(permission_name, view_menu_name)
         if not pv:
             return
-        roles_pvs = self.get_session.query(self.role_model).filter(
-            self.role_model.permissions.contains(pv)
-        ).first()
+        roles_pvs = (
+            self.get_session.query(self.role_model)
+            .filter(self.role_model.permissions.contains(pv))
+            .first()
+        )
         if roles_pvs:
             log.warning(
                 c.LOGMSG_WAR_SEC_DEL_PERMVIEW.format(

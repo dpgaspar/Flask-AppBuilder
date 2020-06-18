@@ -11,6 +11,7 @@ var AdminActions = function() {
     var chkAllFlag = true;
     var multiple = false;
     var single = false;
+    var single_delete = false;
     var action_name = '';
     var action_url = '';
     var action_confirmation = '';
@@ -20,7 +21,7 @@ var AdminActions = function() {
         multiple = true;
         action_name = name;
         action_confirmation = confirmation;
-        var selected = $('input.action_check:checked').size();
+        var selected = $('input.action_check:checked').length;
 
         if (selected == 0) {
             ab_alert('No row selected');
@@ -35,39 +36,53 @@ var AdminActions = function() {
         }
     };
 
+    function single_form_submit() {
+        form = $('#action_form');
+        $(form).attr('action', action_url);
+        form.trigger("submit");
+        return false;
+    }
+
     this.execute_single = function(url, confirmation) {
         single = true;
         action_url = url;
         action_confirmation = confirmation;
 
         if (!!confirmation) {
-                $('#modal-confirm').modal('show');
+            $('#modal-confirm').modal('show');
         }
         else {
-            window.location.href = action_url;
+            single_form_submit();
         }
+    };
+
+    this.execute_single_delete = function(url, confirmation) {
+        single_delete = true;
+        action_url = url;
+        action_confirmation = confirmation;
+        $("#modal-confirm .modal-body").text(confirmation);
+        $('#modal-confirm').modal('show');
     };
 
     function form_submit() {
         // Update hidden form and submit it
-            var form = $('#action_form');
-            $('#action', form).val(action_name);
-            
-            $('input.action_check', form).remove();
-            $('input.action_check:checked').each(function() {   
-                form.append($(this).clone());
-            });
-            
-            form.submit();
+        var form = $('#action_form');
+        $('#action', form).val(action_name);
 
-            return false;
+        $('input.action_check', form).remove();
+        $('input.action_check:checked').each(function() {
+            form.append($(this).clone());
+        });
+
+        form.trigger('submit');
+        return false;
     }
 
     //----------------------------------------------------
     // Event for checkbox with class "action_check_all"
     // will check all checkboxes with class "action_check
     //----------------------------------------------------
-    $('.action_check_all').click(function() {
+    $('.action_check_all').on('click', function() {
         $('.action_check').prop('checked', chkAllFlag).trigger("change");
         chkAllFlag = !chkAllFlag;
     });
@@ -76,7 +91,7 @@ var AdminActions = function() {
     // Event for checkbox with class "action_check"
     // will add class 'active' to row
     //----------------------------------------------------
-    $('.action_check').change(function() {
+    $('.action_check').on('change', function() {
         var thisClosest = $(this).closest('tr'),
         checked = this.checked;
         $(this).closest('tr').add(thisClosest )[checked ? 'addClass' : 'removeClass'](row_checked_class);
@@ -91,7 +106,19 @@ var AdminActions = function() {
             form_submit();
         }
         if (single) {
-            window.location.href = action_url;
+            single_form_submit();
+        }
+        // POST for delete endpoint necessary to send CSRF token from list view
+        if (single_delete) {
+            var form = undefined;
+            if ( $('#action_form').length ) {
+                form = $('#action_form');
+            }
+            else {
+                form = $('#delete_form');
+            }            $(form).attr('action', action_url);
+            form.trigger('submit');
+            return false;
         }
     });
 

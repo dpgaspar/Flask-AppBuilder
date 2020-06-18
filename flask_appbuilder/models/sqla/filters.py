@@ -81,7 +81,7 @@ class FilterStartsWith(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(field.like(value + "%"))
+        return query.filter(field.ilike(value + "%"))
 
 
 class FilterNotStartsWith(BaseFilter):
@@ -90,7 +90,7 @@ class FilterNotStartsWith(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(~field.like(value + "%"))
+        return query.filter(~field.ilike(value + "%"))
 
 
 class FilterEndsWith(BaseFilter):
@@ -99,7 +99,7 @@ class FilterEndsWith(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(field.like("%" + value))
+        return query.filter(field.ilike("%" + value))
 
 
 class FilterNotEndsWith(BaseFilter):
@@ -108,7 +108,7 @@ class FilterNotEndsWith(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(~field.like("%" + value))
+        return query.filter(~field.ilike("%" + value))
 
 
 class FilterContains(BaseFilter):
@@ -117,7 +117,7 @@ class FilterContains(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(field.like("%" + value + "%"))
+        return query.filter(field.ilike("%" + value + "%"))
 
 
 class FilterNotContains(BaseFilter):
@@ -126,7 +126,7 @@ class FilterNotContains(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(~field.like("%" + value + "%"))
+        return query.filter(~field.ilike("%" + value + "%"))
 
 
 class FilterEqual(BaseFilter):
@@ -195,6 +195,11 @@ class FilterRelationManyToManyEqual(FilterRelation):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
+        if isinstance(value, list):
+            for value_item in value:
+                rel_obj = self.datamodel.get_related_obj(self.column_name, value_item)
+                query = query.filter(field.contains(rel_obj))
+            return query
         rel_obj = self.datamodel.get_related_obj(self.column_name, value)
         return query.filter(field.contains(rel_obj))
 

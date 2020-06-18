@@ -8,9 +8,7 @@ import click
 from flask import current_app
 from flask.cli import with_appcontext
 
-from . const import (
-    AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_OID, AUTH_REMOTE_USER
-)
+from .const import AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_OID, AUTH_REMOTE_USER
 
 
 SQLA_REPO_URL = (
@@ -35,7 +33,7 @@ def fab():
     pass
 
 
-@fab.command('create-admin')
+@fab.command("create-admin")
 @click.option("--username", default="admin", prompt="Username")
 @click.option("--firstname", default="admin", prompt="User first name")
 @click.option("--lastname", default="user", prompt="User last name")
@@ -61,6 +59,14 @@ def create_admin(username, firstname, lastname, email, password):
             fg="green",
         )
     )
+    user = current_app.appbuilder.sm.find_user(username=username)
+    if user:
+        click.echo(click.style(f"Error! User already exists {username}", fg="red"))
+        return
+    user = current_app.appbuilder.sm.find_user(email=email)
+    if user:
+        click.echo(click.style(f"Error! User already exists {username}", fg="red"))
+        return
     role_admin = current_app.appbuilder.sm.find_role(
         current_app.appbuilder.sm.auth_role_admin
     )
@@ -85,7 +91,18 @@ def create_user(role, username, firstname, lastname, email, password):
     """
         Create a user
     """
+    user = current_app.appbuilder.sm.find_user(username=username)
+    if user:
+        click.echo(click.style(f"Error! User already exists {username}", fg="red"))
+        return
+    user = current_app.appbuilder.sm.find_user(email=email)
+    if user:
+        click.echo(click.style(f"Error! User already exists {username}", fg="red"))
+        return
     role_object = current_app.appbuilder.sm.find_role(role)
+    if not role_object:
+        click.echo(click.style(f"Error! Role not found {role}", fg="red"))
+        return
     user = current_app.appbuilder.sm.add_user(
         username, firstname, lastname, email, role_object, password
     )
@@ -93,6 +110,27 @@ def create_user(role, username, firstname, lastname, email, password):
         click.echo(click.style("User {0} created.".format(username), fg="green"))
     else:
         click.echo(click.style("Error! No user created", fg="red"))
+
+
+@fab.command("reset-password")
+@click.option(
+    "--username",
+    default="admin",
+    prompt="The username",
+    help="Resets the password for a particular user.",
+)
+@click.password_option()
+@with_appcontext
+def reset_password(username, password):
+    """
+        Resets a user's password
+    """
+    user = current_app.appbuilder.sm.find_user(username=username)
+    if not user:
+        click.echo("User {0} not found.".format(username))
+    else:
+        current_app.appbuilder.sm.reset_password(user.id, password)
+        click.echo(click.style("User {0} reseted.".format(username), fg="green"))
 
 
 @fab.command("create-db")
@@ -118,7 +156,7 @@ def version():
         click.style(
             "F.A.B Version: {0}.".format(current_app.appbuilder.version),
             bg="blue",
-            fg="white"
+            fg="white",
         )
     )
 
@@ -134,7 +172,9 @@ def security_cleanup():
 
 
 @fab.command("security-converge")
-@click.option('--dry-run', '-d', is_flag=True, help="Dry run & print state transitions.")
+@click.option(
+    "--dry-run", "-d", is_flag=True, help="Dry run & print state transitions."
+)
 @with_appcontext
 def security_converge(dry_run=False):
     """
@@ -144,16 +184,16 @@ def security_converge(dry_run=False):
     if dry_run:
         click.echo(click.style("Computed security converge:", fg="green"))
         click.echo(click.style("Add to Roles:", fg="green"))
-        for _from, _to in state_transitions['add'].items():
+        for _from, _to in state_transitions["add"].items():
             click.echo(f"Where {_from} add {_to}")
         click.echo(click.style("Del from Roles:", fg="green"))
-        for pvm in state_transitions['del_role_pvm']:
+        for pvm in state_transitions["del_role_pvm"]:
             click.echo(pvm)
         click.echo(click.style("Remove views:", fg="green"))
-        for views in state_transitions['del_views']:
+        for views in state_transitions["del_views"]:
             click.echo(views)
         click.echo(click.style("Remove permissions:", fg="green"))
-        for perms in state_transitions['del_perms']:
+        for perms in state_transitions["del_perms"]:
             click.echo(perms)
     else:
         click.echo(click.style("Finished security converge", fg="green"))
@@ -293,7 +333,7 @@ def collect_static(static_folder):
         click.echo(
             click.style(
                 "Static folder does not exist creating: %s" % app_static_path,
-                fg="green"
+                fg="green",
             )
         )
         os.makedirs(app_static_path)
@@ -304,8 +344,7 @@ def collect_static(static_folder):
     except Exception:
         click.echo(
             click.style(
-                "Appbuilder static folder already exists on your project",
-                fg="red"
+                "Appbuilder static folder already exists on your project", fg="red"
             )
         )
 

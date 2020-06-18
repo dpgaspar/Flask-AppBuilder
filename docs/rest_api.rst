@@ -543,8 +543,8 @@ The previous example will enable cookie sessions on the all class::
         def private(self)
             ....
 
-On the previous example, we are enabling signed cookies on the ``private`` method. Not that event then
-valid a valid JWT is also accepted.
+On the previous example, we are enabling signed cookies on the ``private`` method. Note that even then 
+a valid JWT is also accepted.
 
 Model REST API
 --------------
@@ -581,10 +581,10 @@ so you can get free documentation for you API's.
 
 FAB will create all possible permissions and add them to the ``AUTH_ROLE_ADMIN`` config key
 that defaults to **Admin**. you can completely override the default inferred permissions
-and reduce the level of granularity, for mode detail about this read the :doc:`security` chapter.
+and reduce the level of granularity, for more detail about this read the :doc:`security` chapter.
 
 Let's dive into a simple example using the quickhowto.
-The quickhowto example as a Contact's Model and a Group Model,
+The quickhowto example has a Contact's Model and a Group Model,
 so each Contact belongs to a Group.
 
 First let's define a CRUD REST Api for our Group model resource::
@@ -1294,19 +1294,20 @@ And we get an HTTP 422 (Unprocessable Entity).
 How to add custom validation? On our next example we only allow
 group names that start with a capital "A"::
 
-    from marshmallow import Schema, fields, ValidationError, post_load
+    from flask_appbuilder.api.schemas import BaseModelSchema
 
 
     def validate_name(n):
         if n[0] != 'A':
             raise ValidationError('Name must start with an A')
 
-    class GroupCustomSchema(Schema):
+    class GroupCustomSchema(BaseModelSchema):
+        model_cls = ContactGroup
         name = fields.Str(validate=validate_name)
 
-        @post_load
-        def process(self, data):
-            return ContactGroup(**data)
+Note that `BaseModelSchema` extends marshmallow `Schema` class, to support automatic SQLAlchemy model creation and
+update, it's a lighter version of marshmallow-sqlalchemy `ModelSchema`. Declare your SQLAlchemy model on `model_cls`
+so that a model is created on schema load.
 
 Then on our Api class::
 

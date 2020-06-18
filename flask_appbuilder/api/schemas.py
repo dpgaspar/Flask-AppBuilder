@@ -1,3 +1,5 @@
+from marshmallow import post_load, Schema
+
 from ..const import (
     API_ADD_COLUMNS_RIS_KEY,
     API_ADD_TITLE_RIS_KEY,
@@ -19,6 +21,36 @@ from ..const import (
     API_SHOW_COLUMNS_RIS_KEY,
     API_SHOW_TITLE_RIS_KEY,
 )
+
+
+class BaseModelSchema(Schema):
+    """
+    Extends marshmallow Schema to add functionality similar to marshmallow-sqlalchemy
+    for creating and updating SQLAlchemy models on load
+    """
+
+    model_cls = None
+    """Declare the SQLAlchemy model when creating a new model on load"""
+
+    def __init__(self, *arg, **kwargs):
+        super().__init__()
+        self.instance = None
+
+    @post_load
+    def process(self, data, **kwargs):
+        if self.instance is not None:
+            for key, value in data.items():
+                setattr(self.instance, key, value)
+            return self.instance
+        return self.model_cls(**data)
+
+    def load(self, data, *, instance=None, **kwargs):
+        self.instance = instance
+        try:
+            return super().load(data, **kwargs)
+        finally:
+            self.instance = None
+
 
 get_list_schema = {
     "type": "object",
@@ -54,9 +86,11 @@ get_list_schema = {
                             {"type": "number"},
                             {"type": "string"},
                             {"type": "boolean"},
+                            {"type": "array"},
                         ]
                     },
                 },
+                "required": ["col", "opr", "value"],
             },
         },
     },

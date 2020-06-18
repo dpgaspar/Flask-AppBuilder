@@ -6,6 +6,7 @@ Introduction
 
 F.A.B. has support for seven languages (planning for some more):
  - Chinese
+ - Dutch
  - English
  - French
  - German
@@ -16,6 +17,8 @@ F.A.B. has support for seven languages (planning for some more):
  - Russian
  - Spanish
  - Greek
+ - Korean
+ - Italian
 
 This means that all messages, builtin on the framework are translated to these languages.
 
