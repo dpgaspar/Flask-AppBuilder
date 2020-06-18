@@ -7,7 +7,7 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import asc, desc
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import aliased, contains_eager, Load, load_only
+from sqlalchemy.orm import aliased, contains_eager, Load
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy_utils.types.uuid import UUIDType
@@ -83,47 +83,12 @@ class SQLAInterface(BaseInterface):
     def is_model_already_joined(query, model):
         return model in [mapper.class_ for mapper in query._join_entities]
 
-    def _apply_query_order(
-        self, query, order_column: str, order_direction: str
-    ) -> BaseQuery:
-        if order_column != "":
-            # if Model has custom decorator **renders('<COL_NAME>')**
-            # this decorator will add a property to the method named *_col_name*
-            if hasattr(self.obj, order_column):
-                if hasattr(getattr(self.obj, order_column), "_col_name"):
-                    order_column = getattr(self._get_attr(order_column), "_col_name")
-            _order_column = self._get_attr(order_column) or order_column
-            if order_direction == "asc":
-                query = query.order_by(asc(_order_column))
-            else:
-                query = query.order_by(desc(_order_column))
-        return query
-
-    def apply_engine_specific_hack(
-        self, query: BaseQuery, page, page_size, order_column
-    ) -> BaseQuery:
-        # MSSQL exception page/limit must have an order by
-        if (
-            page
-            and page_size
-            and not order_column
-            and self.session.bind.dialect.name == "mssql"
-        ):
-            pk_name = self.get_pk_name()
-            return query.order_by(pk_name)
-        return query
-
-    def apply_order_by(
-        self, query: BaseQuery, order_column: str, order_direction: str
-    ) -> BaseQuery:
-        return self._apply_query_order(query, order_column, order_direction)
-
     def _get_base_query(
         self, query=None, filters=None, order_column="", order_direction=""
     ):
         if filters:
             query = filters.apply_all(query)
-        return self._apply_query_order(query, order_column, order_direction)
+        return self.apply_order_by(query, order_column, order_direction)
 
     def _query_join_relation(self, query: BaseQuery, root_relation: str) -> BaseQuery:
         """
@@ -160,48 +125,34 @@ class SQLAInterface(BaseInterface):
             return self._query_join_relation(query, get_column_root_relation(column))
         return query
 
-    def _query_select_options(
-        self, query: BaseQuery, select_columns: List[str] = None
+    def apply_engine_specific_hack(
+        self, query: BaseQuery, page, page_size, order_column
     ) -> BaseQuery:
-        """
-        Add select load options to query. The goal
-        is to only SQL select what is requested and join all the necessary
-        models when dotted notation is used
+        # MSSQL exception page/limit must have an order by
+        if (
+            page
+            and page_size
+            and not order_column
+            and self.session.bind.dialect.name == "mssql"
+        ):
+            pk_name = self.get_pk_name()
+            return query.order_by(pk_name)
+        return query
 
-        :param query: SQLAlchemy Query obj to apply joins and selects
-        :param select_columns: (list) of columns
-        :return: Transformed SQLAlchemy Query
-        """
-        if select_columns:
-            load_options = list()
-            joined_models = list()
-            for column in select_columns:
-                if is_column_dotted(column):
-                    root_relation = get_column_root_relation(column)
-                    leaf_column = get_column_leaf(column)
-                    if self.is_relation_many_to_many(
-                        root_relation
-                    ) or self.is_relation_one_to_many(root_relation):
-                        load_options.append(
-                            (
-                                Load(self.obj)
-                                .joinedload(root_relation)
-                                .load_only(leaf_column)
-                            )
-                        )
-                        continue
-                    elif root_relation not in joined_models:
-                        query = self._query_join_relation(query, root_relation)
-                        joined_models.append(root_relation)
-                    load_options.append(
-                        (contains_eager(root_relation).load_only(leaf_column))
-                    )
-                else:
-                    if not self.is_relation(
-                        column
-                    ) and not self.is_property_or_function(column):
-                        load_options.append(load_only(column))
-            query = query.options(*tuple(load_options))
+    def apply_order_by(
+        self, query: BaseQuery, order_column: str, order_direction: str
+    ) -> BaseQuery:
+        if order_column != "":
+            # if Model has custom decorator **renders('<COL_NAME>')**
+            # this decorator will add a property to the method named *_col_name*
+            if hasattr(self.obj, order_column):
+                if hasattr(getattr(self.obj, order_column), "_col_name"):
+                    order_column = getattr(self._get_attr(order_column), "_col_name")
+            _order_column = self._get_attr(order_column) or order_column
+            if order_direction == "asc":
+                query = query.order_by(asc(_order_column))
+            else:
+                query = query.order_by(desc(_order_column))
         return query
 
     def apply_pagination(
@@ -219,10 +170,9 @@ class SQLAInterface(BaseInterface):
         return query
 
     def _apply_normal_col_select_option(self, query, column) -> BaseQuery:
-        if not self.is_relation(column) and not self.is_property_or_function(
-                column
-        ):
+        if not self.is_relation(column) and not self.is_property_or_function(column):
             return query.options(Load(self.obj).load_only(column))
+        return query
 
     def apply_inner_select_joins(
         self, query: BaseQuery, select_columns: List[str] = None
@@ -276,9 +226,7 @@ class SQLAInterface(BaseInterface):
                     )
                 else:
                     related_model = self.get_related_model(root_relation)
-                    query = query.options(
-                        Load(related_model).load_only(leaf_column)
-                    )
+                    query = query.options(Load(related_model).load_only(leaf_column))
             else:
                 query = self._apply_normal_col_select_option(query, column)
         return query
@@ -346,9 +294,7 @@ class SQLAInterface(BaseInterface):
         if select_columns and order_column:
             select_columns = select_columns + [order_column]
         outer_query = self.apply_outer_select_joins(outer_query, select_columns)
-        outer_query = self.apply_order_by(
-            outer_query, order_column, order_direction
-        )
+        outer_query = self.apply_order_by(outer_query, order_column, order_direction)
 
         result = list()
         results = outer_query.all()
