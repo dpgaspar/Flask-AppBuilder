@@ -295,14 +295,12 @@ class SQLAInterface(BaseInterface):
         _filters = []
         if filters:
             for flt, value in zip(filters.filters, filters.values):
-                print(f"F1: {flt.column_name}")
                 if not is_column_dotted(flt.column_name):
                     _filters.append((flt.column_name, flt.__class__, value))
                 elif self.is_relation_many_to_one(
                     flt.column_name
                 ) or self.is_relation_one_to_one(flt.column_name):
                     _filters.append((flt.column_name, flt.__class__, value))
-            print(f"FILTERS: {_filters}")
             inner_filters.add_filter_list(_filters)
         return inner_filters
 
