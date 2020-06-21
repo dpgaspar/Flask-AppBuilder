@@ -94,3 +94,9 @@ $('#modal-confirm').on('show.bs.modal', function(e) {
     $(this).find('#modal-confirm-ok').attr('href', $(e.relatedTarget).data('href'));
 });
 
+
+//---------------------------------------
+// Event for confirm discard of modified forms
+// require confirmation before leaving forms without saving changed data
+//---------------------------------------
+$("form").areYouSure();
