@@ -215,6 +215,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Self Registration
         app.config.setdefault("AUTH_USER_REGISTRATION", False)
         app.config.setdefault("AUTH_USER_REGISTRATION_ROLE", self.auth_role_public)
+        app.config.setdefault("AUTH_USER_REGISTRATION_ROLE_JMESPATH", None)
 
         # LDAP Config
         if self.auth_type == AUTH_LDAP:
@@ -346,6 +347,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_user_registration_role(self):
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE"]
+
+    @property
+    def auth_user_registration_role_jmespath(self):
+        return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"]
 
     @property
     def auth_ldap_search(self):
@@ -1020,12 +1025,19 @@ class BaseSecurityManager(AbstractSecurityManager):
             return None
         # User does not exist, create one if self registration.
         if not user:
+            role_name = self.auth_user_registration_role
+            if self.auth_user_registration_role_jmespath:
+                import jmespath
+                role_name = jmespath.search(
+                    self.auth_user_registration_role_jmespath,
+                    userinfo
+                )
             user = self.add_user(
                 username=userinfo["username"],
                 first_name=userinfo.get("first_name", ""),
                 last_name=userinfo.get("last_name", ""),
                 email=userinfo.get("email", ""),
-                role=self.find_role(self.auth_user_registration_role),
+                role=self.find_role(role_name)
             )
             if not user:
                 log.error("Error creating a new OAuth user %s" % userinfo["username"])

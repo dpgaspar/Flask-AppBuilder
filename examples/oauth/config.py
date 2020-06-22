@@ -94,8 +94,11 @@ OAUTH_PROVIDERS = [
 # Will allow user self registration
 AUTH_USER_REGISTRATION = True
 
-# The default user self registration role
+# The default user self registration role for all users
 AUTH_USER_REGISTRATION_ROLE = "Admin"
+
+# Self registration role based on user info
+AUTH_USER_REGISTRATION_ROLE_JMESPATH = "contains(['alice', 'celine'], username) && 'Admin' || 'Public'"
 
 # When using LDAP Auth, setup the ldap server
 # AUTH_LDAP_SERVER = "ldap://ldapserver.new"
