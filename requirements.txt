@@ -22,7 +22,6 @@ flask==1.1.1
 idna==2.9                 # via email-validator
 itsdangerous==1.1.0       # via flask
 jinja2==2.10.1            # via flask, flask-babel
-jmespath==0.9.5
 jsonschema==3.0.1
 markupsafe==1.1.1         # via jinja2
 marshmallow-enum==1.5.1

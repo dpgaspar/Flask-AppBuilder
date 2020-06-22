@@ -98,7 +98,7 @@ AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = "Admin"
 
 # Self registration role based on user info
-AUTH_USER_REGISTRATION_ROLE_JMESPATH = "contains(['alice', 'celine'], username) && 'Admin' || 'Public'"
+AUTH_USER_REGISTRATION_ROLE_JMESPATH = "contains(['alice@example.com', 'celine@example.com'], email) && 'Admin' || 'Public'"
 
 # When using LDAP Auth, setup the ldap server
 # AUTH_LDAP_SERVER = "ldap://ldapserver.new"
