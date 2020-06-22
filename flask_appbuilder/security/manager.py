@@ -1028,16 +1028,16 @@ class BaseSecurityManager(AbstractSecurityManager):
             role_name = self.auth_user_registration_role
             if self.auth_user_registration_role_jmespath:
                 import jmespath
+
                 role_name = jmespath.search(
-                    self.auth_user_registration_role_jmespath,
-                    userinfo
+                    self.auth_user_registration_role_jmespath, userinfo
                 )
             user = self.add_user(
                 username=userinfo["username"],
                 first_name=userinfo.get("first_name", ""),
                 last_name=userinfo.get("last_name", ""),
                 email=userinfo.get("email", ""),
-                role=self.find_role(role_name)
+                role=self.find_role(role_name),
             )
             if not user:
                 log.error("Error creating a new OAuth user %s" % userinfo["username"])
