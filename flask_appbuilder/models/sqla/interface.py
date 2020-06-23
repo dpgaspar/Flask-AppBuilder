@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -771,18 +771,28 @@ class SQLAInterface(BaseInterface):
             return query.first()
         return self.session.query(self.obj).get(id)
 
-    def get_pk_name(self) -> str:
+    def get_pk_name(self) -> Optional[Union[List[str], str]]:
+        """
+        Get the model primary key column name.
+        """
         return self._get_pk_name(self.obj)
 
     def get_pk(self, model: Optional[Model] = None):
+        """
+        Get the model primary key SQLAlchemy column.
+        Will not support composite keys
+        """
         model_ = model or self.obj
-        return getattr(model_, self._get_pk_name(model_))
+        pk_name = self._get_pk_name(model_)
+        if pk_name and isinstance(pk_name, str):
+            return getattr(model_, pk_name)
+        return None
 
-    def _get_pk_name(self, model: Model) -> str:
+    def _get_pk_name(self, model: Model) -> Optional[Union[List[str], str]]:
         pk = [pk.name for pk in model.__mapper__.primary_key]
         if pk:
             return pk if self.is_pk_composite() else pk[0]
-
+        return None
 
 def _include_filters(interface: SQLAInterface) -> None:
     """
