@@ -964,9 +964,9 @@ class APITestCase(FABTestCase):
         self.assertIn({"field_integer": 2}, data[API_RESULT_RES_KEY][i]["children"])
         self.assertIn({"field_integer": 3}, data[API_RESULT_RES_KEY][i]["children"])
 
-    def test_get_list_dotted_order(self):
+    def test_get_list_dotted_mo_order(self):
         """
-            REST Api: Test get list and order dotted notation
+            REST Api: Test get list and order dotted M-O notation
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
