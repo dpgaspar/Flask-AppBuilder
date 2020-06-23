@@ -5,7 +5,7 @@ from typing import Type
 
 from flask_babel import lazy_gettext
 
-from .filters import Filters, BaseFilterConverter
+from .filters import BaseFilterConverter, Filters
 
 try:
     import enum

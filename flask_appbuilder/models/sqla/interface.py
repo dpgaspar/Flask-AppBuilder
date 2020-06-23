@@ -9,13 +9,12 @@ from sqlalchemy import asc, desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import aliased, contains_eager, Load
 from sqlalchemy.orm.descriptor_props import SynonymProperty
+from sqlalchemy.orm.session import Session as SessionBase
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.sqltypes import TypeEngine
-from sqlalchemy.orm.session import Session as SessionBase
 from sqlalchemy_utils.types.uuid import UUIDType
 
 
-from flask_appbuilder.exceptions import InterfaceQueryWithoutSession
 from . import filters, Model
 from ..base import BaseInterface
 from ..filters import Filters
@@ -30,6 +29,7 @@ from ...const import (
     LOGMSG_WAR_DBI_DEL_INTEGRITY,
     LOGMSG_WAR_DBI_EDIT_INTEGRITY,
 )
+from ...exceptions import InterfaceQueryWithoutSession
 from ...filemanager import FileManager, ImageManager
 from ...utils.base import get_column_leaf, get_column_root_relation, is_column_dotted
 
@@ -106,23 +106,11 @@ class SQLAInterface(BaseInterface):
                 # Since the join already exists apply a new aliased one
                 model_relation = aliased(model_relation)
                 # The binary expression needs to be inverted
+                relation_pk = self.get_pk(model_relation)
                 relation_join = BinaryExpression(
-                    relation_join.left,
-                    model_relation.__mapper__.primary_key[0],
-                    relation_join.operator,
+                    relation_join.left, relation_pk, relation_join.operator
                 )
             query = query.join(model_relation, relation_join, isouter=True)
-        return query
-
-    def _query_join_dotted_column(self, query: BaseQuery, column: str) -> BaseQuery:
-        """
-
-        :param query: SQLAlchemy query object
-        :param column: If the column is dotted will join the root relation
-        :return: Transformed SQLAlchemy Query
-        """
-        if is_column_dotted(column):
-            return self._query_join_relation(query, get_column_root_relation(column))
         return query
 
     def apply_engine_specific_hack(
@@ -783,8 +771,15 @@ class SQLAInterface(BaseInterface):
             return query.first()
         return self.session.query(self.obj).get(id)
 
-    def get_pk_name(self):
-        pk = [pk.name for pk in self.obj.__mapper__.primary_key]
+    def get_pk_name(self) -> str:
+        return self._get_pk_name(self.obj)
+
+    def get_pk(self, model: Optional[Model] = None):
+        model_ = model or self.obj
+        return getattr(model_, self._get_pk_name(model_))
+
+    def _get_pk_name(self, model: Model) -> str:
+        pk = [pk.name for pk in model.__mapper__.primary_key]
         if pk:
             return pk if self.is_pk_composite() else pk[0]
 
