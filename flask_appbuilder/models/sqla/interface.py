@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
-from typing import List, Optional, Tuple, Union
+from typing import Any, List, Optional, Type, Tuple, Union
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -36,7 +36,7 @@ from ...utils.base import get_column_leaf, get_column_root_relation, is_column_d
 log = logging.getLogger(__name__)
 
 
-def _is_sqla_type(model: Model, sa_type: TypeEngine) -> bool:
+def _is_sqla_type(model: Model, sa_type: Type[TypeEngine]) -> bool:
     return (
         isinstance(model, sa_type)
         or isinstance(model, sa.types.TypeDecorator)
@@ -248,7 +248,7 @@ class SQLAInterface(BaseInterface):
         page: Optional[int] = None,
         page_size: Optional[int] = None,
         select_columns: Optional[List[str]] = None,
-    ):
+    ) -> Tuple[int, List[Type[Model]]]:
         """
         Returns the results for a model query, applies filters, sorting and pagination
 
@@ -651,25 +651,24 @@ class SQLAInterface(BaseInterface):
             ]
         return [(relation.mapper.class_, relation.primaryjoin)]
 
-    def query_model_relation(self, col_name):
-        model = self.get_related_model(col_name)
-        return self.session.query(model).all()
-
-    def get_related_interface(self, col_name):
+    def get_related_interface(self, col_name: str):
         return self.__class__(self.get_related_model(col_name), self.session)
 
-    def get_related_obj(self, col_name, value):
+    def get_related_obj(self, col_name: str, value: Any) -> Optional[Type[Model]]:
         rel_model = self.get_related_model(col_name)
-        return self.session.query(rel_model).get(value)
+        if self.session:
+            return self.session.query(rel_model).get(value)
+        return None
 
-    def get_related_fks(self, related_views):
+    def get_related_fks(self, related_views) -> List[str]:
         return [view.datamodel.get_related_fk(self.obj) for view in related_views]
 
-    def get_related_fk(self, model):
+    def get_related_fk(self, model) -> Optional[str]:
         for col_name in self.list_properties.keys():
             if self.is_relation(col_name):
                 if model == self.get_related_model(col_name):
                     return col_name
+        return None
 
     def get_info(self, col_name):
         if col_name in self.list_properties:
@@ -682,15 +681,15 @@ class SQLAInterface(BaseInterface):
     -------------
     """
 
-    def get_columns_list(self):
+    def get_columns_list(self) -> List[str]:
         """
-            Returns all model's columns on SQLA properties
+        Returns all model's columns on SQLA properties
         """
         return list(self.list_properties.keys())
 
-    def get_user_columns_list(self):
+    def get_user_columns_list(self) -> List[str]:
         """
-            Returns all model's columns except pk or fk
+        Returns all model's columns except pk or fk
         """
         ret_lst = list()
         for col_name in self.get_columns_list():
@@ -699,7 +698,7 @@ class SQLAInterface(BaseInterface):
         return ret_lst
 
     # TODO get different solution, more integrated with filters
-    def get_search_columns_list(self):
+    def get_search_columns_list(self) -> List[str]:
         ret_lst = list()
         for col_name in self.get_columns_list():
             if not self.is_relation(col_name):
@@ -715,12 +714,12 @@ class SQLAInterface(BaseInterface):
                 ret_lst.append(col_name)
         return ret_lst
 
-    def get_order_columns_list(self, list_columns=None):
+    def get_order_columns_list(self, list_columns: List[str] = None) -> List[str]:
         """
-            Returns the columns that can be ordered
+        Returns the columns that can be ordered
 
-            :param list_columns: optional list of columns name, if provided will
-                use this list only.
+        :param list_columns: optional list of columns name, if provided will
+            use this list only.
         """
         ret_lst = list()
         list_columns = list_columns or self.get_columns_list()
