@@ -14,3 +14,4 @@ mysqlclient>=1.4.2, < 2.0.0
 cython==0.29.17
 pymssql==2.1.4
 black==19.3b0
+jmespath==0.9.5
