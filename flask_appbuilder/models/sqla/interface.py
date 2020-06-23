@@ -240,6 +240,15 @@ class SQLAInterface(BaseInterface):
             inner_filters.add_filter_list(_filters)
         return inner_filters
 
+    def exists_col_to_many(self, select_columns: List[str]) -> bool:
+        for column in select_columns:
+            if is_column_dotted(column):
+                root_relation = get_column_root_relation(column)
+                return self.is_relation_many_to_many(
+                    root_relation
+                ) or self.is_relation_one_to_many(root_relation)
+        return False
+
     def query(
         self,
         filters: Optional[Filters] = None,
@@ -281,15 +290,21 @@ class SQLAInterface(BaseInterface):
         inner_query = self.apply_order_by(inner_query, order_column, order_direction)
         inner_query = self.apply_pagination(inner_query, page, page_size)
 
-        outer_query = inner_query.from_self()
-
-        if select_columns and order_column:
-            select_columns = select_columns + [order_column]
-        outer_query = self.apply_outer_select_joins(outer_query, select_columns)
-        outer_query = self.apply_order_by(outer_query, order_column, order_direction)
+        # Only use a from_self if we need to select a join one to many or many to many
+        if select_columns and self.exists_col_to_many(select_columns):
+            if select_columns and order_column:
+                select_columns = select_columns + [order_column]
+            outer_query = inner_query.from_self()
+            outer_query = self.apply_outer_select_joins(outer_query, select_columns)
+            final_query = self.apply_order_by(
+                outer_query, order_column, order_direction
+            )
+        else:
+            final_query = inner_query
 
         result = list()
-        results = outer_query.all()
+        results = final_query.all()
+
         for item in results:
             if hasattr(item, self.obj.__name__):
                 result.append(getattr(item, self.obj.__name__))
@@ -748,11 +763,11 @@ class SQLAInterface(BaseInterface):
             if isinstance(i.type, ImageColumn)
         ]
 
-    def get_property_first_col(self, col_name):
+    def get_property_first_col(self, col_name: str):
         # support for only one col for pk and fk
         return self.list_properties[col_name].columns[0]
 
-    def get_relation_fk(self, col_name):
+    def get_relation_fk(self, col_name: str):
         # support for only one col for pk and fk
         return list(self.list_properties[col_name].local_columns)[0]
 
