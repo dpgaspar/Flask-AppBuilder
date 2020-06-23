@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
-from typing import Any, List, Optional, Type, Tuple, Union
+from typing import Any, List, Optional, Tuple, Type, Union
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -187,8 +187,10 @@ class SQLAInterface(BaseInterface):
                 ) or self.is_relation_one_to_one(root_relation):
                     if root_relation not in joined_models:
                         query = self._query_join_relation(query, root_relation)
-                        related_model = self.get_related_model(root_relation)
-                        query = query.add_entity(related_model)
+                        # only needed if we need to wrap this query, from_self
+                        if select_columns and self.exists_col_to_many(select_columns):
+                            related_model = self.get_related_model(root_relation)
+                            query = query.add_entity(related_model)
                         joined_models.append(root_relation)
                     query = query.options(
                         (contains_eager(root_relation).load_only(leaf_column))
@@ -244,9 +246,10 @@ class SQLAInterface(BaseInterface):
         for column in select_columns:
             if is_column_dotted(column):
                 root_relation = get_column_root_relation(column)
-                return self.is_relation_many_to_many(
+                if self.is_relation_many_to_many(
                     root_relation
-                ) or self.is_relation_one_to_many(root_relation)
+                ) or self.is_relation_one_to_many(root_relation):
+                    return True
         return False
 
     def query(
