@@ -794,6 +794,7 @@ class SQLAInterface(BaseInterface):
             return pk if self.is_pk_composite() else pk[0]
         return None
 
+
 def _include_filters(interface: SQLAInterface) -> None:
     """
     Injects all filters on the interface class itself
