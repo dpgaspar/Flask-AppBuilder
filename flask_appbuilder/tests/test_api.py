@@ -2748,8 +2748,6 @@ class APITestCase(FABTestCase):
     def test_auth_pam(self):
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.const import AUTH_PAM
-        from pamela import PAMError
-        from mock import patch
         from flask_appbuilder.security.sqla.models import User
 
         self.app.config["AUTH_TYPE"] = AUTH_PAM
@@ -2759,12 +2757,9 @@ class APITestCase(FABTestCase):
         user = self.appbuilder.sm.auth_user_pam("", "")
         self.assertIsNone(user)
 
-        with patch("pamela.authenticate") as authenticate:
-            authenticate.side_effect = PAMError
-            user = self.appbuilder.sm.auth_user_pam("test_user", "test_password")
-            self.assertIsNone(user)
+        user = self.appbuilder.sm.auth_user_pam("test_user", "test_password")
+        self.assertIsNone(user)
 
-            authenticate.return_value = None
-            user = self.appbuilder.sm.auth_user_pam("test_user", "test_password")
-            self.assertIsNotNone(user)
-            self.assertIsInstance(user, User)
+        user = self.appbuilder.sm.auth_user_pam(USERNAME_ADMIN, PASSWORD_ADMIN)
+        self.assertIsNotNone(user)
+        self.assertIsInstance(user, User)
