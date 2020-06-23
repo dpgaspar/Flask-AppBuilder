@@ -2744,4 +2744,3 @@ class APITestCase(FABTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 5)
-
