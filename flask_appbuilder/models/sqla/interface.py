@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -10,8 +10,12 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import aliased, contains_eager, Load
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.sqltypes import TypeEngine
+from sqlalchemy.orm.session import Session as SessionBase
 from sqlalchemy_utils.types.uuid import UUIDType
 
+
+from flask_appbuilder.exceptions import InterfaceQueryWithoutSession
 from . import filters, Model
 from ..base import BaseInterface
 from ..filters import Filters
@@ -32,17 +36,11 @@ from ...utils.base import get_column_leaf, get_column_root_relation, is_column_d
 log = logging.getLogger(__name__)
 
 
-def _include_filters(obj):
-    for key in filters.__all__:
-        if not hasattr(obj, key):
-            setattr(obj, key, getattr(filters, key))
-
-
-def _is_sqla_type(obj, sa_type):
+def _is_sqla_type(model: Model, sa_type: TypeEngine) -> bool:
     return (
-        isinstance(obj, sa_type)
-        or isinstance(obj, sa.types.TypeDecorator)
-        and isinstance(obj.impl, sa_type)
+        isinstance(model, sa_type)
+        or isinstance(model, sa.types.TypeDecorator)
+        and isinstance(model.impl, sa_type)
     )
 
 
@@ -56,7 +54,7 @@ class SQLAInterface(BaseInterface):
 
     filter_converter_class = filters.SQLAFilterConverter
 
-    def __init__(self, obj, session=None):
+    def __init__(self, obj: Model, session: Optional[SessionBase] = None) -> None:
         _include_filters(self)
         self.list_columns = dict()
         self.list_properties = dict()
@@ -80,7 +78,7 @@ class SQLAInterface(BaseInterface):
         return self.obj.__name__
 
     @staticmethod
-    def is_model_already_joined(query, model):
+    def is_model_already_joined(query: BaseQuery, model: Model) -> bool:
         return model in [mapper.class_ for mapper in query._join_entities]
 
     def _get_base_query(
@@ -109,7 +107,9 @@ class SQLAInterface(BaseInterface):
                 model_relation = aliased(model_relation)
                 # The binary expression needs to be inverted
                 relation_join = BinaryExpression(
-                    relation_join.left, model_relation.id, relation_join.operator
+                    relation_join.left,
+                    model_relation.__mapper__.primary_key[0],
+                    relation_join.operator,
                 )
             query = query.join(model_relation, relation_join, isouter=True)
         return query
@@ -156,7 +156,7 @@ class SQLAInterface(BaseInterface):
         return query
 
     def apply_pagination(
-        self, query: BaseQuery, page: int, page_size: int
+        self, query: BaseQuery, page: Optional[int], page_size: Optional[int]
     ) -> BaseQuery:
         if page and page_size:
             query = query.offset(page * page_size)
@@ -231,7 +231,7 @@ class SQLAInterface(BaseInterface):
                 query = self._apply_normal_col_select_option(query, column)
         return query
 
-    def get_inner_filters(self, filters: Filters) -> Filters:
+    def get_inner_filters(self, filters: Optional[Filters]) -> Filters:
         """
         Inner filters are non dotted columns and
         one to many or one to one relations
@@ -239,7 +239,7 @@ class SQLAInterface(BaseInterface):
         :param filters: All filters
         :return: New filtered filters to apply to an inner query
         """
-        inner_filters = Filters(self.filter_converter_class, self, [], [])
+        inner_filters = Filters(self.filter_converter_class, self)
         _filters = []
         if filters:
             for flt, value in zip(filters.filters, filters.values):
@@ -254,12 +254,12 @@ class SQLAInterface(BaseInterface):
 
     def query(
         self,
-        filters=None,
-        order_column="",
-        order_direction="",
-        page=None,
-        page_size=None,
-        select_columns=None,
+        filters: Optional[Filters] = None,
+        order_column: str = "",
+        order_direction: str = "",
+        page: Optional[int] = None,
+        page_size: Optional[int] = None,
+        select_columns: Optional[List[str]] = None,
     ):
         """
         Returns the results for a model query, applies filters, sorting and pagination
@@ -274,7 +274,11 @@ class SQLAInterface(BaseInterface):
             the current page
         :param page_size:
             the current page size
+        :param select_columns:
+            A List of columns to be specifically selected on the query
         """
+        if not self.session:
+            raise InterfaceQueryWithoutSession()
         query = self.session.query(self.obj)
 
         inner_filters = self.get_inner_filters(filters)
@@ -337,13 +341,13 @@ class SQLAInterface(BaseInterface):
     def is_image(self, col_name: str) -> bool:
         try:
             return isinstance(self.list_columns[col_name].type, ImageColumn)
-        except Exception:
+        except KeyError:
             return False
 
     def is_file(self, col_name: str) -> bool:
         try:
             return isinstance(self.list_columns[col_name].type, FileColumn)
-        except Exception:
+        except KeyError:
             return False
 
     def is_string(self, col_name: str) -> bool:
@@ -352,61 +356,61 @@ class SQLAInterface(BaseInterface):
                 _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
                 or self.list_columns[col_name].type.__class__ == UUIDType
             )
-        except Exception:
+        except KeyError:
             return False
 
     def is_text(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Text)
-        except Exception:
+        except KeyError:
             return False
 
     def is_binary(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.LargeBinary)
-        except Exception:
+        except KeyError:
             return False
 
     def is_integer(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Integer)
-        except Exception:
+        except KeyError:
             return False
 
     def is_numeric(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Numeric)
-        except Exception:
+        except KeyError:
             return False
 
     def is_float(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Float)
-        except Exception:
+        except KeyError:
             return False
 
     def is_boolean(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Boolean)
-        except Exception:
+        except KeyError:
             return False
 
     def is_date(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Date)
-        except Exception:
+        except KeyError:
             return False
 
     def is_datetime(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.DateTime)
-        except Exception:
+        except KeyError:
             return False
 
     def is_enum(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Enum)
-        except Exception:
+        except KeyError:
             return False
 
     def is_relation(self, col_name: str) -> bool:
@@ -414,35 +418,39 @@ class SQLAInterface(BaseInterface):
             return isinstance(
                 self.list_properties[col_name], sa.orm.properties.RelationshipProperty
             )
-        except Exception:
+        except KeyError:
             return False
 
     def is_relation_many_to_one(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "MANYTOONE"
-        except Exception:
+            return False
+        except KeyError:
             return False
 
     def is_relation_many_to_many(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "MANYTOMANY"
-        except Exception:
+            return False
+        except KeyError:
             return False
 
     def is_relation_one_to_one(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "ONETOONE"
-        except Exception:
+            return False
+        except KeyError:
             return False
 
     def is_relation_one_to_many(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
                 return self.list_properties[col_name].direction.name == "ONETOMANY"
-        except Exception:
+            return False
+        except KeyError:
             return False
 
     def is_nullable(self, col_name: str) -> bool:
@@ -451,19 +459,19 @@ class SQLAInterface(BaseInterface):
             return col.nullable
         try:
             return self.list_columns[col_name].nullable
-        except Exception:
+        except KeyError:
             return False
 
     def is_unique(self, col_name: str) -> bool:
         try:
             return self.list_columns[col_name].unique is True
-        except Exception:
+        except KeyError:
             return False
 
     def is_pk(self, col_name: str) -> bool:
         try:
             return self.list_columns[col_name].primary_key
-        except Exception:
+        except KeyError:
             return False
 
     def is_pk_composite(self) -> bool:
@@ -472,7 +480,7 @@ class SQLAInterface(BaseInterface):
     def is_fk(self, col_name: str) -> bool:
         try:
             return self.list_columns[col_name].foreign_keys
-        except Exception:
+        except KeyError:
             return False
 
     def is_property(self, col_name: str) -> bool:
@@ -779,6 +787,16 @@ class SQLAInterface(BaseInterface):
         pk = [pk.name for pk in self.obj.__mapper__.primary_key]
         if pk:
             return pk if self.is_pk_composite() else pk[0]
+
+
+def _include_filters(interface: SQLAInterface) -> None:
+    """
+    Injects all filters on the interface class itself
+    :param interface:
+    """
+    for key in filters.__all__:
+        if not hasattr(interface, key):
+            setattr(interface, key, getattr(filters, key))
 
 
 """
