@@ -2624,3 +2624,27 @@ class APITestCase(FABTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 5)
+
+    def test_auth_pam(self):
+        from flask_appbuilder import AppBuilder
+        from flask_appbuilder.const import AUTH_PAM
+        from pamela import PAMError
+        from mock import patch
+        from flask_appbuilder.security.sqla.models import User
+
+        self.app.config["AUTH_TYPE"] = AUTH_PAM
+        self.app.config["auth_user_registration"] = True
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        user = self.appbuilder.sm.auth_user_pam("", "")
+        self.assertIsNone(user)
+
+        with patch("pamela.authenticate") as authenticate:
+            authenticate.side_effect = PAMError
+            user = self.appbuilder.sm.auth_user_pam("test_user", "test_password")
+            self.assertIsNone(user)
+
+            authenticate.return_value = None
+            user = self.appbuilder.sm.auth_user_pam("test_user", "test_password")
+            self.assertIsNotNone(user)
+            self.assertIsInstance(user, User)

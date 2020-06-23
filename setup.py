@@ -60,6 +60,7 @@ setup(
         "marshmallow>=2.18.0, <3.0.0",
         "marshmallow-enum>=1.4.1, <2",
         "marshmallow-sqlalchemy>=0.16.1, <1",
+        "pamela",
         "python-dateutil>=2.3, <3",
         "prison>=0.1.3, <1.0.0",
         "PyJWT>=1.7.1",
