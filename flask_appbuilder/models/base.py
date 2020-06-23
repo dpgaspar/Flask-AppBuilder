@@ -40,6 +40,9 @@ class BaseInterface(object):
     edit_integrity_error_message = lazy_gettext(
         "Integrity error, probably unique constraint"
     )
+    read_order_error_message = lazy_gettext(
+        "Read error, could not sort by selected column"
+    )
     general_error_message = lazy_gettext("General Error")
 
     """ Tuple with message and text with severity type ex: ("Added Row", "info") """

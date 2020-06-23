@@ -1018,6 +1018,7 @@ class BaseCRUDView(BaseModelView):
         if not order_column and self.base_order:
             order_column, order_direction = self.base_order
         joined_filters = filters.get_joined_filters(self._base_filters)
+        self.datamodel.message = None
         count, lst = self.datamodel.query(
             joined_filters,
             order_column,
@@ -1025,6 +1026,8 @@ class BaseCRUDView(BaseModelView):
             page=page,
             page_size=page_size,
         )
+        if self.datamodel.message is not None:
+            flash(*self.datamodel.message)
         pks = self.datamodel.get_keys(lst)
 
         # serialize composite pks
