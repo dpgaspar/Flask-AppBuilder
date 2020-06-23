@@ -259,10 +259,12 @@
 {% macro panel_begin(title, extra_class="") %}
 <div class="panel panel-primary {{ extra_class }}">
 	<div class="panel-heading">
-	<h4 class="panel-title">{{title}}</h4>
+	  <h4 class="panel-title">{{title}}</h4>
 	</div>
+  <div class="panel-body">
 {% endmacro %}
 {% macro panel_end() %}
+  </div>
 </div>
 {% endmacro %}
 
