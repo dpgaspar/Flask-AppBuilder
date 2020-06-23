@@ -450,7 +450,7 @@ msgstr "Attivazione account"
 
 #: flask_appbuilder/security/registerviews.py:61
 msgid "Registration sent to your email"
-msgstr Registrazione inviata via email"
+msgstr "Registrazione inviata via email"
 
 #: flask_appbuilder/security/registerviews.py:63
 msgid "Not possible to register you at the moment, try again later"
