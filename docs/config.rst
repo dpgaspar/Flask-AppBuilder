@@ -34,6 +34,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | exist. Mandatory when using user           |           |
 |                                        | registration                               |           |
 +----------------------------------------+--------------------------------------------+-----------+
+| AUTH_USER_REGISTRATION_ROLE_JMESPATH   | The `JMESPath <http://jmespath.org/>`_     |   No      |
+|                                        | expression used to evaluate user role on   |           |
+|                                        | registration. If set, takes precedence     |           |
+|                                        | over ``AUTH_USER_REGISTRATION_ROLE``.      |           |
+|                                        | Requires ``jmespath`` to be installed.     |           |
+|                                        | See :ref:`jmespath-examples` for examples  |           |
++----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_SERVER                       | define your ldap server when AUTH_TYPE=2   |   Cond.   |
 |                                        | example:                                   |           |
 |                                        |                                            |           |
@@ -261,3 +268,25 @@ Next you only have to import them to the Flask app object, like this
     app.config.from_object('config')
 
 Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py>`_
+
+
+.. _jmespath-examples:
+
+Using JMESPath to map user registration role
+--------------------------------------------
+
+If user self registration is enabled and ``AUTH_USER_REGISTRATION_ROLE_JMESPATH`` is set, it is 
+used as a `JMESPath <http://jmespath.org/>`_ expression to evalate user registration role. The input
+values is ``userinfo`` dict, returned by ``get_oauth_user_info`` function of Security Manager.
+Usage of JMESPath expressions requires `jmespath <https://pypi.org/project/jmespath/>`_ package 
+to be installed.
+
+In case of Google OAuth, userinfo contains user's email that can be used to map some users as admins
+and rest of the domain users as read only users. For example, this expression:
+``contains(['user1@domain.com', 'user2@domain.com'], email) && 'Admin' || 'Viewer'``
+causes users 1 and 2 to be registered with role ``Admin`` and rest with the role ``Viewer``.
+
+JMESPath expression allow more groups to be evaluated:
+``email == 'user1@domain.com' && 'Admin' || (email == 'user2@domain.com' && 'Op' || 'Viewer')``
+
+For more example, see `specification <https://jmespath.org/specification.html>`_.
