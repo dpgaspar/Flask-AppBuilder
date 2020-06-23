@@ -1061,7 +1061,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         try:
             pamela.authenticate(username, password, service=service, encoding="utf-8")
         except pamela.PAMError:
-            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED, username)
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return False
         return True
 
@@ -1086,7 +1086,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if not self.pam_authenticate(username, password, service):
             if user:
                 self.update_user_auth_stat(user, False)
-                return None
+            return None
 
         # If user does not exist on the DB and not self user registration, go away
         if not user and not self.auth_user_registration:
