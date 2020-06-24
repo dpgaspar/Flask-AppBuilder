@@ -1091,17 +1091,16 @@ class BaseSecurityManager(AbstractSecurityManager):
         self, user: object, permission_name: str, view_name: str
     ) -> bool:
         roles = user.roles
-        db_role_ids = list()
         # First check against builtin (statically configured) roles
         # because no database query is needed
         for role in roles:
-            if role.name in self.builtin_roles:
-                if self._has_access_builtin_roles(role, permission_name, view_name):
-                    return True
-            else:
-                db_role_ids.append(role.id)
+            if role.name in self.builtin_roles and self._has_access_builtin_roles(
+                role, permission_name, view_name
+            ):
+                return True
 
         # Then check against database-stored roles
+        db_role_ids = [role.id for role in roles]
         return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
 
     def _get_user_permission_view_menus(
