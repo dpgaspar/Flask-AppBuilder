@@ -1285,7 +1285,7 @@ class ModelRestApi(BaseModelApi):
         :param kwargs: Query string parameter arguments
         :return: HTTP Response
         """
-        item = self.datamodel.get(pk, self._base_filters)
+        item = self.datamodel.get(pk, self._base_filters, self.show_columns)
         if not item:
             return self.response_404()
 

@@ -460,7 +460,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         # Test unauthorized DELETE
         pk = 1
-        uri = "api/v1/model1apirestrictedpermissions/{}".format(pk)
+        uri = f"api/v1/model1apirestrictedpermissions/{pk}"
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 401)
         # Test unauthorized POST
@@ -474,7 +474,7 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 401)
         # Test authorized GET
-        uri = "api/v1/model1apirestrictedpermissions/1"
+        uri = f"api/v1/model1apirestrictedpermissions/{pk}"
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
 

@@ -9,6 +9,7 @@ from sqlalchemy import asc, desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import aliased, contains_eager, Load
 from sqlalchemy.orm.descriptor_props import SynonymProperty
+from sqlalchemy.orm.query import Query
 from sqlalchemy.orm.session import Session as SessionBase
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.sqltypes import TypeEngine
@@ -152,7 +153,7 @@ class SQLAInterface(BaseInterface):
             query = query.limit(page_size)
         return query
 
-    def apply_filters(self, query: BaseQuery, filters: Filters) -> BaseQuery:
+    def apply_filters(self, query: BaseQuery, filters: Optional[Filters]) -> BaseQuery:
         if filters:
             return filters.apply_all(query)
         return query
@@ -252,18 +253,49 @@ class SQLAInterface(BaseInterface):
                     return True
         return False
 
-    def query(
+    def _apply_inner_all(
         self,
+        query: Query,
         filters: Optional[Filters] = None,
         order_column: str = "",
         order_direction: str = "",
         page: Optional[int] = None,
         page_size: Optional[int] = None,
         select_columns: Optional[List[str]] = None,
-    ) -> Tuple[int, List[Type[Model]]]:
-        """
-        Returns the results for a model query, applies filters, sorting and pagination
+    ):
+        inner_filters = self.get_inner_filters(filters)
+        query = self.apply_inner_select_joins(query, select_columns)
+        query = self.apply_filters(query, inner_filters)
+        query = self.apply_engine_specific_hack(query, page, page_size, order_column)
+        query = self.apply_order_by(query, order_column, order_direction)
+        query = self.apply_pagination(query, page, page_size)
+        return query
 
+    def query_count(
+        self,
+        query: Query,
+        filters: Optional[Filters] = None,
+        select_columns: Optional[List[str]] = None,
+    ):
+        return self._apply_inner_all(
+            query, filters, select_columns=select_columns
+        ).count()
+
+    def apply_all(
+        self,
+        query: Query,
+        filters: Optional[Filters] = None,
+        order_column: str = "",
+        order_direction: str = "",
+        page: Optional[int] = None,
+        page_size: Optional[int] = None,
+        select_columns: Optional[List[str]] = None,
+    ) -> BaseQuery:
+        """
+        Accepts a SQLAlchemy Query and applies all filtering logic, order by and
+        pagination.
+
+        :param query: The query to apply all
         :param filters:
             dict with filters {<col_name>:<value,...}
         :param order_column:
@@ -276,43 +308,70 @@ class SQLAInterface(BaseInterface):
             the current page size
         :param select_columns:
             A List of columns to be specifically selected on the query
+        :return: A SQLAlchemy Query with all the applied logic
         """
-        if not self.session:
-            raise InterfaceQueryWithoutSession()
-        query = self.session.query(self.obj)
-
-        inner_filters = self.get_inner_filters(filters)
-        inner_query = self.apply_inner_select_joins(query, select_columns)
-        inner_query = self.apply_filters(inner_query, inner_filters)
-
-        count = inner_query.count()
-
-        inner_query = self.apply_engine_specific_hack(
-            inner_query, page, page_size, order_column
+        inner_query = self._apply_inner_all(
+            query,
+            filters,
+            order_column,
+            order_direction,
+            page,
+            page_size,
+            select_columns,
         )
-        inner_query = self.apply_order_by(inner_query, order_column, order_direction)
-        inner_query = self.apply_pagination(inner_query, page, page_size)
-
         # Only use a from_self if we need to select a join one to many or many to many
         if select_columns and self.exists_col_to_many(select_columns):
             if select_columns and order_column:
                 select_columns = select_columns + [order_column]
             outer_query = inner_query.from_self()
             outer_query = self.apply_outer_select_joins(outer_query, select_columns)
-            final_query = self.apply_order_by(
-                outer_query, order_column, order_direction
-            )
+            return self.apply_order_by(outer_query, order_column, order_direction)
         else:
-            final_query = inner_query
+            return inner_query
+
+    def query(
+        self,
+        filters: Optional[Filters] = None,
+        order_column: str = "",
+        order_direction: str = "",
+        page: Optional[int] = None,
+        page_size: Optional[int] = None,
+        select_columns: Optional[List[str]] = None,
+    ) -> Tuple[int, List[Model]]:
+        """
+        Returns the results for a model query, applies filters, sorting and pagination
+
+        :param filters: A Filter class that contains all filters to apply
+        :param order_column: name of the column to order
+        :param order_direction: the direction to order <'asc'|'desc'>
+        :param page: the current page
+        :param page_size: the current page size
+        :param select_columns: A List of columns to be specifically selected
+        on the query. Supports dotted notation.
+        :return: A tuple with the query count (non paginated) and the results
+        """
+        if not self.session:
+            raise InterfaceQueryWithoutSession()
+        query = self.session.query(self.obj)
+
+        count = self.query_count(query, filters, select_columns)
+        query = self.apply_all(
+            query,
+            filters,
+            order_column,
+            order_direction,
+            page,
+            page_size,
+            select_columns,
+        )
+        query_results = query.all()
 
         result = list()
-        results = final_query.all()
-
-        for item in results:
+        for item in query_results:
             if hasattr(item, self.obj.__name__):
                 result.append(getattr(item, self.obj.__name__))
             else:
-                return count, results
+                return count, query_results
         return count, result
 
     def query_simple_group(
@@ -766,17 +825,28 @@ class SQLAInterface(BaseInterface):
             if isinstance(i.type, ImageColumn)
         ]
 
-    def get_property_first_col(self, col_name: str):
+    def get_property_first_col(self, col_name: str) -> str:
         # support for only one col for pk and fk
         return self.list_properties[col_name].columns[0]
 
-    def get_relation_fk(self, col_name: str):
+    def get_relation_fk(self, col_name: str) -> str:
         # support for only one col for pk and fk
         return list(self.list_properties[col_name].local_columns)[0]
 
-    def get(self, id, filters=None):
+    def get(
+        self, id, filters=Optional[Filters], select_columns: Optional[List[str]] = None
+    ) -> Optional[Model]:
+        """
+        Returns the result for a model get, applies filters and supports dotted
+        notation for joins and granular selecting query columns.
+
+        :param id: The model id (pk).
+        :param filters: A Filter class that contains all filters to apply.
+        :param select_columns: A List of columns to be specifically selected.
+        on the query. Supports dotted notation.
+        :return:
+        """
         if filters:
-            query = self.session.query(self.obj)
             _filters = filters.copy()
             pk = self.get_pk_name()
             if self.is_pk_composite():
@@ -784,9 +854,16 @@ class SQLAInterface(BaseInterface):
                     _filters.add_filter(_pk, self.FilterEqual, _id)
             else:
                 _filters.add_filter(pk, self.FilterEqual, id)
-            query = self._get_base_query(query=query, filters=_filters)
-            return query.first()
-        return self.session.query(self.obj).get(id)
+        else:
+            _filters = filters
+        query = self.session.query(self.obj)
+        item = self.apply_all(
+            query, _filters, select_columns=select_columns
+        ).one_or_none()
+        if item:
+            if hasattr(item, self.obj.__name__):
+                return getattr(item, self.obj.__name__)
+        return item
 
     def get_pk_name(self) -> Optional[Union[List[str], str]]:
         """
