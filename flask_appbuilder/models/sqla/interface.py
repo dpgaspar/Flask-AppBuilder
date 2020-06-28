@@ -138,6 +138,10 @@ class SQLAInterface(BaseInterface):
                 if hasattr(getattr(self.obj, order_column), "_col_name"):
                     order_column = getattr(self._get_attr(order_column), "_col_name")
             _order_column = self._get_attr(order_column) or order_column
+            if is_column_dotted(order_column):
+                query = self._query_join_relation(
+                    query, get_column_root_relation(order_column)
+                )
             if order_direction == "asc":
                 query = query.order_by(asc(_order_column))
             else:
