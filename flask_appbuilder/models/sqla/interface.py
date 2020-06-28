@@ -834,7 +834,10 @@ class SQLAInterface(BaseInterface):
         return list(self.list_properties[col_name].local_columns)[0]
 
     def get(
-        self, id, filters=Optional[Filters], select_columns: Optional[List[str]] = None
+        self,
+        id,
+        filters: Optional[Filters] = None,
+        select_columns: Optional[List[str]] = None,
     ) -> Optional[Model]:
         """
         Returns the result for a model get, applies filters and supports dotted
@@ -846,16 +849,18 @@ class SQLAInterface(BaseInterface):
         on the query. Supports dotted notation.
         :return:
         """
+        pk = self.get_pk_name()
         if filters:
             _filters = filters.copy()
-            pk = self.get_pk_name()
-            if self.is_pk_composite():
-                for _pk, _id in zip(pk, id):
-                    _filters.add_filter(_pk, self.FilterEqual, _id)
-            else:
-                _filters.add_filter(pk, self.FilterEqual, id)
         else:
-            _filters = filters
+            _filters = Filters(self.filter_converter_class, self)
+            _filters.add_filter(pk, self.FilterEqual, id)
+
+        if self.is_pk_composite():
+            for _pk, _id in zip(pk, id):
+                _filters.add_filter(_pk, self.FilterEqual, _id)
+        else:
+            _filters.add_filter(pk, self.FilterEqual, id)
         query = self.session.query(self.obj)
         item = self.apply_all(
             query, _filters, select_columns=select_columns

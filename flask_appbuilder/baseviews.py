@@ -1024,6 +1024,7 @@ class BaseCRUDView(BaseModelView):
             order_direction,
             page=page,
             page_size=page_size,
+            select_columns=self.list_columns,
         )
         pks = self.datamodel.get_keys(lst)
 
