@@ -1177,6 +1177,10 @@ class BaseCRUDView(BaseModelView):
                     return None
             else:
                 is_valid_form = False
+        else:
+            # Perform additional actions to pre-fill the add form.
+            self.prefill_add_form(form)
+
         if is_valid_form:
             self.update_redirect()
         return self._get_add_widget(form=form, exclude_cols=exclude_cols)
@@ -1338,6 +1342,23 @@ class BaseCRUDView(BaseModelView):
                 def prefill_form(self, form, pk):
                     if form.email.data:
                         form.email_confirmation.data = form.email.data
+        """
+        pass
+
+    def prefill_add_form(self, form):
+        """
+            Override this, will be called only if the current action is rendering
+            an add form (a GET request), and is used to perform additional action to
+            prefill the form.
+
+            This is useful when you have added custom fields that depend on the
+            database contents. Fields that were added by name of a normal column
+            or relationship should work out of the box.
+
+            example::
+
+                def prefill_add_form(self, form):
+                    form.domain.data = request.environ.get("HTTP_HOST", "127.0.0.1")
         """
         pass
 
