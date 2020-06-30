@@ -170,6 +170,9 @@ class MenuApi(BaseApi):
         """An endpoint for retreiving the menu.
         ---
         get:
+          description: >-
+            Get the menu data structure.
+            Returns a forest like structure with the menu the user has access to
           responses:
             200:
               description: Get menu data
@@ -179,17 +182,23 @@ class MenuApi(BaseApi):
                     type: object
                     properties:
                       result:
+                        description: Menu items in a forest like data structure
                         type: array
                         items:
                           type: object
                           properties:
                             name:
+                              description: >-
+                                The internal menu item name, maps to permission_name
                               type: string
                             label:
+                              description: Pretty name for the menu item
                               type: string
                             icon:
+                              description: Icon name to show for this menu item
                               type: string
                             url:
+                              description: The URL for the menu item
                               type: string
                             childs:
                               type: array
