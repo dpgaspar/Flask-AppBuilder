@@ -138,7 +138,7 @@ so data can be translated back and forth without loss or guesswork::
             if 'name' in kwargs['rison']:
                 return self.response(
                     200,
-                    message="Hello {}".format(kwargs['rison']['name'])
+                    message=f"Hello {kwargs['rison']['name']}"
                 )
             return self.response_400(message="Please send your name")
 
@@ -238,7 +238,7 @@ validate your Rison arguments, this way you can implement a very strict API easi
     def greeting4(self, **kwargs):
         return self.response(
             200,
-            message="Hello {}".format(kwargs['rison']['name'])
+            message=f"Hello {kwargs['rison']['name']}"
         )
 
 Finally to properly handle all possible exceptions use the ``safe`` decorator,
@@ -396,7 +396,7 @@ easily reference them::
             """
             return self.response(
                 200,
-                message="Hello {}".format(kwargs['rison']['name'])
+                message=f"Hello {kwargs['rison']['name']}"
             )
 
 
@@ -1015,6 +1015,33 @@ the ``show_columns`` property. This takes precedence from the *Rison* arguments:
         datamodel = SQLAInterface(Contact)
         show_columns = ['name']
 
+By default FAB will issue a query containing the exact fields for `show_columns`, but these are also associated with
+the response object. Sometimes it's useful to distinguish between the query select columns and the response itself.
+Imagine the case you want to use a `@property` to further transform the output, and that transformation implies
+two model fields (concat or sum for example)::
+
+    class ContactModelApi(ModelRestApi):
+        resource_name = 'contact'
+        datamodel = SQLAInterface(Contact)
+        show_columns = ['name', 'birthday']
+        show_select_columns = ['name', 'age']
+
+
+The Model::
+
+    class Contact(Model):
+        id = Column(Integer, primary_key=True)
+        name = Column(String(150), unique=True, nullable=False)
+        ...
+        birthday = Column(Date, nullable=True)
+        ...
+
+        @property
+        def age(self):
+            return date.today().year - self.birthday.year
+
+Note: The same principal exists on `list_select_columns`
+
 We can add fields that are python functions also, for this on the SQLAlchemy definition,
 let's add a new function::
 
@@ -1034,7 +1061,7 @@ let's add a new function::
             return self.name
 
         def some_function(self):
-            return "Hello {}".format(self.name)
+            return f"Hello {self.name}"
 
 And then on the REST API::
 
