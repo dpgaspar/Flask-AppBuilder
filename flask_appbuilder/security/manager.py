@@ -1101,7 +1101,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             else:
                 db_role_ids.append(role.id)
 
-        # Then check against database-stored roles
+        # If it's not a builtin role check against database store roles
         return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
 
     def _get_user_permission_view_menus(

@@ -1255,6 +1255,8 @@ class ModelRestApi(BaseModelApi):
         """ Endpoint that renders a response for CRUD REST meta data
         ---
         get:
+          description: >-
+            Get metadata information about this API resource
           parameters:
           - in: query
             name: q
@@ -1276,7 +1278,22 @@ class ModelRestApi(BaseModelApi):
                         type: object
                       filters:
                         type: object
+                        properties:
+                          column_name:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  description: >-
+                                    The filter name. Will be translated by babel
+                                  type: string
+                                operator:
+                                  description: >-
+                                    The filter operation key to use on list filters
+                                  type: string
                       permissions:
+                        description: The user permissions for this API resource
                         type: array
                         items:
                           type: string
@@ -1336,6 +1353,8 @@ class ModelRestApi(BaseModelApi):
         """Get item from Model
         ---
         get:
+          description: >-
+            Get an item model
           parameters:
           - in: path
             schema:
@@ -1357,15 +1376,36 @@ class ModelRestApi(BaseModelApi):
                     properties:
                       label_columns:
                         type: object
+                        properties:
+                          column_name:
+                            description: >-
+                              The label for the column name.
+                              Will be translated by babel
+                            example: A Nice label for the column
+                            type: string
                       show_columns:
+                        description: >-
+                          A list of columns
                         type: array
                         items:
                           type: string
                       description_columns:
                         type: object
+                        properties:
+                          column_name:
+                            description: >-
+                              The description for the column name.
+                              Will be translated by babel
+                            example: A Nice description for the column
+                            type: string
                       show_title:
+                        description: >-
+                          A title to render.
+                          Will be translated by babel
+                        example: Show Item Details
                         type: string
                       id:
+                        description: The item id
                         type: string
                       result:
                         $ref: '#/components/schemas/{{self.__class__.__name__}}.get'
@@ -1446,6 +1486,8 @@ class ModelRestApi(BaseModelApi):
         """Get list of items from Model
         ---
         get:
+          description: >-
+            Get a list of models
           parameters:
           - in: query
             name: q
@@ -1463,28 +1505,56 @@ class ModelRestApi(BaseModelApi):
                     properties:
                       label_columns:
                         type: object
+                        properties:
+                          column_name:
+                            description: >-
+                              The label for the column name.
+                              Will be translated by babel
+                            example: A Nice label for the column
+                            type: string
                       list_columns:
+                        description: >-
+                          A list of columns
                         type: array
                         items:
                           type: string
                       description_columns:
                         type: object
+                        properties:
+                          column_name:
+                            description: >-
+                              The description for the column name.
+                              Will be translated by babel
+                            example: A Nice description for the column
+                            type: string
                       list_title:
+                        description: >-
+                          A title to render.
+                          Will be translated by babel
+                        example: List Items
                         type: string
                       ids:
+                        description: >-
+                          A list of item ids, useful when you don't know the column id
                         type: array
                         items:
                           type: string
                       count:
+                        description: >-
+                          The total record count on the backend
                         type: number
                       order_columns:
+                        description: >-
+                          A list of allowed columns to sort
                         type: array
                         items:
                           type: string
                       result:
-                          type: array
-                          items:
-                            $ref: '#/components/schemas/{{self.__class__.__name__}}.get_list'  # noqa
+                        description: >-
+                          The result from the get list query
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/{{self.__class__.__name__}}.get_list'  # noqa
             400:
               $ref: '#/components/responses/400'
             401:
