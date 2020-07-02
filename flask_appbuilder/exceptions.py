@@ -20,3 +20,9 @@ class InvalidOrderByColumnFABException(FABException):
     """Invalid order by column"""
 
     pass
+
+
+class InterfaceQueryWithoutSession(FABException):
+    """You need to setup a session on the interface to perform queries"""
+
+    pass
