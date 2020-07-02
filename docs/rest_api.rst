@@ -1023,8 +1023,8 @@ two model fields (concat or sum for example)::
     class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
-        show_columns = ['name', 'birthday']
-        show_select_columns = ['name', 'age']
+        show_columns = ['name', 'age']
+        show_select_columns = ['name', 'birthday']
 
 
 The Model::
@@ -1040,7 +1040,7 @@ The Model::
         def age(self):
             return date.today().year - self.birthday.year
 
-Note: The same principal exists on `list_select_columns`
+Note: The same logic is applied on `list_select_columns`
 
 We can add fields that are python functions also, for this on the SQLAlchemy definition,
 let's add a new function::
