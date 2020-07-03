@@ -651,8 +651,10 @@ class AuthOAuthView(AuthView):
                     log.debug("Login to Register")
                     session["register"] = True
                 if provider == "twitter":
-                    return self.appbuilder.sm.oauth_remotes[provider].authorize(
-                        callback=url_for(
+                    return self.appbuilder.sm.oauth_remotes[
+                        provider
+                    ].authorize_redirect(
+                        redirect_uri=url_for(
                             ".oauth_authorized",
                             provider=provider,
                             _external=True,
@@ -660,11 +662,13 @@ class AuthOAuthView(AuthView):
                         )
                     )
                 else:
-                    return self.appbuilder.sm.oauth_remotes[provider].authorize(
-                        callback=url_for(
+                    return self.appbuilder.sm.oauth_remotes[
+                        provider
+                    ].authorize_redirect(
+                        redirect_uri=url_for(
                             ".oauth_authorized", provider=provider, _external=True
                         ),
-                        state=state,
+                        state=state.decode("ascii"),
                     )
             except Exception as e:
                 log.error("Error on OAuth authorize: {0}".format(e))
@@ -674,7 +678,7 @@ class AuthOAuthView(AuthView):
     @expose("/oauth-authorized/<provider>")
     def oauth_authorized(self, provider):
         log.debug("Authorized init")
-        resp = self.appbuilder.sm.oauth_remotes[provider].authorized_response()
+        resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token()
         if resp is None:
             flash(u"You denied the request to sign in.", "warning")
             return redirect(self.appbuilder.get_url_for_login)
