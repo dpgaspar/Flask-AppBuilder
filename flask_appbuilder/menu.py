@@ -162,6 +162,7 @@ class Menu(object):
 
 class MenuApi(BaseApi):
     resource_name = "menu"
+    openapi_spec_tag = "Menu"
 
     @expose("/", methods=["GET"])
     @protect(allow_browser_login=True)

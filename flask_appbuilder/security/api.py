@@ -25,6 +25,7 @@ class SecurityApi(BaseApi):
 
     resource_name = "security"
     version = API_SECURITY_VERSION
+    openapi_spec_tag = "Security"
 
     def add_apispec_components(self, api_spec):
         super(SecurityApi, self).add_apispec_components(api_spec)

@@ -64,6 +64,7 @@ class OpenApi(BaseApi):
 
 class SwaggerView(BaseView):
 
+    route_base = "/swagger"
     default_view = "ui"
     openapi_uri = "/api/{}/_openapi"
 
