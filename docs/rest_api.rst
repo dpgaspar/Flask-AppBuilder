@@ -321,7 +321,7 @@ So our spec for a method that accepts two HTTP verbs::
 
 
 To access Swagger UI you must enable ``FAB_API_SWAGGER_UI = True`` on your config file
-then goto ``http://localhost:8080/swaggerview/v1`` for OpenAPI **v1** definitions
+then goto ``http://localhost:8080/swagger/v1`` for OpenAPI **v1** definitions
 On Swagger UI our example API looks like:
 
 .. image:: ./images/swagger001.png
@@ -611,7 +611,7 @@ that can be safely serialized and deserialized. Let's recall our Model definitio
         def __repr__(self):
             return self.name
 
-Swagger UI API representation for groups (http://localhost:8080/swaggerview/v1):
+Swagger UI API representation for groups (http://localhost:8080/swagger/v1):
 
 .. image:: ./images/swagger002.png
     :width: 70%
