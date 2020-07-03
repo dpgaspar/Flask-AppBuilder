@@ -1,6 +1,27 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+- Fix, swagger test (#1423)
+- Fix, change openapi tags and swagger access URL (breaking) (#1422)
+- Fix: replace deprecated flask-oauthlib with authlib (#1411)
+- Refactor: interface query on m-m joins and select specific columns (#1398)
+- Fix, docs on has_view_access (#1419)
+- New, Examples/react api (#1071)
+- Fix, action confirmation disabling (#1408)
+- New, add API descriptions and examples to OpenAPI spec (#1396)
+- New, Dynamic user registration role (#1410)
+- Fix, typos and improved bit of the German translation (#1406)
+- New, Added Dutch language to docs (#1393)
+- New, Added Dutch translation (#1387)
+- Fix, load options and limits for many to many truncating results (#1389)
+- Fix, SQLAlchemyAutoSchema needs marshmallow-sqlalchemy>=0.22.0 (#1392)
+- New, [api] support marshmallow 3 (#1334)
+- Fix, hardcoded url on oauth (#1331)
+- Fix, [examples] Update models.py (#1380)
+- Fix: add a panel body to panel_begin/panel_end macros (#1377)
+- Fix, name column resizing in ab_view_menu table #1367 (#1368)
+- Fix, typos in the documentation (#1375)
+
 Improvements and Bug fixes on 2.3.4
 -----------------------------------
 
