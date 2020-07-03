@@ -2537,7 +2537,7 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        uri = "swaggerview/v1"
+        uri = "swagger/v1"
         rv = client.get(uri)
         self.assertEqual(rv.status_code, 200)
 
