@@ -381,7 +381,7 @@ class MVCTestCase(BaseMVCTestCase):
         class Model1View(ModelView):
             datamodel = SQLAInterface(Model1)
             related_views = [Model2View]
-            list_columns = ["field_string", "field_file"]
+            list_columns = ["field_string", "field_integer"]
 
         class Model3View(ModelView):
             datamodel = SQLAInterface(Model3)

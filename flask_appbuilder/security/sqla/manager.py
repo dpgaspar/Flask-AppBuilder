@@ -272,7 +272,9 @@ class SecurityManager(BaseSecurityManager):
             return
 
     def find_role(self, name):
-        return self.get_session.query(self.role_model).filter_by(name=name).first()
+        return (
+            self.get_session.query(self.role_model).filter_by(name=name).one_or_none()
+        )
 
     def get_all_roles(self):
         return self.get_session.query(self.role_model).all()
@@ -281,7 +283,7 @@ class SecurityManager(BaseSecurityManager):
         return (
             self.get_session.query(self.role_model)
             .filter_by(name=self.auth_role_public)
-            .first()
+            .one_or_none()
         )
 
     def get_public_permissions(self):
@@ -295,7 +297,9 @@ class SecurityManager(BaseSecurityManager):
             Finds and returns a Permission by name
         """
         return (
-            self.get_session.query(self.permission_model).filter_by(name=name).first()
+            self.get_session.query(self.permission_model)
+            .filter_by(name=name)
+            .one_or_none()
         )
 
     def exist_permission_on_roles(
@@ -417,7 +421,11 @@ class SecurityManager(BaseSecurityManager):
         """
             Finds and returns a ViewMenu by name
         """
-        return self.get_session.query(self.viewmenu_model).filter_by(name=name).first()
+        return (
+            self.get_session.query(self.viewmenu_model)
+            .filter_by(name=name)
+            .one_or_none()
+        )
 
     def get_all_view_menu(self):
         return self.get_session.query(self.viewmenu_model).all()
@@ -485,7 +493,7 @@ class SecurityManager(BaseSecurityManager):
             return (
                 self.get_session.query(self.permissionview_model)
                 .filter_by(permission=permission, view_menu=view_menu)
-                .first()
+                .one_or_none()
             )
 
     def find_permissions_view_menu(self, view_menu):
@@ -537,7 +545,7 @@ class SecurityManager(BaseSecurityManager):
         roles_pvs = (
             self.get_session.query(self.role_model)
             .filter(self.role_model.permissions.contains(pv))
-            .first()
+            .one_or_none()
         )
         if roles_pvs:
             log.warning(

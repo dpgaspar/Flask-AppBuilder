@@ -39,6 +39,7 @@ from .const import (
     MAX_PAGE_SIZE,
     MODEL1_DATA_SIZE,
     MODEL2_DATA_SIZE,
+    MODELOMCHILD_DATA_SIZE,
     PASSWORD_ADMIN,
     PASSWORD_READONLY,
     USERNAME_ADMIN,
@@ -281,12 +282,20 @@ class APITestCase(FABTestCase):
             list_columns = ["field_string", "children.field_integer"]
             show_columns = ["field_string", "children.field_integer"]
 
+        self.modeldottedmmapi = ModelDottedMMApi
         self.appbuilder.add_api(ModelDottedMMApi)
 
         class ModelOMParentApi(ModelRestApi):
             datamodel = SQLAInterface(ModelOMParent)
 
         self.appbuilder.add_api(ModelOMParentApi)
+
+        class ModelDottedOMParentApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelOMParent)
+            list_columns = ["field_string", "children.field_string"]
+            show_columns = ["field_string", "children.field_string"]
+
+        self.appbuilder.add_api(ModelDottedOMParentApi)
 
         class ModelMMRequiredApi(ModelRestApi):
             datamodel = SQLAInterface(ModelMMParentRequired)
@@ -451,7 +460,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         # Test unauthorized DELETE
         pk = 1
-        uri = "api/v1/model1apirestrictedpermissions/{}".format(pk)
+        uri = f"api/v1/model1apirestrictedpermissions/{pk}"
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 401)
         # Test unauthorized POST
@@ -465,7 +474,7 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 401)
         # Test authorized GET
-        uri = "api/v1/model1apirestrictedpermissions/1"
+        uri = f"api/v1/model1apirestrictedpermissions/{pk}"
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
 
@@ -681,9 +690,9 @@ class APITestCase(FABTestCase):
             )
             self.assertEqual(rv.status_code, 200)
 
-    def test_get_item_dotted_notation(self):
+    def test_get_item_dotted_mo_notation(self):
         """
-            REST Api: Test get item with dotted notation
+            REST Api: Test get item with dotted M-O related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -770,9 +779,9 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, f"api/v1/model1apifiltered/{pk}")
         self.assertEqual(rv.status_code, 200)
 
-    def test_get_item_1m_field(self):
+    def test_get_item_mo_field(self):
         """
-            REST Api: Test get item with 1-N related field
+            REST Api: Test get item with M-O related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -800,7 +809,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_mm_field(self):
         """
-            REST Api: Test get item with N-N related field
+            REST Api: Test get item with M-M related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -819,7 +828,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_dotted_mm_field(self):
         """
-            REST Api: Test get item with dotted N-N related field
+            REST Api: Test get item with dotted M-M related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -854,7 +863,8 @@ class APITestCase(FABTestCase):
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 200)
         expected_rel_field = [
-            {"field_string": f"text0.{i}", "id": i} for i in range(1, 4)
+            {"field_string": f"text0.{i}", "id": i}
+            for i in range(1, MODELOMCHILD_DATA_SIZE)
         ]
         self.assertEqual(data[API_RESULT_RES_KEY]["children"], expected_rel_field)
 
@@ -873,9 +883,9 @@ class APITestCase(FABTestCase):
         # Tests data result default page size
         self.assertEqual(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
 
-    def test_get_list_dotted_notation(self):
+    def test_get_list_dotted_mo_field(self):
         """
-            REST Api: Test get list with dotted notation
+            REST Api: Test get list with dotted M-O related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -896,9 +906,44 @@ class APITestCase(FABTestCase):
             {"field_string": "test0", "group": {"field_string": "test0"}},
         )
 
+    def test_get_list_om_field(self):
+        """
+            REST Api: Test get list with O-M related field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = self.auth_client_get(client, token, "api/v1/modelomparentapi/")
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(data["count"], MODEL1_DATA_SIZE)
+        self.assertEqual(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        expected_rel_field = [
+            {"field_string": f"text0.{i}", "id": i}
+            for i in range(1, MODELOMCHILD_DATA_SIZE)
+        ]
+        self.assertEqual(data[API_RESULT_RES_KEY][0]["children"], expected_rel_field)
+
+    def test_get_list_dotted_om_field(self):
+        """
+            REST Api: Test get list with dotted O-M related field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = self.auth_client_get(client, token, "api/v1/modeldottedomparentapi/")
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(data["count"], MODEL1_DATA_SIZE)
+        self.assertEqual(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        expected_rel_field = [
+            {"field_string": f"text0.{i}"} for i in range(1, MODELOMCHILD_DATA_SIZE)
+        ]
+        self.assertEqual(data[API_RESULT_RES_KEY][0]["children"], expected_rel_field)
+
     def test_get_list_dotted_mm_field(self):
         """
-            REST Api: Test get list with dotted N-N related field
+            REST Api: Test get list with dotted M-M related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -910,15 +955,18 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 200)
+        self.assertEqual(data["count"], MODEL2_DATA_SIZE)
+        self.assertEqual(len(data[API_RESULT_RES_KEY]), self.modeldottedmmapi.page_size)
         i = 0
         self.assertEqual(data[API_RESULT_RES_KEY][i]["field_string"], "0")
+        self.assertEqual(len(data[API_RESULT_RES_KEY][i]["children"]), 3)
         self.assertIn({"field_integer": 1}, data[API_RESULT_RES_KEY][i]["children"])
         self.assertIn({"field_integer": 2}, data[API_RESULT_RES_KEY][i]["children"])
         self.assertIn({"field_integer": 3}, data[API_RESULT_RES_KEY][i]["children"])
 
-    def test_get_list_dotted_order(self):
+    def test_get_list_dotted_mo_order(self):
         """
-            REST Api: Test get list and order dotted notation
+            REST Api: Test get list and order dotted M-O notation
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
