@@ -1,6 +1,9 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.0.0
+-----------------------------------
+
 - Fix, swagger test (#1423)
 - Fix, change openapi tags and swagger access URL (breaking) (#1422)
 - Fix: replace deprecated flask-oauthlib with authlib (#1411)
