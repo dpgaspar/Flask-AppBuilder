@@ -42,7 +42,7 @@ Change Log
 
 BREAKING CHANGE on 3.0.0 (OAuth)
 
-Major version 3, changed it's OAuth dependency from flask-oauth to authlib, due to this OAuth configuration
+Major version 3, changed it's **OAuth** dependency from flask-oauth to authlib, due to this OAuth configuration
 changed:
 
 Before:
@@ -65,7 +65,6 @@ Before:
     ]
 
 Now:
-
 
 .. code-block::
 
