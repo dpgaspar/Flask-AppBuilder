@@ -83,6 +83,9 @@ Now:
         }
     ]
 
+Also make sure you change your dependency for flask-oauth to `authlib <https://github.com/lepture/authlib>`_
+
+
 Fixes, Bugs and contributions
 -----------------------------
 
