@@ -1,6 +1,12 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 
-<form id="filter_form" class="form-search" method="get">
+{% macro random_int() %}{% for n in [0,1,2,3,4,5] %}{{ [0,1,2,3,4,5,6,7,8,9]|random }}{% endfor %}{% endmacro %}
+
+<!-- You have to manually call the macros in a list. -->
+{% set parts = [random_int(), random_int(), random_int(), random_int(), random_int()] %}
+{% set unique_id = parts|join('-') %}
+
+<form id="filter_form_{{ unique_id }}" class="form-search" method="get">
 
     <div class="btn-group">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -28,7 +34,7 @@
 <script>
 	(function($) {
 	var filter = new AdminFilters(
-                    '#filter_form',
+                    '#filter_form_{{ unique_id }}',
                     {{ label_columns | tojson }},
                     {{ form_fields | tojson }},
                     {{ search_filters | tojson }},

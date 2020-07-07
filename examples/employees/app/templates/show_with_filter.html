@@ -1,0 +1,40 @@
+{% extends "appbuilder/general/model/show.html" %}
+
+{% block content %}
+{{ lib.panel_begin(title, "show") }}
+
+{% if related_views is defined %}
+    <ul class="nav nav-tabs"  style="{{"display: none;" if not related_views else "" }}">
+    <li class="active"><a href="#Home" data-toggle="tab">{{ _("Detail") }}</a> </li>
+        {% for view in related_views %}
+            <li>
+                <a href="#{{view.__class__.__name__}}" data-toggle="tab">{{view.title}}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content">
+    {% for view in related_views %}
+        <div id="{{view.__class__.__name__}}" class="tab-pane">
+            {% if loop.index > 0 %}
+                {% block list_search scoped %}
+                    {% call lib.accordion_tag(loop.index -1, _("Search"), False) %}
+                        {{ widgets.get('search_widgets')[loop.index -1]()|safe }}
+                    {% endcall %}
+                {% endblock %}
+            {% endif %}
+            {{ widgets.get('related_views')[loop.index - 1](pk = pk)|safe }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% block show_form %}
+    <div id="Home" class="tab-pane active">
+        {{ widgets.get('show')()|safe }}
+    </div>
+{% endblock show_form %}
+
+{% if related_views is defined %}</div>{% endif %}
+{{ lib.panel_end() }}
+
+{% endblock content %}

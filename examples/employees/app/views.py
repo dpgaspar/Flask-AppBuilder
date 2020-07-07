@@ -5,7 +5,7 @@ from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
 from . import appbuilder, db
 from .models import Benefit, Department, Employee, EmployeeHistory, Function
-
+from .custommodelview import CustomModelView
 
 def department_query():
     return db.session.query(Department)
@@ -38,10 +38,11 @@ class FunctionView(ModelView):
     related_views = [EmployeeView]
 
 
-class DepartmentView(ModelView):
+class DepartmentView(CustomModelView):
     datamodel = SQLAInterface(Department)
-    related_views = [EmployeeView]
+    related_views = [EmployeeView, EmployeeHistoryView]
 
+    show_template = 'show_with_filter.html'
 
 class BenefitView(ModelView):
     datamodel = SQLAInterface(Benefit)
