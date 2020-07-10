@@ -545,7 +545,7 @@ class SecurityManager(BaseSecurityManager):
         roles_pvs = (
             self.get_session.query(self.role_model)
             .filter(self.role_model.permissions.contains(pv))
-            .one_or_none()
+            .first()
         )
         if roles_pvs:
             log.warning(
