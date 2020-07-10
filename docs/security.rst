@@ -456,33 +456,33 @@ permission to your app to access or manage the user's account on the provider.
 
 So you can send tweets, post on the users facebook, retrieve the user's linkedin profile etc.
 
-To use OAuth you need to install `Flask-OAuthLib <https://flask-oauthlib.readthedocs.org/en/latest/>`_. It's useful
+To use OAuth you need to install `AuthLib <https://docs.authlib.org/en/latest/index.html>`_. It's useful
 to get to know this library since F.A.B. will expose the remote application object for you to play with.
 
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_ 
 to get an idea of a simple use for this.
 
 Use **config.py** configure OAUTH_PROVIDERS with a list of oauth providers, notice that the remote_app
-key is just the configuration for flask-oauthlib::
+key is just the configuration for authlib::
 
     AUTH_TYPE = AUTH_OAUTH
     
     OAUTH_PROVIDERS = [
         {'name':'twitter', 'icon':'fa-twitter',
             'remote_app': {
-                'consumer_key':'TWITTER KEY',
-                'consumer_secret':'TWITTER SECRET',
-                'base_url':'https://api.twitter.com/1.1/',
+                'client_id':'TWITTER KEY',
+                'client_secret':'TWITTER SECRET',
+                'api_base_url':'https://api.twitter.com/1.1/',
                 'request_token_url':'https://api.twitter.com/oauth/request_token',
                 'access_token_url':'https://api.twitter.com/oauth/access_token',
                 'authorize_url':'https://api.twitter.com/oauth/authenticate'}
         },
         {'name':'google', 'icon':'fa-google', 'token_key':'access_token',
             'remote_app': {
-                'consumer_key':'GOOGLE KEY',
-                'consumer_secret':'GOOGLE SECRET',
-                'base_url':'https://www.googleapis.com/oauth2/v2/',
-                'request_token_params':{
+                'client_id':'GOOGLE KEY',
+                'client_secret':'GOOGLE SECRET',
+                'api_base_url':'https://www.googleapis.com/oauth2/v2/',
+                'client_kwargs':{
                   'scope': 'email profile'
                 },
                 'request_token_url':None,
@@ -512,7 +512,7 @@ To override/customize the user information retrieval from oauth, you can create 
     def my_user_info_getter(sm, provider, response=None):
         if provider == 'github':
             me = sm.oauth_remotes[provider].get('user')
-            return {'username': me.data.get('login')}
+            return {'username': me.json().get('login')}
         else:
             return {}
         
