@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.0.1
+-----------------------------------
+
+- Fix, google charts (#1431)
+- Fix, del permission assertion on roles (#1434)
+
 Improvements and Bug fixes on 3.0.0
 -----------------------------------
 
