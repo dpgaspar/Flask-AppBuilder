@@ -11,7 +11,8 @@
 <!--- Check any relevant boxes with "x" -->
 <!--- HINT: Include "Fixes #nnn" if you are fixing an existing issue -->
 - [ ] Has associated issue:
-- [ ] Changes UI
-- [ ] Requires DB Migration.
-- [ ] Introduces new feature or API
-- [ ] Removes existing feature or API
+- [ ] Is CRUD MVC related.
+- [ ] Is Auth, RBAC security related.
+- [ ] Changes the security db schema.
+- [ ] Introduces new feature
+- [ ] Removes existing feature
