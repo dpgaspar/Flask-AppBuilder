@@ -1,13 +1,19 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.0.1
+-----------------------------------
+
+- Fix, google charts (#1431)
+- Fix, del permission assertion on roles (#1434)
+
 Improvements and Bug fixes on 3.0.0
 -----------------------------------
 
 - Fix, swagger test (#1423)
 - Fix, change openapi tags and swagger access URL (breaking) (#1422)
-- Fix: replace deprecated flask-oauthlib with authlib (#1411)
-- Refactor: interface query on m-m joins and select specific columns (#1398)
+- Fix, replace deprecated flask-oauthlib with authlib (#1411)
+- Refactor, interface query on m-m joins and select specific columns (#1398)
 - Fix, docs on has_view_access (#1419)
 - New, Examples/react api (#1071)
 - Fix, action confirmation disabling (#1408)

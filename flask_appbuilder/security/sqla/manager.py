@@ -219,11 +219,7 @@ class SecurityManager(BaseSecurityManager):
             return False
 
     def count_users(self):
-        return (
-            self.get_session.query(func.count("*"))
-            .select_from(self.user_model)
-            .scalar()
-        )
+        return self.get_session.query(func.count(self.user_model.id)).scalar()
 
     def update_user(self, user):
         try:
