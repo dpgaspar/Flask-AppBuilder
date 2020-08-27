@@ -727,7 +727,9 @@ class SQLAInterface(BaseInterface):
     def get_related_model(self, col_name: str) -> Type[Model]:
         return self.list_properties[col_name].mapper.class_
 
-    def get_related_model_and_join(self, col_name: str) -> List[Tuple[Type[Model], object]]:
+    def get_related_model_and_join(
+        self, col_name: str
+    ) -> List[Tuple[Type[Model], object]]:
         relation = self.list_properties[col_name]
         if relation.direction.name == "MANYTOMANY":
             return [
