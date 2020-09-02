@@ -1,6 +1,6 @@
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
-from flask import current_app
+from flask import current_app, url_for
 from flask_appbuilder.api import BaseApi
 from flask_appbuilder.api import expose, protect, safe
 from flask_appbuilder.basemanager import BaseManager
@@ -58,7 +58,7 @@ class OpenApi(BaseApi):
             openapi_version="3.0.2",
             info=dict(description=current_app.appbuilder.app_name),
             plugins=[MarshmallowPlugin()],
-            servers=[{"url": "/api/{}".format(version)}],
+            servers=[{"url": url_for("OpenApi.get", version=version)[:-9]}],
         )
 
 
@@ -66,14 +66,13 @@ class SwaggerView(BaseView):
 
     route_base = "/swagger"
     default_view = "ui"
-    openapi_uri = "/api/{}/_openapi"
 
     @expose("/<version>")
     @has_access
     def show(self, version):
         return self.render_template(
             "appbuilder/swagger/swagger.html",
-            openapi_uri=self.openapi_uri.format(version),
+            openapi_uri=url_for(OpenApi.__name__ + "." + OpenApi.get.__name__, version=version),
         )
 
 
