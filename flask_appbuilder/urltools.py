@@ -51,9 +51,14 @@ def get_page_args():
     """
     pages = {}
     for arg in request.args:
-        re_match = re.findall("page_(.*)", arg)
+        re_match = re.match(r"page_(.*)", arg)
         if re_match:
-            pages[re_match[0]] = int(request.args.get(arg))
+            try:
+                page_num = int(request.args.get(arg))
+                if page_num >= 0:
+                    pages[re_match.group(1)] = page_num
+            except ValueError:
+                pass
     return pages
 
 
@@ -67,9 +72,14 @@ def get_page_size_args():
     """
     page_sizes = {}
     for arg in request.args:
-        re_match = re.findall("psize_(.*)", arg)
+        re_match = re.match(r"psize_(.*)", arg)
         if re_match:
-            page_sizes[re_match[0]] = int(request.args.get(arg))
+            try:
+                page_size = int(request.args.get(arg))
+                if page_size >= 1:
+                    page_sizes[re_match.group(1)] = page_size
+            except ValueError:
+                pass
     return page_sizes
 
 
@@ -83,19 +93,22 @@ def get_order_args():
     """
     orders = {}
     for arg in request.args:
-        re_match = re.findall("_oc_(.*)", arg)
+        re_match = re.match(r"_oc_(.*)", arg)
         if re_match:
-            order_direction = request.args.get("_od_" + re_match[0])
+            order_direction = request.args.get("_od_" + re_match.group(1))
             if order_direction in ("asc", "desc"):
-                orders[re_match[0]] = (request.args.get(arg), order_direction)
+                orders[re_match.group(1)] = (request.args.get(arg), order_direction)
     return orders
 
 
 def get_filter_args(filters):
     filters.clear_filters()
     for arg in request.args:
-        re_match = re.findall("_flt_(\d)_(.*)", arg)
+        re_match = re.match(r"_flt_(\d)_(.*)", arg)
         if re_match:
-            filters.add_filter_index(
-                re_match[0][1], int(re_match[0][0]), request.args.get(arg)
-            )
+            filter_index = int(re_match.group(1))
+            col_name = re_match.group(2)
+            try:
+                filters.add_filter_index(col_name, filter_index, request.args.get(arg))
+            except (KeyError, IndexError):
+                pass
