@@ -1,10 +1,10 @@
 {% macro render_additional_links(additional_links, pk) %}
-	{% if additional_links %}
-		{% for item in additional_links %}
-			<a href="{{item.href}}?pk={{pk}}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon"></span>
-			{{_(item.label)}}</a>
-		{% endfor %}
-	{% endif %}
+    {% if additional_links %}
+        {% for item in additional_links %}
+            <a href="{{item.href}}?pk={{pk}}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon"></span>
+            {{_(item.label)}}</a>
+        {% endfor %}
+    {% endif %}
 {% endmacro %}
 
 {% macro render_action_links(actions, pk, modelview_name) %}
@@ -59,7 +59,7 @@
     {{_('Actions')}}<span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu">
-    	{% for action_key in actions %}
+        {% for action_key in actions %}
             {% set action = actions.get(action_key) %}
                 <li>
                     <a href="javascript:void(0)"
@@ -70,16 +70,20 @@
                 </li>
         {% endfor %}
     </ul>
-		<script type="text/javascript">
-		$(document).ready(function() {
-		{% for action_key in actions %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+    {% for action_key in actions %}
         {% set action = actions.get(action_key) %}
-				$('.{{action.name}}_menu_item').on('click', function(){
-				    return modelActions.execute_multiple('{{action.name}}','{{action.confirmation}}');
-				})
-		{% endfor %}
-		});
-		</script>
+        $('.{{action.name}}_menu_item').on('click', function(){
+            {% if action.confirmation %}
+                return modelActions.execute_multiple('{{action.name}}','{{action.confirmation}}');
+            {% else %}
+                return modelActions.execute_multiple('{{action.name}}', false);
+            {% endif %}
+        })
+    {% endfor %}
+    });
+    </script>
 </div>
 {% endif %}
 {% endmacro %}
@@ -94,7 +98,7 @@
     {{_('Page size')}}<span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu">
-    	{% for sel_page_size in range(25,125,25) %}
+        {% for sel_page_size in range(25,125,25) %}
         {% if page*sel_page_size <= count %}
             {% if sel_page_size == page_size %}
                 <li class="active"><a href="{{sel_page_size | link_page_size(modelview_name) }}">{{sel_page_size}}</a></li>
@@ -118,15 +122,15 @@
     {% set res = item | get_link_order(modelview_name) %}
         {% if res == 2 %}
             <li class="active">
-    	    <a href={{ item | link_order(modelview_name) }}>{{label_columns.get(item)}}
-    	    <i class="fa fa-fw fa-chevron-up"></i></a>
+            <a href={{ item | link_order(modelview_name) }}>{{label_columns.get(item)}}
+            <i class="fa fa-fw fa-chevron-up"></i></a>
             </li>
-    	{% elif res == 1 %}
+        {% elif res == 1 %}
             <li class="active">
             <a href={{ item | link_order(modelview_name) }}>{{label_columns.get(item)}}
-    	    <i class="fa fa-fw fa-chevron-down"></i></a>
+            <i class="fa fa-fw fa-chevron-down"></i></a>
             </li>
-    	{% else %}
+        {% else %}
             <li>
             <a href={{ item | link_order(modelview_name) }}>{{label_columns.get(item)}}</a>
             </li>
@@ -217,7 +221,7 @@
 
 
 {% macro render_field(field, begin_sep_label='', end_sep_label='', begin_sep_field='', end_sep_field='') %}
-	  {% if field.id != 'csrf_token' %}
+      {% if field.id != 'csrf_token' %}
           {% if field.type == 'HiddenField' %}
             {{ field}}
           {% else %}
@@ -247,20 +251,20 @@
 
 {% macro render_field_search(field) %}
 {% if field.id != 'csrf_token' %}
-	<div class="control-label">
-        	<th class="col-lg-2">{{ field.label.text }}</th>
+    <div class="control-label">
+            <th class="col-lg-2">{{ field.label.text }}</th>
         </div>
         <div class="controls">
                 <td>{{ field(name_='_flt_' + field.name) }}</td>
-	</div>
+    </div>
 {% endif %}
 {% endmacro %}
 
 {% macro panel_begin(title, extra_class="") %}
 <div class="panel panel-primary {{ extra_class }}">
-	<div class="panel-heading">
-	  <h4 class="panel-title">{{title}}</h4>
-	</div>
+    <div class="panel-heading">
+      <h4 class="panel-title">{{title}}</h4>
+    </div>
   <div class="panel-body">
 {% endmacro %}
 {% macro panel_end() %}
