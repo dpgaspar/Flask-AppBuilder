@@ -72,7 +72,8 @@ class SwaggerView(BaseView):
     def show(self, version):
         return self.render_template(
             "appbuilder/swagger/swagger.html",
-            openapi_uri=url_for(OpenApi.__name__ + "." + OpenApi.get.__name__, version=version),
+            openapi_uri=url_for(OpenApi.__name__ + "."
+                                + OpenApi.get.__name__, version=version),
         )
 
 
