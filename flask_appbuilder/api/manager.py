@@ -16,7 +16,7 @@ class OpenApi(BaseApi):
     @protect()
     @safe
     def get(self, version):
-        """ Endpoint that renders an OpenApi spec for all views that belong
+        """Endpoint that renders an OpenApi spec for all views that belong
             to a certain version
         ---
         get:
@@ -72,8 +72,9 @@ class SwaggerView(BaseView):
     def show(self, version):
         return self.render_template(
             "appbuilder/swagger/swagger.html",
-            openapi_uri=url_for(OpenApi.__name__ + "."
-                                + OpenApi.get.__name__, version=version),
+            openapi_uri=url_for(
+                OpenApi.__name__ + "." + OpenApi.get.__name__, version=version
+            ),
         )
 
 
