@@ -1,7 +1,7 @@
 import datetime
 from functools import reduce
 import logging
-from typing import Type
+from typing import Any, Type
 
 from flask_babel import lazy_gettext
 
@@ -44,7 +44,7 @@ class BaseInterface(object):
     """ Tuple with message and text with severity type ex: ("Added Row", "info") """
     message = ()
 
-    def __init__(self, obj):
+    def __init__(self, obj: Type[Any]):
         self.obj = obj
 
     def _get_attr(self, col_name):

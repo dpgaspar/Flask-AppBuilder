@@ -55,7 +55,7 @@ class SQLAInterface(BaseInterface):
 
     filter_converter_class = filters.SQLAFilterConverter
 
-    def __init__(self, obj: Model, session: Optional[SessionBase] = None) -> None:
+    def __init__(self, obj: Type[Model], session: Optional[SessionBase] = None) -> None:
         _include_filters(self)
         self.list_columns = dict()
         self.list_properties = dict()
@@ -115,7 +115,11 @@ class SQLAInterface(BaseInterface):
         return query
 
     def apply_engine_specific_hack(
-        self, query: BaseQuery, page, page_size, order_column
+        self,
+        query: BaseQuery,
+        page: Optional[int],
+        page_size: Optional[int],
+        order_column: Optional[str],
     ) -> BaseQuery:
         # MSSQL exception page/limit must have an order by
         if (
@@ -579,7 +583,7 @@ class SQLAInterface(BaseInterface):
     -------------------------------
     """
 
-    def add(self, item, raise_exception=False):
+    def add(self, item: Model, raise_exception: bool = False) -> bool:
         try:
             self.session.add(item)
             self.session.commit()
@@ -603,7 +607,7 @@ class SQLAInterface(BaseInterface):
                 raise e
             return False
 
-    def edit(self, item, raise_exception=False):
+    def edit(self, item: Model, raise_exception: bool = False) -> bool:
         try:
             self.session.merge(item)
             self.session.commit()
@@ -627,7 +631,7 @@ class SQLAInterface(BaseInterface):
                 raise e
             return False
 
-    def delete(self, item, raise_exception=False):
+    def delete(self, item: Model, raise_exception: bool = False) -> bool:
         try:
             self._delete_files(item)
             self.session.delete(item)
@@ -652,7 +656,7 @@ class SQLAInterface(BaseInterface):
                 raise e
             return False
 
-    def delete_all(self, items):
+    def delete_all(self, items: List[Model]) -> bool:
         try:
             for item in items:
                 self._delete_files(item)
@@ -680,7 +684,7 @@ class SQLAInterface(BaseInterface):
     -----------------------
     """
 
-    def _add_files(self, this_request, item):
+    def _add_files(self, this_request, item: Model):
         fm = FileManager()
         im = ImageManager()
         for file_col in this_request.files:
@@ -690,7 +694,7 @@ class SQLAInterface(BaseInterface):
             if self.is_image(file_col):
                 im.save_file(this_request.files[file_col], getattr(item, file_col))
 
-    def _delete_files(self, item):
+    def _delete_files(self, item: Model):
         for file_col in self.get_file_column_list():
             if self.is_file(file_col):
                 if getattr(item, file_col):
@@ -708,7 +712,7 @@ class SQLAInterface(BaseInterface):
     ------------------------------
     """
 
-    def get_col_default(self, col_name):
+    def get_col_default(self, col_name: str) -> Any:
         default = getattr(self.list_columns[col_name], "default", None)
         if default is not None:
             value = getattr(default, "arg", None)
@@ -720,10 +724,12 @@ class SQLAInterface(BaseInterface):
                         return None
                 return value
 
-    def get_related_model(self, col_name: str) -> Model:
+    def get_related_model(self, col_name: str) -> Type[Model]:
         return self.list_properties[col_name].mapper.class_
 
-    def get_related_model_and_join(self, col_name: str) -> List[Tuple[Model, object]]:
+    def get_related_model_and_join(
+        self, col_name: str
+    ) -> List[Tuple[Type[Model], object]]:
         relation = self.list_properties[col_name]
         if relation.direction.name == "MANYTOMANY":
             return [
@@ -744,14 +750,14 @@ class SQLAInterface(BaseInterface):
     def get_related_fks(self, related_views) -> List[str]:
         return [view.datamodel.get_related_fk(self.obj) for view in related_views]
 
-    def get_related_fk(self, model) -> Optional[str]:
+    def get_related_fk(self, model: Type[Model]) -> Optional[str]:
         for col_name in self.list_properties.keys():
             if self.is_relation(col_name):
                 if model == self.get_related_model(col_name):
                     return col_name
         return None
 
-    def get_info(self, col_name):
+    def get_info(self, col_name: str):
         if col_name in self.list_properties:
             return self.list_properties[col_name].info
         return {}
@@ -815,14 +821,14 @@ class SQLAInterface(BaseInterface):
                     ret_lst.append(col_name)
         return ret_lst
 
-    def get_file_column_list(self):
+    def get_file_column_list(self) -> List[str]:
         return [
             i.name
             for i in self.obj.__mapper__.columns
             if isinstance(i.type, FileColumn)
         ]
 
-    def get_image_column_list(self):
+    def get_image_column_list(self) -> List[str]:
         return [
             i.name
             for i in self.obj.__mapper__.columns
@@ -880,7 +886,7 @@ class SQLAInterface(BaseInterface):
         """
         return self._get_pk_name(self.obj)
 
-    def get_pk(self, model: Optional[Model] = None):
+    def get_pk(self, model: Optional[Type[Model]] = None):
         """
         Get the model primary key SQLAlchemy column.
         Will not support composite keys
@@ -891,7 +897,7 @@ class SQLAInterface(BaseInterface):
             return getattr(model_, pk_name)
         return None
 
-    def _get_pk_name(self, model: Model) -> Optional[Union[List[str], str]]:
+    def _get_pk_name(self, model: Type[Model]) -> Optional[Union[List[str], str]]:
         pk = [pk.name for pk in model.__mapper__.primary_key]
         if pk:
             return pk if self.is_pk_composite() else pk[0]

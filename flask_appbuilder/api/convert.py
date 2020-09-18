@@ -96,7 +96,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                 class Meta:
                     model = _model
                     fields = columns
-                    strict = True
                     load_instance = True
                     sqla_session = self.datamodel.session
 
@@ -105,7 +104,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             class MetaSchema(SQLAlchemyAutoSchema, class_mixin):
                 class Meta:
                     model = _model
-                    strict = True
                     load_instance = True
                     sqla_session = self.datamodel.session
 

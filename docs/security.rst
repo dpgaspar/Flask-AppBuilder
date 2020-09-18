@@ -486,6 +486,19 @@ key is just the configuration for authlib::
                 'request_token_url':None,
                 'access_token_url':'https://accounts.google.com/o/oauth2/token',
                 'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+        },
+        {'name':'openshift', 'icon':'fa-circle-o', 'token_key':'access_token',
+            'remote_app': {
+                'client_id':'system:serviceaccount:mynamespace:mysa',
+                'client_secret':'<mysa serviceaccount token here>',
+                'api_base_url':'https://openshift.default.svc.cluster.local:443',
+                'client_kwargs':{
+                  'scope': 'user:info'
+                },
+                'redirect_uri':'https://myapp-mynamespace.apps.<cluster_domain>',
+                'access_token_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/token',
+                'authorize_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/authorize',
+                'token_endpoint_auth_method':'client_secret_post'}
         }
     ]
 
@@ -493,7 +506,7 @@ This needs a small explanation, you basically have five special keys:
 
 :name: The name of the provider, you can choose whatever you want. But the framework as some 
     builtin logic to retrieve information about a user that you can make use of if you choose:
-    'twitter', 'google', 'github','linkedin'.
+    'twitter', 'google', 'github', 'linkedin', 'openshift'.
  
 :icon: The font-awesome icon for this provider.
 :token_key: The token key name that this provider uses, google and github uses *'access_token'*,

@@ -562,6 +562,14 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "id": me["oid"],
                 "username": me["oid"],
             }
+        # for OpenShift
+        if provider == "openshift":
+            me = self.appbuilder.sm.oauth_remotes[provider].get(
+                "apis/user.openshift.io/v1/users/~"
+            )
+            data = me.json()
+            log.debug("User info from OpenShift: {0}".format(data))
+            return {"username": "openshift_" + data.get("metadata").get("name")}
         else:
             return {}
 
