@@ -214,7 +214,7 @@ class SecurityManager(BaseSecurityManager):
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_ADD_USER.format(str(e)))
             self.get_session.rollback()
-            return False
+            return None
 
     def count_users(self):
         return self.get_session.query(func.count(self.user_model.id)).scalar()
