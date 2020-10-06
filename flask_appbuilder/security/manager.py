@@ -955,7 +955,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                             role=self.find_role(self.auth_user_registration_role),
                         )
 
-                self.update_user_auth_stat(user)
+                if user:
+                    self.update_user_auth_stat(user)
                 return user
 
             except ldap.LDAPError as e:
@@ -1011,7 +1012,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
 
-        self.update_user_auth_stat(user)
+        if user:
+            self.update_user_auth_stat(user)
         return user
 
     def auth_user_oauth(self, userinfo):
@@ -1054,7 +1056,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             if not user:
                 log.error("Error creating a new OAuth user %s" % userinfo["username"])
                 return None
-        self.update_user_auth_stat(user)
+        if user:
+            self.update_user_auth_stat(user)
         return user
 
     """
