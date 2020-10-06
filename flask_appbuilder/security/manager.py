@@ -1053,11 +1053,11 @@ class BaseSecurityManager(AbstractSecurityManager):
                 email=userinfo.get("email", ""),
                 role=self.find_role(role_name),
             )
-            if not user:
+            if user is None:
                 log.error("Error creating a new OAuth user %s" % userinfo["username"])
                 return None
-        if user:
-            self.update_user_auth_stat(user)
+
+        self.update_user_auth_stat(user)
         return user
 
     """

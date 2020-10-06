@@ -191,7 +191,7 @@ class SecurityManager(BaseSecurityManager):
         role,
         password="",
         hashed_password="",
-    ):
+    )->User:
         """
             Generic function to create user
         """
