@@ -4,6 +4,9 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 3.1.0
 -----------------------------------
 
+Fix, sanitize the uploaded filename (#1482)
+Fix, add missing font file format for glyphicons (#1483)
+Docs, Remove incorrect possessive. `list's => lists`. (#1476)
 Fix, select2 readonly not working (#1467)
 Fix, improve type annotations on SQLAlchemy (#1458)
 New, Support for OpenShift OAuth (#1454)
