@@ -201,10 +201,16 @@ class SQLAInterface(BaseInterface):
                             related_model = self.get_related_model(root_relation)
                             query = query.add_entity(related_model)
                         joined_models.append(root_relation)
-                    query = query.options(
-                        (contains_eager(root_relation).load_only(leaf_column))
-                    )
+                    print(f"Apply inner eager {root_relation}.{column}")
+                    related_model = self.get_related_model(root_relation)
+                    query = query.options(Load(related_model).load_only(leaf_column))
+
+                    # query = query.options(
+                    #     (contains_eager(root_relation).load_only(leaf_column))
+                    # )
+                    print(f"AFTER SQL!!! {query.statement}")
             else:
+                print(f"Apply inner select option {column}")
                 query = self._apply_normal_col_select_option(query, column)
         return query
 
@@ -220,13 +226,19 @@ class SQLAInterface(BaseInterface):
                 if self.is_relation_many_to_many(
                     root_relation
                 ) or self.is_relation_one_to_many(root_relation):
-                    query = query.options(
-                        Load(self.obj).joinedload(root_relation).load_only(leaf_column)
-                    )
-                else:
+                    print(f"Apply outer Load {root_relation}.{column}")
                     related_model = self.get_related_model(root_relation)
                     query = query.options(Load(related_model).load_only(leaf_column))
+
+                    # query = query.options(
+                    #     Load(self.obj).joinedload(root_relation).load_only(leaf_column)
+                    # )
+                else:
+                    related_model = self.get_related_model(root_relation)
+                    print(f"Apply outer Load2 {root_relation}.{column}")
+                    query = query.options(Load(related_model).load_only(leaf_column))
             else:
+                print(f"Apply outer select option {column}")
                 query = self._apply_normal_col_select_option(query, column)
         return query
 
@@ -327,6 +339,7 @@ class SQLAInterface(BaseInterface):
             page_size,
             select_columns,
         )
+        print(f"INNER SQL!!! {inner_query.statement}")
         # Only use a from_self if we need to select a join one to many or many to many
         if select_columns and self.exists_col_to_many(select_columns):
             if select_columns and order_column:
