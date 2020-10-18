@@ -316,12 +316,12 @@ class SQLAInterface(BaseInterface):
 
     def query_count(
         self,
-        query: Query,
+        query: BaseQuery,
         filters: Optional[Filters] = None,
         select_columns: Optional[List[str]] = None,
     ):
         return self._apply_inner_all(
-            query, filters, select_columns=select_columns
+            query, filters, select_columns=select_columns, aliases_mapping={}
         ).count()
 
     def apply_all(
