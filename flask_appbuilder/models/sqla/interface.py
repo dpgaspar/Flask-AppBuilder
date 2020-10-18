@@ -5,9 +5,9 @@ from typing import Any, List, Optional, Tuple, Type, Union
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, alias
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import aliased, Load
+from sqlalchemy.orm import aliased, Load, contains_eager
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.orm.query import Query
 from sqlalchemy.orm.session import Session as SessionBase
@@ -61,6 +61,7 @@ class SQLAInterface(BaseInterface):
         self.list_properties = dict()
 
         self.session = session
+        self.aliases = {}
         # Collect all SQLA columns and properties
         for prop in sa.orm.class_mapper(obj).iterate_properties:
             if type(prop) != SynonymProperty:
@@ -102,34 +103,10 @@ class SQLAInterface(BaseInterface):
 
         for relation in relations:
             model_relation, relation_join = relation
-            # Support multiple joins for the same table
-            if self.is_model_already_joined(query, model_relation):
-                # Since the join already exists apply a new aliased one
-                model_relation = aliased(model_relation)
-                # The binary expression needs to be inverted
-                relation_pk = self.get_pk(model_relation)
-                relation_join = BinaryExpression(
-                    relation_join.left, relation_pk, relation_join.operator
-                )
-            query = query.join(model_relation, relation_join, isouter=True)
-        return query
-
-    def _query_join_relation2(self, query: BaseQuery, root_relation: str) -> BaseQuery:
-        """
-        Helper function that applies necessary joins for dotted columns on a
-        SQLAlchemy query object
-
-        :param query: SQLAlchemy query object
-        :param root_relation: The root part of a dotted column, so the root relation
-        :return: Transformed SQLAlchemy Query
-        """
-        relations = self.get_related_model_and_join(root_relation)
-
-        for relation in relations:
-            model_relation, relation_join = relation
             # Use alias if it's not a custom relation
             if not hasattr(relation_join, "clauses"):
                 model_relation = aliased(model_relation, name=root_relation)
+                self.aliases[root_relation] = model_relation
                 relation_pk = self.get_pk(model_relation)
                 if relation_join.left.foreign_keys:
                     relation_join = BinaryExpression(
@@ -170,10 +147,14 @@ class SQLAInterface(BaseInterface):
                 if hasattr(getattr(self.obj, order_column), "_col_name"):
                     order_column = getattr(self._get_attr(order_column), "_col_name")
             _order_column = self._get_attr(order_column) or order_column
-            # if is_column_dotted(order_column):
-            #     query = self._query_join_relation(
-            #         query, get_column_root_relation(order_column)
-            #     )
+
+            print("!!!!!!")
+            if is_column_dotted(order_column):
+                root_relation = get_column_root_relation(order_column)
+                column_leaf = get_column_leaf(order_column)
+                _alias = self.aliases[root_relation]
+                print(f"ALIAS !!!! {_alias}")
+                _order_column = getattr(_alias, column_leaf)
             if order_direction == "asc":
                 query = query.order_by(asc(_order_column))
             else:
@@ -224,18 +205,18 @@ class SQLAInterface(BaseInterface):
                 ) or self.is_relation_one_to_one(root_relation):
                     related_model = self.get_related_model(root_relation)
                     if root_relation not in joined_models:
-                        query, related_model_ = self._query_join_relation2(
+                        query, alias_related_model = self._query_join_relation(
                             query, root_relation
                         )
-                        query = query.options(
-                            Load(related_model_).load_only(leaf_column)
-                        )
+                        query = query.add_entity(alias_related_model)
                         joined_models.append(root_relation)
-                        continue
 
-                    query = query.options(Load(related_model).load_only(leaf_column))
+                    query = query.options(
+                        contains_eager(root_relation, alias=alias_related_model).load_only(leaf_column)
+                    )
             else:
                 query = self._apply_normal_col_select_option(query, column)
+        print(f"INNER SQL {query.statement}")
         return query
 
     def apply_outer_select_joins(
@@ -406,8 +387,15 @@ class SQLAInterface(BaseInterface):
             page_size,
             select_columns,
         )
-        result = query.all()
+        print(f"FINAL SQL {query.statement}")
+        query_results = query.all()
 
+        result = list()
+        for item in query_results:
+            if hasattr(item, self.obj.__name__):
+                result.append(getattr(item, self.obj.__name__))
+            else:
+                return count, query_results
         return count, result
 
     def query_simple_group(
