@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple, Type, Union
 import sqlalchemy as sa
 from sqlalchemy import asc, desc
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import aliased, ColumnProperty, Load
+from sqlalchemy.orm import aliased, ColumnProperty, contains_eager, Load
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.orm.query import Query
 from sqlalchemy.orm.session import Session as SessionBase
@@ -221,7 +221,6 @@ class SQLAInterface(BaseInterface):
                     root_relation
                 ) or self.is_relation_one_to_one(root_relation):
                     if root_relation not in joined_models:
-
                         query = self._query_join_relation(
                             query, root_relation, aliases_mapping=aliases_mapping
                         )
@@ -236,6 +235,14 @@ class SQLAInterface(BaseInterface):
 
                     related_model_ = self.get_alias_mapping(
                         root_relation, aliases_mapping
+                    )
+                    relation = getattr(self.obj, root_relation)
+                    # The Zen of eager loading :(
+                    # https://docs.sqlalchemy.org/en/13/orm/loading_relationships.html
+                    query = query.options(
+                        contains_eager(relation.of_type(related_model_)).load_only(
+                            leaf_column
+                        )
                     )
                     query = query.options(Load(related_model_).load_only(leaf_column))
             else:
