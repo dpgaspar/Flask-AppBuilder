@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.1.1
+-----------------------------------
+
+Fix, REST API inner joins eager loading (#1486)
+
 Improvements and Bug fixes on 3.1.0
 -----------------------------------
 
