@@ -879,7 +879,6 @@ class BaseCRUDView(BaseModelView):
         # Generate base props
         list_cols = self.datamodel.get_user_columns_list()
         self.list_columns = self.list_columns or [list_cols[0]]
-        self._gen_labels_columns(self.list_columns)
         self.order_columns = (
             self.order_columns
             or self.datamodel.get_order_columns_list(list_columns=self.list_columns)
@@ -895,6 +894,9 @@ class BaseCRUDView(BaseModelView):
                 self.show_columns = [
                     x for x in list_cols if x not in self.show_exclude_columns
                 ]
+
+        self._gen_labels_columns(set(self.list_columns + self.show_columns))
+
         if self.add_fieldsets:
             self.add_columns = []
             for fieldset_item in self.add_fieldsets:
