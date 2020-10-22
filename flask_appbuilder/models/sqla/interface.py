@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
-from typing import Any, List, Optional, Tuple, Type, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
-from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import asc, desc
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import aliased, contains_eager, Load
+from sqlalchemy.orm import aliased, ColumnProperty, contains_eager, Load
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.orm.query import Query
 from sqlalchemy.orm.session import Session as SessionBase
+from sqlalchemy.orm.util import AliasedClass
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.sqltypes import TypeEngine
 from sqlalchemy_utils.types.uuid import UUIDType
@@ -51,15 +51,12 @@ class SQLAInterface(BaseInterface):
     Implements SQLA support methods for views
     """
 
-    session = None
-
     filter_converter_class = filters.SQLAFilterConverter
 
     def __init__(self, obj: Type[Model], session: Optional[SessionBase] = None) -> None:
         _include_filters(self)
         self.list_columns = dict()
         self.list_properties = dict()
-
         self.session = session
         # Collect all SQLA columns and properties
         for prop in sa.orm.class_mapper(obj).iterate_properties:
@@ -79,7 +76,7 @@ class SQLAInterface(BaseInterface):
         return self.obj.__name__
 
     @staticmethod
-    def is_model_already_joined(query: BaseQuery, model: Model) -> bool:
+    def is_model_already_joined(query: Query, model: Type[Model]) -> bool:
         return model in [mapper.class_ for mapper in query._join_entities]
 
     def _get_base_query(
@@ -89,7 +86,12 @@ class SQLAInterface(BaseInterface):
             query = filters.apply_all(query)
         return self.apply_order_by(query, order_column, order_direction)
 
-    def _query_join_relation(self, query: BaseQuery, root_relation: str) -> BaseQuery:
+    def _query_join_relation(
+        self,
+        query: Query,
+        root_relation: str,
+        aliases_mapping: Dict[str, AliasedClass] = None,
+    ) -> Query:
         """
         Helper function that applies necessary joins for dotted columns on a
         SQLAlchemy query object
@@ -98,29 +100,35 @@ class SQLAInterface(BaseInterface):
         :param root_relation: The root part of a dotted column, so the root relation
         :return: Transformed SQLAlchemy Query
         """
+        if aliases_mapping is None:
+            aliases_mapping = {}
         relations = self.get_related_model_and_join(root_relation)
 
         for relation in relations:
             model_relation, relation_join = relation
-            # Support multiple joins for the same table
-            if self.is_model_already_joined(query, model_relation):
-                # Since the join already exists apply a new aliased one
-                model_relation = aliased(model_relation)
-                # The binary expression needs to be inverted
+            # Use alias if it's not a custom relation
+            if not hasattr(relation_join, "clauses"):
+                model_relation = aliased(model_relation, name=root_relation)
+                aliases_mapping[root_relation] = model_relation
                 relation_pk = self.get_pk(model_relation)
-                relation_join = BinaryExpression(
-                    relation_join.left, relation_pk, relation_join.operator
-                )
+                if relation_join.left.foreign_keys:
+                    relation_join = BinaryExpression(
+                        relation_join.left, relation_pk, relation_join.operator
+                    )
+                else:
+                    relation_join = BinaryExpression(
+                        relation_join.right, relation_pk, relation_join.operator
+                    )
             query = query.join(model_relation, relation_join, isouter=True)
         return query
 
     def apply_engine_specific_hack(
         self,
-        query: BaseQuery,
+        query: Query,
         page: Optional[int],
         page_size: Optional[int],
         order_column: Optional[str],
-    ) -> BaseQuery:
+    ) -> Query:
         # MSSQL exception page/limit must have an order by
         if (
             page
@@ -133,8 +141,12 @@ class SQLAInterface(BaseInterface):
         return query
 
     def apply_order_by(
-        self, query: BaseQuery, order_column: str, order_direction: str
-    ) -> BaseQuery:
+        self,
+        query: Query,
+        order_column: str,
+        order_direction: str,
+        aliases_mapping: Dict[str, AliasedClass] = None,
+    ) -> Query:
         if order_column != "":
             # if Model has custom decorator **renders('<COL_NAME>')**
             # this decorator will add a property to the method named *_col_name*
@@ -142,10 +154,12 @@ class SQLAInterface(BaseInterface):
                 if hasattr(getattr(self.obj, order_column), "_col_name"):
                     order_column = getattr(self._get_attr(order_column), "_col_name")
             _order_column = self._get_attr(order_column) or order_column
+
             if is_column_dotted(order_column):
-                query = self._query_join_relation(
-                    query, get_column_root_relation(order_column)
-                )
+                root_relation = get_column_root_relation(order_column)
+                column_leaf = get_column_leaf(order_column)
+                _alias = self.get_alias_mapping(root_relation, aliases_mapping)
+                _order_column = getattr(_alias, column_leaf)
             if order_direction == "asc":
                 query = query.order_by(asc(_order_column))
             else:
@@ -153,32 +167,44 @@ class SQLAInterface(BaseInterface):
         return query
 
     def apply_pagination(
-        self, query: BaseQuery, page: Optional[int], page_size: Optional[int]
-    ) -> BaseQuery:
+        self, query: Query, page: Optional[int], page_size: Optional[int]
+    ) -> Query:
         if page and page_size:
             query = query.offset(page * page_size)
         if page_size:
             query = query.limit(page_size)
         return query
 
-    def apply_filters(self, query: BaseQuery, filters: Optional[Filters]) -> BaseQuery:
+    def apply_filters(self, query: Query, filters: Optional[Filters]) -> Query:
         if filters:
             return filters.apply_all(query)
         return query
 
-    def _apply_normal_col_select_option(self, query, column) -> BaseQuery:
+    def _apply_normal_col_select_option(self, query: Query, column: str) -> Query:
         if not self.is_relation(column) and not self.is_property_or_function(column):
             return query.options(Load(self.obj).load_only(column))
         return query
 
+    def _apply_relation_fks_select_options(self, query: Query, relation_name) -> Query:
+        relation = getattr(self.obj, relation_name)
+        if hasattr(relation, "property"):
+            local_cols = getattr(self.obj, relation_name).property.local_columns
+            for local_fk in local_cols:
+                query = query.options(Load(self.obj).load_only(local_fk.name))
+            return query
+        return query
+
     def apply_inner_select_joins(
-        self, query: BaseQuery, select_columns: List[str] = None
-    ) -> BaseQuery:
+        self,
+        query: Query,
+        select_columns: List[str] = None,
+        aliases_mapping: Dict[str, AliasedClass] = None,
+    ) -> Query:
         """
         Add select load options to query. The goal
         is to only SQL select what is requested and join all the necessary
         models when dotted notation is used. Inner implies non dotted columns
-        and one to many and one to one
+        and many to one and one to one
 
         :param query:
         :param select_columns:
@@ -195,22 +221,37 @@ class SQLAInterface(BaseInterface):
                     root_relation
                 ) or self.is_relation_one_to_one(root_relation):
                     if root_relation not in joined_models:
-                        query = self._query_join_relation(query, root_relation)
-                        # only needed if we need to wrap this query, from_self
-                        if select_columns and self.exists_col_to_many(select_columns):
-                            related_model = self.get_related_model(root_relation)
-                            query = query.add_entity(related_model)
+                        query = self._query_join_relation(
+                            query, root_relation, aliases_mapping=aliases_mapping
+                        )
+                        query = query.add_entity(
+                            self.get_alias_mapping(root_relation, aliases_mapping)
+                        )
+                        # Add relation FK to avoid N+1 performance issue
+                        query = self._apply_relation_fks_select_options(
+                            query, root_relation
+                        )
                         joined_models.append(root_relation)
-                    query = query.options(
-                        (contains_eager(root_relation).load_only(leaf_column))
+
+                    related_model_ = self.get_alias_mapping(
+                        root_relation, aliases_mapping
                     )
+                    relation = getattr(self.obj, root_relation)
+                    # The Zen of eager loading :(
+                    # https://docs.sqlalchemy.org/en/13/orm/loading_relationships.html
+                    query = query.options(
+                        contains_eager(relation.of_type(related_model_)).load_only(
+                            leaf_column
+                        )
+                    )
+                    query = query.options(Load(related_model_).load_only(leaf_column))
             else:
                 query = self._apply_normal_col_select_option(query, column)
         return query
 
     def apply_outer_select_joins(
-        self, query: BaseQuery, select_columns: List[str] = None
-    ) -> BaseQuery:
+        self, query: Query, select_columns: List[str] = None
+    ) -> Query:
         if not select_columns:
             return query
         for column in select_columns:
@@ -261,6 +302,13 @@ class SQLAInterface(BaseInterface):
                     return True
         return False
 
+    def get_alias_mapping(
+        self, model_name: str, aliases_mapping: Dict[str, AliasedClass]
+    ) -> Union[AliasedClass, Type[Model]]:
+        if aliases_mapping is None:
+            return self.get_related_model(model_name)
+        return aliases_mapping.get(model_name, self.get_related_model(model_name))
+
     def _apply_inner_all(
         self,
         query: Query,
@@ -270,12 +318,15 @@ class SQLAInterface(BaseInterface):
         page: Optional[int] = None,
         page_size: Optional[int] = None,
         select_columns: Optional[List[str]] = None,
-    ):
+        aliases_mapping: Dict[str, AliasedClass] = None,
+    ) -> Query:
         inner_filters = self.get_inner_filters(filters)
-        query = self.apply_inner_select_joins(query, select_columns)
+        query = self.apply_inner_select_joins(query, select_columns, aliases_mapping)
         query = self.apply_filters(query, inner_filters)
         query = self.apply_engine_specific_hack(query, page, page_size, order_column)
-        query = self.apply_order_by(query, order_column, order_direction)
+        query = self.apply_order_by(
+            query, order_column, order_direction, aliases_mapping=aliases_mapping
+        )
         query = self.apply_pagination(query, page, page_size)
         return query
 
@@ -284,9 +335,9 @@ class SQLAInterface(BaseInterface):
         query: Query,
         filters: Optional[Filters] = None,
         select_columns: Optional[List[str]] = None,
-    ):
+    ) -> int:
         return self._apply_inner_all(
-            query, filters, select_columns=select_columns
+            query, filters, select_columns=select_columns, aliases_mapping={}
         ).count()
 
     def apply_all(
@@ -298,7 +349,7 @@ class SQLAInterface(BaseInterface):
         page: Optional[int] = None,
         page_size: Optional[int] = None,
         select_columns: Optional[List[str]] = None,
-    ) -> BaseQuery:
+    ) -> Query:
         """
         Accepts a SQLAlchemy Query and applies all filtering logic, order by and
         pagination.
@@ -318,6 +369,7 @@ class SQLAInterface(BaseInterface):
             A List of columns to be specifically selected on the query
         :return: A SQLAlchemy Query with all the applied logic
         """
+        aliases_mapping = {}
         inner_query = self._apply_inner_all(
             query,
             filters,
@@ -326,6 +378,7 @@ class SQLAInterface(BaseInterface):
             page,
             page_size,
             select_columns,
+            aliases_mapping=aliases_mapping,
         )
         # Only use a from_self if we need to select a join one to many or many to many
         if select_columns and self.exists_col_to_many(select_columns):
@@ -835,7 +888,7 @@ class SQLAInterface(BaseInterface):
             if isinstance(i.type, ImageColumn)
         ]
 
-    def get_property_first_col(self, col_name: str) -> str:
+    def get_property_first_col(self, col_name: str) -> ColumnProperty:
         # support for only one col for pk and fk
         return self.list_properties[col_name].columns[0]
 
