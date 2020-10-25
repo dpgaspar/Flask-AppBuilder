@@ -28,10 +28,9 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
       - name: black
-        run: black --check -l 90 setup.py flask_appbuilder
+        run: black --check setup.py flask_appbuilder
       - name: flake8
         run: flake8 flask_appbuilder
-
 
   test-postgres:
     runs-on: ubuntu-18.04
