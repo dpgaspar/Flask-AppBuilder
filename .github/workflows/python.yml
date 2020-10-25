@@ -18,7 +18,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          apt-get-install
           pip-upgrade
           pip install -r requirements.txt
           pip install -r requitements-dev.txt
