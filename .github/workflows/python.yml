@@ -24,8 +24,44 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip install -r requitements-dev.txt
+          pip install -r requirements-dev.txt
       - name: black
-        run: black -l 90 flask_appbuilder
+        run: black --check -l 90 setup.py flask_appbuilder
       - name: flake8
         run: flake8 flask_appbuilder
+
+
+  test-postgres:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+    env:
+      SQLALCHEMY_DATABASE_URI:
+        postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
+    services:
+      postgres:
+        image: postgres:10-alpine
+        env:
+          POSTGRES_USER: pguser
+          POSTGRES_PASSWORD: pguserpassword
+          POSTGRES_DB: app
+        ports:
+          - 15432:5432
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2.1.1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+      - name: Run tests
+        run: |
+          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder/tests/test_mongoengine.py
+      - name: Upload code coverage
+        run: |
+          bash <(curl -s https://codecov.io/bash) -cF python
