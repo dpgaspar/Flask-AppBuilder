@@ -68,3 +68,41 @@ jobs:
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
+
+  test-mysql:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7]
+    env:
+      SQLALCHEMY_DATABASE_URI: |
+        mysql+mysqldb://mysqluser:mysqluserpassword@127.0.0.1:13306/app?charset=utf8mb4&binary_prefix=true
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_USER: mysqluser
+          MYSQL_PASSWORD: mysqluserpassword
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: app
+        ports:
+          - 13306:3306
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2.1.1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+      - name: Run tests
+        run: |
+          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder.tests --ignore-files="test_mongoengine\.py"
+      - name: Upload code coverage
+        run: |
+          bash <(curl -s https://codecov.io/bash) -cF python
