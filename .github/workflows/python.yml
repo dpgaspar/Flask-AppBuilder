@@ -17,12 +17,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        with:
-          run: |
-            apt-get-install
-            pip-upgrade
-            pip install -r requirements.txt
-            pip install -r requitements-dev.txt
+        run: |
+          apt-get-install
+          pip-upgrade
+          pip install -r requirements.txt
+          pip install -r requitements-dev.txt
       - name: black
         run: black flask_appbuilder
       - name: flake8
