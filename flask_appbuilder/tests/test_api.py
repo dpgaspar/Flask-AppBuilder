@@ -375,7 +375,8 @@ class APITestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder.get_session.close()
-        self.db.dispose()
+        engine = self.db.session.get_bind(mapper=None, clause=None)
+        engine.dispose()
         self.appbuilder = None
         self.app = None
         self.db = None
