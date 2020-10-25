@@ -118,10 +118,11 @@ jobs:
       SQLALCHEMY_DATABASE_URI: |
         mssql+pymssql://sa:Password_123@localhost:11433/master
     services:
-      mysql:
+      mssql:
         image: mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
         env:
           SA_PASSWORD: Password_123
+          ACCEPT_EULA: Y
         ports:
           - 11433:1433
     steps:
