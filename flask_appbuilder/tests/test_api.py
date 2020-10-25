@@ -377,9 +377,6 @@ class APITestCase(FABTestCase):
         self.appbuilder.get_session.close()
         engine = self.db.session.get_bind(mapper=None, clause=None)
         engine.dispose()
-        self.appbuilder = None
-        self.app = None
-        self.db = None
 
     def test_babel(self):
         """
