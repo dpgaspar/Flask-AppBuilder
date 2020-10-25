@@ -4,8 +4,8 @@ import logging
 from typing import Set
 
 from flask import Flask, redirect, request, session
-from flask_appbuilder.actions import action
 from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder.actions import action
 from flask_appbuilder.charts.views import (
     ChartView,
     DirectByChartView,
@@ -390,7 +390,9 @@ class MVCTestCase(BaseMVCTestCase):
             add_columns = ["pk1", "pk2", "field_string"]
             edit_columns = ["pk1", "pk2", "field_string"]
 
-            @action("muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False)
+            @action(
+                "muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False
+            )
             def muldelete(self, items):
                 self.datamodel.delete_all(items)
                 self.update_redirect()
@@ -837,13 +839,25 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(model, None)
 
         # Add it back, then delete via muldelete
-        self.appbuilder.get_session.add(Model3(pk1=1, pk2=datetime.datetime(2017, 1, 1), field_string="baz"))
+        self.appbuilder.get_session.add(
+            Model3(pk1=1, pk2=datetime.datetime(2017, 1, 1), field_string="baz")
+        )
         self.appbuilder.get_session.commit()
         rv = client.post(
             "/model3view/action_post",
             data=dict(
                 action="muldelete",
-                rowid=[json.dumps(["1", {"_type": "datetime", "value": "2017-01-01T00:00:00.000000"}])],
+                rowid=[
+                    json.dumps(
+                        [
+                            "1",
+                            {
+                                "_type": "datetime",
+                                "value": "2017-01-01T00:00:00.000000",
+                            },
+                        ]
+                    )
+                ],
             ),
             follow_redirects=True,
         )
