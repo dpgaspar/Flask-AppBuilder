@@ -26,6 +26,6 @@ jobs:
           pip install -r requirements.txt
           pip install -r requitements-dev.txt
       - name: black
-        run: black flask_appbuilder
+        run: black -l 90 flask_appbuilder
       - name: flake8
         run: flake8 flask_appbuilder
