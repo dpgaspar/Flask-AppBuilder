@@ -62,6 +62,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
+          pip install -r requirements-extra.txt
       - name: Run tests
         run: |
           nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder.tests --ignore-files="test_mongoengine\.py"
@@ -100,6 +101,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
+          pip install -r requirements-extra.txt
       - name: Run tests
         run: |
           nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder.tests --ignore-files="test_mongoengine\.py"
@@ -114,14 +116,14 @@ jobs:
         python-version: [3.6, 3.7]
     env:
       SQLALCHEMY_DATABASE_URI: |
-        mssql+pymssql://sa:Password_123@localhost:1433/master
+        mssql+pymssql://sa:Password_123@localhost:11433/master
     services:
       mysql:
         image: mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
         env:
           SA_PASSWORD: Password_123
         ports:
-          - 13306:3306
+          - 11433:1433
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python
@@ -135,6 +137,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
+          pip install -r requirements-extra.txt
       - name: Run tests
         run: |
           nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder.tests --ignore-files="test_mongoengine\.py"

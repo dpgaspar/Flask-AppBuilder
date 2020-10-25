@@ -7,6 +7,3 @@ tox==3.5.3
 mockldap>=0.3.0
 black==19.3b0
 jmespath==0.9.5
-mysqlclient==1.4.2.post1
-psycopg2-binary==2.8.6
-pymssql==2.1.4
