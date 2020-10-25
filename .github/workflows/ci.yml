@@ -153,7 +153,7 @@ jobs:
         python-version: [3.6, 3.7]
     env:
       SQLALCHEMY_DATABASE_URI: |
-        SQLALCHEMY_DATABASE_URI = sqlite:///
+        SQLALCHEMY_DATABASE_URI = sqlite:///unittest.db
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python
@@ -180,9 +180,6 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7]
-    env:
-      SQLALCHEMY_DATABASE_URI: |
-        SQLALCHEMY_DATABASE_URI = sqlite:///
     services:
       mssql:
         image: mongo:4.4.1-bionic
