@@ -49,7 +49,6 @@ jobs:
           POSTGRES_DB: app
         ports:
           - 15432:5432
-        command: postgres -c 'max_connections=500'
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python
