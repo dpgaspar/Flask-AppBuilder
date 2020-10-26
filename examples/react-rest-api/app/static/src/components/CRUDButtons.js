@@ -87,7 +87,7 @@ export class DeleteButton extends Component {
         onClick={this.onClick}
         data-target={"#" + this.props.modalId}
       >
-        <i class="fa fa-eraser"></i>
+        <i class="fa fa-trash"></i>
       </a>
     );
   }
@@ -122,8 +122,8 @@ export class ShowButton extends Component {
 export class CRUDRowButtons extends Component {
 
   render() {
-    const showButton = 
-      <ShowButton 
+    const showButton =
+      <ShowButton
         resource={this.props.resource}
         id={this.props.id}
         modalId="show-modal"
