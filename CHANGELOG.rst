@@ -4,6 +4,9 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 3.1.1
 -----------------------------------
 
+deps: constraint pre 1 packages following semver (#1502) [Daniel Vaz Gaspar]
+fix: MVC order by on relation (#1500) [Daniel Vaz Gaspar]
+docs: add github actions badge (#1501) [Daniel Vaz Gaspar]
 fix: remove unnecessary classes from dropdowns (#1491) [Ryan Hamilton]
 feat: migrate from travis to github actions (#1497) [Daniel Vaz Gaspar]
 fix: lint (#1498) [Daniel Vaz Gaspar]
