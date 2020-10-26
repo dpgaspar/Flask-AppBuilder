@@ -1,8 +1,8 @@
 Flask App Builder
 =================
 
-.. image:: https://travis-ci.org/dpgaspar/Flask-AppBuilder.png?branch=master
-        :target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
+.. image:: https://github.com/dpgaspar/Flask-AppBuilder/workflows/Python/badge.svg
+        :target: https://github.com/dpgaspar/Flask-AppBuilder/actions
 
 .. image:: https://img.shields.io/pypi/v/Flask-AppBuilder.svg
         :alt: PyPI
