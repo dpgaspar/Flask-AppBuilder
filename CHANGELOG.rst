@@ -4,7 +4,14 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 3.1.1
 -----------------------------------
 
-Fix, REST API inner joins eager loading (#1486)
+fix: remove unnecessary classes from dropdowns (#1491) [Ryan Hamilton]
+feat: migrate from travis to github actions (#1497) [Daniel Vaz Gaspar]
+fix: lint (#1498) [Daniel Vaz Gaspar]
+fix: Improve UX by moving drop-down caret within clickable target (#1492) [Ryan Hamilton]
+style: use a clearer visual representation for "delete" actions (#1495) [Ryan Hamilton]
+fix: "actions" on ModelViews with composite primary keys (#1493) [Ash Berlin-Taylor]
+docs: migrate examples/quickhowto3 to version 3.x.x (#1488) [luizduma]
+fix: REST API inner joins eager loading (#1486) [Daniel Vaz Gaspar]
 
 Improvements and Bug fixes on 3.1.0
 -----------------------------------
