@@ -157,9 +157,15 @@ class SQLAInterface(BaseInterface):
 
             if is_column_dotted(order_column):
                 root_relation = get_column_root_relation(order_column)
-                column_leaf = get_column_leaf(order_column)
-                _alias = self.get_alias_mapping(root_relation, aliases_mapping)
-                _order_column = getattr(_alias, column_leaf)
+                # On MVC we still allow for joins to happen here
+                if not self.is_model_already_joined(
+                    query, self.get_related_model(root_relation)
+                ):
+                    query = self._query_join_relation(query, root_relation)
+                else:
+                    column_leaf = get_column_leaf(order_column)
+                    _alias = self.get_alias_mapping(root_relation, aliases_mapping)
+                    _order_column = getattr(_alias, column_leaf)
             if order_direction == "asc":
                 query = query.order_by(asc(_order_column))
             else:
