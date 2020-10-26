@@ -366,6 +366,8 @@ class MVCTestCase(BaseMVCTestCase):
                 "group": [["field_string", FilterEqual, "test0"]]
             }
 
+            order_columns = ["field_string", "group.field_string"]
+
         class Model22View(ModelView):
             datamodel = SQLAInterface(Model2)
             list_columns = [
@@ -1094,9 +1096,22 @@ class MVCTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn(f"test{MODEL1_DATA_SIZE-1}", data)
 
+    def test_model_list_order_related(self):
+        """
+        Test Model order related field on lists
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = client.get(
+            "/model2view/list?_oc_Model2View=group.field_string&_od_Model2View=asc",
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 200)
+
     def test_model_add_unique_validation(self):
         """
-            Test Model add unique field validation
+        Test Model add unique field validation
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)

@@ -161,11 +161,12 @@ class SQLAInterface(BaseInterface):
                 if not self.is_model_already_joined(
                     query, self.get_related_model(root_relation)
                 ):
-                    query = self._query_join_relation(query, root_relation)
-                else:
-                    column_leaf = get_column_leaf(order_column)
-                    _alias = self.get_alias_mapping(root_relation, aliases_mapping)
-                    _order_column = getattr(_alias, column_leaf)
+                    query = self._query_join_relation(
+                        query, root_relation, aliases_mapping=aliases_mapping
+                    )
+                column_leaf = get_column_leaf(order_column)
+                _alias = self.get_alias_mapping(root_relation, aliases_mapping)
+                _order_column = getattr(_alias, column_leaf)
             if order_direction == "asc":
                 query = query.order_by(asc(_order_column))
             else:
