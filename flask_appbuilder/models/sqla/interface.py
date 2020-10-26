@@ -917,7 +917,6 @@ class SQLAInterface(BaseInterface):
             _filters = filters.copy()
         else:
             _filters = Filters(self.filter_converter_class, self)
-            _filters.add_filter(pk, self.FilterEqual, id)
 
         if self.is_pk_composite():
             for _pk, _id in zip(pk, id):
