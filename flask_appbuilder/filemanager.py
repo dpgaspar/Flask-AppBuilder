@@ -6,6 +6,7 @@ import uuid
 
 from flask.globals import _request_ctx_stack
 from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename
 from wtforms import ValidationError
 
 try:
@@ -74,11 +75,12 @@ class FileManager(object):
             os.remove(path)
 
     def save_file(self, data, filename):
-        path = self.get_path(filename)
+        filename_ = secure_filename(filename)
+        path = self.get_path(filename_)
         if not op.exists(op.dirname(path)):
             os.makedirs(os.path.dirname(path), self.permission)
         data.save(path)
-        return filename
+        return filename_
 
 
 class ImageManager(FileManager):

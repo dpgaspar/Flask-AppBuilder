@@ -374,9 +374,9 @@ class APITestCase(FABTestCase):
         self.appbuilder.add_api(Model1ApiIncludeRoutes)
 
     def tearDown(self):
-        self.appbuilder = None
-        self.app = None
-        self.db = None
+        self.appbuilder.get_session.close()
+        engine = self.db.session.get_bind(mapper=None, clause=None)
+        engine.dispose()
 
     def test_babel(self):
         """

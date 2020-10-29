@@ -2,7 +2,7 @@ import logging
 from flask import Flask
 from flask_appbuilder import AppBuilder
 from flask_sqlalchemy import SQLAlchemy
-from flask_appbuilder.models import SQLA
+from flask_appbuilder import SQLA
 from sqlalchemy import event
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")

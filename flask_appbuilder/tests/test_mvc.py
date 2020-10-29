@@ -5,6 +5,7 @@ from typing import Set
 
 from flask import Flask, redirect, request, session
 from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder.actions import action
 from flask_appbuilder.charts.views import (
     ChartView,
     DirectByChartView,
@@ -365,6 +366,8 @@ class MVCTestCase(BaseMVCTestCase):
                 "group": [["field_string", FilterEqual, "test0"]]
             }
 
+            order_columns = ["field_string", "group.field_string"]
+
         class Model22View(ModelView):
             datamodel = SQLAInterface(Model2)
             list_columns = [
@@ -388,6 +391,14 @@ class MVCTestCase(BaseMVCTestCase):
             list_columns = ["pk1", "pk2", "field_string"]
             add_columns = ["pk1", "pk2", "field_string"]
             edit_columns = ["pk1", "pk2", "field_string"]
+
+            @action(
+                "muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False
+            )
+            def muldelete(self, items):
+                self.datamodel.delete_all(items)
+                self.update_redirect()
+                return redirect(self.get_redirect())
 
         class Model1CompactView(CompactCRUDMixin, ModelView):
             datamodel = SQLAInterface(Model1)
@@ -829,6 +840,33 @@ class MVCTestCase(BaseMVCTestCase):
         model = self.db.session.query(Model3).filter_by(pk1=2).one_or_none()
         self.assertEqual(model, None)
 
+        # Add it back, then delete via muldelete
+        self.appbuilder.get_session.add(
+            Model3(pk1=1, pk2=datetime.datetime(2017, 1, 1), field_string="baz")
+        )
+        self.appbuilder.get_session.commit()
+        rv = client.post(
+            "/model3view/action_post",
+            data=dict(
+                action="muldelete",
+                rowid=[
+                    json.dumps(
+                        [
+                            "1",
+                            {
+                                "_type": "datetime",
+                                "value": "2017-01-01T00:00:00.000000",
+                            },
+                        ]
+                    )
+                ],
+            ),
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 200)
+        model = self.db.session.query(Model3).filter_by(pk1=1).one_or_none()
+        self.assertEqual(model, None)
+
     def test_model_crud_add_with_enum(self):
         """
             Test Model add for Model with Enum Columns
@@ -1058,9 +1096,22 @@ class MVCTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn(f"test{MODEL1_DATA_SIZE-1}", data)
 
+    def test_model_list_order_related(self):
+        """
+        Test Model order related field on lists
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = client.get(
+            "/model2view/list?_oc_Model2View=group.field_string&_od_Model2View=asc",
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 200)
+
     def test_model_add_unique_validation(self):
         """
-            Test Model add unique field validation
+        Test Model add unique field validation
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)

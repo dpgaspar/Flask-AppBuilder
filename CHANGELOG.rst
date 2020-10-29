@@ -1,6 +1,38 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.1.1
+-----------------------------------
+
+- fix: MVC order by related column use alias (#1504) [Daniel Vaz Gaspar]
+- fix: remove unnecessary CSS class/styling from dropdowns (#1503) [Ryan Hamilton]
+- deps: constraint pre 1 packages following semver (#1502) [Daniel Vaz Gaspar]
+- fix: MVC order by on relation (#1500) [Daniel Vaz Gaspar]
+- docs: add github actions badge (#1501) [Daniel Vaz Gaspar]
+- fix: remove unnecessary classes from dropdowns (#1491) [Ryan Hamilton]
+- ci: migrate from travis to github actions (#1497) [Daniel Vaz Gaspar]
+- fix: lint (#1498) [Daniel Vaz Gaspar]
+- fix: Improve UX by moving drop-down caret within clickable target (#1492) [Ryan Hamilton]
+- style: use a clearer visual representation for "delete" actions (#1495) [Ryan Hamilton]
+- fix: "actions" on ModelViews with composite primary keys (#1493) [Ash Berlin-Taylor]
+- docs: migrate examples/quickhowto3 to version 3.x.x (#1488) [luizduma]
+- fix: REST API inner joins eager loading (#1486) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 3.1.0
+-----------------------------------
+
+- Fix, sanitize the uploaded filename (#1482)
+- Fix, add missing font file format for glyphicons (#1483)
+- Docs, Remove incorrect possessive. `list's => lists`. (#1476)
+- Fix, select2 readonly not working (#1467)
+- Fix, improve type annotations on SQLAlchemy (#1458)
+- New, Support for OpenShift OAuth (#1454)
+- Fix, remove unnecessary strict option from schemas (#1466)
+- Fix, check if locale exists before loading it (#1460)
+- Fix, Update SQLAlchemy query for count_users (#1445)
+- Docs, Contributing (#1440)
+- Docs, improve, help contributions (#1438)
+
 Improvements and Bug fixes on 3.0.1
 -----------------------------------
 
