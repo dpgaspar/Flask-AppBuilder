@@ -2,7 +2,7 @@ import json
 import logging
 import os.path as op
 from typing import Set
-
+f
 from flask import (
     abort,
     flash,
@@ -432,7 +432,7 @@ class RestCRUDView(BaseCRUDView):
         ret_list = list()
         for item in result:
             pk = rel_datamodel.get_pk_value(item)
-            ret_list.append({"id": int(pk), "text": str(item)})
+            ret_list.append({"id": pk, "text": str(item)})
         ret_json = json.dumps(ret_list)
         return ret_json
 
@@ -501,7 +501,7 @@ class RestCRUDView(BaseCRUDView):
         ret_list = list()
         for item in result:
             pk = self.datamodel.get_pk_value(item)
-            ret_list.append({"id": int(pk), "text": str(item)})
+            ret_list.append({"id": pk, "text": str(item)})
 
         ret_json = json.dumps(ret_list)
         response = make_response(ret_json, 200)
@@ -841,8 +841,8 @@ class CompactCRUDMixin(BaseCRUDView):
             form_widget = self._add().get("add")
         elif session_form_widget == "edit":
             pk = self.get_key("session_form_edit_pk")
-            if pk and self.datamodel.get(int(pk)):
-                form_widget = self._edit(int(pk)).get("edit")
+            if pk and self.datamodel.get(pk):
+                form_widget = self._edit(pk).get("edit")
         return {
             "list": GroupFormListWidget(
                 list_widget=widgets.get("list"),
