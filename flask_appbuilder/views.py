@@ -2,7 +2,7 @@ import json
 import logging
 import os.path as op
 from typing import Set
-f
+
 from flask import (
     abort,
     flash,
