@@ -52,13 +52,14 @@ class OpenApi(BaseApi):
 
     @staticmethod
     def _create_api_spec(version):
+        api_url = url_for("OpenApi.get", version=version).rpartition("/")[0]
         return APISpec(
             title=current_app.appbuilder.app_name,
             version=version,
             openapi_version="3.0.2",
             info=dict(description=current_app.appbuilder.app_name),
             plugins=[MarshmallowPlugin()],
-            servers=[{"url": url_for("OpenApi.get", version=version)[:-9]}],
+            servers=[{"url": api_url}],
         )
 
 
