@@ -5,6 +5,7 @@ import uuid
 from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm.exc import MultipleResultsFound
+from sqlalchemy.exc import OperationalError
 from werkzeug.security import generate_password_hash
 
 from .models import (
@@ -230,7 +231,11 @@ class SecurityManager(BaseSecurityManager):
             return False
 
     def get_user_by_id(self, pk):
-        return self.get_session.query(self.user_model).get(pk)
+        try:
+            return self.get_session.query(self.user_model).get(pk)
+        except OperationalError:
+            self.get_session.rollback()
+            return self.get_session.query(self.user_model).get(pk)
 
     """
     -----------------------
