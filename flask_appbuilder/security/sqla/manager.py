@@ -4,8 +4,8 @@ import uuid
 
 from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
-from sqlalchemy.orm.exc import MultipleResultsFound
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import generate_password_hash
 
 from .models import (
