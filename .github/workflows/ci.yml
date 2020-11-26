@@ -131,14 +131,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: "finnp/create-file-action@master"
-          env:
-            FILE_NAME: "/etc/odbcinst.ini"
-            FILE_DATA: >-
-              [FreeTDS]
-              Description=FreeTDS Driver
-              Driver=/usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
-              Setup=/usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -147,6 +139,7 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           pip install -r requirements-extra.txt
+          cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
       - name: Run tests
         run: |
           nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder.tests --ignore-files="test_mongoengine\.py"
