@@ -116,7 +116,7 @@ jobs:
         python-version: [3.7]
     env:
       SQLALCHEMY_DATABASE_URI: |
-        mssql+pymssql://sa:Password_123@localhost:11433/master
+        mssql+pyodbc://sa:Password_123@localhost:11433/master?driver=ODBC+Driver+13+for+SQL+Server
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
