@@ -131,10 +131,18 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - uses: "finnp/create-file-action@master"
+          env:
+            FILE_NAME: "/etc/odbcinst.ini"
+            FILE_DATA: |
+              [FreeTDS]
+              Description=FreeTDS Driver
+              Driver=/usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
+              Setup=/usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev freetds-bin
+          sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev freetds-bin unixodbc-dev tdsodbc
           pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
