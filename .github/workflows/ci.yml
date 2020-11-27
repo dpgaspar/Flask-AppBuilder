@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.6, 3.7, 3.8, 3.9]
     env:
       SQLALCHEMY_DATABASE_URI:
         postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.7]
     env:
       SQLALCHEMY_DATABASE_URI: |
         mysql+mysqldb://mysqluser:mysqluserpassword@127.0.0.1:13306/app?charset=utf8mb4&binary_prefix=true
@@ -113,10 +113,10 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.7]
     env:
       SQLALCHEMY_DATABASE_URI: |
-        mssql+pymssql://sa:Password_123@localhost:11433/master
+        mssql+pyodbc://sa:Password_123@localhost:11433/master?driver=FreeTDS
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
@@ -134,11 +134,12 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev
+          sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev freetds-bin unixodbc-dev tdsodbc
           pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           pip install -r requirements-extra.txt
+          sudo cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
       - name: Run tests
         run: |
           nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder.tests --ignore-files="test_mongoengine\.py"

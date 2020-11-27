@@ -5,4 +5,4 @@ Pillow>=7.0.0, <8.0.0
 cython==0.29.17
 mysqlclient==2.0.1
 psycopg2-binary==2.8.6
-pymssql==2.1.4
+pyodbc==4.0.30
