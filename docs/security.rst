@@ -16,6 +16,204 @@ Configure the authentication type on config.py, take a look at :doc:`config`
 
 The session is preserved and encrypted using Flask-Login, OpenID requires Flask-OpenID.
 
+Authentication Methods
+----------------------
+
+You can choose one from 5 authentication methods. Configure the method to be used
+on the **config.py** (when using the create-app, or following the proposed app structure). First the
+configuration imports the constants for the authentication methods::
+
+    from flask_appbuilder.security.manager import (
+        AUTH_DB,
+        AUTH_LDAP,
+        AUTH_OAUTH,
+        AUTH_OID,
+        AUTH_REMOTE_USER
+    )
+
+Next you will use the **AUTH_TYPE** key to choose the type::
+
+    AUTH_TYPE = AUTH_DB
+
+Additionally you can customize the name of the builtin roles for Admin and Public accesses::
+
+    AUTH_ROLE_ADMIN = 'My Admin Role Name'
+    AUTH_ROLE_PUBLIC = 'My Public Role Name'
+
+Finally you can allow users to self register (take a look at the following chapters for further detail)::
+
+    AUTH_USER_REGISTRATION = True
+    AUTH_USER_REGISTRATION_ROLE = "My Public Role Name"
+
+These settings can apply to all the authentication methods. When you create your first admin user
+using **flask fab** command line, this user will be authenticated using the authentication method
+defined on your **config.py**.
+
+Authentication: Database
+------------------------
+
+The database authentication type is the most *simple* one, it authenticates users against an
+username and hashed password field kept on your database.
+
+Administrators can create users with passwords, and users can change their passwords. This is all done using the UI.
+(You can override and extend the default UI as we'll see on *Your Custom Security*)
+
+Authentication: OpenID
+----------------------
+
+This authentication method uses `Flask-OpenID <https://github.com/mitsuhiko/flask-openid>`_. All configuration is done
+on **config.py** using OPENID_PROVIDERS key, just add or remove from the list the providers you want to enable::
+
+    AUTH_TYPE = AUTH_OID
+    OPENID_PROVIDERS = [
+        { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
+        { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
+        { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
+        { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }
+    ]
+
+Each list entry is a dict with a readable OpenID name and it's url, if the url needs an username just add it using <username>.
+The login template for this method will provide a text box for the user to fillout his/her username.
+
+F.A.B. will ask for the 'email' from OpenID, and if this email belongs to some user on your application he/she will login successfully.
+
+Authentication: LDAP
+--------------------
+
+This method will authenticate the user's credentials against an LDAP server. For MSFT AD just define the LDAP server::
+
+    AUTH_TYPE = AUTH_LDAP
+    AUTH_LDAP_SERVER = "ldap://ldapserver.local"
+    AUTH_LDAP_USE_TLS = False
+
+For OpenLDAP or if you need/want to bind first with a query LDAP user,
+then using username to search the LDAP server and binding to it (using the user provided password)::
+
+    AUTH_TYPE = AUTH_LDAP
+    AUTH_LDAP_SERVER = "ldap://ldapserver.local"
+    AUTH_LDAP_USE_TLS = False
+    AUTH_LDAP_SEARCH = "dc=domain,dc=local"
+    AUTH_LDAP_BIND_USER = "CN=Query User,OU=People,dc=domain,dc=local"
+    AUTH_LDAP_BIND_PASSWORD = "password"
+
+For MSFT AD, users can be authenticated using the attribute 'userPrincipalName', so usernames will use the form
+'myusername@yourdomain.local'. You can set all domains to a certain default,
+allowing users to authenticate using 'myusername' instead of 'myusername@yourdomain.local'::
+
+    AUTH_LDAP_APPEND_DOMAIN = 'yourdomain.local'
+
+You can limit the LDAP search scope by configuring::
+
+    AUTH_LDAP_SEARCH_FILTER = "(memberOf=cn=myTeam,OU=type,dc=ex,cn=com)"
+
+The above example will limit all users to belong to the "myTeam" security group.
+
+For self user registration, use the following to config further:
+
+:AUTH_LDAP_UID_FIELD: Default to 'uid' will be used to search the user on the LDAP server.
+    For MSFT AD you can set it to 'userPrincipalName'
+
+:AUTH_LDAP_FIRSTNAME_FIELD: Default to 'givenName' will use MSFT AD attribute to register first_name on the db.
+
+:AUTH_LDAP_LASTTNAME_FIELD: Default to 'sn' will use MSFT AD attribute to register last_name on the db.
+
+:AUTH_LDAP_EMAIL_FIELD: Default to 'mail' will use MSFT AD attribute to register email on the db.
+    If this attribute is null the framework will register <username + '@email.notfound'>
+
+:AUTH_LDAP_SEARCH: This must be set when using self user registration.
+
+
+Authentication: OAuth
+---------------------
+
+By using this method it will be possible to use the provider API, this is because you're requesting the user to give
+permission to your app to access or manage the user's account on the provider.
+
+So you can send tweets, post on the users facebook, retrieve the user's linkedin profile etc.
+
+To use OAuth you need to install `AuthLib <https://docs.authlib.org/en/latest/index.html>`_. It's useful
+to get to know this library since F.A.B. will expose the remote application object for you to play with.
+
+Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
+to get an idea of a simple use for this.
+
+Use **config.py** configure OAUTH_PROVIDERS with a list of oauth providers, notice that the remote_app
+key is just the configuration for authlib::
+
+    AUTH_TYPE = AUTH_OAUTH
+
+    OAUTH_PROVIDERS = [
+        {'name':'twitter', 'icon':'fa-twitter',
+            'remote_app': {
+                'client_id':'TWITTER KEY',
+                'client_secret':'TWITTER SECRET',
+                'api_base_url':'https://api.twitter.com/1.1/',
+                'request_token_url':'https://api.twitter.com/oauth/request_token',
+                'access_token_url':'https://api.twitter.com/oauth/access_token',
+                'authorize_url':'https://api.twitter.com/oauth/authenticate'}
+        },
+        {'name':'google', 'icon':'fa-google', 'token_key':'access_token',
+            'remote_app': {
+                'client_id':'GOOGLE KEY',
+                'client_secret':'GOOGLE SECRET',
+                'api_base_url':'https://www.googleapis.com/oauth2/v2/',
+                'client_kwargs':{
+                  'scope': 'email profile'
+                },
+                'request_token_url':None,
+                'access_token_url':'https://accounts.google.com/o/oauth2/token',
+                'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+        },
+        {'name':'openshift', 'icon':'fa-circle-o', 'token_key':'access_token',
+            'remote_app': {
+                'client_id':'system:serviceaccount:mynamespace:mysa',
+                'client_secret':'<mysa serviceaccount token here>',
+                'api_base_url':'https://openshift.default.svc.cluster.local:443',
+                'client_kwargs':{
+                  'scope': 'user:info'
+                },
+                'redirect_uri':'https://myapp-mynamespace.apps.<cluster_domain>',
+                'access_token_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/token',
+                'authorize_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/authorize',
+                'token_endpoint_auth_method':'client_secret_post'}
+        }
+    ]
+
+This needs a small explanation, you basically have five special keys:
+
+:name: The name of the provider, you can choose whatever you want. But the framework as some
+    builtin logic to retrieve information about a user that you can make use of if you choose:
+    'twitter', 'google', 'github', 'linkedin', 'openshift'.
+
+:icon: The font-awesome icon for this provider.
+:token_key: The token key name that this provider uses, google and github uses *'access_token'*,
+    twitter uses *'oauth_token'* and thats the default.
+:token_secret: The token secret key name, default is *'oauth_token_secret'*
+
+After the user authenticates and grants access permissions to your application
+the framework retrieves information about the user, username and email. This info
+will be checked with the internal user (user record on User Model), first by username next by email.
+
+To override/customize the user information retrieval from oauth, you can create your own method like this::
+
+    @appbuilder.sm.oauth_user_info_getter
+    def my_user_info_getter(sm, provider, response=None):
+        if provider == 'github':
+            me = sm.oauth_remotes[provider].get('user')
+            return {'username': me.json().get('login')}
+        else:
+            return {}
+
+Decorate your method with the SecurityManager **oauth_user_info_getter** decorator.
+Make your method accept the exact parameters as on this example, and then return a dictionary
+with the retrieved user information. The dictionary keys must have the same column names as the User Model.
+Your method will be called after the user authorizes your application on the OAuth provider, and it will
+receive the following: **sm** is F.A.B's SecurityManager class, **provider** is a string with the name you configured
+this provider with, **response** is the response.
+
+Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
+
+
 Role based
 ----------
 
@@ -343,198 +541,6 @@ exclude them from add and edit form. Using our example you will define our view 
         add_columns = ['name']
         edit_columns = ['name']
 
-Authentication Methods
-----------------------
-
-We are now looking at the authentication methods, and how you can configure them and customize them.
-The framework has 5 authentication methods and you choose one of them, you configure the method to be used
-on the **config.py** (when using the create-app, or following the proposed app structure). First the
-configuration imports the constants for the authentication methods::
-
-    from flask_appbuilder.security.manager import (
-        AUTH_DB,
-        AUTH_LDAP,
-        AUTH_OAUTH,
-        AUTH_OID,
-        AUTH_REMOTE_USER
-    )
-
-Next you will use the **AUTH_TYPE** key to choose the type::
-
-    AUTH_TYPE = AUTH_DB
-    
-Additionally you can customize the name of the builtin roles for Admin and Public accesses::
-
-    AUTH_ROLE_ADMIN = 'My Admin Role Name'
-    AUTH_ROLE_PUBLIC = 'My Public Role Name'
-
-Finally you can allow users to self register (take a look at the following chapters for further detail)::
-
-    AUTH_USER_REGISTRATION = True
-    AUTH_USER_REGISTRATION_ROLE = "My Public Role Name"
-
-These settings can apply to all the authentication methods. When you create your first admin user
-using **flask fab** command line, this user will be authenticated using the authentication method
-defined on your **config.py**.
-
-Authentication: Database
-------------------------
-
-The database authentication type is the most *simple* one, it authenticates users against an
-username and hashed password field kept on your database.
-
-Administrators can create users with passwords, and users can change their passwords. This is all done using the UI.
-(You can override and extend the default UI as we'll see on *Your Custom Security*)
-
-Authentication: OpenID
-----------------------
-
-This authentication method uses `Flask-OpenID <https://github.com/mitsuhiko/flask-openid>`_. All configuration is done
-on **config.py** using OPENID_PROVIDERS key, just add or remove from the list the providers you want to enable::
-
-    AUTH_TYPE = AUTH_OID
-    OPENID_PROVIDERS = [
-        { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
-        { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
-        { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
-        { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }
-    ]
-
-Each list entry is a dict with a readable OpenID name and it's url, if the url needs an username just add it using <username>.
-The login template for this method will provide a text box for the user to fillout his/her username.
-
-F.A.B. will ask for the 'email' from OpenID, and if this email belongs to some user on your application he/she will login successfully.
-
-Authentication: LDAP
---------------------
-
-This method will authenticate the user's credentials against an LDAP server. Using this method without self user registration
-is very simple, for MSFT AD just define the LDAP server::
-
-    AUTH_TYPE = AUTH_LDAP
-    AUTH_LDAP_SERVER = "ldap://ldapserver.local"
-    AUTH_LDAP_USE_TLS = False
-
-For OpenLDAP or if you need/want to bind first with a query LDAP user, 
-then using username to search the LDAP server and binding to it (using the user provided password)::
-
-    AUTH_TYPE = AUTH_LDAP
-    AUTH_LDAP_SERVER = "ldap://ldapserver.local"
-    AUTH_LDAP_USE_TLS = False
-    AUTH_LDAP_SEARCH = "dc=domain,dc=local"
-    AUTH_LDAP_BIND_USER = "CN=Query User,OU=People,dc=domain,dc=local"
-    AUTH_LDAP_BIND_PASSWORD = "password"
-
-for MSFT AD users will be authenticated using the attribute 'userPrincipalName', so username's will be of the form
-'someuser@somedomail.local'. Since 1.6.1 you can use a new configuration to set all domains to a certain default,
-this will allow users to authenticate using 'someuser' be setting::
-
-    AUTH_LDAP_APPEND_DOMAIN = 'somedomain.local'
-
-When using self user registration, you can use the following to config further:
-
-:AUTH_LDAP_UID_FIELD: Default to 'uid' will be used to search the user on the LDAP server.
-    For MSFT AD you can set it to 'userPrincipalName'
-
-:AUTH_LDAP_FIRSTNAME_FIELD: Default to 'givenName' will use MSFT AD attribute to register first_name on the db.
-
-:AUTH_LDAP_LASTTNAME_FIELD: Default to 'sn' will use MSFT AD attribute to register last_name on the db.
-
-:AUTH_LDAP_EMAIL_FIELD: Default to 'mail' will use MSFT AD attribute to register email on the db.
-    If this attribute is null the framework will register <username + '@email.notfound'>
-
-:AUTH_LDAP_SEARCH: This must be set when using self user registration.
-
-
-Authentication: OAuth
----------------------
-
-By using this method it will be possible to use the provider API, this is because you're requesting the user to give
-permission to your app to access or manage the user's account on the provider.
-
-So you can send tweets, post on the users facebook, retrieve the user's linkedin profile etc.
-
-To use OAuth you need to install `AuthLib <https://docs.authlib.org/en/latest/index.html>`_. It's useful
-to get to know this library since F.A.B. will expose the remote application object for you to play with.
-
-Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_ 
-to get an idea of a simple use for this.
-
-Use **config.py** configure OAUTH_PROVIDERS with a list of oauth providers, notice that the remote_app
-key is just the configuration for authlib::
-
-    AUTH_TYPE = AUTH_OAUTH
-    
-    OAUTH_PROVIDERS = [
-        {'name':'twitter', 'icon':'fa-twitter',
-            'remote_app': {
-                'client_id':'TWITTER KEY',
-                'client_secret':'TWITTER SECRET',
-                'api_base_url':'https://api.twitter.com/1.1/',
-                'request_token_url':'https://api.twitter.com/oauth/request_token',
-                'access_token_url':'https://api.twitter.com/oauth/access_token',
-                'authorize_url':'https://api.twitter.com/oauth/authenticate'}
-        },
-        {'name':'google', 'icon':'fa-google', 'token_key':'access_token',
-            'remote_app': {
-                'client_id':'GOOGLE KEY',
-                'client_secret':'GOOGLE SECRET',
-                'api_base_url':'https://www.googleapis.com/oauth2/v2/',
-                'client_kwargs':{
-                  'scope': 'email profile'
-                },
-                'request_token_url':None,
-                'access_token_url':'https://accounts.google.com/o/oauth2/token',
-                'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
-        },
-        {'name':'openshift', 'icon':'fa-circle-o', 'token_key':'access_token',
-            'remote_app': {
-                'client_id':'system:serviceaccount:mynamespace:mysa',
-                'client_secret':'<mysa serviceaccount token here>',
-                'api_base_url':'https://openshift.default.svc.cluster.local:443',
-                'client_kwargs':{
-                  'scope': 'user:info'
-                },
-                'redirect_uri':'https://myapp-mynamespace.apps.<cluster_domain>',
-                'access_token_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/token',
-                'authorize_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/authorize',
-                'token_endpoint_auth_method':'client_secret_post'}
-        }
-    ]
-
-This needs a small explanation, you basically have five special keys:
-
-:name: The name of the provider, you can choose whatever you want. But the framework as some 
-    builtin logic to retrieve information about a user that you can make use of if you choose:
-    'twitter', 'google', 'github', 'linkedin', 'openshift'.
- 
-:icon: The font-awesome icon for this provider.
-:token_key: The token key name that this provider uses, google and github uses *'access_token'*,
-    twitter uses *'oauth_token'* and thats the default.
-:token_secret: The token secret key name, default is *'oauth_token_secret'*
-
-After the user authenticates and grants access permissions to your application
-the framework retrieves information about the user, username and email. This info
-will be checked with the internal user (user record on User Model), first by username next by email.
-
-To override/customize the user information retrieval from oauth, you can create your own method like this::
-
-    @appbuilder.sm.oauth_user_info_getter
-    def my_user_info_getter(sm, provider, response=None):
-        if provider == 'github':
-            me = sm.oauth_remotes[provider].get('user')
-            return {'username': me.json().get('login')}
-        else:
-            return {}
-        
-Decorate your method with the SecurityManager **oauth_user_info_getter** decorator.
-Make your method accept the exact parameters as on this example, and then return a dictionary 
-with the retrieved user information. The dictionary keys must have the same column names as the User Model.
-Your method will be called after the user authorizes your application on the OAuth provider, and it will
-receive the following: **sm** is F.A.B's SecurityManager class, **provider** is a string with the name you configured 
-this provider with, **response** is the response.
-
-Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
 
 Your Custom Security
 --------------------
