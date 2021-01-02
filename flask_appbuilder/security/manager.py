@@ -211,6 +211,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault("AUTH_ROLE_ADMIN", "Admin")
         app.config.setdefault("AUTH_ROLE_PUBLIC", "Public")
         app.config.setdefault("AUTH_TYPE", AUTH_DB)
+        app.config.setdefault("USE_RECAPTCHA_AUTH_DB", False)
+
         # Self Registration
         app.config.setdefault("AUTH_USER_REGISTRATION", False)
         app.config.setdefault("AUTH_USER_REGISTRATION_ROLE", self.auth_role_public)

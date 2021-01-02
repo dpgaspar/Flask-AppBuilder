@@ -18,6 +18,10 @@ class LoginForm_db(DynamicForm):
     password = PasswordField(lazy_gettext("Password"), validators=[DataRequired()])
 
 
+class LoginFormDbCaptcha(LoginForm_db):
+    recaptcha = RecaptchaField()
+
+
 class UserInfoEdit(DynamicForm):
     first_name = StringField(
         lazy_gettext("First Name"),

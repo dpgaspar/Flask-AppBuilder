@@ -11,7 +11,13 @@ from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
 
 from .decorators import has_access
-from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, UserInfoEdit
+from .forms import (
+    LoginForm_db,
+    LoginForm_oid,
+    LoginFormDbCaptcha,
+    ResetPasswordForm,
+    UserInfoEdit,
+)
 from .._compat import as_unicode
 from ..actions import action
 from ..baseviews import BaseView
@@ -487,7 +493,12 @@ class AuthDBView(AuthView):
     def login(self):
         if g.user is not None and g.user.is_authenticated:
             return redirect(self.appbuilder.get_url_for_index)
-        form = LoginForm_db()
+        form = (
+            LoginFormDbCaptcha()
+            if self.appbuilder.app.config["USE_RECAPTCHA_AUTH_DB"]
+            else LoginForm_db()
+        )
+
         if form.validate_on_submit():
             user = self.appbuilder.sm.auth_user_db(
                 form.username.data, form.password.data

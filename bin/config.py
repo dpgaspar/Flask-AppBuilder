@@ -30,7 +30,6 @@ LANGUAGES = {
 }
 
 
-
 #------------------------------
 # GLOBALS FOR GENERAL APP's
 #------------------------------
@@ -40,6 +39,8 @@ IMG_UPLOAD_URL = '/static/uploads/'
 AUTH_TYPE = 1
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
+USE_RECAPTCHA_AUTH_DB = False
+
 APP_NAME = "My App 0.2"
 APP_THEME = ""                  # default
 #APP_THEME = "cerulean.css"      # COOL

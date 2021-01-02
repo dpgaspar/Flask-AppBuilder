@@ -42,6 +42,8 @@ AUTH_TYPE = 1
 AUTH_ROLE_ADMIN = "Admin"
 AUTH_ROLE_PUBLIC = "Public"
 
+USE_RECAPTCHA_AUTH_DB = False
+
 # --------------------------------------
 # User registration
 AUTH_USER_REGISTRATION = True
