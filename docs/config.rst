@@ -26,6 +26,10 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | AUTH_USER_REGISTRATION =               | Set to True to enable user self            |   No      |
 | True|False                             | registration                               |           |
 +----------------------------------------+--------------------------------------------+-----------+
+| USE_RECAPTCHA_AUTH_DB =                | Set to True to enable recapcha             |   No      |
+| True|False                             | in login page                              |           |
+|                                        | Default is False                           |           |
++----------------------------------------+--------------------------------------------+-----------+
 | AUTH_USERNAME_CI =                     | Make auth login CI of not defaults to true |   No      |
 | True|False                             |                                            |           |
 +----------------------------------------+--------------------------------------------+-----------+
@@ -257,10 +261,10 @@ Use config.py to configure the following parameters. By default it will use SQLL
 
 Using config.py
 ---------------
- 
+
 My favorite way, and the one I advise if you are building a medium to large size application
 is to place all your configuration keys on a config.py file
- 
+
 Next you only have to import them to the Flask app object, like this
 ::
 
@@ -275,10 +279,10 @@ Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBui
 Using JMESPath to map user registration role
 --------------------------------------------
 
-If user self registration is enabled and ``AUTH_USER_REGISTRATION_ROLE_JMESPATH`` is set, it is 
+If user self registration is enabled and ``AUTH_USER_REGISTRATION_ROLE_JMESPATH`` is set, it is
 used as a `JMESPath <http://jmespath.org/>`_ expression to evalate user registration role. The input
 values is ``userinfo`` dict, returned by ``get_oauth_user_info`` function of Security Manager.
-Usage of JMESPath expressions requires `jmespath <https://pypi.org/project/jmespath/>`_ package 
+Usage of JMESPath expressions requires `jmespath <https://pypi.org/project/jmespath/>`_ package
 to be installed.
 
 In case of Google OAuth, userinfo contains user's email that can be used to map some users as admins

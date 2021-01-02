@@ -104,6 +104,47 @@ class MVCBabelTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 302)
 
 
+class SecurityViewsTestCase(FABTestCase):
+    def test_login_db_default_no_recaptcha(self):
+        """
+        MVC: Test default login db without recaptcha
+        """
+        app = Flask(__name__)
+        app.config.from_object("flask_appbuilder.tests.config_api")
+        app.config["LANGUAGES"] = {}
+        db = SQLA(app)
+        AppBuilder(app, db.session)
+
+        client = app.test_client()
+        rv = client.get("/login/")
+        self.assertEqual(rv.status_code, 200)
+
+        data = rv.data.decode("utf-8")
+        self.assertNotIn("https://www.google.com/recaptcha/api.js", data)
+
+    def test_login_db_with_recaptcha(self):
+        """
+        MVC: Test login form with recaptcha configured
+        """
+        app = Flask(__name__)
+        app.config.from_object("flask_appbuilder.tests.config_api")
+        app.config["LANGUAGES"] = {}
+        app.config["USE_RECAPTCHA_AUTH_DB"] = True
+        app.config["RECAPTCHA_PUBLIC_KEY"] = "6LedRP0SAAAAAOF03Nsv_ny2NzOF_Dthe_Xn269v"
+        app.config["RECAPTCHA_PRIVATE_KEY"] = "6LedRP0SAAAAAPnsdEKgj5VU1QbFcPv7mO8cW0So"
+
+        db = SQLA(app)
+        AppBuilder(app, db.session)
+
+        client = app.test_client()
+        rv = client.get("/login/")
+        self.assertEqual(rv.status_code, 200)
+
+        data = rv.data.decode("utf-8")
+        self.assertIn("https://www.google.com/recaptcha/api.js", data)
+        self.assertIn('<div class="g-recaptcha" data-sitekey="', data)
+
+
 class BaseMVCTestCase(FABTestCase):
     def setUp(self):
         self.app = Flask(__name__)
