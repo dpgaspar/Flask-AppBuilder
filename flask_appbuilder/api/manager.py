@@ -20,6 +20,8 @@ class OpenApi(BaseApi):
             to a certain version
         ---
         get:
+          description: >-
+            Get the OpenAPI spec for a specific API version
           parameters:
           - in: path
             schema:
@@ -27,7 +29,7 @@ class OpenApi(BaseApi):
             name: version
           responses:
             200:
-              description: Item from Model
+              description: The OpenAPI spec
               content:
                 application/json:
                   schema:
@@ -62,6 +64,7 @@ class OpenApi(BaseApi):
 
 class SwaggerView(BaseView):
 
+    route_base = "/swagger"
     default_view = "ui"
     openapi_uri = "/api/{}/_openapi"
 

@@ -1,6 +1,68 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.1.1
+-----------------------------------
+
+- fix: MVC order by related column use alias (#1504) [Daniel Vaz Gaspar]
+- fix: remove unnecessary CSS class/styling from dropdowns (#1503) [Ryan Hamilton]
+- deps: constraint pre 1 packages following semver (#1502) [Daniel Vaz Gaspar]
+- fix: MVC order by on relation (#1500) [Daniel Vaz Gaspar]
+- docs: add github actions badge (#1501) [Daniel Vaz Gaspar]
+- fix: remove unnecessary classes from dropdowns (#1491) [Ryan Hamilton]
+- ci: migrate from travis to github actions (#1497) [Daniel Vaz Gaspar]
+- fix: lint (#1498) [Daniel Vaz Gaspar]
+- fix: Improve UX by moving drop-down caret within clickable target (#1492) [Ryan Hamilton]
+- style: use a clearer visual representation for "delete" actions (#1495) [Ryan Hamilton]
+- fix: "actions" on ModelViews with composite primary keys (#1493) [Ash Berlin-Taylor]
+- docs: migrate examples/quickhowto3 to version 3.x.x (#1488) [luizduma]
+- fix: REST API inner joins eager loading (#1486) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 3.1.0
+-----------------------------------
+
+- Fix, sanitize the uploaded filename (#1482)
+- Fix, add missing font file format for glyphicons (#1483)
+- Docs, Remove incorrect possessive. `list's => lists`. (#1476)
+- Fix, select2 readonly not working (#1467)
+- Fix, improve type annotations on SQLAlchemy (#1458)
+- New, Support for OpenShift OAuth (#1454)
+- Fix, remove unnecessary strict option from schemas (#1466)
+- Fix, check if locale exists before loading it (#1460)
+- Fix, Update SQLAlchemy query for count_users (#1445)
+- Docs, Contributing (#1440)
+- Docs, improve, help contributions (#1438)
+
+Improvements and Bug fixes on 3.0.1
+-----------------------------------
+
+- Fix, google charts (#1431)
+- Fix, del permission assertion on roles (#1434)
+
+Improvements and Bug fixes on 3.0.0
+-----------------------------------
+
+- Fix, swagger test (#1423)
+- Fix, change openapi tags and swagger access URL (breaking) (#1422)
+- Fix, replace deprecated flask-oauthlib with authlib (#1411)
+- Refactor, interface query on m-m joins and select specific columns (#1398)
+- Fix, docs on has_view_access (#1419)
+- New, Examples/react api (#1071)
+- Fix, action confirmation disabling (#1408)
+- New, add API descriptions and examples to OpenAPI spec (#1396)
+- New, Dynamic user registration role (#1410)
+- Fix, typos and improved bit of the German translation (#1406)
+- New, Added Dutch language to docs (#1393)
+- New, Added Dutch translation (#1387)
+- Fix, load options and limits for many to many truncating results (#1389)
+- Fix, SQLAlchemyAutoSchema needs marshmallow-sqlalchemy>=0.22.0 (#1392)
+- New, [api] support marshmallow 3 (#1334)
+- Fix, hardcoded url on oauth (#1331)
+- Fix, [examples] Update models.py (#1380)
+- Fix: add a panel body to panel_begin/panel_end macros (#1377)
+- Fix, name column resizing in ab_view_menu table #1367 (#1368)
+- Fix, typos in the documentation (#1375)
+
 Improvements and Bug fixes on 2.3.4
 -----------------------------------
 

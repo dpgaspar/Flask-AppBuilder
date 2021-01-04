@@ -1,5 +1,5 @@
-from flask_appbuilder import GeneralView
-from flask_appbuilder.models.datamodel import SQLAModel
+from flask_appbuilder import ModelView
+from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.charts.views import ChartView, TimeChartView
 from flask_babel import lazy_gettext as _
 
@@ -16,8 +16,8 @@ def fill_gender():
         session.rollback()
 
 
-class ContactGeneralView(GeneralView):
-    datamodel = SQLAModel(Contact)
+class ContactModelView(ModelView):
+    datamodel = SQLAInterface(Contact)
 
     label_columns = {"group": "Contacts Group"}
     list_columns = ["name", "personal_celphone", "birthday", "group"]
@@ -75,22 +75,21 @@ class ContactGeneralView(GeneralView):
 
 class ContactChartView(ChartView):
     chart_title = "Grouped contacts"
-    label_columns = ContactGeneralView.label_columns
+    label_columns = ContactModelView.label_columns
     group_by_columns = ["group", "gender"]
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
 
 
 class ContactTimeChartView(TimeChartView):
     chart_title = "Grouped Birth contacts"
     chart_type = "AreaChart"
-    label_columns = ContactGeneralView.label_columns
+    label_columns = ContactModelView.label_columns
     group_by_columns = ["birthday"]
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
 
-
-class GroupGeneralView(GeneralView):
-    datamodel = SQLAModel(Group)
-    related_views = [ContactGeneralView]
+class GroupModelView(ModelView):
+    datamodel = SQLAInterface(Group)
+    related_views = [ContactModelView]
 
 
 fixed_translations_import = [
@@ -103,14 +102,14 @@ fixed_translations_import = [
 
 fill_gender()
 appbuilder.add_view(
-    GroupGeneralView,
+    GroupModelView,
     "List Groups",
     icon="fa-folder-open-o",
     category="Contacts",
     category_icon="fa-envelope",
 )
 appbuilder.add_view(
-    ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts"
+    ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
 )
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(

@@ -48,19 +48,19 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
         }
         $el.append(
             $('<td/>').append($field)
-            );;
+            );
     }
 
 	function addRemoveFilter($el, name, label)
 	{
 		$el.append(
-                $('<td class="col-lg-1 col-md-1" />').append(
-                    $('<a href="#" class="btn remove-filter" />')
-                        .append($('<span class="close-icon">&times;</span>'))
-                        .append('&nbsp;')
-                        .append(label)
-                        .on('click', removeFilter)
-                    )
+            $('<td class="col-lg-1 col-md-1" />').append(
+                $('<a href="#" class="btn remove-filter" />')
+                    .append($('<span class="close-icon">&times;</span>'))
+                    .append('&nbsp;')
+                    .append(label)
+                    .on('click', removeFilter)
+                )
             );
 	}
 
@@ -126,7 +126,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
         	$field.datetimepicker({pickTime: false });
         }
         lastCount += 1;
-    };
+    }
 
 	// ----------------------------------------------------------
 	// Trigger for option change will change input element name
@@ -138,7 +138,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 
 
     $('a.filter').on('click', function() {
-        var name = $(this).attr('name')
+        var name = $(this).attr('name');
         addFilter(name);
     });
     

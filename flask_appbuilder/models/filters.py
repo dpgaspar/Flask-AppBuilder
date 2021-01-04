@@ -1,6 +1,6 @@
 import copy
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Type
 
 from .._compat import as_unicode
 from ..exceptions import (
@@ -128,10 +128,10 @@ class Filters(object):
 
     def __init__(
         self,
-        filter_converter: BaseFilterConverter,
+        filter_converter: Type[BaseFilterConverter],
         datamodel,
-        search_columns: List[str] = None,
-        search_filters: Dict[str, List[BaseFilter]] = None,
+        search_columns: Optional[List[str]] = None,
+        search_filters: Optional[Dict[str, List[BaseFilter]]] = None,
     ):
         """
 

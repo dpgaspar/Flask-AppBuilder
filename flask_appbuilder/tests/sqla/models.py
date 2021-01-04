@@ -18,6 +18,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import backref, relationship
 
+from ..const import MODELOMCHILD_DATA_SIZE
+
 
 def validate_name(n):
     if n[0] != "A":
@@ -35,8 +37,9 @@ class Model1(Model):
         return str(self.field_string)
 
     def full_concat(self):
-        return "{}.{}.{}.{}".format(
-            self.field_string, self.field_integer, self.field_float, self.field_date
+        return (
+            f"{self.field_string}.{self.field_integer}"
+            f".{self.field_float}.{self.field_date}"
         )
 
 
@@ -320,18 +323,18 @@ def insert_data(session, count):
         session.add(model)
         session.commit()
 
-    model_oo_parents = list()
+    model_om_parents = list()
     for i in range(count):
         model = ModelOMParent()
         model.field_string = f"text{i}"
         session.add(model)
         session.commit()
-        model_oo_parents.append(model)
+        model_om_parents.append(model)
 
     for i in range(count):
-        for j in range(1, 4):
+        for j in range(1, MODELOMCHILD_DATA_SIZE):
             model = ModelOMChild()
             model.field_string = f"text{i}.{j}"
-            model.parent = model_oo_parents[i]
+            model.parent = model_om_parents[i]
             session.add(model)
             session.commit()
