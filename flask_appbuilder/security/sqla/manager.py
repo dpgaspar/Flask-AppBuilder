@@ -28,6 +28,7 @@ class SecurityManager(BaseSecurityManager):
     """
         Responsible for authentication, registering security views,
         role and permission auto management
+
         If you want to change anything just inherit and override, then
         pass your own security manager to AppBuilder.
     """
@@ -107,6 +108,7 @@ class SecurityManager(BaseSecurityManager):
     ):
         """
             Add a registration request for the user.
+
             :rtype : RegisterUser
         """
         register_user = self.registeruser_model()
@@ -131,6 +133,7 @@ class SecurityManager(BaseSecurityManager):
     def del_register_user(self, register_user):
         """
             Deletes registration object from database
+
             :param register_user: RegisterUser object to delete
         """
         try:
@@ -301,6 +304,7 @@ class SecurityManager(BaseSecurityManager):
         """
             Method to efficiently check if a certain permission exists
             on a list of role id's. This is used by `has_access`
+
         :param view_name: The view's name to check if exists on one of the roles
         :param permission_name: The permission name to check if exists
         :param role_ids: a list of Role ids
@@ -358,6 +362,7 @@ class SecurityManager(BaseSecurityManager):
     def add_permission(self, name):
         """
             Adds a permission to the backend, model permission
+
             :param name:
                 name of the permission: 'can_add','can_edit' etc...
         """
@@ -377,6 +382,7 @@ class SecurityManager(BaseSecurityManager):
     def del_permission(self, name: str) -> bool:
         """
             Deletes a permission from the backend, model permission
+
             :param name:
                 name of the permission: 'can_add','can_edit' etc...
         """
@@ -442,6 +448,7 @@ class SecurityManager(BaseSecurityManager):
     def del_view_menu(self, name: str) -> bool:
         """
             Deletes a ViewMenu from the backend
+
             :param name:
                 name of the ViewMenu
         """
@@ -488,6 +495,7 @@ class SecurityManager(BaseSecurityManager):
     def find_permissions_view_menu(self, view_menu):
         """
             Finds all permissions from ViewMenu, returns list of PermissionView
+
             :param view_menu: ViewMenu object
             :return: list of PermissionView objects
         """
@@ -500,6 +508,7 @@ class SecurityManager(BaseSecurityManager):
     def add_permission_view_menu(self, permission_name, view_menu_name):
         """
             Adds a permission on a view or menu to the backend
+
             :param permission_name:
                 name of the permission to add: 'can_add','can_edit' etc...
             :param view_menu_name:
@@ -576,6 +585,7 @@ class SecurityManager(BaseSecurityManager):
     def add_permission_role(self, role, perm_view):
         """
             Add permission-ViewMenu object to Role
+
             :param role:
                 The role object
             :param perm_view:
@@ -596,6 +606,7 @@ class SecurityManager(BaseSecurityManager):
     def del_permission_role(self, role, perm_view):
         """
             Remove permission-ViewMenu object to Role
+
             :param role:
                 The role object
             :param perm_view:
