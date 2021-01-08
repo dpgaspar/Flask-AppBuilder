@@ -49,6 +49,7 @@ var AdminActions = function() {
         action_confirmation = confirmation;
 
         if (!!confirmation) {
+            $("#modal-confirm .modal-body").text(confirmation);
             $('#modal-confirm').modal('show');
         }
         else {
