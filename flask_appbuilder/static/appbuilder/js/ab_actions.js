@@ -29,6 +29,7 @@ var AdminActions = function() {
         }
 
         if (!!confirmation) {
+            $("#modal-confirm .modal-body").text(confirmation);
             $('#modal-confirm').modal('show');
         }
         else {
