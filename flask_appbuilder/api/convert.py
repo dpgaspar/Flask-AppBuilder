@@ -152,21 +152,21 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             field = fields.Nested(nested_schema, many=many, required=required)
             field.unique = datamodel.is_unique(column.data)
             return field
-        # Handle bug on marshmallow-sqlalchemy #163
-        elif datamodel.is_relation(column.data):
-            if datamodel.is_relation_many_to_many(
-                column.data
-            ) or datamodel.is_relation_one_to_many(column.data):
-                if datamodel.get_info(column.data).get("required", False):
-                    required = True
-                else:
-                    required = False
+        # Handle bug on marshmallow-sqlalchemy
+        # https://github.com/marshmallow-code/marshmallow-sqlalchemy/issues/163
+        if datamodel.is_relation_many_to_many(
+            column.data
+        ) or datamodel.is_relation_one_to_many(column.data):
+            if datamodel.get_info(column.data).get("required", False):
+                required = True
             else:
-                required = not datamodel.is_nullable(column.data)
-            field = field_for(datamodel.obj, column.data)
-            field.required = required
-            field.unique = datamodel.is_unique(column.data)
-            return field
+                required = False
+        else:
+            required = not datamodel.is_nullable(column.data)
+        field = field_for(datamodel.obj, column.data)
+        field.required = required
+        field.unique = datamodel.is_unique(column.data)
+        return field
 
     def _column2field(
         self,
@@ -185,7 +185,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         """
         # Handle relations
         if datamodel.is_relation(column.data):
-            self._column2relation(datamodel, column, nested=nested)
+            return self._column2relation(datamodel, column, nested=nested)
         # Handle Enums
         elif datamodel.is_enum(column.data):
             return self._column2enum(
