@@ -552,6 +552,20 @@ class BaseSecurityManager(AbstractSecurityManager):
             Since there are different OAuth API's with different ways to
             retrieve user info
         """
+        remote = self.oauth_remotes[provider]
+        metadata = remote.load_server_metadata()
+        # from `userinfo_endpoint`
+        # https://docs.authlib.org/en/latest/client/frameworks.html?highlight=userinfo#userinfo-endpoint
+        if "userinfo_endpoint" in metadata:
+            userinfo = remote.userinfo()
+            log.debug("User info from {}: {}".format(provider, userinfo))
+            return {
+                "username": userinfo["username"],
+                "email": userinfo.get("email"),
+                "first_name": userinfo.get("first_name"),
+                "last_name": userinfo.get("last_name"),
+            }
+
         # for GITHUB
         if provider == "github" or provider == "githublocal":
             me = self.appbuilder.sm.oauth_remotes[provider].get("user")

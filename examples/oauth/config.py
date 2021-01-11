@@ -40,6 +40,16 @@ CSRF_ENABLED = True
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
 AUTH_TYPE = AUTH_OAUTH
 
+
+def normalize_userinfo(client, data):
+    return {
+        'sub': str(data['id']),
+        'name': data['username'],
+        'username': data['username'],
+        'email': data.get('email'),
+        'first_name': data['name'],
+    }
+
 OAUTH_PROVIDERS = [
     {
         "name": "twitter",
@@ -104,6 +114,21 @@ OAUTH_PROVIDERS = [
             ),
         },
     },
+    {
+        'name': 'gitlab',
+        'icon': 'fa-gitlab',
+        'token_key': 'access_token',
+        'remote_app': {
+            "client_id": os.environ.get("GITLAB_KEY"),
+            "client_secret": os.environ.get("GITLAB_SECRET"),
+            'api_base_url': 'https://gitlab.com/api/v4/',
+            'access_token_url': 'https://gitlab.com/oauth/token',
+            'authorize_url': 'https://gitlab.com/oauth/authorize',
+            'userinfo_endpoint': 'user',
+            'userinfo_compliance_fix': normalize_userinfo,
+            'client_kwargs': {'scope': 'email read_user'},
+        }
+    }
 ]
 
 # Uncomment to setup Full admin role name
