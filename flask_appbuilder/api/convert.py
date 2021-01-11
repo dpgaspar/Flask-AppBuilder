@@ -1,4 +1,9 @@
+from typing import List
+
+from flask_appbuilder.models.sqla import Model
+from flask_appbuilder.models.sqla.interface import SQLAInterface
 from marshmallow import fields
+from marshmallow.fields import Field
 from marshmallow_enum import EnumField
 from marshmallow_sqlalchemy import field_for
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
@@ -15,7 +20,7 @@ class TreeNode:
 
 class Tree:
     """
-        Simplistic one level Tree
+    Simplistic one level Tree
     """
 
     def __init__(self):
@@ -42,7 +47,7 @@ class Tree:
         return ret
 
 
-def columns2Tree(columns):
+def columns2Tree(columns: List[str]) -> Tree:
     tree = Tree()
     for column in columns:
         if "." in column:
@@ -53,7 +58,7 @@ def columns2Tree(columns):
 
 
 class BaseModel2SchemaConverter(object):
-    def __init__(self, datamodel, validators_columns):
+    def __init__(self, datamodel: SQLAInterface, validators_columns):
         """
         :param datamodel: SQLAInterface
         """
@@ -69,7 +74,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         Class that converts Models to marshmallow Schemas
     """
 
-    def __init__(self, datamodel, validators_columns):
+    def __init__(self, datamodel: SQLAInterface, validators_columns):
         """
         :param datamodel: SQLAInterface
         """
@@ -80,9 +85,9 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         for k, v in schema._declared_fields.items():
             print(k, v)
 
-    def _meta_schema_factory(self, columns, model, class_mixin):
+    def _meta_schema_factory(self, columns: List[str], model: Model, class_mixin):
         """
-            Creates ModelSchema marshmallow-sqlalchemy
+        Creates ModelSchema marshmallow-sqlalchemy
 
         :param columns: a list of columns to mix
         :param model: Model
@@ -109,18 +114,28 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
 
         return MetaSchema
 
-    def _column2field(self, datamodel, column, nested=True, enum_dump_by_name=False):
-        """
+    def _column2enum(
+        self,
+        datamodel: SQLAInterface,
+        column: TreeNode,
+        enum_dump_by_name: bool = False,
+    ):
+        required = not datamodel.is_nullable(column.data)
+        enum_class = datamodel.list_columns[column.data].info.get(
+            "enum_class", datamodel.list_columns[column.data].type
+        )
+        if enum_dump_by_name:
+            enum_dump_by = EnumField.NAME
+        else:
+            enum_dump_by = EnumField.VALUE
+        field = EnumField(enum_class, dump_by=enum_dump_by, required=required)
+        field.unique = datamodel.is_unique(column.data)
+        return field
 
-        :param datamodel: SQLAInterface
-        :param column: TreeNode column (childs are dotted column)
-        :param nested: Boolean if will create nested fields
-        :param enum_dump_by_name:
-        :return: Schema.field
-        """
-        _model = datamodel.obj
-        # Handle relations
-        if datamodel.is_relation(column.data) and nested:
+    def _column2relation(
+        self, datamodel: SQLAInterface, column: TreeNode, nested: bool = False
+    ):
+        if nested:
             required = not datamodel.is_nullable(column.data)
             nested_model = datamodel.get_related_model(column.data)
             lst = [item.data for item in column.childs]
@@ -148,32 +163,43 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                     required = False
             else:
                 required = not datamodel.is_nullable(column.data)
-            field = field_for(_model, column.data)
+            field = field_for(datamodel.obj, column.data)
             field.required = required
             field.unique = datamodel.is_unique(column.data)
             return field
+
+    def _column2field(
+        self,
+        datamodel: SQLAInterface,
+        column: TreeNode,
+        nested: bool = True,
+        enum_dump_by_name: bool = False,
+    ) -> Field:
+        """
+
+        :param datamodel: SQLAInterface
+        :param column: TreeNode column (childs are dotted columns)
+        :param nested: Boolean if will create nested fields
+        :param enum_dump_by_name:
+        :return: Schema.field
+        """
+        # Handle relations
+        if datamodel.is_relation(column.data):
+            self._column2relation(datamodel, column, nested=nested)
         # Handle Enums
         elif datamodel.is_enum(column.data):
-            required = not datamodel.is_nullable(column.data)
-            enum_class = datamodel.list_columns[column.data].info.get(
-                "enum_class", datamodel.list_columns[column.data].type
+            return self._column2enum(
+                datamodel, column, enum_dump_by_name=enum_dump_by_name
             )
-            if enum_dump_by_name:
-                enum_dump_by = EnumField.NAME
-            else:
-                enum_dump_by = EnumField.VALUE
-            field = EnumField(enum_class, dump_by=enum_dump_by, required=required)
-            field.unique = datamodel.is_unique(column.data)
-            return field
         # is custom property method field?
-        if hasattr(getattr(_model, column.data), "fget"):
+        if hasattr(getattr(datamodel.obj, column.data), "fget"):
             return fields.Raw(dump_only=True)
         # its a model function
-        if hasattr(getattr(_model, column.data), "__call__"):
-            return fields.Function(getattr(_model, column.data), dump_only=True)
+        if hasattr(getattr(datamodel.obj, column.data), "__call__"):
+            return fields.Function(getattr(datamodel.obj, column.data), dump_only=True)
         # is a normal model field not a function?
-        if not hasattr(getattr(_model, column.data), "__call__"):
-            field = field_for(_model, column.data)
+        if not hasattr(getattr(datamodel.obj, column.data), "__call__"):
+            field = field_for(datamodel.obj, column.data)
             field.unique = datamodel.is_unique(column.data)
             if column.data in self.validators_columns:
                 if field.validate is None:
