@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Type
 
 from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -85,7 +85,9 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         for k, v in schema._declared_fields.items():
             print(k, v)
 
-    def _meta_schema_factory(self, columns: List[str], model: Model, class_mixin):
+    def _meta_schema_factory(
+        self, columns: List[str], model: Model, class_mixin, parent_schema=None
+    ):
         """
         Creates ModelSchema marshmallow-sqlalchemy
 
@@ -208,7 +210,13 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                 field.validators.append(self.validators_columns[column.data])
             return field
 
-    def convert(self, columns, model=None, nested=True, enum_dump_by_name=False):
+    def convert(
+        self,
+        columns: List[str],
+        model: Type[Model] = None,
+        nested: bool = True,
+        enum_dump_by_name: bool = False,
+    ):
         """
             Creates a Marshmallow ModelSchema class
 
