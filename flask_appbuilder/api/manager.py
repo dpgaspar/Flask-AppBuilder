@@ -14,7 +14,9 @@ def resolver(schema):
     name = schema_cls.__name__
     if name == "MetaSchema":
         if hasattr(schema_cls, "Meta"):
-            return schema_cls.Meta.model.__name__
+            return (
+                f"{schema_cls.Meta.parent_schema_name}.{schema_cls.Meta.model.__name__}"
+            )
     if name.endswith("Schema"):
         return name[:-6] or name
     return name

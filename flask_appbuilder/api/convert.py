@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List, Optional, Type
 
 from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -86,7 +86,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             print(k, v)
 
     def _meta_schema_factory(
-        self, columns: List[str], model: Model, class_mixin, parent_schema=None
+        self, columns: List[str], model: Model, class_mixin, parent_schema_name=None
     ):
         """
         Creates ModelSchema marshmallow-sqlalchemy
@@ -97,6 +97,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         :return: ModelSchema
         """
         _model = model
+        _parent_schema_name = parent_schema_name
         if columns:
 
             class MetaSchema(SQLAlchemyAutoSchema, class_mixin):
@@ -105,6 +106,9 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                     fields = columns
                     load_instance = True
                     sqla_session = self.datamodel.session
+                    # The parent_schema_name is useful to humanize nested schema names
+                    # This name comes from ModelRestApi
+                    parent_schema_name = _parent_schema_name
 
         else:
 
@@ -113,6 +117,9 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                     model = _model
                     load_instance = True
                     sqla_session = self.datamodel.session
+                    # The parent_schema_name is useful to humanize nested schema names
+                    # This name comes from ModelRestApi
+                    parent_schema_name = _parent_schema_name
 
         return MetaSchema
 
@@ -135,13 +142,19 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         return field
 
     def _column2relation(
-        self, datamodel: SQLAInterface, column: TreeNode, nested: bool = False
+        self,
+        datamodel: SQLAInterface,
+        column: TreeNode,
+        nested: bool = False,
+        parent_schema_name: Optional[str] = None,
     ):
         if nested:
             required = not datamodel.is_nullable(column.data)
             nested_model = datamodel.get_related_model(column.data)
             lst = [item.data for item in column.childs]
-            nested_schema = self.convert(lst, nested_model, nested=False)
+            nested_schema = self.convert(
+                lst, nested_model, nested=False, parent_schema_name=parent_schema_name
+            )
             if datamodel.is_relation_many_to_one(column.data):
                 many = False
             elif datamodel.is_relation_many_to_many(column.data):
@@ -176,6 +189,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         column: TreeNode,
         nested: bool = True,
         enum_dump_by_name: bool = False,
+        parent_schema_name: Optional[str] = None,
     ) -> Field:
         """
 
@@ -187,7 +201,9 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         """
         # Handle relations
         if datamodel.is_relation(column.data):
-            return self._column2relation(datamodel, column, nested=nested)
+            return self._column2relation(
+                datamodel, column, nested=nested, parent_schema_name=parent_schema_name
+            )
         # Handle Enums
         elif datamodel.is_enum(column.data):
             return self._column2enum(
@@ -213,9 +229,10 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
     def convert(
         self,
         columns: List[str],
-        model: Type[Model] = None,
+        model: Optional[Type[Model]] = None,
         nested: bool = True,
         enum_dump_by_name: bool = False,
+        parent_schema_name: Optional[str] = None,
     ):
         """
             Creates a Marshmallow ModelSchema class
@@ -226,7 +243,9 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         :param nested: Generate relation with nested schemas
         :return: ModelSchema object
         """
-        super(Model2SchemaConverter, self).convert(columns, model=model, nested=nested)
+        super(Model2SchemaConverter, self).convert(
+            columns, model=model, nested=nested, parent_schema_name=parent_schema_name
+        )
 
         class SchemaMixin:
             pass
@@ -241,9 +260,15 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         for column in tree_columns.root.childs:
             # Get child model is column is dotted notation
             ma_sqla_fields_override[column.data] = self._column2field(
-                _datamodel, column, nested, enum_dump_by_name
+                _datamodel,
+                column,
+                nested,
+                enum_dump_by_name,
+                parent_schema_name=parent_schema_name,
             )
             _columns.append(column.data)
         for k, v in ma_sqla_fields_override.items():
             setattr(SchemaMixin, k, v)
-        return self._meta_schema_factory(_columns, _model, SchemaMixin)()
+        return self._meta_schema_factory(
+            _columns, _model, SchemaMixin, parent_schema_name=parent_schema_name
+        )()
