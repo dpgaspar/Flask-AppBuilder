@@ -1026,42 +1026,60 @@ class ModelRestApi(BaseModelApi):
         self._init_model_schemas()
         return super(ModelRestApi, self).create_blueprint(appbuilder, *args, **kwargs)
 
+    @property
+    def list_model_schema_name(self) -> str:
+        return f"{self.__class__.__name__}.get_list"
+
+    @property
+    def show_model_schema_name(self) -> str:
+        return f"{self.__class__.__name__}.get"
+
+    @property
+    def add_model_schema_name(self) -> str:
+        return f"{self.__class__.__name__}.post"
+
+    @property
+    def edit_model_schema_name(self) -> str:
+        return f"{self.__class__.__name__}.put"
+
     def add_apispec_components(self, api_spec):
         super(ModelRestApi, self).add_apispec_components(api_spec)
         api_spec.components.schema(
-            "{}.{}".format(self.__class__.__name__, "get_list"),
-            schema=self.list_model_schema,
+            self.list_model_schema_name, schema=self.list_model_schema
         )
         api_spec.components.schema(
-            "{}.{}".format(self.__class__.__name__, "post"),
-            schema=self.add_model_schema,
+            self.add_model_schema_name, schema=self.add_model_schema
         )
         api_spec.components.schema(
-            "{}.{}".format(self.__class__.__name__, "put"),
-            schema=self.edit_model_schema,
+            self.edit_model_schema_name, schema=self.edit_model_schema
         )
         api_spec.components.schema(
-            "{}.{}".format(self.__class__.__name__, "get"),
-            schema=self.show_model_schema,
+            self.show_model_schema_name, schema=self.show_model_schema
         )
 
     def _init_model_schemas(self):
         # Create Marshmalow schemas if one is not specified
         if self.list_model_schema is None:
             self.list_model_schema = self.model2schemaconverter.convert(
-                self.list_columns
+                self.list_columns, parent_schema_name=self.list_model_schema_name
             )
         if self.add_model_schema is None:
             self.add_model_schema = self.model2schemaconverter.convert(
-                self.add_columns, nested=False, enum_dump_by_name=True
+                self.add_columns,
+                nested=False,
+                enum_dump_by_name=True,
+                parent_schema_name=self.add_model_schema_name,
             )
         if self.edit_model_schema is None:
             self.edit_model_schema = self.model2schemaconverter.convert(
-                self.edit_columns, nested=False, enum_dump_by_name=True
+                self.edit_columns,
+                nested=False,
+                enum_dump_by_name=True,
+                parent_schema_name=self.edit_model_schema_name,
             )
         if self.show_model_schema is None:
             self.show_model_schema = self.model2schemaconverter.convert(
-                self.show_columns
+                self.show_columns, parent_schema_name=self.show_model_schema_name
             )
 
     def _init_titles(self):
