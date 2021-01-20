@@ -386,11 +386,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"]
 
     @property
-    def auth_roles_mapping(self):
+    def auth_roles_mapping(self) -> Dict[str, List[str]]:
         return self.appbuilder.get_app.config["AUTH_ROLES_MAPPING"]
 
     @property
-    def auth_roles_sync_at_login(self):
+    def auth_roles_sync_at_login(self) -> bool:
         return self.appbuilder.get_app.config["AUTH_ROLES_SYNC_AT_LOGIN"]
 
     @property
@@ -422,7 +422,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["AUTH_LDAP_UID_FIELD"]
 
     @property
-    def auth_ldap_group_field(self):
+    def auth_ldap_group_field(self) -> str:
         return self.appbuilder.get_app.config["AUTH_LDAP_GROUP_FIELD"]
 
     @property
@@ -901,7 +901,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         except (IndexError, NameError):
             return None, None
 
-    def _ldap_calculate_user_roles(self, user_attributes) -> List[str]:
+    def _ldap_calculate_user_roles(
+        self, user_attributes: Dict[str, bytes]
+    ) -> List[str]:
         user_role_objects = []
 
         # apply AUTH_ROLES_MAPPING
@@ -1150,7 +1152,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                         user_attributes, self.auth_ldap_lastname_field, ""
                     ),
                     email=self.ldap_extract(
-                        user_attributes, self.auth_ldap_email_field, ""
+                        user_attributes,
+                        self.auth_ldap_email_field,
+                        f"{username}@email.notfound",
                     ),
                     role=self._ldap_calculate_user_roles(user_attributes),
                 )
@@ -1306,7 +1310,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 username=username,
                 first_name=userinfo.get("first_name", ""),
                 last_name=userinfo.get("last_name", ""),
-                email=userinfo.get("email", ""),
+                email=userinfo.get("email", "") or f"{username}@email.notfound",
                 role=self._oauth_calculate_user_roles(userinfo),
             )
             log.debug("New user registered: {0}".format(user))

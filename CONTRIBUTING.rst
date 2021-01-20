@@ -34,3 +34,12 @@ can run a subset of tests targeting only Postgres.
 .. code-block:: bash
 
     $ tox -e postgres
+
+3 - Code Formatting
+
+.. code-block:: bash
+
+    $ black flask_appbuilder
+    $ flake8 flask_appbuilder
+
+

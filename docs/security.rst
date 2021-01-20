@@ -95,7 +95,7 @@ For a typical Microsoft AD setup (where all users can preform LDAP searches)::
     AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
     AUTH_LDAP_FIRSTNAME_FIELD = "givenName"
     AUTH_LDAP_LASTNAME_FIELD = "sn"
-    AUTH_LDAP_EMAIL_FIELD = "mail"
+    AUTH_LDAP_EMAIL_FIELD = "mail"  # if null in LDAP, email is set to: "{username}@email.notfound"
 
     # bind username (for password validation)
     AUTH_LDAP_USERNAME_FORMAT = "uid=%s,ou=users,dc=example,dc=com"  # %s is replaced with the provided username
@@ -117,7 +117,7 @@ For a typical OpenLDAP setup (where LDAP searches require a special account)::
     AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
     AUTH_LDAP_FIRSTNAME_FIELD = "givenName"
     AUTH_LDAP_LASTNAME_FIELD = "sn"
-    AUTH_LDAP_EMAIL_FIELD = "mail"
+    AUTH_LDAP_EMAIL_FIELD = "mail"  # if null in LDAP, email is set to: "{username}@email.notfound"
 
     # search configs
     AUTH_LDAP_SEARCH = "ou=users,dc=example,dc=com"  # the LDAP search base
