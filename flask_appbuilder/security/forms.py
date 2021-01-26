@@ -51,6 +51,30 @@ class ResetPasswordForm(DynamicForm):
     )
 
 
+class ResetMyPasswordForm(DynamicForm):
+    current_password = PasswordField(
+        lazy_gettext("Current Password"),
+        description=lazy_gettext("Your current password"),
+        validators=[DataRequired()],
+        widget=BS3PasswordFieldWidget(),
+    )
+    password = PasswordField(
+        lazy_gettext("Password"),
+        description=lazy_gettext(
+            "Please use a good password policy,"
+            " this application does not check this for you"
+        ),
+        validators=[DataRequired()],
+        widget=BS3PasswordFieldWidget(),
+    )
+    conf_password = PasswordField(
+        lazy_gettext("Confirm Password"),
+        description=lazy_gettext("Please rewrite the password to confirm"),
+        validators=[EqualTo("password", message=lazy_gettext("Passwords must match"))],
+        widget=BS3PasswordFieldWidget(),
+    )
+
+
 class RegisterUserDBForm(DynamicForm):
     username = StringField(
         lazy_gettext("User Name"),

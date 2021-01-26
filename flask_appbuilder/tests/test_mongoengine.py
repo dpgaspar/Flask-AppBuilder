@@ -290,7 +290,11 @@ class FlaskTestCase(FABTestCase):
         self.assertIn("Reset Password Form", data)
         rv = client.post(
             "/resetmypassword/form",
-            data=dict(password="password", conf_password="password"),
+            data=dict(
+                current_password=DEFAULT_ADMIN_PASSWORD,
+                password="password",
+                conf_password="password",
+            ),
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 200)
@@ -299,7 +303,9 @@ class FlaskTestCase(FABTestCase):
         rv = client.post(
             "/resetmypassword/form",
             data=dict(
-                password=DEFAULT_ADMIN_PASSWORD, conf_password=DEFAULT_ADMIN_PASSWORD
+                current_password="password",
+                password=DEFAULT_ADMIN_PASSWORD,
+                conf_password=DEFAULT_ADMIN_PASSWORD,
             ),
             follow_redirects=True,
         )

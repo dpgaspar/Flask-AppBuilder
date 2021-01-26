@@ -11,7 +11,13 @@ from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
 
 from .decorators import has_access
-from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, UserInfoEdit
+from .forms import (
+    LoginForm_db,
+    LoginForm_oid,
+    ResetMyPasswordForm,
+    ResetPasswordForm,
+    UserInfoEdit,
+)
 from .._compat import as_unicode
 from ..actions import action
 from ..baseviews import BaseView
@@ -69,12 +75,19 @@ class ResetMyPasswordView(SimpleFormView):
     """
 
     route_base = "/resetmypassword"
-    form = ResetPasswordForm
+    route_form = f"{route_base}/form"
+    form = ResetMyPasswordForm
     form_title = lazy_gettext("Reset Password Form")
     redirect_url = "/"
     message = lazy_gettext("Password Changed")
+    invalid_current_password_message = lazy_gettext("Invalid current password")
 
     def form_post(self, form):
+        username = g.user.username
+        user = self.appbuilder.sm.auth_user_db(username, form.current_password.data)
+        if not user:
+            flash(as_unicode(self.invalid_current_password_message), "warning")
+            return redirect(self.route_form)
         self.appbuilder.sm.reset_password(g.user.id, form.password.data)
         flash(as_unicode(self.message), "info")
 
@@ -682,7 +695,7 @@ class AuthOAuthView(AuthView):
         log.debug("Authorized init")
         resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token()
         if resp is None:
-            flash(u"You denied the request to sign in.", "warning")
+            flash("You denied the request to sign in.", "warning")
             return redirect(self.appbuilder.get_url_for_login)
         log.debug("OAUTH Authorized resp: {0}".format(resp))
         # Retrieves specific user info from the provider
@@ -703,7 +716,7 @@ class AuthOAuthView(AuthView):
                         allow = True
                         break
                 if not allow:
-                    flash(u"You are not authorized.", "warning")
+                    flash("You are not authorized.", "warning")
                     return redirect(self.appbuilder.get_url_for_login)
             else:
                 log.debug("No whitelist for OAuth provider")
