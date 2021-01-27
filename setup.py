@@ -62,7 +62,7 @@ setup(
         "marshmallow-sqlalchemy>=0.22.0, <0.24.0",
         "python-dateutil>=2.3, <3",
         "prison>=0.1.3, <1.0.0",
-        "PyJWT>=1.7.1",
+        "PyJWT>=1.7.1, <2.0.0",
         "sqlalchemy-utils>=0.32.21, <1",
     ],
     extras_require={"jmespath": ["jmespath>=0.9.5"]},
