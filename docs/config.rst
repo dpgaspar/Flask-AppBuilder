@@ -41,6 +41,15 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | Requires ``jmespath`` to be installed.     |           |
 |                                        | See :ref:`jmespath-examples` for examples  |           |
 +----------------------------------------+--------------------------------------------+-----------+
+| AUTH_ROLES_SYNC_AT_LOGIN               | Sets if user's roles are replaced each     |   No      |
+|                                        | login with those received from LDAP/OAUTH  |           |
+|                                        | Default: False                             |           |
++----------------------------------------+--------------------------------------------+-----------+
+| AUTH_ROLES_MAPPING                     | A mapping from LDAP/OAUTH group names      |   No      |
+|                                        | to FAB roles                               |           |
+|                                        |                                            |           |
+|                                        | See example under AUTH_LDAP_GROUP_FIELD    |           |
++----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_SERVER                       | define your ldap server when AUTH_TYPE=2   |   Cond.   |
 |                                        | example:                                   |           |
 |                                        |                                            |           |
@@ -102,6 +111,27 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
 |                                        |                                            |           |
 |                                        | AUTH_LDAP_UID_FIELD = "uid"                |           |
++----------------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_GROUP_FIELD                  | sets the field in the ldap directory that  |   No      |
+|                                        | stores the user's group uids. This field   |           |
+|                                        | is used in combination with                |           |
+|                                        | AUTH_ROLES_MAPPING to propagate the users  |           |
+|                                        | groups into the User database.             |           |
+|                                        | Default is "memberOf".                     |           |
+|                                        | example:                                   |           |
+|                                        |                                            |           |
+|                                        | AUTH_TYPE = 2                              |           |
+|                                        |                                            |           |
+|                                        | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                        |                                            |           |
+|                                        | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
+|                                        |                                            |           |
+|                                        | AUTH_LDAP_GROUP_FIELD = "memberOf"         |           |
+|                                        |                                            |           |
+|                                        | AUTH_ROLES_MAPPING = {                     |           |
+|                                        |   "cn=User,ou=groups,dc=example,dc=com":   |           |
+|                                        |     ["User"]                               |           |
+|                                        | }                                          |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_FIRSTNAME_FIELD              | sets the field in the ldap directory that  |   No      |
 |                                        | stores the user's first name. This field   |           |
