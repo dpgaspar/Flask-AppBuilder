@@ -80,82 +80,112 @@ F.A.B. will ask for the 'email' from OpenID, and if this email belongs to some u
 Authentication: LDAP
 --------------------
 
-This method will authenticate the user's credentials against an LDAP server. For MSFT AD just define the LDAP server::
+This method will authenticate the user's credentials against an LDAP server.
+
+WARNING: To use LDAP you need to install `python-ldap <https://www.python-ldap.org>`_.
+
+For a typical Microsoft AD setup (where all users can preform LDAP searches)::
 
     AUTH_TYPE = AUTH_LDAP
-    AUTH_LDAP_SERVER = "ldap://ldapserver.local"
+    AUTH_LDAP_SERVER = "ldap://ldap.example.com"
     AUTH_LDAP_USE_TLS = False
 
-For OpenLDAP or if you need/want to bind first with a query LDAP user,
-then using username to search the LDAP server and binding to it (using the user provided password)::
+    # registration configs
+    AUTH_USER_REGISTRATION = True  # allow users who are not already in the FAB DB
+    AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
+    AUTH_LDAP_FIRSTNAME_FIELD = "givenName"
+    AUTH_LDAP_LASTNAME_FIELD = "sn"
+    AUTH_LDAP_EMAIL_FIELD = "mail"  # if null in LDAP, email is set to: "{username}@email.notfound"
+
+    # bind username (for password validation)
+    AUTH_LDAP_USERNAME_FORMAT = "uid=%s,ou=users,dc=example,dc=com"  # %s is replaced with the provided username
+    # AUTH_LDAP_APPEND_DOMAIN = "example.com"  # bind usernames will look like: {USERNAME}@example.com
+
+    # search configs
+    AUTH_LDAP_SEARCH = "ou=users,dc=example,dc=com"  # the LDAP search base (if non-empty, a search will ALWAYS happen)
+    AUTH_LDAP_UID_FIELD = "uid"  # the username field
+
+
+For a typical OpenLDAP setup (where LDAP searches require a special account)::
 
     AUTH_TYPE = AUTH_LDAP
-    AUTH_LDAP_SERVER = "ldap://ldapserver.local"
+    AUTH_LDAP_SERVER = "ldap://ldap.example.com"
     AUTH_LDAP_USE_TLS = False
-    AUTH_LDAP_SEARCH = "dc=domain,dc=local"
-    AUTH_LDAP_BIND_USER = "CN=Query User,OU=People,dc=domain,dc=local"
-    AUTH_LDAP_BIND_PASSWORD = "password"
 
-For MSFT AD, users can be authenticated using the attribute 'userPrincipalName', so usernames will use the form
-'myusername@yourdomain.local'. You can set all domains to a certain default,
-allowing users to authenticate using 'myusername' instead of 'myusername@yourdomain.local'::
+    # registration configs
+    AUTH_USER_REGISTRATION = True  # allow users who are not already in the FAB DB
+    AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
+    AUTH_LDAP_FIRSTNAME_FIELD = "givenName"
+    AUTH_LDAP_LASTNAME_FIELD = "sn"
+    AUTH_LDAP_EMAIL_FIELD = "mail"  # if null in LDAP, email is set to: "{username}@email.notfound"
 
-    AUTH_LDAP_APPEND_DOMAIN = 'yourdomain.local'
+    # search configs
+    AUTH_LDAP_SEARCH = "ou=users,dc=example,dc=com"  # the LDAP search base
+    AUTH_LDAP_UID_FIELD = "uid"  # the username field
+    AUTH_LDAP_BIND_USER = "uid=admin,ou=users,dc=example,dc=com"  # the special bind username for search
+    AUTH_LDAP_BIND_PASSWORD = "admin_password"  # the special bind password for search
+
 
 You can limit the LDAP search scope by configuring::
 
-    AUTH_LDAP_SEARCH_FILTER = "(memberOf=cn=myTeam,OU=type,dc=ex,cn=com)"
+    # only allow users with memberOf="cn=myTeam,ou=teams,dc=example,dc=com"
+    AUTH_LDAP_SEARCH_FILTER = "(memberOf=cn=myTeam,ou=teams,dc=example,dc=com)"
 
-The above example will limit all users to belong to the "myTeam" security group.
+You can give FlaskAppBuilder roles based on LDAP roles (note, this requires AUTH_LDAP_SEARCH to be set)::
 
-For self user registration, use the following to config further:
+    # a mapping from LDAP DN to a list of FAB roles
+    AUTH_ROLES_MAPPING = {
+        "cn=fab_users,ou=groups,dc=example,dc=com": ["User"],
+        "cn=fab_admins,ou=groups,dc=example,dc=com": ["Admin"],
+    }
 
-:AUTH_LDAP_UID_FIELD: Default to 'uid' will be used to search the user on the LDAP server.
-    For MSFT AD you can set it to 'userPrincipalName'
+    # the LDAP user attribute which has their role DNs
+    AUTH_LDAP_GROUP_FIELD = "memberOf"
 
-:AUTH_LDAP_FIRSTNAME_FIELD: Default to 'givenName' will use MSFT AD attribute to register first_name on the db.
+    # if we should replace ALL the user's roles each login, or only on registration
+    AUTH_ROLES_SYNC_AT_LOGIN = True
 
-:AUTH_LDAP_LASTTNAME_FIELD: Default to 'sn' will use MSFT AD attribute to register last_name on the db.
-
-:AUTH_LDAP_EMAIL_FIELD: Default to 'mail' will use MSFT AD attribute to register email on the db.
-    If this attribute is null the framework will register <username + '@email.notfound'>
-
-:AUTH_LDAP_SEARCH: This must be set when using self user registration.
-
+    # force users to re-auth after 30min of inactivity (to keep roles in sync)
+    PERMANENT_SESSION_LIFETIME = 1800
 
 Authentication: OAuth
 ---------------------
 
-By using this method it will be possible to use the provider API, this is because you're requesting the user to give
-permission to your app to access or manage the user's account on the provider.
+This method will authenticate the user's credentials against an OAUTH provider.
 
-So you can send tweets, post on the users facebook, retrieve the user's linkedin profile etc.
+WARNING: To use OAuth you need to install `Python AuthLib <https://authlib.org>`_.
 
-To use OAuth you need to install `AuthLib <https://docs.authlib.org/en/latest/index.html>`_. It's useful
-to get to know this library since F.A.B. will expose the remote application object for you to play with.
-
+By using this method it is possible to use the OAUTH provider's APIs, this is because you're requesting the user to give
+permission to manage the user's account on the provider.
+Therefore, you can send tweets, post on the users Facebook, retrieve the user's LinkedIn profile etc.
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
 to get an idea of a simple use for this.
 
-Use **config.py** configure OAUTH_PROVIDERS with a list of oauth providers, notice that the remote_app
-key is just the configuration for authlib::
+Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for your users::
 
     AUTH_TYPE = AUTH_OAUTH
 
+    # registration configs
+    AUTH_USER_REGISTRATION = True  # allow users who are not already in the FAB DB
+    AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
+
+    # the list of providers which the user can choose from
     OAUTH_PROVIDERS = [
         {'name':'twitter', 'icon':'fa-twitter',
+            'token_key':'oauth_token',
             'remote_app': {
-                'client_id':'TWITTER KEY',
-                'client_secret':'TWITTER SECRET',
+                'client_id':'TWITTER_KEY',
+                'client_secret':'TWITTER_SECRET',
                 'api_base_url':'https://api.twitter.com/1.1/',
                 'request_token_url':'https://api.twitter.com/oauth/request_token',
                 'access_token_url':'https://api.twitter.com/oauth/access_token',
                 'authorize_url':'https://api.twitter.com/oauth/authenticate'}
         },
-        {'name':'google', 'icon':'fa-google', 'token_key':'access_token',
+        {'name':'google', 'icon':'fa-google',
+            'token_key':'access_token',
             'remote_app': {
-                'client_id':'GOOGLE KEY',
-                'client_secret':'GOOGLE SECRET',
+                'client_id':'GOOGLE_KEY',
+                'client_secret':'GOOGLE_SECRET',
                 'api_base_url':'https://www.googleapis.com/oauth2/v2/',
                 'client_kwargs':{
                   'scope': 'email profile'
@@ -164,7 +194,8 @@ key is just the configuration for authlib::
                 'access_token_url':'https://accounts.google.com/o/oauth2/token',
                 'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
         },
-        {'name':'openshift', 'icon':'fa-circle-o', 'token_key':'access_token',
+        {'name':'openshift', 'icon':'fa-circle-o',
+            'token_key':'access_token',
             'remote_app': {
                 'client_id':'system:serviceaccount:mynamespace:mysa',
                 'client_secret':'<mysa serviceaccount token here>',
@@ -176,43 +207,72 @@ key is just the configuration for authlib::
                 'access_token_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/token',
                 'authorize_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/authorize',
                 'token_endpoint_auth_method':'client_secret_post'}
+        },{'name': 'okta', 'icon': 'fa-circle-o',
+            'token_key': 'access_token',
+            'remote_app': {
+                'client_id': 'OKTA_KEY',
+                'client_secret': 'OKTA_SECRET',
+                'api_base_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/',
+                'client_kwargs': {
+                    'scope': 'openid profile email groups'
+                },
+                'access_token_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/token',
+                'authorize_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize',
         }
     ]
 
 This needs a small explanation, you basically have five special keys:
 
-:name: The name of the provider, you can choose whatever you want. But the framework as some
-    builtin logic to retrieve information about a user that you can make use of if you choose:
-    'twitter', 'google', 'github', 'linkedin', 'openshift'.
+:name: the name of the provider:
+    you can choose whatever you want, but FAB has builtin logic in `BaseSecurityManager.get_oauth_user_info()` for:
+    'azure', 'github', 'google', 'linkedin', 'okta', 'openshift', 'twitter'
 
-:icon: The font-awesome icon for this provider.
-:token_key: The token key name that this provider uses, google and github uses *'access_token'*,
-    twitter uses *'oauth_token'* and thats the default.
-:token_secret: The token secret key name, default is *'oauth_token_secret'*
+:icon: the font-awesome icon for this provider
 
-After the user authenticates and grants access permissions to your application
-the framework retrieves information about the user, username and email. This info
-will be checked with the internal user (user record on User Model), first by username next by email.
+:token_key: the token key name that the provider uses, default is *'oauth_token'*
 
-To override/customize the user information retrieval from oauth, you can create your own method like this::
+:token_secret: the token secret key name, default is *'oauth_token_secret'*
+
+:remote_app: the actual configs for the provider API
+
+You can give FlaskAppBuilder roles based on Oauth groups::
+
+    # note, this is only natively supported in `okta` currently,
+    # however, if you customize userinfo retrieval to include 'role_keys', this will work for other providers
+
+    # a mapping from the values of `userinfo["role_keys"]` to a list of FAB roles
+    AUTH_ROLES_MAPPING = {
+        "FAB_USERS": ["User"],
+        "FAB_ADMINS": ["Admin"],
+    }
+
+    # if we should replace ALL the user's roles each login, or only on registration
+    AUTH_ROLES_SYNC_AT_LOGIN = True
+
+    # force users to re-auth after 30min of inactivity (to keep roles in sync)
+    PERMANENT_SESSION_LIFETIME = 1800
+
+To customize the userinfo retrieval, you can create your own method like this::
 
     @appbuilder.sm.oauth_user_info_getter
     def my_user_info_getter(sm, provider, response=None):
-        if provider == 'github':
-            me = sm.oauth_remotes[provider].get('user')
-            return {'username': me.json().get('login')}
+        if provider == "okta":
+            me = sm.oauth_remotes[provider].get("userinfo")
+            log.debug("User info from Okta: {0}".format(me.data))
+            return {
+                "username": "okta_" + me.data.get("sub", ""),
+                "first_name": me.data.get("given_name", ""),
+                "last_name": me.data.get("family_name", ""),
+                "email": me.data.get("email", ""),
+                "role_keys": me.data.get("groups", []),
+            }
         else:
             return {}
 
 Decorate your method with the SecurityManager **oauth_user_info_getter** decorator.
-Make your method accept the exact parameters as on this example, and then return a dictionary
-with the retrieved user information. The dictionary keys must have the same column names as the User Model.
-Your method will be called after the user authorizes your application on the OAuth provider, and it will
-receive the following: **sm** is F.A.B's SecurityManager class, **provider** is a string with the name you configured
-this provider with, **response** is the response.
-
+Your method should return a dictionary with the userinfo, the keys having the same column names as the User Model.
+Your method will be called after the user authorizes your application on the OAuth provider.
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
-
 
 Role based
 ----------
