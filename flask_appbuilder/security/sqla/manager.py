@@ -230,6 +230,8 @@ class SecurityManager(BaseSecurityManager):
             return False
 
     def get_user_by_id(self, pk):
+        #comment to test if github will determine the change now
+        #will remove this after
         return self.get_session.query(self.user_model).get(pk)
 
     """
