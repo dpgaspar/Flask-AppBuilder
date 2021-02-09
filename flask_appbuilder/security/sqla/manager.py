@@ -14,8 +14,8 @@ from .models import (
     RegisterUser,
     Role,
     User,
-    ViewMenu,
     UserResetPassword,
+    ViewMenu,    
 )
 from ..manager import BaseSecurityManager
 from ... import const as c
