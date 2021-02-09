@@ -242,18 +242,13 @@ class SecurityManager(BaseSecurityManager):
             return False
 
     def get_user_by_id(self, pk):
-        try:
-            return self.get_session.query(self.user_model).get(pk)
-        except OperationalError:
-            self.get_session.rollback()
-            return self.get_session.query(self.user_model).get(pk)
+        return self.get_session.query(self.user_model).get(pk)
 
     def get_user_by_email(self, email):
         return (
             self.get_session.query(self.user_model)
               .filter_by(email=email).scalar()
         )
-
 
     def get_reset_password_hash(self, user_id):
         return (
