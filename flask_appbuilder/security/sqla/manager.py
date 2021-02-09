@@ -5,7 +5,6 @@ import uuid
 from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm.exc import MultipleResultsFound
-from sqlalchemy.exc import OperationalError
 from werkzeug.security import generate_password_hash
 
 from .models import (
@@ -214,7 +213,7 @@ class SecurityManager(BaseSecurityManager):
             user.username = username
             user.email = email
             user.active = True
-            user.roles.append(role)
+            user.roles = role if isinstance(role, list) else [role]
             if hashed_password:
                 user.password = hashed_password
             else:
