@@ -181,6 +181,7 @@ class UserResetPassword(Model):
     created_on = Column(DateTime, default=datetime.datetime.now, nullable=False)
     ack = Column(Boolean, default=False, nullable=False)
 
+    
     @declared_attr
     def id(cls):
         return Column(
