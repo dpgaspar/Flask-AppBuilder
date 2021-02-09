@@ -5,7 +5,7 @@ import logging
 import re
 from typing import Dict, List, Set
 
-from flask import g, session, url_for, flash
+from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
@@ -766,8 +766,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         user = self.get_user_by_email(email)
         self.appbuilder.sm.reset_pw_hash(user)
-        #en dan nog de mogelijkheid maken om naar het password change form te gaan als je niet ingelogd bent!
-        #flash(user,'warning')
 
     def update_user_auth_stat(self, user, success=True):
         """
