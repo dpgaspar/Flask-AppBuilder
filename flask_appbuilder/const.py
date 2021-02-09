@@ -61,9 +61,13 @@ LOGMSG_ERR_SEC_ADD_USER = "Error adding new user to database. {0}"
 """ Error adding user, format with err message """
 LOGMSG_ERR_SEC_UPD_USER = "Error updating user to database. {0} "
 """ Error updating user, format with err message """
+LOGMSG_ERR_SEC_ADD_RESET_PW_HASH = "Error adding new password reset hash to db. {0} "
+""" Error adding password reset hash, format with err message """
 LOGMSG_WAR_SEC_NO_USER = "No user yet created, use flask fab command to do it."
 """ Warning when app starts if no user exists on db """
-LOGMSG_WAR_SEC_NOLDAP_OBJ = "No LDAP object found for: {0}"
+LOGMSG_WAR_SEC_NOLDAP_OBJ = (
+    "User self registration failed no LDAP object found for: {0}"
+)
 
 LOGMSG_INF_SEC_ADD_PERMVIEW = "Created Permission View: {0}"
 """ Info when adding permission view, format with permission view class string """
