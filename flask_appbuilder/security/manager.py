@@ -217,7 +217,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault("AUTH_ROLE_ADMIN", "Admin")
         app.config.setdefault("AUTH_ROLE_PUBLIC", "Public")
         app.config.setdefault("AUTH_TYPE", AUTH_DB)
-        app.config.setdefault("EMAIL_PROT", "False")
+        app.config.setdefault("EMAIL_PROT", False)
 
         # Self Registration
         app.config.setdefault("AUTH_USER_REGISTRATION", False)
