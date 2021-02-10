@@ -679,14 +679,14 @@ class MVCTestCase(BaseMVCTestCase):
         )
         self.assertEqual(rv.status_code, 200)
         
-     def test_sec_reset_password_email_prot(self):
+    def test_sec_reset_password_email_prot(self):
         """
-            Test Security reset password while a valid reset_hash with Email ack is required
-	        (EMAIL_PROT = True)
+	    Test Security reset password while a valid reset_hash with Email ack is required
+	    (EMAIL_PROT = True)
         """
         client = self.app.test_client()
 
-	    #turn password reset with hash function on
+        #turn password reset with hash function on
         self.app.config.setdefault(“EMAIL_PROT”, True)
 
         # Try Reset My password while logged in, without a reset_hash with Email ack
