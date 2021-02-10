@@ -928,7 +928,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         except (IndexError, NameError):
             return None, None
     
-     def _ldap_calculate_user_roles(
+    def _ldap_calculate_user_roles(
         self, user_attributes: Dict[str, bytes]
     ) -> List[str]:
         user_role_objects = []
