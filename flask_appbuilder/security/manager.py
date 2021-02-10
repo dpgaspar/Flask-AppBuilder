@@ -10,7 +10,6 @@ from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
 from flask_login import current_user, LoginManager
-from flask_openid import OpenID
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .api import SecurityApi
@@ -49,6 +48,7 @@ from ..const import (
     AUTH_OAUTH,
     AUTH_OID,
     AUTH_REMOTE_USER,
+    LOGMSG_ERR_SEC_ADD_REGISTER_USER,
     LOGMSG_ERR_SEC_AUTH_LDAP,
     LOGMSG_ERR_SEC_AUTH_LDAP_TLS,
     LOGMSG_WAR_SEC_LOGIN_FAILED,
@@ -182,6 +182,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Authentication OAuth view """
     authremoteuserview = AuthRemoteUserView
     """ Override if you want your own Authentication REMOTE_USER view """
+    
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
     registeruseroidview = RegisterUserOIDView
@@ -1016,7 +1017,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     def auth_user_ldap(self, username, password):
         """
             Method for authenticating user with LDAP.
+            
             NOTE: this depends on python-ldap module
+            
             :param username: the username
             :param password: the password
         """
@@ -1290,6 +1293,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def auth_user_oauth(self, userinfo):
         """
             Method for authenticating user with OAuth.
+            
             :userinfo: dict with user information
                        (keys are the same as User model columns)
         """
