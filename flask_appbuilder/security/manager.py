@@ -310,12 +310,14 @@ class BaseSecurityManager(AbstractSecurityManager):
     def create_builtin_roles(self):
         return self.appbuilder.get_app.config.get("FAB_ROLES", {})
     
-   def get_roles_from_keys(self, role_keys: List[str]) -> List[role_model]:
+    def get_roles_from_keys(self, role_keys: List[str]) -> List[role_model]:
         """
         Construct a list of FAB role objects, from a list of keys.
+
         NOTE:
         - keys are things like: "LDAP group DNs" or "OAUTH group names"
         - we use AUTH_ROLES_MAPPING to map from keys, to FAB role names
+
         :param role_keys: the list of FAB role keys
         :return: a list of RoleModelView
         """
