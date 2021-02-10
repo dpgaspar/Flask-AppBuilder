@@ -51,16 +51,6 @@ class ResetPasswordForm(DynamicForm):
     )
 
 
-class ForgotMyPasswordForm(DynamicForm):
-    email = StringField(
-        lazy_gettext("Email"),
-        validators=[DataRequired(), Email()],
-        widget=BS3TextFieldWidget(),
-    )
-
-    recaptcha = RecaptchaField()
-
-
 class RegisterUserDBForm(DynamicForm):
     username = StringField(
         lazy_gettext("User Name"),
