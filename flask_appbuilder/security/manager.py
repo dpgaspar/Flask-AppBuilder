@@ -999,7 +999,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         except ldap.INVALID_CREDENTIALS:
             return False        
 
-   @staticmethod
+    @staticmethod
     def ldap_extract(
         ldap_dict: Dict[str, bytes], field_name: str, fallback: str
     ) -> str:
