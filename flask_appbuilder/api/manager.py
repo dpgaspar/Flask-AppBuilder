@@ -1,11 +1,25 @@
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
+from apispec.ext.marshmallow.common import resolve_schema_cls
 from flask import current_app
 from flask_appbuilder.api import BaseApi
 from flask_appbuilder.api import expose, protect, safe
 from flask_appbuilder.basemanager import BaseManager
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.security.decorators import has_access
+
+
+def resolver(schema):
+    schema_cls = resolve_schema_cls(schema)
+    name = schema_cls.__name__
+    if name == "MetaSchema":
+        if hasattr(schema_cls, "Meta"):
+            return (
+                f"{schema_cls.Meta.parent_schema_name}.{schema_cls.Meta.model.__name__}"
+            )
+    if name.endswith("Schema"):
+        return name[:-6] or name
+    return name
 
 
 class OpenApi(BaseApi):
@@ -57,7 +71,7 @@ class OpenApi(BaseApi):
             version=version,
             openapi_version="3.0.2",
             info=dict(description=current_app.appbuilder.app_name),
-            plugins=[MarshmallowPlugin()],
+            plugins=[MarshmallowPlugin(schema_name_resolver=resolver)],
             servers=[{"url": "/api/{}".format(version)}],
         )
 
