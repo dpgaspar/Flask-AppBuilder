@@ -687,7 +687,7 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
 
         #turn password reset with hash function on
-        self.app.config.setdefault(“EMAIL_PROT”, True)
+        self.app.config.setdefault("EMAIL_PROT", True)
 
         # Try Reset My password while logged in, without a reset_hash with Email ack
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
