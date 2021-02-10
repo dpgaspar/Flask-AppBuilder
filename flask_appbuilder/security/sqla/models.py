@@ -173,26 +173,3 @@ class RegisterUser(Model):
     email = Column(String(64), nullable=False)
     registration_date = Column(DateTime, default=datetime.datetime.now, nullable=True)
     registration_hash = Column(String(256))
-
-    
-class UserResetPassword(Model):
-    __tablename__ = "ab_user_reset_pw"
-    reset_hash = Column(String(256), nullable=False)
-    created_on = Column(DateTime, default=datetime.datetime.now, nullable=False)
-    ack = Column(Boolean, default=False, nullable=False)
-   
-    @declared_attr
-    def id(cls):
-        return Column(
-            Integer, ForeignKey("ab_user.id"),
-            default=cls.get_user_id,
-            nullable=False,
-            primary_key=True
-        )
-
-    @classmethod
-    def get_user_id(cls):
-        try:
-            return g.user.id
-        except Exception:
-            return None
