@@ -182,7 +182,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Authentication OAuth view """
     authremoteuserview = AuthRemoteUserView
     """ Override if you want your own Authentication REMOTE_USER view """
-    
+
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
     registeruseroidview = RegisterUserOIDView
@@ -258,7 +258,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         if self.auth_type == AUTH_OID:
             from flask_openid import OpenID
-            
+
             self.oid = OpenID(app)
         if self.auth_type == AUTH_OAUTH:
             from authlib.integrations.flask_client import OAuth
@@ -310,7 +310,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def create_builtin_roles(self):
         return self.appbuilder.get_app.config.get("FAB_ROLES", {})
-    
+
     def get_roles_from_keys(self, role_keys: List[str]) -> List[role_model]:
         """
         Construct a list of FAB role objects, from a list of keys.
@@ -396,7 +396,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_user_registration_role_jmespath(self) -> str:
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"]
-    
+
     @property
     def auth_roles_mapping(self) -> Dict[str, List[str]]:
         return self.appbuilder.get_app.config["AUTH_ROLES_MAPPING"]
@@ -432,7 +432,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_uid_field(self):
         return self.appbuilder.get_app.config["AUTH_LDAP_UID_FIELD"]
-    
+
     @property
     def auth_ldap_group_field(self) -> str:
         return self.appbuilder.get_app.config["AUTH_LDAP_GROUP_FIELD"]
@@ -889,7 +889,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             )
         else:
             filter_str = "({0}={1})".format(self.auth_ldap_uid_field, username)
-            
+
         # build what fields to request in the LDAP search
         request_fields = [
             self.auth_ldap_firstname_field,
@@ -907,7 +907,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         search_result = con.search_s(
             self.auth_ldap_search, ldap.SCOPE_SUBTREE, filter_str, request_fields
-        )        
+        )
         log.debug("LDAP search returned: {0}".format(search_result))
 
         # only continue if 0 or 1 results were returned
@@ -928,7 +928,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             return user_dn, user_info
         except (IndexError, NameError):
             return None, None
-    
+
     def _ldap_calculate_user_roles(
         self, user_attributes: Dict[str, bytes]
     ) -> List[str]:
@@ -961,7 +961,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def _ldap_bind_indirect(self, ldap, con) -> None:
         """
             Attempt to bind to LDAP using the AUTH_LDAP_BIND_USER.
-            
+
             :param ldap: The ldap module reference
             :param con: The ldap connection
         """
@@ -986,7 +986,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 " not valid LDAP bind credentials"
             )
             raise ex
-            
+
     @staticmethod
     def _ldap_bind(ldap, con, dn: str, password: str) -> bool:
         """
@@ -998,7 +998,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.debug("LDAP bind SUCCESS with username: '{0}'".format(dn))
             return True
         except ldap.INVALID_CREDENTIALS:
-            return False        
+            return False
 
     @staticmethod
     def ldap_extract(
@@ -1017,9 +1017,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     def auth_user_ldap(self, username, password):
         """
             Method for authenticating user with LDAP.
-            
+
             NOTE: this depends on python-ldap module
-            
+
             :param username: the username
             :param password: the password
         """
@@ -1255,7 +1255,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         self.update_user_auth_stat(user)
         return user
-    
+
     def _oauth_calculate_user_roles(self, userinfo) -> List[str]:
         user_role_objects = []
 
@@ -1293,7 +1293,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def auth_user_oauth(self, userinfo):
         """
             Method for authenticating user with OAuth.
-            
+
             :userinfo: dict with user information
                        (keys are the same as User model columns)
         """
