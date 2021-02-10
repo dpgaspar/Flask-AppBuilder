@@ -14,17 +14,12 @@ from .models import (
     RegisterUser,
     Role,
     User,
-    UserResetPassword,
-    ViewMenu,    
+    ViewMenu,
 )
 from ..manager import BaseSecurityManager
 from ... import const as c
 from ...models.sqla import Base
 from ...models.sqla.interface import SQLAInterface
-from datetime import datetime, timedelta
-from flask_babel import lazy_gettext
-from flask import flash, render_template, url_for
-from ..._compat import as_unicode
 
 log = logging.getLogger(__name__)
 
@@ -46,12 +41,6 @@ class SecurityManager(BaseSecurityManager):
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
     registeruser_model = RegisterUser
-
-    #The template used to generate the reset password email sent to the user
-    email_template = "appbuilder/general/security/resetpw_mail.html"
-
-    #The reset password email subject
-    email_subject = lazy_gettext("Reset your password")
 
     def __init__(self, appbuilder):
         """
@@ -242,131 +231,6 @@ class SecurityManager(BaseSecurityManager):
 
     def get_user_by_id(self, pk):
         return self.get_session.query(self.user_model).get(pk)
-
-    def get_user_by_email(self, email):
-        return (
-            self.get_session.query(self.user_model)
-              .filter_by(email=email).scalar()
-        )
-
-    def get_reset_password_hash(self, user_id):
-        return (
-            self.get_session.query(UserResetPassword)
-            .filter(UserResetPassword.id == user_id)
-            .scalar()
-        )
-
-    def check_reset_password_hash(self, resetpw):
-        """
-            Returns True if the reset password hash is not expired.
-
-        :rtype : resetpw object
-        """
-
-        if resetpw.reset_hash:
-            now = datetime.now()
-            created_on = resetpw.created_on
-            expire_date = created_on + timedelta(minutes=30)
-
-            if expire_date > now:
-                return True
-            else:
-                #delete the password reset_hash
-                self.get_session.delete(resetpw)
-                self.get_session.commit()
-        return
-
-    def create_reset_pw_hash(self, resetpw):
-        try:
-            self.get_session.merge(resetpw)
-            self.get_session.commit()
-        except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_ADD_RESET_PW_HASH.format(str(e)))
-            self.get_session.rollback()
-            return False
-
-    def reset_pw_hash(self, user):
-        """
-            Create a password reset_hash for the user in table
-            UserResetPassword and sent a link to the Email of the user.
-
-            Returns True if there already is a valid reset_hash.
-            (valid: clicked on link in the Email and not expired)
-        :rtype : User
-        """
-        emailsent_msg = lazy_gettext('The Email for resetting your password '
-          'has been sent')
-        error_msg = lazy_gettext('The Email for resetting your password'
-          'could not be sent')
-
-        try:
-            user_id = user.id
-            resetpw = self.get_reset_password_hash(user_id)
-
-            #hash not expired: don't send another Email
-            if resetpw:
-                #if you don't want to limit the time between sending Emails
-                #do this:
-                #if not resetpw.ack:
-                    #pass
-                if self.check_reset_password_hash(resetpw):
-                    return True
-
-            else:
-                resetpw = UserResetPassword()
-                resetpw.reset_hash = str(uuid.uuid1())
-                resetpw.id = user_id
-                self.create_reset_pw_hash(resetpw)
-
-            if self.send_pw_reset_email(user, resetpw=resetpw):
-                flash(as_unicode(emailsent_msg), "info")
-
-            else:
-                error_message = lazy_gettext('Hello ') + f'{user.first_name}, '+ error_msg
-                flash(as_unicode(error_message), "danger")
-            return
-
-        except:
-            self.appbuilder.get_session.rollback()
-            return
-
-
-    def send_pw_reset_email(self, user, resetpw):
-        """
-            Method for sending the password reset Email to the user
-        """
-        try:
-            from flask_mail import Mail, Message
-
-        except Exception:
-            log.error("Install Flask-Mail to use User registration")
-            return False
-
-        mail = Mail(self.appbuilder.get_app)
-        msg = Message()
-        msg.subject = self.email_subject
-
-        url = url_for(
-            self.appbuilder.sm.userdbmodelview.__name__ + ".resetmypw",
-            _external=True,
-            reset_hash=resetpw.reset_hash,
-        )
-
-        msg.html = render_template(
-            self.email_template,
-            url=url,
-            first_name=user.first_name,
-            last_name=user.last_name,
-        )
-        msg.recipients = [user.email]
-
-        try:
-            mail.send(msg)
-        except Exception as e:
-            log.error("Send email exception: {0}".format(str(e)))
-            return False
-        return True
-
 
     """
     -----------------------
