@@ -266,7 +266,7 @@ class SecurityManager(BaseSecurityManager):
         if resetpw.reset_hash:
             now = datetime.now()
             created_on = resetpw.created_on
-            expire_date = created_on + timedelta(minutes=30)
+            expire_date = created_on + timedelta(minutes=15)
 
             if expire_date > now:
                 return True
@@ -297,7 +297,7 @@ class SecurityManager(BaseSecurityManager):
         emailsent_msg = lazy_gettext('The Email for resetting your password '
           'has been sent')
         error_msg = lazy_gettext('The Email for resetting your password'
-          'could not be sent')
+          'could not be sent, try again in 15 minutes.')
 
         try:
             user_id = user.id
