@@ -841,9 +841,9 @@ class AuthOAuthView(AuthView):
                         redirect_uri=url_for(
                             ".oauth_authorized", provider=provider, _external=True
                         ),
-                         state=state.decode("ascii")
-                         if isinstance(state, bytes)
-                         else state,
+                        state=state.decode("ascii")
+                        if isinstance(state, bytes)
+                        else state,
                     )
             except Exception as e:
                 log.error("Error on OAuth authorize: {0}".format(e))
