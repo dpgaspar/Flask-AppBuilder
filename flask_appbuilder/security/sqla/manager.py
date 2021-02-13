@@ -15,7 +15,7 @@ from .models import (
     Role,
     User,
     UserResetPassword,
-    ViewMenu,    
+    ViewMenu,
 )
 from ..manager import BaseSecurityManager
 from ... import const as c
@@ -31,11 +31,11 @@ log = logging.getLogger(__name__)
 
 class SecurityManager(BaseSecurityManager):
     """
-        Responsible for authentication, registering security views,
-        role and permission auto management
+    Responsible for authentication, registering security views,
+    role and permission auto management
 
-        If you want to change anything just inherit and override, then
-        pass your own security manager to AppBuilder.
+    If you want to change anything just inherit and override, then
+    pass your own security manager to AppBuilder.
     """
 
     user_model = User
@@ -47,17 +47,17 @@ class SecurityManager(BaseSecurityManager):
     permissionview_model = PermissionView
     registeruser_model = RegisterUser
 
-    #The template used to generate the reset password email sent to the user
+    # The template used to generate the reset password email sent to the user
     email_template = "appbuilder/general/security/resetpw_mail.html"
 
-    #The reset password email subject
+    # The reset password email subject
     email_subject = lazy_gettext("Reset your password")
 
     def __init__(self, appbuilder):
         """
-            SecurityManager contructor
-            param appbuilder:
-                F.A.B AppBuilder main object
+        SecurityManager contructor
+        param appbuilder:
+            F.A.B AppBuilder main object
         """
         super(SecurityManager, self).__init__(appbuilder)
         user_datamodel = SQLAInterface(self.user_model)
@@ -118,9 +118,9 @@ class SecurityManager(BaseSecurityManager):
         self, username, first_name, last_name, email, password="", hashed_password=""
     ):
         """
-            Add a registration request for the user.
+        Add a registration request for the user.
 
-            :rtype : RegisterUser
+        :rtype : RegisterUser
         """
         register_user = self.registeruser_model()
         register_user.username = username
@@ -143,9 +143,9 @@ class SecurityManager(BaseSecurityManager):
 
     def del_register_user(self, register_user):
         """
-            Deletes registration object from database
+        Deletes registration object from database
 
-            :param register_user: RegisterUser object to delete
+        :param register_user: RegisterUser object to delete
         """
         try:
             self.get_session.delete(register_user)
@@ -158,7 +158,7 @@ class SecurityManager(BaseSecurityManager):
 
     def find_user(self, username=None, email=None):
         """
-            Finds user by username or email
+        Finds user by username or email
         """
         if username:
             try:
@@ -204,7 +204,7 @@ class SecurityManager(BaseSecurityManager):
         hashed_password="",
     ):
         """
-            Generic function to create user
+        Generic function to create user
         """
         try:
             user = self.user_model()
@@ -243,12 +243,6 @@ class SecurityManager(BaseSecurityManager):
     def get_user_by_id(self, pk):
         return self.get_session.query(self.user_model).get(pk)
 
-    def get_user_by_email(self, email):
-        return (
-            self.get_session.query(self.user_model)
-              .filter_by(email=email).scalar()
-        )
-
     def get_reset_password_hash(self, user_id):
         return (
             self.get_session.query(UserResetPassword)
@@ -256,9 +250,9 @@ class SecurityManager(BaseSecurityManager):
             .scalar()
         )
 
-    def check_reset_password_hash(self, resetpw):
+    def check_expire_reset_password_hash(self, resetpw):
         """
-            Returns True if the reset password hash is not expired.
+            Returns True if the reset password hash has not been expired.
 
         :rtype : resetpw object
         """
@@ -271,7 +265,7 @@ class SecurityManager(BaseSecurityManager):
             if expire_date > now:
                 return True
             else:
-                #delete the password reset_hash
+                # delete the password reset_hash
                 self.get_session.delete(resetpw)
                 self.get_session.commit()
         return
@@ -294,22 +288,25 @@ class SecurityManager(BaseSecurityManager):
             (valid: clicked on link in the Email and not expired)
         :rtype : User
         """
-        emailsent_msg = lazy_gettext('The Email for resetting your password '
-          'has been sent')
-        error_msg = lazy_gettext('The Email for resetting your password'
-          'could not be sent, try again in 15 minutes.')
+        emailsent_msg = lazy_gettext(
+            "The Email for resetting your password " "has been sent"
+        )
+        error_msg = lazy_gettext(
+            "The Email for resetting your password"
+            "could not be sent, try again in 15 minutes."
+        )
 
         try:
             user_id = user.id
             resetpw = self.get_reset_password_hash(user_id)
 
-            #hash not expired: don't send another Email
+            # hash not expired: don't send another Email
             if resetpw:
-                #if you don't want to limit the time between sending Emails
-                #do this:
-                #if not resetpw.ack:
-                    #pass
-                if self.check_reset_password_hash(resetpw):
+                # if you don't want to limit the time between sending Emails
+                # do this:
+                # if not resetpw.ack:
+                # pass
+                if self.check_expire_reset_password_hash(resetpw):
                     return True
 
             else:
@@ -322,18 +319,20 @@ class SecurityManager(BaseSecurityManager):
                 flash(as_unicode(emailsent_msg), "info")
 
             else:
-                error_message = lazy_gettext('Hello ') + f'{user.first_name}, '+ error_msg
-                flash(as_unicode(error_message), "danger")
+                flash(as_unicode(error_msg), "danger")
             return
 
         except:
             self.appbuilder.get_session.rollback()
-            return
 
+            # for security reasons always tell the email has been sent
+            # not ideal for typos
+            flash(as_unicode(emailsent_msg), "info")
+            return
 
     def send_pw_reset_email(self, user, resetpw):
         """
-            Method for sending the password reset Email to the user
+        Method for sending the password reset Email to the user
         """
         try:
             from flask_mail import Mail, Message
@@ -366,7 +365,6 @@ class SecurityManager(BaseSecurityManager):
             log.error("Send email exception: {0}".format(str(e)))
             return False
         return True
-
 
     """
     -----------------------
@@ -426,7 +424,7 @@ class SecurityManager(BaseSecurityManager):
 
     def find_permission(self, name):
         """
-            Finds and returns a Permission by name
+        Finds and returns a Permission by name
         """
         return (
             self.get_session.query(self.permission_model)
@@ -497,10 +495,10 @@ class SecurityManager(BaseSecurityManager):
 
     def add_permission(self, name):
         """
-            Adds a permission to the backend, model permission
+        Adds a permission to the backend, model permission
 
-            :param name:
-                name of the permission: 'can_add','can_edit' etc...
+        :param name:
+            name of the permission: 'can_add','can_edit' etc...
         """
         perm = self.find_permission(name)
         if perm is None:
@@ -517,10 +515,10 @@ class SecurityManager(BaseSecurityManager):
 
     def del_permission(self, name: str) -> bool:
         """
-            Deletes a permission from the backend, model permission
+        Deletes a permission from the backend, model permission
 
-            :param name:
-                name of the permission: 'can_add','can_edit' etc...
+        :param name:
+            name of the permission: 'can_add','can_edit' etc...
         """
         perm = self.find_permission(name)
         if not perm:
@@ -551,7 +549,7 @@ class SecurityManager(BaseSecurityManager):
 
     def find_view_menu(self, name):
         """
-            Finds and returns a ViewMenu by name
+        Finds and returns a ViewMenu by name
         """
         return (
             self.get_session.query(self.viewmenu_model)
@@ -564,9 +562,9 @@ class SecurityManager(BaseSecurityManager):
 
     def add_view_menu(self, name):
         """
-            Adds a view or menu to the backend, model view_menu
-            param name:
-                name of the view menu to add
+        Adds a view or menu to the backend, model view_menu
+        param name:
+            name of the view menu to add
         """
         view_menu = self.find_view_menu(name)
         if view_menu is None:
@@ -583,10 +581,10 @@ class SecurityManager(BaseSecurityManager):
 
     def del_view_menu(self, name: str) -> bool:
         """
-            Deletes a ViewMenu from the backend
+        Deletes a ViewMenu from the backend
 
-            :param name:
-                name of the ViewMenu
+        :param name:
+            name of the ViewMenu
         """
         view_menu = self.find_view_menu(name)
         if not view_menu:
@@ -617,7 +615,7 @@ class SecurityManager(BaseSecurityManager):
 
     def find_permission_view_menu(self, permission_name, view_menu_name):
         """
-            Finds and returns a PermissionView by names
+        Finds and returns a PermissionView by names
         """
         permission = self.find_permission(permission_name)
         view_menu = self.find_view_menu(view_menu_name)
@@ -630,10 +628,10 @@ class SecurityManager(BaseSecurityManager):
 
     def find_permissions_view_menu(self, view_menu):
         """
-            Finds all permissions from ViewMenu, returns list of PermissionView
+        Finds all permissions from ViewMenu, returns list of PermissionView
 
-            :param view_menu: ViewMenu object
-            :return: list of PermissionView objects
+        :param view_menu: ViewMenu object
+        :return: list of PermissionView objects
         """
         return (
             self.get_session.query(self.permissionview_model)
@@ -643,12 +641,12 @@ class SecurityManager(BaseSecurityManager):
 
     def add_permission_view_menu(self, permission_name, view_menu_name):
         """
-            Adds a permission on a view or menu to the backend
+        Adds a permission on a view or menu to the backend
 
-            :param permission_name:
-                name of the permission to add: 'can_add','can_edit' etc...
-            :param view_menu_name:
-                name of the view menu to add
+        :param permission_name:
+            name of the permission to add: 'can_add','can_edit' etc...
+        :param view_menu_name:
+            name of the view menu to add
         """
         if not (permission_name and view_menu_name):
             return None
@@ -720,12 +718,12 @@ class SecurityManager(BaseSecurityManager):
 
     def add_permission_role(self, role, perm_view):
         """
-            Add permission-ViewMenu object to Role
+        Add permission-ViewMenu object to Role
 
-            :param role:
-                The role object
-            :param perm_view:
-                The PermissionViewMenu object
+        :param role:
+            The role object
+        :param perm_view:
+            The PermissionViewMenu object
         """
         if perm_view and perm_view not in role.permissions:
             try:
@@ -741,12 +739,12 @@ class SecurityManager(BaseSecurityManager):
 
     def del_permission_role(self, role, perm_view):
         """
-            Remove permission-ViewMenu object to Role
+        Remove permission-ViewMenu object to Role
 
-            :param role:
-                The role object
-            :param perm_view:
-                The PermissionViewMenu object
+        :param role:
+            The role object
+        :param perm_view:
+            The PermissionViewMenu object
         """
         if perm_view in role.permissions:
             try:
