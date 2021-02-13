@@ -11,8 +11,13 @@ from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
 
 from .decorators import has_access
-from .forms import (LoginForm_db, LoginForm_oid, ResetPasswordForm,
-  UserInfoEdit, ForgotMyPasswordForm)
+from .forms import (
+    LoginForm_db,
+    LoginForm_oid,
+    ResetPasswordForm,
+    UserInfoEdit,
+    ForgotMyPasswordForm,
+)
 from .._compat import as_unicode
 from ..actions import action
 from ..baseviews import BaseView
@@ -67,7 +72,7 @@ class PermissionViewModelView(ModelView):
 
 class ForgotMyPasswordView(PublicFormView):
     """
-        View for resetting user password via Email when the user is locked out
+    View for resetting user password via Email when the user is locked out
     """
 
     route_base = "/forgotmypassword"
@@ -81,7 +86,7 @@ class ForgotMyPasswordView(PublicFormView):
 
 class ResetMyPasswordView(SimpleFormView):
     """
-        View for resetting own user password
+    View for resetting own user password
     """
 
     route_base = "/resetmypassword"
@@ -89,26 +94,28 @@ class ResetMyPasswordView(SimpleFormView):
     form_title = lazy_gettext("Reset Password Form")
     redirect_url = "/"
     message = lazy_gettext("Password Changed")
-    forbidden_msg = lazy_gettext("You have to confirm the " +
-      "\"Reset your password\" Email in order to change the password")
+    forbidden_msg = lazy_gettext(
+        "You have to confirm the "
+        + '"Reset your password" Email in order to change the password'
+    )
 
     def form_get(self, form):
-        if current_app.config['EMAIL_PROT']:
+        if current_app.config["EMAIL_PROT"]:
             resetpw = self.appbuilder.sm.get_reset_password_hash(g.user.id)
-            valid = self.appbuilder.sm.check_reset_password_hash(resetpw)
+            valid = self.appbuilder.sm.check_expire_reset_password_hash(resetpw)
 
-            #prevents browsing to the url while there's no valid reset_hash
+            # prevents browsing to the url while there's no valid reset_hash
             if resetpw.ack and valid:
                 pass
             else:
-                flash(self.forbidden_msg, 'danger')
+                flash(self.forbidden_msg, "danger")
                 abort(401)
 
     def form_post(self, form):
         self.appbuilder.sm.reset_password(g.user.id, form.password.data)
 
-        if current_app.config['EMAIL_PROT']:
-            #remove resetpw from db
+        if current_app.config["EMAIL_PROT"]:
+            # remove resetpw from db
             resetpw = self.appbuilder.sm.get_reset_password_hash(g.user.id)
             self.appbuilder.get_session.delete(resetpw)
             self.appbuilder.get_session.commit()
@@ -117,7 +124,7 @@ class ResetMyPasswordView(SimpleFormView):
 
 class PublicResetMyPasswordView(PublicFormView):
     """
-        View for resetting own user password
+    View for resetting own user password
     """
 
     route_base = "/resetmypassword"
@@ -126,19 +133,18 @@ class PublicResetMyPasswordView(PublicFormView):
     redirect_url = "/"
     message = lazy_gettext("Password Changed")
 
-
     @expose("/form/<string:reset_hash>", methods=["GET"])
     def this_form_get(self, reset_hash):
-        if current_app.config['EMAIL_PROT']:
+        if current_app.config["EMAIL_PROT"]:
             user_id = (
                 self.appbuilder.get_session.query(UserResetPassword.id)
-                  .filter_by(reset_hash=reset_hash)
-                  .scalar()
-                )
+                .filter_by(reset_hash=reset_hash)
+                .scalar()
+            )
             resetpw = self.appbuilder.sm.get_reset_password_hash(user_id)
-            valid = self.appbuilder.sm.check_reset_password_hash(resetpw)
+            valid = self.appbuilder.sm.check_expire_reset_password_hash(resetpw)
 
-            #prevents browsing to the url while there's no valid reset_hash
+            # prevents browsing to the url while there's no valid reset_hash
             if resetpw.ack and valid:
                 self._init_vars()
                 form = self.form.refresh()
@@ -154,15 +160,14 @@ class PublicResetMyPasswordView(PublicFormView):
 
         abort(404)
 
-
     @expose("/form/<string:reset_hash>", methods=["POST"])
     def this_form_post(self, reset_hash):
-        if current_app.config['EMAIL_PROT']:
+        if current_app.config["EMAIL_PROT"]:
             user_id = (
                 self.appbuilder.get_session.query(UserResetPassword.id)
-                  .filter_by(reset_hash=reset_hash)
-                  .scalar()
-                )
+                .filter_by(reset_hash=reset_hash)
+                .scalar()
+            )
 
             self._init_vars()
             form = self.form.refresh()
@@ -170,7 +175,7 @@ class PublicResetMyPasswordView(PublicFormView):
                 self.appbuilder.sm.reset_password(user_id, form.password.data)
                 flash(as_unicode(self.message), "info")
 
-                #remove resetpw from db!
+                # remove resetpw from db!
                 resetpw = self.appbuilder.sm.get_reset_password_hash(user_id)
                 self.appbuilder.get_session.delete(resetpw)
                 self.appbuilder.get_session.commit()
@@ -192,7 +197,7 @@ class PublicResetMyPasswordView(PublicFormView):
 
 class ResetPasswordView(SimpleFormView):
     """
-        View for reseting all users password
+    View for reseting all users password
     """
 
     route_base = "/resetpassword"
@@ -345,9 +350,9 @@ class UserModelView(ModelView):
 
 class UserOIDModelView(UserModelView):
     """
-        View that add OID specifics to User view.
-        Override to implement your own custom view.
-        Then override useroidmodelview property on SecurityManager
+    View that add OID specifics to User view.
+    Override to implement your own custom view.
+    Then override useroidmodelview property on SecurityManager
     """
 
     pass
@@ -355,9 +360,9 @@ class UserOIDModelView(UserModelView):
 
 class UserLDAPModelView(UserModelView):
     """
-        View that add LDAP specifics to User view.
-        Override to implement your own custom view.
-        Then override userldapmodelview property on SecurityManager
+    View that add LDAP specifics to User view.
+    Override to implement your own custom view.
+    Then override userldapmodelview property on SecurityManager
     """
 
     pass
@@ -365,9 +370,9 @@ class UserLDAPModelView(UserModelView):
 
 class UserOAuthModelView(UserModelView):
     """
-        View that add OAUTH specifics to User view.
-        Override to implement your own custom view.
-        Then override userldapmodelview property on SecurityManager
+    View that add OAUTH specifics to User view.
+    Override to implement your own custom view.
+    Then override userldapmodelview property on SecurityManager
     """
 
     pass
@@ -375,9 +380,9 @@ class UserOAuthModelView(UserModelView):
 
 class UserRemoteUserModelView(UserModelView):
     """
-        View that add REMOTE_USER specifics to User view.
-        Override to implement your own custom view.
-        Then override userldapmodelview property on SecurityManager
+    View that add REMOTE_USER specifics to User view.
+    Override to implement your own custom view.
+    Then override userldapmodelview property on SecurityManager
     """
 
     pass
@@ -385,9 +390,9 @@ class UserRemoteUserModelView(UserModelView):
 
 class UserDBModelView(UserModelView):
     """
-        View that add DB specifics to User view.
-        Override to implement your own custom view.
-        Then override userdbmodelview property on SecurityManager
+    View that add DB specifics to User view.
+    Override to implement your own custom view.
+    Then override userdbmodelview property on SecurityManager
     """
 
     add_form_extra_fields = {
@@ -459,19 +464,20 @@ class UserDBModelView(UserModelView):
             appbuilder=self.appbuilder,
         )
 
-    @expose('/resetpw', methods=['GET'])
+    @expose("/resetpw", methods=["GET"])
     def resetpw(self):
-        #preliminary work for extending this function for a "Forgot Password"
+        access = None
+
         if g.user is not None and g.user.is_authenticated:
             user = self.appbuilder.sm.get_user_by_id(g.user.id)
-
-        access = self.appbuilder.sm.reset_pw_hash(user)
+            access = self.appbuilder.sm.reset_pw_hash(user)
 
         if access:
             return redirect(
-                      url_for(self.appbuilder.sm.resetmypasswordview.__name__ +
-                      ".this_form_get")
-                     )
+                url_for(
+                    self.appbuilder.sm.resetmypasswordview.__name__ + ".this_form_get"
+                )
+            )
         else:
             return redirect(self.get_redirect())
 
@@ -483,13 +489,14 @@ class UserDBModelView(UserModelView):
         multiple=False,
     )
     def resetmypassword(self, item):
-        if current_app.config['EMAIL_PROT']:
-            return redirect(url_for('.resetpw'))
+        if current_app.config["EMAIL_PROT"]:
+            return redirect(url_for(".resetpw"))
 
         else:
             return redirect(
-                url_for(self.appbuilder.sm.resetmypasswordview.__name__ +
-                ".this_form_get")
+                url_for(
+                    self.appbuilder.sm.resetmypasswordview.__name__ + ".this_form_get"
+                )
             )
 
     @action(
@@ -510,41 +517,45 @@ class UserDBModelView(UserModelView):
     def pre_add(self, item):
         item.password = generate_password_hash(item.password)
 
-
     @expose("/resetmypw/<string:reset_hash>")
     def resetmypw(self, reset_hash):
         """
-            Endpoint to expose an reset password url, this url
-            is sent to the user by E-mail, when accessed the user will grant
-            access to the change password form
+        Endpoint to expose an reset password url, this url
+        is sent to the user by E-mail, when accessed the user will grant
+        access to the change password form
         """
         false_error_message = lazy_gettext("Not able to reset the password")
 
         resetpw = (
             self.appbuilder.get_session.query(UserResetPassword)
-              .filter(UserResetPassword.reset_hash == reset_hash)
-              .scalar()
+            .filter(UserResetPassword.reset_hash == reset_hash)
+            .scalar()
         )
 
         if resetpw:
-            not_expired = self.appbuilder.sm.check_reset_password_hash(resetpw)
+            not_expired = self.appbuilder.sm.check_expire_reset_password_hash(resetpw)
 
             if not_expired:
-                #confirm user is validated by email
+                # confirm user is validated by email
                 resetpw.ack = True
                 self.appbuilder.get_session.merge(resetpw)
                 self.appbuilder.get_session.commit()
 
                 if g.user is not None and g.user.is_authenticated:
                     return redirect(
-                        url_for(self.appbuilder.sm.resetmypasswordview.__name__ +
-                          ".this_form_get")
+                        url_for(
+                            self.appbuilder.sm.resetmypasswordview.__name__
+                            + ".this_form_get"
+                        )
                     )
 
                 else:
                     return redirect(
-                        url_for(self.appbuilder.sm.publicresetmypasswordview.__name__ +
-                          ".this_form_get", reset_hash=reset_hash)
+                        url_for(
+                            self.appbuilder.sm.publicresetmypasswordview.__name__
+                            + ".this_form_get",
+                            reset_hash=reset_hash,
+                        )
                     )
 
         else:
