@@ -20,10 +20,14 @@ from .models import (
 from ..manager import BaseSecurityManager
 from ... import const as c
 from ...models.sqla import Base
-from ...models.sqla.interface import SQLAInterface
+
 from datetime import datetime, timedelta
-from flask_babel import lazy_gettext
+
+from ...models.sqla.interface import SQLAInterface
+
 from flask import flash, render_template, url_for
+from flask_babel import lazy_gettext
+
 from ..._compat import as_unicode
 
 log = logging.getLogger(__name__)
@@ -322,7 +326,7 @@ class SecurityManager(BaseSecurityManager):
                 flash(as_unicode(error_msg), "danger")
             return
 
-        except:
+        except Exception:
             self.appbuilder.get_session.rollback()
 
             # for security reasons always tell the email has been sent
