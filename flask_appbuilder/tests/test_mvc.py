@@ -1705,10 +1705,12 @@ class ResetHashMVCTestCase(BaseMVCTestCase):
         db = SQLA(self.app)
         AppBuilder(self.app, db.session)
 
+	"""
         role_admin = self.appbuilder.sm.find_role("Admin")
         self.appbuilder.sm.add_user(
             "admin", "admin", "user", "admin@fab.org", role_admin, "general"
         )
+	"""
 
 	
 def tearDown(self):
