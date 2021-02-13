@@ -1439,7 +1439,7 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(model.field_string, "test1")
         self.assertEqual(model.field_integer, 1)
 
-    def test_method_permission_override(self):
+   def test_method_permission_override(self):
         """
             MVC: Test method permission name override
         """
@@ -1693,44 +1693,44 @@ class MVCTestCase(BaseMVCTestCase):
 	
 class ResetHashMVCTestCase(BaseMVCTestCase):
     """
-         Tests for Security reset password while a valid reset_hash with Email ack is required
-         (EMAIL_PROT = True)
+	Tests for Security reset password while a valid reset_hash with Email ack is required
+	(EMAIL_PROT = True)
     """
-    def setUp(self):
-        super().setUp()
-        sess = PSSession()
-	
-        #turn password reset with hash function on
-        self.app.config["EMAIL_PROT"] = True
-        db = SQLA(self.app)
-        AppBuilder(self.app, db.session)
+	def setUp(self):
+		super().setUp()
+		sess = PSSession()
 
-	"""
+		#turn password reset with hash function on
+		self.app.config["EMAIL_PROT"] = True
+		db = SQLA(self.app)
+		AppBuilder(self.app, db.session)
+
+		"""
         role_admin = self.appbuilder.sm.find_role("Admin")
         self.appbuilder.sm.add_user(
             "admin", "admin", "user", "admin@fab.org", role_admin, "general"
         )
-	"""
+        """
 
 
     def tearDown(self):
-        self.appbuilder = None
-        self.app = None
-        self.db = None
-        log.debug("TEAR DOWN")
+		self.appbuilder = None
+		self.app = None
+		self.db = None
+		log.debug("TEAR DOWN")
 
     def test_sec_reset_password_email_prot(self):
-        """
+		"""
         Test Security reset password while a valid reset_hash with Email ack is required
         (EMAIL_PROT = True)
         """
-        client = self.app.test_client()
+		client = self.app.test_client()
 
-        # Try Reset My password while logged in, without a reset_hash with Email ack
-        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/users/action/resetmypassword/1", follow_redirects=True)
-        data = rv.data.decode("utf-8")
-        self.assertIn("Reset Password Form", data)
-        self.assertEqual(rv.status_code, 401)
-        self.browser_logout(client)
+		# Try Reset My password while logged in, without a reset_hash with Email ack
+		rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+		rv = client.get("/users/action/resetmypassword/1", follow_redirects=True)
+		data = rv.data.decode("utf-8")
+		self.assertIn("Reset Password Form", data)
+		self.assertEqual(rv.status_code, 401)
+		self.browser_logout(client)
 	
