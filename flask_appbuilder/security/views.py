@@ -12,20 +12,20 @@ from wtforms.validators import EqualTo
 
 from .decorators import has_access
 from .forms import (
+    ForgotMyPasswordForm,
     LoginForm_db,
     LoginForm_oid,
     ResetPasswordForm,
-    UserInfoEdit,
-    ForgotMyPasswordForm,
+    UserInfoEdit,    
 )
 from .._compat import as_unicode
 from ..actions import action
 from ..baseviews import BaseView
 from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
-from ..views import expose, ModelView, SimpleFormView, PublicFormView
-from ..widgets import ListWidget, ShowWidget
+from ..views import expose, ModelView, PublicFormView, SimpleFormView
 from .sqla.models import UserResetPassword
+from ..widgets import ListWidget, ShowWidget
 
 log = logging.getLogger(__name__)
 
