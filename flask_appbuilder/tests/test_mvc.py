@@ -1439,7 +1439,7 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(model.field_string, "test1")
         self.assertEqual(model.field_integer, 1)
 
-   def test_method_permission_override(self):
+    def test_method_permission_override(self):
         """
             MVC: Test method permission name override
         """
