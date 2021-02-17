@@ -12,7 +12,7 @@ Setup you dev environment
 
     $ python -m venv venv
     $ source venv/bin/activate
-    $ pip install -r requirements.txt -r requirements-dev.txt
+    $ pip install -r requirements.txt -r requirements-dev.txt -r requirements-extra.txt
 
 2 - Install `docker` and `docker-compose`
 
@@ -34,3 +34,12 @@ can run a subset of tests targeting only Postgres.
 .. code-block:: bash
 
     $ tox -e postgres
+
+3 - Code Formatting
+
+.. code-block:: bash
+
+    $ black flask_appbuilder
+    $ flake8 flask_appbuilder
+
+

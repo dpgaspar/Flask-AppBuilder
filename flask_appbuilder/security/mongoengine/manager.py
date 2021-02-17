@@ -123,7 +123,7 @@ class SecurityManager(BaseSecurityManager):
             user.username = username
             user.email = email
             user.active = True
-            user.roles.append(role)
+            user.roles = role if isinstance(role, list) else [role]
             if hashed_password:
                 user.password = hashed_password
             else:
