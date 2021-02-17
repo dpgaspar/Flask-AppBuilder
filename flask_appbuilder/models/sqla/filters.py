@@ -146,6 +146,7 @@ class FilterNotEqual(BaseFilter):
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
         value = set_value_to_type(self.datamodel, self.column_name, value)
+
         return query.filter(field != value)
 
 
@@ -156,6 +157,10 @@ class FilterGreater(BaseFilter):
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
         value = set_value_to_type(self.datamodel, self.column_name, value)
+
+        if value is None:
+            return query
+
         return query.filter(field > value)
 
 
@@ -166,6 +171,10 @@ class FilterSmaller(BaseFilter):
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
         value = set_value_to_type(self.datamodel, self.column_name, value)
+
+        if value is None:
+            return query
+
         return query.filter(field < value)
 
 
@@ -193,15 +202,33 @@ class FilterRelationManyToManyEqual(FilterRelation):
     name = lazy_gettext("Relation as Many")
     arg_name = "rel_m_m"
 
+    def apply_item(self, query, field, value_item):
+        """
+        Get object by column_name and value_item, then apply filter if object exists
+        Query with new filter applied
+        """
+        rel_obj = self.datamodel.get_related_obj(self.column_name, value_item)
+
+        if rel_obj:
+            return query.filter(field.contains(rel_obj))
+        else:
+            log.error(
+                "Related object for column: %s, value: %s return Null",
+                self.column_name,
+                value_item,
+            )
+
+        return query
+
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
+
         if isinstance(value, list):
             for value_item in value:
-                rel_obj = self.datamodel.get_related_obj(self.column_name, value_item)
-                query = query.filter(field.contains(rel_obj))
+                query = self.apply_item(query, field, value_item)
             return query
-        rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        return query.filter(field.contains(rel_obj))
+
+        return self.apply_item(query, field, value)
 
 
 class FilterEqualFunction(BaseFilter):
