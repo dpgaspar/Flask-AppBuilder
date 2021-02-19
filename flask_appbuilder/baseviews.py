@@ -256,7 +256,7 @@ class BaseView(object):
             if attr_name in self.exclude_route_methods:
                 log.info(
                     f"Not registering route for method "
-                    "{self.__class__.__name__}.{attr_name}"
+                    f"{self.__class__.__name__}.{attr_name}"
                 )
                 continue
             attr = getattr(self, attr_name)
