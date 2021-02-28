@@ -1673,10 +1673,8 @@ class MVCTestCase(BaseMVCTestCase):
 
 """
 class ResetHashMVCTestCase(BaseMVCTestCase):
-    """
     #Tests for Security reset password while a valid reset_hash with Email ack is required
     #(EMAIL_PROT = True)
-    """
 
     def setUp(self):
         super().setUp()
