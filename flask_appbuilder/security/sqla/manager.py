@@ -1,10 +1,21 @@
+from datetime import datetime, timedelta
+
+from flask import flash, render_template, url_for
+
+from flask_babel import lazy_gettext
+
 import logging
-from typing import List, Optional
-import uuid
+
+from smtplib import SMTPException
 
 from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm.exc import MultipleResultsFound
+
+from typing import List, Optional
+
+import uuid
+
 from werkzeug.security import generate_password_hash
 
 from .models import (
@@ -20,14 +31,7 @@ from .models import (
 from ..manager import BaseSecurityManager
 from ... import const as c
 from ...models.sqla import Base
-
-from datetime import datetime, timedelta
-
 from ...models.sqla.interface import SQLAInterface
-
-from flask import flash, render_template, url_for
-from flask_babel import lazy_gettext
-
 from ..._compat import as_unicode
 
 log = logging.getLogger(__name__)
@@ -60,7 +64,7 @@ class SecurityManager(BaseSecurityManager):
     def __init__(self, appbuilder):
         """
         SecurityManager contructor
-        param appbuilder:
+        :param appbuilder:
             F.A.B AppBuilder main object
         """
         super(SecurityManager, self).__init__(appbuilder)
@@ -247,7 +251,7 @@ class SecurityManager(BaseSecurityManager):
     def get_user_by_id(self, pk):
         return self.get_session.query(self.user_model).get(pk)
 
-    def get_reset_password_hash(self, user_id):
+    def get_reset_password_hash(self, user_id: int) -> UserResetPassword:
         return (
             self.get_session.query(UserResetPassword)
             .filter(UserResetPassword.id == user_id)
@@ -256,8 +260,7 @@ class SecurityManager(BaseSecurityManager):
 
     def check_expire_reset_password_hash(self, resetpw):
         """
-            Returns True if the reset password hash has not been expired.
-
+        Returns True if the reset password hash has not been expired.
         :rtype : resetpw object
         """
 
@@ -270,11 +273,15 @@ class SecurityManager(BaseSecurityManager):
                 return True
             else:
                 # delete the password reset_hash
-                self.get_session.delete(resetpw)
-                self.get_session.commit()
+                try:
+                    self.get_session.delete(resetpw)
+                    self.get_session.commit()
+                except Exception as e:
+                    log.error(c.LOGMSG_ERR_SEC_DEL_RESET_PW_HASH.format(str(e)))
+                    self.get_session.rollback()
         return
 
-    def create_reset_pw_hash(self, resetpw):
+    def create_reset_pw_hash(self, resetpw: object):
         try:
             self.get_session.merge(resetpw)
             self.get_session.commit()
@@ -283,20 +290,20 @@ class SecurityManager(BaseSecurityManager):
             self.get_session.rollback()
             return False
 
-    def reset_pw_hash(self, user):
+    def reset_pw_hash(self, user: object):
         """
-            Create a password reset_hash for the user in table
-            UserResetPassword and sent a link to the Email of the user.
+        Create a password reset_hash for the user in table
+        UserResetPassword and sent a link to the Emailaddress of the user.
 
-            Returns True if there already is a valid reset_hash.
-            (valid: clicked on link in the Email and not expired)
-        :rtype : User
+        Returns True if there already is a valid reset_hash.
+        (valid: clicked on link in the Email and not expired)
+        :param rtype : User
         """
         emailsent_msg = lazy_gettext(
             "The Email for resetting your password " "has been sent"
         )
         error_msg = lazy_gettext(
-            "The Email for resetting your password"
+            "The Email for resetting your password "
             "could not be sent, try again in 15 minutes."
         )
 
@@ -365,10 +372,10 @@ class SecurityManager(BaseSecurityManager):
 
         try:
             mail.send(msg)
-        except Exception as e:
-            log.error("Send email exception: {0}".format(str(e)))
-            return False
-        return True
+            return True
+        except SMTPException as e:
+            log.error("Send email password_reset exception: {0}".format(str(e)))
+        return False
 
     """
     -----------------------
