@@ -1,18 +1,26 @@
 from datetime import datetime, timedelta
 
+
 from flask import flash, render_template, url_for
 
-from flask_babel import lazy_gettext
 
 import logging
 
+from flask_babel import lazy_gettext
+
+
 from smtplib import SMTPException
+
 
 from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
-from sqlalchemy.orm.exc import MultipleResultsFound
+
 
 from typing import List, Optional
+
+
+from sqlalchemy.orm.exc import MultipleResultsFound
+
 
 import uuid
 
@@ -31,8 +39,9 @@ from .models import (
 from ..manager import BaseSecurityManager
 from ... import const as c
 from ...models.sqla import Base
-from ...models.sqla.interface import SQLAInterface
 from ..._compat import as_unicode
+from ...models.sqla.interface import SQLAInterface
+
 
 log = logging.getLogger(__name__)
 
