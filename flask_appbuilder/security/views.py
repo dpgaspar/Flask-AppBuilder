@@ -16,7 +16,7 @@ from .forms import (
     LoginForm_db,
     LoginForm_oid,
     ResetPasswordForm,
-    UserInfoEdit,    
+    UserInfoEdit,
 )
 from .._compat import as_unicode
 from ..actions import action
