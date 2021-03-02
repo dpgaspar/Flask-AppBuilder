@@ -23,8 +23,8 @@ from ..actions import action
 from ..baseviews import BaseView
 from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
-from ..views import expose, ModelView, PublicFormView, SimpleFormView
 from .sqla.models import UserResetPassword
+from ..views import expose, ModelView, PublicFormView, SimpleFormView
 from ..widgets import ListWidget, ShowWidget
 
 log = logging.getLogger(__name__)
