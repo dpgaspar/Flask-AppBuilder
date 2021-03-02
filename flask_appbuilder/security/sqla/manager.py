@@ -1,33 +1,24 @@
+import logging
+import uuid
 from datetime import datetime, timedelta
+from smtplib import SMTPException
+from typing import List, Optional
 
 
 from flask import flash, render_template, url_for
 
 
-import logging
-
 from flask_babel import lazy_gettext
-
-
-from smtplib import SMTPException
 
 
 from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
-
-
-from typing import List, Optional
-
-
 from sqlalchemy.orm.exc import MultipleResultsFound
 
-
-import uuid
 
 from werkzeug.security import generate_password_hash
 
 from .models import (
-    assoc_permissionview_role,
     Permission,
     PermissionView,
     RegisterUser,
@@ -35,11 +26,12 @@ from .models import (
     User,
     UserResetPassword,
     ViewMenu,
+    assoc_permissionview_role,
 )
 from ..manager import BaseSecurityManager
 from ... import const as c
-from ...models.sqla import Base
 from ..._compat import as_unicode
+from ...models.sqla import Base
 from ...models.sqla.interface import SQLAInterface
 
 
