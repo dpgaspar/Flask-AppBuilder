@@ -126,6 +126,44 @@ class BaseMVCTestCase(FABTestCase):
         }
 
 
+class ListFilterTestCase(BaseMVCTestCase):
+    def test_list_filter_in_valid_object(self):
+        """
+        MVC: Test Filter with related object not found
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Roles doesn't exists
+            rv = c.get("/users/list/?_flt_0_roles=-1")
+            self.assertEqual(rv.status_code, 200)
+
+    def test_list_filter_unknow_column(self):
+        """
+        MVC: Test Filter with unknown field
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+            # UNKNOWN_COLUMN is not a valid column
+            rv = c.get("/users/list/?_flt_0_UNKNOWN_COLUMN=-1")
+            self.assertEqual(rv.status_code, 200)
+
+    def test_list_filter_invalid_value_format(self):
+        """
+        MVC: Test Filter with invalid value of date filter
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            #  Greater than wrong value
+            rv = c.get("/users/list/?_flt_1_created_on=wrongvalue")
+            self.assertEqual(rv.status_code, 200)
+
+            #  Smaller than wrong value
+            rv = c.get("/users/list/?_flt_2_created_on=wrongvalue")
+            self.assertEqual(rv.status_code, 200)
+
+
 class MVCCSRFTestCase(BaseMVCTestCase):
     def setUp(self):
 
