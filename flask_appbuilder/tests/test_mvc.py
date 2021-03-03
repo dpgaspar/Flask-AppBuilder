@@ -1100,7 +1100,7 @@ class MVCTestCase(BaseMVCTestCase):
         rv = client.get("/model2view/add")
         data = rv.data.decode("utf-8")
         self.assertIn("test0", data)
-        self.assertNotIn(f"test1", data)
+        self.assertNotIn("test1", data)
 
         model2 = (
             self.appbuilder.get_session.query(Model2)
@@ -1110,7 +1110,7 @@ class MVCTestCase(BaseMVCTestCase):
         # Base filter string starts with
         rv = client.get(f"/model2view/edit/{model2.id}")
         data = rv.data.decode("utf-8")
-        self.assertIn(f"test1", data)
+        self.assertIn("test1", data)
 
     def test_model_list_order(self):
         """
@@ -1546,7 +1546,7 @@ class MVCTestCase(BaseMVCTestCase):
         # Unauthorized delete
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string=f"test1")
+            .filter_by(field_string="test1")
             .one_or_none()
         )
         pk = model1.id
