@@ -3,11 +3,13 @@
 
 {% if appbuilder %}
     {% set app_name = appbuilder.app_name %}
+    {% set app_icon = appbuilder.app_icon %}
 {% endif %}
 
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="icon" href={{app_icon}}>
     <title>{% block page_title %}{{app_name}}{% endblock %}</title>
 
     {% block head_meta %}
