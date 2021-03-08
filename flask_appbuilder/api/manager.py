@@ -1,7 +1,7 @@
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
-from flask import current_app, url_for
 from apispec.ext.marshmallow.common import resolve_schema_cls
+from flask import current_app, url_for
 from flask_appbuilder.api import BaseApi
 from flask_appbuilder.api import expose, protect, safe
 from flask_appbuilder.basemanager import BaseManager
