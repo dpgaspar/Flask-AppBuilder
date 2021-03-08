@@ -60,7 +60,7 @@ class OpenApi(BaseApi):
                 base_api.add_api_spec(api_spec)
                 version_found = True
         if version_found:
-            return self export EOS_LOGIN_CONF=/home/mleinweber/projects/ealogin/config.py.response(200, **api_spec.to_dict())
+            return self.response(200, **api_spec.to_dict())
         else:
             return self.response_404()
 
