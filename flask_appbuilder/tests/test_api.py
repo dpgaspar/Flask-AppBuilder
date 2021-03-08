@@ -2019,7 +2019,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string=f"test0")
+            .filter_by(field_string="test0")
             .one_or_none()
         )
         pk = model1.id

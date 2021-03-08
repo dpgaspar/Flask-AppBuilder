@@ -12,7 +12,7 @@ Setup you dev environment
 
     $ python -m venv venv
     $ source venv/bin/activate
-    $ pip install -r requirements.txt -r requirements-dev.txt
+    $ pip install -r requirements.txt -r requirements-dev.txt -r requirements-extra.txt
 
 2 - Install `docker` and `docker-compose`
 
@@ -34,3 +34,47 @@ can run a subset of tests targeting only Postgres.
 .. code-block:: bash
 
     $ tox -e postgres
+
+4 - Code Formatting
+
+.. code-block:: bash
+
+    $ black flask_appbuilder
+    $ flake8 flask_appbuilder
+
+Run a single test
+-----------------
+
+Using Postgres
+
+1 - Stop and delete Postgres volume, then restart
+
+.. code-block:: bash
+
+    $ docker-compose down -v
+    $ docker-compose up -d
+
+2 - Export the connection string
+
+.. code-block:: bash
+
+   $ export SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://pguser:pguserpassword@0.0.0.0/app
+
+3 - Run the fixtures
+
+.. code-block:: bash
+
+    $ nosetests -v flask_appbuilder.tests.test_0_fixture
+
+
+4 - Run a single test
+
+.. code-block:: bash
+
+    $ nosetests -v flask_appbuilder.tests.test_api:APITestCase.test_get_item_dotted_mo_notation
+
+
+.. note::
+
+    If your using SQLite3, the location of the db is: ./flask_appbuilder/tests/app.db
+    You can safely delete it, if you need to delete the fixtures for example.

@@ -1,6 +1,21 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.2.0
+-----------------------------------
+
+- fix: issue 1469 error in filters (#1541) [Duy Nguyen Hoang]
+- fix: showing excluded routes in server log (#1565) [runoutnow]
+- refactor: AUTH_LDAP/AUTH_OAUTH + implement role mapping (#1374) [Mathew Wicks]
+- fix(api): OpenAPI spec of nested components without auto generated names (#1547) [Daniel Vaz Gaspar]
+- fix(mvc): action confirmation on single show view (#1539) [Daniel Vaz Gaspar]
+- docs: improve docs around LDAP auth (#1526) [Daniel Vaz Gaspar]
+- ci: tests for python 3.8 and 3.9 (#1525) [Daniel Vaz Gaspar]
+- docs: fix, swagger path in readme (#1518) [Felix Rilling]
+- fix: oauth #1511 (#1522) [Daniel Vaz Gaspar]
+- fix: github actions (#1523) [Daniel Vaz Gaspar]
+- fix: changelog (#1507) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 3.1.1
 -----------------------------------
 
