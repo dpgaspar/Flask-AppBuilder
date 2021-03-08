@@ -73,9 +73,7 @@ class OpenApi(BaseApi):
             openapi_version="3.0.2",
             info=dict(description=current_app.appbuilder.app_name),
             plugins=[MarshmallowPlugin(schema_name_resolver=resolver)],
-            servers=[{"url": api_url}],
-            plugins=[MarshmallowPlugin(schema_name_resolver=resolver)],
-            servers=[{"url": "/api/{}".format(version)}],
+            servers=[{"url": api_url}]
         )
 
 
