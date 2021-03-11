@@ -126,6 +126,44 @@ class BaseMVCTestCase(FABTestCase):
         }
 
 
+class ListFilterTestCase(BaseMVCTestCase):
+    def test_list_filter_in_valid_object(self):
+        """
+        MVC: Test Filter with related object not found
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Roles doesn't exists
+            rv = c.get("/users/list/?_flt_0_roles=-1")
+            self.assertEqual(rv.status_code, 200)
+
+    def test_list_filter_unknow_column(self):
+        """
+        MVC: Test Filter with unknown field
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+            # UNKNOWN_COLUMN is not a valid column
+            rv = c.get("/users/list/?_flt_0_UNKNOWN_COLUMN=-1")
+            self.assertEqual(rv.status_code, 200)
+
+    def test_list_filter_invalid_value_format(self):
+        """
+        MVC: Test Filter with invalid value of date filter
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            #  Greater than wrong value
+            rv = c.get("/users/list/?_flt_1_created_on=wrongvalue")
+            self.assertEqual(rv.status_code, 200)
+
+            #  Smaller than wrong value
+            rv = c.get("/users/list/?_flt_2_created_on=wrongvalue")
+            self.assertEqual(rv.status_code, 200)
+
+
 class MVCCSRFTestCase(BaseMVCTestCase):
     def setUp(self):
 
@@ -1062,7 +1100,7 @@ class MVCTestCase(BaseMVCTestCase):
         rv = client.get("/model2view/add")
         data = rv.data.decode("utf-8")
         self.assertIn("test0", data)
-        self.assertNotIn(f"test1", data)
+        self.assertNotIn("test1", data)
 
         model2 = (
             self.appbuilder.get_session.query(Model2)
@@ -1072,7 +1110,7 @@ class MVCTestCase(BaseMVCTestCase):
         # Base filter string starts with
         rv = client.get(f"/model2view/edit/{model2.id}")
         data = rv.data.decode("utf-8")
-        self.assertIn(f"test1", data)
+        self.assertIn("test1", data)
 
     def test_model_list_order(self):
         """
@@ -1508,7 +1546,7 @@ class MVCTestCase(BaseMVCTestCase):
         # Unauthorized delete
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string=f"test1")
+            .filter_by(field_string="test1")
             .one_or_none()
         )
         pk = model1.id

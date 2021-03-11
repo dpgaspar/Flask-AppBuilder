@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: morrisoncole/pr-lint-action@v1.4.1
         with:
-          title-regex: "^(build|chore|ci|docs|feat|fix|perf|refactor|style|test|other)((.+))?:\\s.+"
+          title-regex: "^(build|chore|ci|docs|feat|fix|perf|refactor|style|test|release|other)((.+))?:\\s.+"
           on-failed-regex-fail-action: true
           on-failed-regex-request-changes: false
           on-failed-regex-create-review: false
