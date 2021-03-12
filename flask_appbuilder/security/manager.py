@@ -626,6 +626,14 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "email": me.data.get("email", ""),
                 "role_keys": me.data.get("groups", []),
             }
+        # for custom remote_app
+        if provider in self.appbuilder.sm.oauth_remotes and hasattr(
+            self.appbuilder.sm.oauth_remotes[provider],
+            "get_oauth_user_info"
+        ):
+            me = self.appbuilder.sm.oauth_remotes[provider].get_oauth_user_info()
+            log.debug("User info from {0}: {1}".format(provider, me))
+            return me
         else:
             return {}
 
