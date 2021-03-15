@@ -53,6 +53,8 @@ setup(
         "Flask-Babel>=1, <2",
         "Flask-Login>=0.3, <0.5",
         "Flask-OpenID>=1.2.5, <2",
+        # SQLAlchemy 1.4.0 breaks flask-sqlalchemy and sqlalchemy-utils
+        "SQLAlchemy<1.4.0",
         "Flask-SQLAlchemy>=2.4, <3",
         "Flask-WTF>=0.14.2, <0.15.0",
         "Flask-JWT-Extended>=3.18, <4",
