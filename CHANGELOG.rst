@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.2.1
+-----------------------------------
+
+- docs: improve contributing run single test (#1579) [Daniel Vaz Gaspar]
+- fix: sqlalchemy 1.4.0 breaking changes (#1586) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 3.2.0
 -----------------------------------
 
