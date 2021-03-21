@@ -599,13 +599,14 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.debug(str(id_token))
             me = self._azure_jwt_token_parse(id_token)
             log.debug("Parse JWT token : {0}".format(me))
+            upn_split = me["upn"].split("@") if "upn" in me else []
             return {
-                "name": me["name"],
-                "email": me["upn"],
-                "first_name": me["given_name"],
-                "last_name": me["family_name"],
+                "name": me["name"] if "name" in me else "N/A",
+                "email": me["upn"] if "upn" in me else "N/A",
+                "first_name": me["given_name"] if "given_name" in me else upn_split[0] if "upn" in me else "N/A",
+                "last_name": me["family_name"] if "family_name" in me else upn_split[1] if len(upn_split) > 1 else upn_split[0] if "upn" in me else "N/A",
                 "id": me["oid"],
-                "username": me["oid"],
+                "username": me["upn"].split("@")[0] if "upn" in me else me["oid"]
             }
         # for OpenShift
         if provider == "openshift":
