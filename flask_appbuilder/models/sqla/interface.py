@@ -13,7 +13,6 @@ from sqlalchemy.orm.session import Session as SessionBase
 from sqlalchemy.orm.util import AliasedClass
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.sqltypes import TypeEngine
-from sqlalchemy_utils.types.uuid import UUIDType
 
 
 from . import filters, Model
@@ -485,10 +484,7 @@ class SQLAInterface(BaseInterface):
 
     def is_string(self, col_name: str) -> bool:
         try:
-            return (
-                _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
-                or self.list_columns[col_name].type.__class__ == UUIDType
-            )
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
         except KeyError:
             return False
 
