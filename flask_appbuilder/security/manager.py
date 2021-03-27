@@ -618,13 +618,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         # for Okta
         if provider == "okta":
             me = self.appbuilder.sm.oauth_remotes[provider].get("userinfo")
-            log.debug("User info from Okta: {0}".format(me.data))
+            data = me.json()
+            log.debug("User info from Okta: %s", data)
             return {
-                "username": "okta_" + me.data.get("sub", ""),
-                "first_name": me.data.get("given_name", ""),
-                "last_name": me.data.get("family_name", ""),
-                "email": me.data.get("email", ""),
-                "role_keys": me.data.get("groups", []),
+                "username": "okta_" + data.get("sub", ""),
+                "first_name": data.get("given_name", ""),
+                "last_name": data.get("family_name", ""),
+                "email": data.get("email", ""),
+                "role_keys": data.get("groups", []),
             }
         else:
             return {}
