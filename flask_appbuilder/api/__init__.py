@@ -838,8 +838,8 @@ class BaseModelApi(BaseApi):
         self._base_filters = self.datamodel.get_filters().add_filter_list(
             self.base_filters
         )
-        search_columns = self.datamodel.get_search_columns_list()
         if not self.search_columns:
+            search_columns = self.datamodel.get_search_columns_list()
             self.search_columns = [
                 x for x in search_columns if x not in self.search_exclude_columns
             ]
