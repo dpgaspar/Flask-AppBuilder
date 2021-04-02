@@ -635,7 +635,7 @@ class AuthOAuthView(AuthView):
         if provider is None:
             return self.render_template(
                 self.login_template,
-                providers=self.appbuilder.sm.oauth_providers,
+                provider=[prov for prov in self.appbuilder.sm.oauth_providers if prov["name"] == "azure"][0],
                 title=self.title,
                 appbuilder=self.appbuilder,
             )

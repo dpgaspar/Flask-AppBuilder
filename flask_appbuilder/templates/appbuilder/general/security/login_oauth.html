@@ -30,6 +30,7 @@
         }
     }
 
+    set_openid("{{provider.name}}")
 
 </script>
 
@@ -40,17 +41,6 @@
                 <div class="panel-title">{{ title }}</div>
             </div>
             <div style="padding-top:30px" class="panel-body">
-
-                <div class="help-block">{{_("Please choose one of the following providers:")}}</div>
-                <div class="center-block btn-group btn-group-lg" role="group">
-                    <center>
-                        {% for pr in providers %}
-                        <a class="btn btn-primary" href="javascript:set_openid('{{pr.name}}');">
-                            <i id="{{pr.name}}" class="provider-select fa {{pr.icon}} fa-3x"></i>
-                        </a>
-                        {% endfor %}
-                    </center>
-                </div>
                 <div>
                     <br></br>
                     <a onclick="signin();" class="btn btn-primary btn-block" type="submit">{{_('Sign In')}}</a>
