@@ -274,6 +274,60 @@ Your method should return a dictionary with the userinfo, the keys having the sa
 Your method will be called after the user authorizes your application on the OAuth provider.
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
 
+To add a new Oauth Provider from Airflow, you can create your own class in **weberver_config.py** like this::
+    
+    import os
+    from flask_appbuilder.security.manager import AUTH_OAUTH
+    from airflow.www.security import AirflowSecurityManager
+
+    AUTH_TYPE = AUTH_OAUTH
+    WTF_CSRF_ENABLED = True
+    AUTH_USER_REGISTRATION = True
+    OIDC_COOKIE_SECURE = False
+
+    SSO_URL = "https://{sso-server}/realms/{realm-name}/protocol/openid-connect/"
+
+    RHSSO_PROVIDER = {
+                           'name': 'rhsso',
+                           'icon': 'fa-id-card-o',
+                           'token_key': 'access_token',
+                           'remote_app': {
+                                   'api_base_url': SSO_URL,
+                                   'client_kwargs': {
+                                           'scope': 'default'
+                                   },
+                                   'request_token_url': None,
+                                   'access_token_url': os.path.join(SSO_URL,'token'),
+                                   'authorize_url': os.path.join(SSO_URL,'auth'),
+                                   'client_id': 'client',
+                                   'client_secret': 'secret'
+                           }
+    }
+
+    OAUTH_PROVIDERS = OAUTHPROVIDERS.append(RHSSO_PROVIDER)
+
+
+    class CustomOauthProvider(AirflowSecurityManager):
+      def oauth_user_info_getter(self, provider, response=None):
+          if provider == "rhsso":
+              me = self.appbuilder.sm.oauth_remotes[provider].get("userinfo")
+              data = me.json()
+              print("User info from OAuth Provider: {0}".format(data))
+              return {
+                  "preferred_username": data.get("preferred_username",""),
+                  "first_name": data.get("given_name",""),
+                  "last_name": data.get("family_name",""),
+                  "email": data.get("email",""),
+                  "name": data.get("name",""),
+                  "username": data.get("preferred_username",""),
+                  "id": data.get("upn",""),
+                  "roles": data.get("roles",[])
+              }
+          else:
+              return {}
+
+    SECURITY_MANAGER_CLASS = CustomOauthProvider
+
 Role based
 ----------
 
@@ -537,6 +591,26 @@ on all your Roles.
 :note: You should backup your production database before migrating your permissions. Also note that you
        can run ``flask fab security-converge --dry-run`` to get a list of operations the converge will perform.
 
+To add new roles or change default role's permissions from Airflow, you can create your own class in **weberver_config.py** like this::
+
+    from airflow.www.security import AirflowSecurityManager
+    from airflow.security import permissions
+
+    AUTH_ROLE_ADMIN = 'Admin'
+    AUTH_ROLE_PUBLIC = 'Public'
+    UPDATE_FAB_PERMS = True
+
+    class CustomPermissions(AirflowSecurityManager):
+        PUBLIC_PERMISSIONS = [(permissions.ACTION_CAN_READ, permissions.RESOURCE_WEBSITE),]
+
+        ROLE_CONFIGS = [
+            {'role': 'Public', 'perms': PUBLIC_PERMISSIONS},
+            {'role': 'Viewer', 'perms': AirflowSecurityManager.VIEWER_PERMISSIONS},
+            {'role': 'User', 'perms': AirflowSecurityManager.USER_PERMISSIONS + AirflowSecurityManager.VIEWER_PERMISSIONS},
+            {'role': 'Op', 'perms': OP_PERMISSIONS + AirflowSecurityManager.USER_PERMISSIONS + AirflowSecurityManager.VIEWER_PERMISSIONS},
+            {'role': 'Admin', 'perms': ADMIN_PERMISSIONS + OP_PERMISSIONS + AirflowSecurityManager.USER_PERMISSIONS + AirflowSecurityManager.VIEWER_PERMISSIONS},
+        ]
+    
 
 Automatic Cleanup
 -----------------
