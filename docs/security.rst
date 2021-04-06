@@ -281,13 +281,13 @@ To add a new Oauth Provider, you can define the following parameters in **config
                            'icon': 'fa-id-card-o',
                            'token_key': 'access_token',
                            'remote_app': {
-                                   'api_base_url': 'https://{sso-server}/realms/{realm-name}/protocol/openid-connect/',
+                                   'api_base_url': 'https://{sso_server}/realms/{realm_name}/protocol/openid-connect/',
                                    'client_kwargs': {
                                            'scope': 'default'
                                    },
                                    'request_token_url': None,
-                                   'access_token_url': 'https://{sso-server}/realms/{realm-name}/protocol/openid-connect/token',
-                                   'authorize_url': 'https://{sso-server}/realms/{realm-name}/protocol/openid-connect/auth',
+                                   'access_token_url': 'https://{sso_server}/realms/{realm_name}/protocol/openid-connect/token',
+                                   'authorize_url': 'https://{sso_server}/realms/{realm_name}/protocol/openid-connect/auth',
                                    'client_id': 'client',
                                    'client_secret': 'secret'
                            }
