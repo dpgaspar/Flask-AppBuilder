@@ -276,7 +276,7 @@ Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/m
 
 To add a new Oauth Provider, you can define the following parameters in **config.py** like this::
     
-    OAUTH_PROVIDER = [{
+    OAUTH_PROVIDERS = [{
                            'name': 'keycloak',
                            'icon': 'fa-id-card-o',
                            'token_key': 'access_token',
