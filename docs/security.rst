@@ -276,20 +276,18 @@ Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/m
 
 To add a new Oauth Provider, you can define the following parameters in **config.py** like this::
     
-    SSO_URL = "https://{sso-server}/realms/{realm-name}/protocol/openid-connect/"
-
     OAUTH_PROVIDER = [{
-                           'name': 'rhsso',
+                           'name': 'keycloak',
                            'icon': 'fa-id-card-o',
                            'token_key': 'access_token',
                            'remote_app': {
-                                   'api_base_url': SSO_URL,
+                                   'api_base_url': 'https://{sso-server}/realms/{realm-name}/protocol/openid-connect/',
                                    'client_kwargs': {
                                            'scope': 'default'
                                    },
                                    'request_token_url': None,
-                                   'access_token_url': os.path.join(SSO_URL,'token'),
-                                   'authorize_url': os.path.join(SSO_URL,'auth'),
+                                   'access_token_url': 'https://{sso-server}/realms/{realm-name}/protocol/openid-connect/token',
+                                   'authorize_url': 'https://{sso-server}/realms/{realm-name}/protocol/openid-connect/auth',
                                    'client_id': 'client',
                                    'client_secret': 'secret'
                            }
@@ -303,13 +301,10 @@ To override the default parameters with your custom ones, you can add your own c
     from airflow.www.security import AirflowSecurityManager
 
     AUTH_TYPE = AUTH_OAUTH
-    WTF_CSRF_ENABLED = True
-    AUTH_USER_REGISTRATION = True
-    OIDC_COOKIE_SECURE = False
 
     class CustomOauthProvider(AirflowSecurityManager):
       def oauth_user_info_getter(self, provider, response=None):
-          if provider == "rhsso":
+          if provider == "keycloak":
               me = self.appbuilder.sm.oauth_remotes[provider].get("userinfo")
               data = me.json()
               print("User info from OAuth Provider: {0}".format(data))
@@ -596,8 +591,6 @@ To add new roles or change default role's permissions, you can create your own c
     from airflow.www.security import AirflowSecurityManager
     from airflow.security import permissions
 
-    AUTH_ROLE_ADMIN = 'Admin'
-    AUTH_ROLE_PUBLIC = 'Public'
     UPDATE_FAB_PERMS = True
 
     class CustomPermissions(AirflowSecurityManager):
