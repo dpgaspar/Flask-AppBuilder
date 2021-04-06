@@ -274,20 +274,11 @@ Your method should return a dictionary with the userinfo, the keys having the sa
 Your method will be called after the user authorizes your application on the OAuth provider.
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
 
-To add a new Oauth Provider from Airflow, you can create your own class in **weberver_config.py** like this::
+To add a new Oauth Provider, you can define the following parameters in **config.py** like this::
     
-    import os
-    from flask_appbuilder.security.manager import AUTH_OAUTH
-    from airflow.www.security import AirflowSecurityManager
-
-    AUTH_TYPE = AUTH_OAUTH
-    WTF_CSRF_ENABLED = True
-    AUTH_USER_REGISTRATION = True
-    OIDC_COOKIE_SECURE = False
-
     SSO_URL = "https://{sso-server}/realms/{realm-name}/protocol/openid-connect/"
 
-    RHSSO_PROVIDER = {
+    OAUTH_PROVIDER = [{
                            'name': 'rhsso',
                            'icon': 'fa-id-card-o',
                            'token_key': 'access_token',
@@ -302,10 +293,19 @@ To add a new Oauth Provider from Airflow, you can create your own class in **web
                                    'client_id': 'client',
                                    'client_secret': 'secret'
                            }
-    }
+    }]
 
-    OAUTH_PROVIDERS = OAUTHPROVIDERS.append(RHSSO_PROVIDER)
 
+To override the default parameters with your custom ones, you can add your own class to **config.py** like this::
+
+    import os
+    from flask_appbuilder.security.manager import AUTH_OAUTH
+    from airflow.www.security import AirflowSecurityManager
+
+    AUTH_TYPE = AUTH_OAUTH
+    WTF_CSRF_ENABLED = True
+    AUTH_USER_REGISTRATION = True
+    OIDC_COOKIE_SECURE = False
 
     class CustomOauthProvider(AirflowSecurityManager):
       def oauth_user_info_getter(self, provider, response=None):
@@ -591,7 +591,7 @@ on all your Roles.
 :note: You should backup your production database before migrating your permissions. Also note that you
        can run ``flask fab security-converge --dry-run`` to get a list of operations the converge will perform.
 
-To add new roles or change default role's permissions from Airflow, you can create your own class in **weberver_config.py** like this::
+To add new roles or change default role's permissions, you can create your own class in **config.py** like this::
 
     from airflow.www.security import AirflowSecurityManager
     from airflow.security import permissions
@@ -610,6 +610,8 @@ To add new roles or change default role's permissions from Airflow, you can crea
             {'role': 'Op', 'perms': OP_PERMISSIONS + AirflowSecurityManager.USER_PERMISSIONS + AirflowSecurityManager.VIEWER_PERMISSIONS},
             {'role': 'Admin', 'perms': ADMIN_PERMISSIONS + OP_PERMISSIONS + AirflowSecurityManager.USER_PERMISSIONS + AirflowSecurityManager.VIEWER_PERMISSIONS},
         ]
+
+    SECURITY_MANAGER_CLASS = CustomPermissions
     
 
 Automatic Cleanup
