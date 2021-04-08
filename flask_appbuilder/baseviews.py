@@ -458,7 +458,7 @@ class BaseModelView(BaseView):
     search_form_extra_fields = None
     """
         A dictionary containing column names and a WTForm
-        Form fields to be added to the Add form, these fields do not
+        Form fields to be added to the search form, these fields do not
         exist on the model itself ex::
 
         search_form_extra_fields = {'some_col':BooleanField('Some Col', default=False)}
@@ -475,7 +475,7 @@ class BaseModelView(BaseView):
 
             class ContactModelView(ModelView):
                 datamodel = SQLAModel(Contact, db.session)
-                search_form_query_rel_fields = [('group':[['name',FilterStartsWith,'W']]}
+                search_form_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
 
     """
 
