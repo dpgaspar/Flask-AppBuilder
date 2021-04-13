@@ -603,7 +603,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "name": me.get("name", ""),
                 "email": me["upn"],
                 "first_name": me.get("given_name", ""),
-                "last_name": me("family_name", ""),
+                "last_name": me.get("family_name", ""),
                 "id": me["oid"],
                 "username": me["oid"],
             }
