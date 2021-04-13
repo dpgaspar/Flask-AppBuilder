@@ -600,10 +600,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             me = self._azure_jwt_token_parse(id_token)
             log.debug("Parse JWT token : {0}".format(me))
             return {
-                "name": me["name"],
+                "name": me.get("name", ""),
                 "email": me["upn"],
-                "first_name": me["given_name"],
-                "last_name": me["family_name"],
+                "first_name": me.get("given_name", ""),
+                "last_name": me("family_name", ""),
                 "id": me["oid"],
                 "username": me["oid"],
             }
