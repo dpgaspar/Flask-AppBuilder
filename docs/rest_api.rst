@@ -522,7 +522,7 @@ You can create an alternate JWT user loader, this can be useful if you want
 to use an external Authentication provider and map the JWT identity to your
 user Model::
 
-    @appbuilder.sm.jwt_manager.user_loader_callback_loader
+    @appbuilder.sm.jwt_manager.user_lookup_loader
     def alternate_user_loader(identity):
         # find the user by it's identity
         ...

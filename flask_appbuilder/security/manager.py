@@ -297,7 +297,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         jwt_manager = JWTManager()
         jwt_manager.init_app(app)
-        jwt_manager.user_loader_callback_loader(self.load_user_jwt)
+        jwt_manager.user_lookup_loader(self.load_user_jwt)
         return jwt_manager
 
     def create_builtin_roles(self):
@@ -1944,7 +1944,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     def load_user(self, pk):
         return self.get_user_by_id(int(pk))
 
-    def load_user_jwt(self, pk):
+    def load_user_jwt(self, _jwt_header, jwt_data):
+        pk = jwt_data["sub"]
         user = self.load_user(pk)
         # Set flask g.user to JWT user, we can't do it on before request
         g.user = user
