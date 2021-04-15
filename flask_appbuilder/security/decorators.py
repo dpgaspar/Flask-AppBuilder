@@ -2,7 +2,16 @@ import functools
 import logging
 from typing import Any, Callable
 
-from flask import current_app, flash, jsonify, make_response, redirect, request, url_for, Response
+from flask import (
+    current_app,
+    flash,
+    jsonify,
+    make_response,
+    redirect,
+    request,
+    Response,
+    url_for,
+)
 from flask_jwt_extended import verify_jwt_in_request
 from flask_login import current_user
 
