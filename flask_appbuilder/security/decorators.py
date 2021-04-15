@@ -1,7 +1,8 @@
 import functools
 import logging
+from typing import Any, Callable
 
-from flask import current_app, flash, jsonify, make_response, redirect, request, url_for
+from flask import current_app, flash, jsonify, make_response, redirect, request, url_for, Response
 from flask_jwt_extended import verify_jwt_in_request
 from flask_login import current_user
 
@@ -15,7 +16,7 @@ from ..const import (
 log = logging.getLogger(__name__)
 
 
-def protect(allow_browser_login=False):
+def protect(allow_browser_login: bool = False) -> Callable[..., Any]:
     """
         Use this decorator to enable granular security permissions
         to your API methods (BaseApi and child classes).
@@ -24,13 +25,13 @@ def protect(allow_browser_login=False):
         allow_browser_login will accept signed cookies obtained from the normal MVC app::
 
             class MyApi(BaseApi):
-                @expose('/dosonmething', methods=['GET'])
+                @expose('/do-something', methods=['GET'])
                 @protect(allow_browser_login=True)
                 @safe
                 def do_something(self):
                     ....
 
-                @expose('/dosonmethingelse', methods=['GET'])
+                @expose('/do-something-else', methods=['GET'])
                 @protect()
                 @safe
                 def do_something_else(self):
@@ -39,39 +40,45 @@ def protect(allow_browser_login=False):
         By default the permission's name is the methods name.
     """
 
-    def _protect(f):
+    def _protect(f: Callable[..., Any]) -> Callable[..., Any]:
         if hasattr(f, "_permission_name"):
-            permission_str = f._permission_name
+            func_perm_name = f._permission_name
         else:
-            permission_str = f.__name__
+            func_perm_name = f.__name__
 
-        def wraps(self, *args, **kwargs):
+        def wraps(self, *args: Any, **kwargs: Any) -> Response:
             # Apply method permission name override if exists
-            permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
-            if self.method_permission_name:
-                _permission_name = self.method_permission_name.get(f.__name__)
-                if _permission_name:
-                    permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
-            class_permission_name = self.class_permission_name
+            mapped_permission_name = (
+                self.method_permission_name.get(func_perm_name)
+                if self.method_permission_name
+                else None
+            )
+            permission_name = mapped_permission_name or func_perm_name
+            permission_str = f"{PERMISSION_PREFIX}{permission_name}"
+
+            # Chekc if permission exists on all possible class permissions
             if permission_str not in self.base_permissions:
                 return self.response_401()
+
+            # Check if it's public
+            class_permission_name = self.class_permission_name
             if current_app.appbuilder.sm.is_item_public(
                 permission_str, class_permission_name
             ):
                 return f(self, *args, **kwargs)
+
+            # If no browser login check JWT (loads user)
             if not (self.allow_browser_login or allow_browser_login):
                 verify_jwt_in_request()
+            # Else browser login but user is not authenticated, check JWT (loads user)
+            elif not current_user.is_authenticated:
+                verify_jwt_in_request()
+
+            # Check access permission
             if current_app.appbuilder.sm.has_access(
                 permission_str, class_permission_name
             ):
                 return f(self, *args, **kwargs)
-            elif self.allow_browser_login or allow_browser_login:
-                if not current_user.is_authenticated:
-                    verify_jwt_in_request()
-                if current_app.appbuilder.sm.has_access(
-                    permission_str, class_permission_name
-                ):
-                    return f(self, *args, **kwargs)
             log.warning(
                 LOGMSG_ERR_SEC_ACCESS_DENIED.format(
                     permission_str, class_permission_name
@@ -79,7 +86,7 @@ def protect(allow_browser_login=False):
             )
             return self.response_401()
 
-        f._permission_name = permission_str
+        f._permission_name = func_perm_name
         return functools.update_wrapper(wraps, f)
 
     return _protect
