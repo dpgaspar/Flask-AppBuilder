@@ -87,8 +87,8 @@ class SecurityPermissionsTestCase(FABTestCase):
         assert {
             ("can_list", "Model1View"),
             ("can_list", "Model2View"),
-            ( "can_show", "ModelDBView"),
-            ( "can_delete", "ModelDBView"),
+            ("can_show", "ModelDBView"),
+            ("can_delete", "ModelDBView"),
         } == self.appbuilder.sm.get_user_permissions(self._user01)
 
     def test_get_user_permissions_db(self):
@@ -125,3 +125,23 @@ class SecurityPermissionsTestCase(FABTestCase):
         Security Permissions: Get anonymous user permissions
         """
         assert set() == self.appbuilder.sm.get_user_permissions(AnonymousUserMixin())
+
+    def test_get_role_permissions_builtin(self):
+        """
+        Security Permissions: Get role permissions builtin
+        """
+        role = self.appbuilder.sm.find_role("FAB_ROLE1")
+        assert {
+            ("can_list", "Model2View"),
+            ("can_list", "Model1View"),
+        } == self.appbuilder.sm.get_role_permissions(role)
+
+    def test_get_role_permissions_db(self):
+        """
+        Security Permissions: Get role permissions db
+        """
+        role = self.appbuilder.sm.find_role("DB_ROLE1")
+        assert {
+           ("can_show", "ModelDBView"),
+           ("can_delete", "ModelDBView"),
+       } == self.appbuilder.sm.get_role_permissions(role)
