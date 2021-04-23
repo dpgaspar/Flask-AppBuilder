@@ -1394,30 +1394,28 @@ class BaseSecurityManager(AbstractSecurityManager):
         # If it's not a builtin role check against database store roles
         return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
 
-    def get_current_user_roles(self) -> List[object]:
+    def get_user_roles(self, user) -> List[object]:
         """
         Get current user roles, if user is not authenticated returns the public role
         """
-        user = self.current_user
         if not user.is_authenticated:
             return [self.get_public_role()]
         return user.roles
 
-    def get_current_user_permissions(self) -> Set[Tuple[str, str]]:
+    def get_user_permissions(self, user) -> Set[Tuple[str, str]]:
         """
         Get all permissions from the current user
         """
-        roles = self.get_current_user_roles()
+        roles = self.get_user_roles(user)
         result = set()
         for role in roles:
             if role.name in self.builtin_roles:
                 for permission in self.builtin_roles[role.name]:
                     result.add((permission[0], permission[1]))
             else:
-
                 for permission in self.get_role_permissions(role.id):
                     result.add((permission.view_menu.name, permission.permission.name))
-            return result
+        return result
 
     def _get_user_permission_view_menus(
         self, user: object, permission_name: str, view_menus_name: List[str]

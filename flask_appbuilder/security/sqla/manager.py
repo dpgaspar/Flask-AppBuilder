@@ -364,10 +364,11 @@ class SecurityManager(BaseSecurityManager):
         Get all DB permissions from a role (one single query)
         """
         return (
-            self.appbuilder.get_session.query(self.role_model)
-            .join(self.permission_model)
-            .join(self.viewmenu_model)
-            .filter(self.role_model.id == role_id)
+            self.appbuilder.get_session.query(PermissionView)
+            .join(Permission)
+            .join(ViewMenu)
+            .join(PermissionView.role)
+            .filter(Role.id == role_id)
             .all()
         )
 
