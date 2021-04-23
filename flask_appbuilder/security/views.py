@@ -632,50 +632,54 @@ class AuthOAuthView(AuthView):
         if g.user is not None and g.user.is_authenticated:
             log.debug("Already authenticated {0}".format(g.user))
             return redirect(self.appbuilder.get_url_for_index)
+
         if provider is None:
-            return self.render_template(
-                self.login_template,
-                providers=self.appbuilder.sm.oauth_providers,
-                title=self.title,
-                appbuilder=self.appbuilder,
-            )
-        else:
-            log.debug("Going to call authorize for: {0}".format(provider))
-            state = jwt.encode(
-                request.args.to_dict(flat=False),
-                self.appbuilder.app.config["SECRET_KEY"],
-                algorithm="HS256",
-            )
-            try:
-                if register:
-                    log.debug("Login to Register")
-                    session["register"] = True
-                if provider == "twitter":
-                    return self.appbuilder.sm.oauth_remotes[
-                        provider
-                    ].authorize_redirect(
-                        redirect_uri=url_for(
-                            ".oauth_authorized",
-                            provider=provider,
-                            _external=True,
-                            state=state,
-                        )
+            if len(self.appbuilder.sm.oauth_providers) > 1:
+                return self.render_template(
+                    self.login_template,
+                    providers=self.appbuilder.sm.oauth_providers,
+                    title=self.title,
+                    appbuilder=self.appbuilder,
+                )
+            else:
+                provider = self.appbuilder.sm.oauth_providers[0]["name"]
+
+        log.debug("Going to call authorize for: {0}".format(provider))
+        state = jwt.encode(
+            request.args.to_dict(flat=False),
+            self.appbuilder.app.config["SECRET_KEY"],
+            algorithm="HS256",
+        )
+        try:
+            if register:
+                log.debug("Login to Register")
+                session["register"] = True
+            if provider == "twitter":
+                return self.appbuilder.sm.oauth_remotes[
+                    provider
+                ].authorize_redirect(
+                    redirect_uri=url_for(
+                        ".oauth_authorized",
+                        provider=provider,
+                        _external=True,
+                        state=state,
                     )
-                else:
-                    return self.appbuilder.sm.oauth_remotes[
-                        provider
-                    ].authorize_redirect(
-                        redirect_uri=url_for(
-                            ".oauth_authorized", provider=provider, _external=True
-                        ),
-                        state=state.decode("ascii")
-                        if isinstance(state, bytes)
-                        else state,
-                    )
-            except Exception as e:
-                log.error("Error on OAuth authorize: {0}".format(e))
-                flash(as_unicode(self.invalid_login_message), "warning")
-                return redirect(self.appbuilder.get_url_for_index)
+                )
+            else:
+                return self.appbuilder.sm.oauth_remotes[
+                    provider
+                ].authorize_redirect(
+                    redirect_uri=url_for(
+                        ".oauth_authorized", provider=provider, _external=True
+                    ),
+                    state=state.decode("ascii")
+                    if isinstance(state, bytes)
+                    else state,
+                )
+        except Exception as e:
+            log.error("Error on OAuth authorize: {0}".format(e))
+            flash(as_unicode(self.invalid_login_message), "warning")
+            return redirect(self.appbuilder.get_url_for_index)
 
     @expose("/oauth-authorized/<provider>")
     def oauth_authorized(self, provider):
