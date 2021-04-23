@@ -600,10 +600,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             me = self._azure_jwt_token_parse(id_token)
             log.debug("Parse JWT token : {0}".format(me))
             return {
-                "name": me["name"],
+                "name": me.get("name", ""),
                 "email": me["upn"],
-                "first_name": me["given_name"],
-                "last_name": me["family_name"],
+                "first_name": me.get("given_name", ""),
+                "last_name": me.get("family_name", ""),
                 "id": me["oid"],
                 "username": me["oid"],
             }
@@ -878,10 +878,17 @@ class BaseSecurityManager(AbstractSecurityManager):
                 filter_str, request_fields, self.auth_ldap_search
             )
         )
-        search_result = con.search_s(
+        raw_search_result = con.search_s(
             self.auth_ldap_search, ldap.SCOPE_SUBTREE, filter_str, request_fields
         )
-        log.debug("LDAP search returned: {0}".format(search_result))
+        log.debug("LDAP search returned: {0}".format(raw_search_result))
+
+        # Remove any search referrals from results
+        search_result = [
+            (dn, attrs)
+            for dn, attrs in raw_search_result
+            if dn is not None and isinstance(attrs, dict)
+        ]
 
         # only continue if 0 or 1 results were returned
         if len(search_result) > 1:
