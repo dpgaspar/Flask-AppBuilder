@@ -359,7 +359,7 @@ class SecurityManager(BaseSecurityManager):
             )
         ).all()
 
-    def get_role_permissions(self, role_id: int) -> List[PermissionView]:
+    def get_db_role_permissions(self, role_id: int) -> List[PermissionView]:
         """
         Get all DB permissions from a role (one single query)
         """

@@ -85,10 +85,10 @@ class SecurityPermissionsTestCase(FABTestCase):
         Security Permissions: Get user permissions mixes role types
         """
         assert {
-            ("Model1View", "can_list"),
-            ("Model2View", "can_list"),
-            ("ModelDBView", "can_show"),
-            ("ModelDBView", "can_delete"),
+            ("can_list", "Model1View"),
+            ("can_list", "Model2View"),
+            ( "can_show", "ModelDBView"),
+            ( "can_delete", "ModelDBView"),
         } == self.appbuilder.sm.get_user_permissions(self._user01)
 
     def test_get_user_permissions_db(self):
@@ -96,8 +96,8 @@ class SecurityPermissionsTestCase(FABTestCase):
         Security Permissions: Get user permissions DB role type
         """
         assert {
-            ("ModelDBView", "can_delete"),
-            ("ModelDBView", "can_show"),
+            ("can_delete", "ModelDBView"),
+            ("can_show", "ModelDBView"),
         } == self.appbuilder.sm.get_user_permissions(self._user02)
 
     def test_get_user_permissions_builtin(self):
@@ -105,8 +105,8 @@ class SecurityPermissionsTestCase(FABTestCase):
         Security Permissions: Get user permissions builtin role type
         """
         assert {
-            ("Model3View", "can_list"),
-            ("Model4View", "can_list"),
+            ("can_list", "Model3View"),
+            ("can_list", "Model4View"),
         } == self.appbuilder.sm.get_user_permissions(self._user03)
 
     def test_get_user_permissions_builtin_multiple(self):
@@ -114,10 +114,10 @@ class SecurityPermissionsTestCase(FABTestCase):
         Security Permissions: Get user permissions multiple builtin role type
         """
         assert {
-            ("Model2View", "can_list"),
-            ("Model1View", "can_list"),
-            ("Model3View", "can_list"),
-            ("Model4View", "can_list"),
+            ("can_list", "Model2View"),
+            ("can_list", "Model1View"),
+            ("can_list", "Model3View"),
+            ("can_list", "Model4View"),
         } == self.appbuilder.sm.get_user_permissions(self._user04)
 
     def test_get_anonymous_permissions(self):

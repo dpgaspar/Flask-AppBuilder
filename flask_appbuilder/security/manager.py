@@ -1402,6 +1402,19 @@ class BaseSecurityManager(AbstractSecurityManager):
             return [self.get_public_role()]
         return user.roles
 
+    def get_role_permissions(self, role) -> Set[Tuple[str, str]]:
+        """
+        Get all permissions for a certain role
+        """
+        result = set()
+        if role.name in self.builtin_roles:
+            for permission in self.builtin_roles[role.name]:
+                result.add((permission[1], permission[0]))
+        else:
+            for permission in self.get_db_role_permissions(role.id):
+                result.add((permission.permission.name, permission.view_menu.name))
+        return result
+
     def get_user_permissions(self, user) -> Set[Tuple[str, str]]:
         """
         Get all permissions from the current user
@@ -1409,12 +1422,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         roles = self.get_user_roles(user)
         result = set()
         for role in roles:
-            if role.name in self.builtin_roles:
-                for permission in self.builtin_roles[role.name]:
-                    result.add((permission[0], permission[1]))
-            else:
-                for permission in self.get_role_permissions(role.id):
-                    result.add((permission.view_menu.name, permission.permission.name))
+            result.update(self.get_role_permissions(role))
         return result
 
     def _get_user_permission_view_menus(
@@ -1783,7 +1791,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def get_role_permissions(self, role_id: int) -> List[object]:
+    def get_db_role_permissions(self, role_id: int) -> List[object]:
         """
         Get all DB permissions from a role id
         """
