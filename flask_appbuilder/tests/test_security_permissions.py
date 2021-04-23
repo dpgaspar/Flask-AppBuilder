@@ -142,6 +142,6 @@ class SecurityPermissionsTestCase(FABTestCase):
         """
         role = self.appbuilder.sm.find_role("DB_ROLE1")
         assert {
-           ("can_show", "ModelDBView"),
-           ("can_delete", "ModelDBView"),
-       } == self.appbuilder.sm.get_role_permissions(role)
+            ("can_show", "ModelDBView"),
+            ("can_delete", "ModelDBView"),
+        } == self.appbuilder.sm.get_role_permissions(role)
