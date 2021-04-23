@@ -1394,7 +1394,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         # If it's not a builtin role check against database store roles
         return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
 
-    def get_current_user_roles(self) -> List[...]:
+    def get_current_user_roles(self) -> List[object]:
         """
         Get current user roles, if user is not authenticated returns the public role
         """
@@ -1785,7 +1785,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def get_role_permissions(self, role_id: int) -> List[...]:
+    def get_role_permissions(self, role_id: int) -> List[object]:
         """
         Get all DB permissions from a role id
         """
