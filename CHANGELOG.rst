@@ -4,6 +4,13 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 3.2.2
 -----------------------------------
 
+- feat: get user permissions API (#1620) [Daniel Gaspar]
+- fix: Ignore LDAP search referrals (#1602) [Fred Thomsen]
+- fix: relax AzureAD mandatory fields (#1608) [hyunjong.lee]
+
+Improvements and Bug fixes on 3.2.2
+-----------------------------------
+
 - docs: fix, errors in BaseModelView docstring (#1591) [Xiaodong DENG]
 - fix: load user info for okta (#1589) [QP Hou]
 
