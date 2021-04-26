@@ -4,6 +4,7 @@ import uuid
 
 from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import generate_password_hash
 
@@ -369,6 +370,8 @@ class SecurityManager(BaseSecurityManager):
             .join(ViewMenu)
             .join(PermissionView.role)
             .filter(Role.id == role_id)
+            .options(contains_eager(PermissionView.permission))
+            .options(contains_eager(PermissionView.view_menu))
             .all()
         )
 
