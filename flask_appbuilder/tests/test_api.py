@@ -29,6 +29,7 @@ from flask_appbuilder.const import (
     API_SHOW_TITLE_RIS_KEY,
     API_URI_RIS_KEY,
 )
+from flask_appbuilder.hooks import before_request
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 import prison
@@ -372,6 +373,43 @@ class APITestCase(FABTestCase):
             include_route_methods = "get"
 
         self.appbuilder.add_api(Model1ApiIncludeRoutes)
+
+        context = self
+        context._before_request_condition_value = True
+
+        class Model1BeforeRequest(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+
+            @before_request
+            def ensure_enabled(self):
+                if not context._before_request_condition_value:
+                    return self.response_404()
+                return None
+
+            @expose("/enabled")
+            def enabled(self):
+                return self.response(200, message="Route is enabled")
+
+        self.appbuilder.add_api(Model1BeforeRequest)
+
+        class Model1BeforeRequestScoped(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+
+            @before_request(only=["conditionally_enabled"])
+            def ensure_enabled(self):
+                if not context._before_request_condition_value:
+                    return self.response_404()
+                return None
+
+            @expose("/always_enabled")
+            def always_enabled(self):
+                return self.response(200, message="Route is always enabled")
+
+            @expose("/conditionally_enabled")
+            def conditionally_enabled(self):
+                return self.response(200, message="Route is conditionally enabled")
+
+        self.appbuilder.add_api(Model1BeforeRequestScoped)
 
     def tearDown(self):
         self.appbuilder.get_session.close()
@@ -2788,3 +2826,61 @@ class APITestCase(FABTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 5)
+
+    def test_before_request(self):
+        """
+            REST Api: Test simple before_request filter
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        self._before_request_condition_value = True
+
+        uri = "api/v1/model1beforerequest/enabled"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data, {"message": "Route is enabled"})
+
+        self._before_request_condition_value = False
+
+        uri = "api/v1/model1beforerequest/enabled"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data, {"message": "Not found"})
+
+    def test_before_request_scoped(self):
+        """
+            REST Api: Test before_request filter scoped
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        self._before_request_condition_value = True
+
+        uri = "api/v1/model1beforerequestscoped/always_enabled"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data, {"message": "Route is always enabled"})
+
+        uri = "api/v1/model1beforerequestscoped/conditionally_enabled"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data, {"message": "Route is conditionally enabled"})
+
+        self._before_request_condition_value = False
+
+        uri = "api/v1/model1beforerequestscoped/always_enabled"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data, {"message": "Route is always enabled"})
+
+        uri = "api/v1/model1beforerequestscoped/conditionally_enabled"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data, {"message": "Not found"})
