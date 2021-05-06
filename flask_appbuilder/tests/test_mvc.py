@@ -1771,10 +1771,7 @@ class MVCTestCase(BaseMVCTestCase):
         )
         self.assertEqual(rv.status_code, 404)
 
-        rv = client.get(
-            "/modelbeforerequest/delete/1",
-            follow_redirects=True,
-        )
+        rv = client.get("/modelbeforerequest/delete/1", follow_redirects=True)
         self.assertEqual(rv.status_code, 404)
 
         # Basic condition is true, so some requests should succeed,
@@ -1798,10 +1795,7 @@ class MVCTestCase(BaseMVCTestCase):
         )
         self.assertEqual(rv.status_code, 404)
 
-        rv = client.get(
-            "/modelbeforerequest/delete/1",
-            follow_redirects=True,
-        )
+        rv = client.get("/modelbeforerequest/delete/1", follow_redirects=True)
         self.assertEqual(rv.status_code, 404)
 
         # Now /list/ and others are available, but
@@ -1825,10 +1819,7 @@ class MVCTestCase(BaseMVCTestCase):
         )
         self.assertEqual(rv.status_code, 404)
 
-        rv = client.get(
-            "/modelbeforerequest/delete/1",
-            follow_redirects=True,
-        )
+        rv = client.get("/modelbeforerequest/delete/1", follow_redirects=True)
         self.assertEqual(rv.status_code, 404)
 
         # Everything is available
@@ -1852,8 +1843,5 @@ class MVCTestCase(BaseMVCTestCase):
         )
         self.assertEqual(rv.status_code, 200)
 
-        rv = client.get(
-            "/modelbeforerequest/delete/1",
-            follow_redirects=True,
-        )
+        rv = client.get("/modelbeforerequest/delete/1", follow_redirects=True)
         self.assertEqual(rv.status_code, 200)

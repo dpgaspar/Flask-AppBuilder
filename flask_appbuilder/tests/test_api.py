@@ -375,41 +375,52 @@ class APITestCase(FABTestCase):
         self.appbuilder.add_api(Model1ApiIncludeRoutes)
 
         context = self
-        context._before_request_condition_value = True
+        context._before_request_condition_value = False
+        context._before_request_can_read = False
+        context._before_request_can_write = False
 
         class Model1BeforeRequest(ModelRestApi):
             datamodel = SQLAInterface(Model1)
 
             @before_request
-            def ensure_enabled(self):
+            def check_condition(self):
                 if not context._before_request_condition_value:
                     return self.response_404()
                 return None
 
-            @expose("/enabled")
-            def enabled(self):
-                return self.response(200, message="Route is enabled")
+            @before_request(only=["get_all", "show"])
+            def can_read(self):
+                if not context._before_request_can_read:
+                    return self.response_404()
+                return None
+
+            @before_request(only=["create", "update"])
+            def can_write(self):
+                if not context._before_request_can_write:
+                    return self.response_404()
+                return None
+
+            @expose("/basic")
+            def basic(self):
+                return self.response(200, message="basic")
+
+            @expose("/")
+            def get_all(self):
+                return self.response(200, message="get_all")
+
+            @expose("/show")
+            def show(self):
+                return self.response(200, message="show")
+
+            @expose("/create", methods=["POST"])
+            def create(self):
+                return self.response(200, message="create")
+
+            @expose("/update", methods=["PUT"])
+            def update(self):
+                return self.response(200, message="update")
 
         self.appbuilder.add_api(Model1BeforeRequest)
-
-        class Model1BeforeRequestScoped(ModelRestApi):
-            datamodel = SQLAInterface(Model1)
-
-            @before_request(only=["conditionally_enabled"])
-            def ensure_enabled(self):
-                if not context._before_request_condition_value:
-                    return self.response_404()
-                return None
-
-            @expose("/always_enabled")
-            def always_enabled(self):
-                return self.response(200, message="Route is always enabled")
-
-            @expose("/conditionally_enabled")
-            def conditionally_enabled(self):
-                return self.response(200, message="Route is conditionally enabled")
-
-        self.appbuilder.add_api(Model1BeforeRequestScoped)
 
     def tearDown(self):
         self.appbuilder.get_session.close()
@@ -2834,53 +2845,129 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        self._before_request_condition_value = True
-
-        uri = "api/v1/model1beforerequest/enabled"
-        rv = self.auth_client_get(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-        data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data, {"message": "Route is enabled"})
-
+        # Everything is disabled
         self._before_request_condition_value = False
+        self._before_request_can_read = False
+        self._before_request_can_write = False
 
-        uri = "api/v1/model1beforerequest/enabled"
+        uri = "api/v1/model1beforerequest/basic"
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 404)
-        data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data, {"message": "Not found"})
 
-    def test_before_request_scoped(self):
-        """
-            REST Api: Test before_request filter scoped
-        """
-        client = self.app.test_client()
-        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        self._before_request_condition_value = True
-
-        uri = "api/v1/model1beforerequestscoped/always_enabled"
-        rv = self.auth_client_get(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-        data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data, {"message": "Route is always enabled"})
-
-        uri = "api/v1/model1beforerequestscoped/conditionally_enabled"
-        rv = self.auth_client_get(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-        data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data, {"message": "Route is conditionally enabled"})
-
-        self._before_request_condition_value = False
-
-        uri = "api/v1/model1beforerequestscoped/always_enabled"
-        rv = self.auth_client_get(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-        data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data, {"message": "Route is always enabled"})
-
-        uri = "api/v1/model1beforerequestscoped/conditionally_enabled"
+        uri = "api/v1/model1beforerequest/"
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 404)
-        data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data, {"message": "Not found"})
+
+        uri = "api/v1/model1beforerequest/show"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/create"
+        rv = self.auth_client_post(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/update"
+        rv = self.auth_client_put(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        # Basic condition is true, but handlers gated by
+        # reads and writes are still false.
+        self._before_request_condition_value = True
+        self._before_request_can_read = False
+        self._before_request_can_write = False
+
+        uri = "api/v1/model1beforerequest/basic"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/show"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/create"
+        rv = self.auth_client_post(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/update"
+        rv = self.auth_client_put(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        # Everything but writes are enabled
+        self._before_request_condition_value = True
+        self._before_request_can_read = True
+        self._before_request_can_write = False
+
+        uri = "api/v1/model1beforerequest/basic"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/show"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/create"
+        rv = self.auth_client_post(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/update"
+        rv = self.auth_client_put(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        # Everything is enabled
+        self._before_request_condition_value = True
+        self._before_request_can_read = True
+        self._before_request_can_write = True
+
+        uri = "api/v1/model1beforerequest/basic"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/show"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/create"
+        rv = self.auth_client_post(client, token, uri, {})
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/update"
+        rv = self.auth_client_put(client, token, uri, {})
+        self.assertEqual(rv.status_code, 200)
+
+        # Everything is disabled, even though read
+        # and write conditions are true
+        self._before_request_condition_value = False
+        self._before_request_can_read = True
+        self._before_request_can_write = True
+
+        uri = "api/v1/model1beforerequest/basic"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/show"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/create"
+        rv = self.auth_client_post(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/update"
+        rv = self.auth_client_put(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
