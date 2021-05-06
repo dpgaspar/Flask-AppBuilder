@@ -12,8 +12,8 @@ CSS and Javascript
 
 To add your own CSS's or javascript application wide.
 You will need to tell the framework to use your own base *jinja2* template, this
-template is extended by all the templates. It's very simple, first create your own
-template on you **templates** directory.
+template is extended by all the templates. It's very simple: first create your own
+template in your **templates** directory.
 
 On a simple application structure create *mybase.html* (or whatever name you want)::
 
@@ -89,14 +89,14 @@ This main structure of jinja2 on the baselayout template is::
 Navigation Bar
 --------------
 
-Theres also the possibility to customize the navigation bar. 
+There is also the possibility to customize the navigation bar. 
 You can completely override it, or just partially.
 
 To completely override the navigation bar, implement your own base layout as described earlier
-and then extend the existing one and override the **navbar** block
+and then extend the existing one and override the **navbar** block.
 
-As an example, lets say you created your own base layout named **my_layout.html** 
-on your **templates** folder::
+As an example, let's say you created your own base layout named **my_layout.html** 
+in your **templates** folder::
 
     {% extends 'appbuilder/baselayout.html' %}
 
@@ -113,7 +113,7 @@ on your **templates** folder::
         </div>
     {% endblock %}
 
-Remember to tell Flask-Appbuilder to use your layout instead (previous chapter)
+Remember to tell Flask-Appbuilder to use your layout instead (previous chapter).
 
 The best way to just override the navbar partially is to override the existing templates
 from the framework. You can always do this with any template. There are two good candidates for this:
@@ -127,7 +127,7 @@ List Templates
 Using the contacts app example, we are going to see how to override or insert jinja2 on specific sections
 of F.A.B. list template. Remember that the framework uses templates with generated widgets, this widgets are big
 widgets, because they render entire sections of a page.
-On list's of records you will have two widgets, the search widget, and the list widget. You will have
+On list's of records you will have two widgets: the search widget and the list widget. You will have
 a template with the following sections, where you can add your template sections over, before and after
 each block:
 
@@ -174,7 +174,7 @@ If you have your template on ./your_project/app/templates/list_contacts.html
         list_template = 'list_contacts.html'
 
 
-On your template you can do something like this
+In your template you can do something like this
 
 ::
 
@@ -197,9 +197,9 @@ On your template you can do something like this
 Add Templates
 --------------
 
-On this section we will see how to override the add template form.
+In this section we will see how to override the add template form.
 You will have only one widget, the add form widget. So you will have
-a template with the following sections. Where you can add your template sections over, before and after
+a template with the following sections, where you can add your template sections over, before and after
 each block:
 
 - Add template
@@ -209,7 +209,7 @@ each block:
         - End Block "add_form"
     - End Block "content"
 
-To insert your template section before the a block, say "add_form" just create your own template like this:
+To insert your template section before a block, say "add_form" just create your own template like this:
 
 ::
 
@@ -222,7 +222,7 @@ To insert your template section before the a block, say "add_form" just create y
 
 To use your template define you ModelView with **add_template** declaration to your templates relative path
 
-If you have your template on ./your_project/app/templates/add_contacts.html
+If you have your template in ./your_project/app/templates/add_contacts.html
 
 ::
 
@@ -234,7 +234,7 @@ If you have your template on ./your_project/app/templates/add_contacts.html
 Edit Templates
 --------------
 
-On this section we will see how to override the edit template form.
+In this section we will see how to override the edit template form.
 You will have only one widget the edit form widget, so you will have
 a template with the following sections, where you can add your template sections over, before and after
 each block:
@@ -259,7 +259,7 @@ To insert your template section before the edit widget, just create your own tem
 
 To use your template define you ModelView with **edit_template** declaration to your templates relative path
 
-If you have your template on ./your_project/app/templates/edit_contacts.html
+If you have your template in ./your_project/app/templates/edit_contacts.html
 
 ::
 
@@ -272,7 +272,7 @@ If you have your template on ./your_project/app/templates/edit_contacts.html
 Show Templates
 --------------
 
-On this section we will see how to override the show template.
+In this section we will see how to override the show template.
 You will have only one widget the show widget, so you will have
 a template with the following sections, where you can add your template sections over, before and after
 each block:
@@ -284,7 +284,7 @@ each block:
         - End Block "show_form"
     - End Block "content"
 
-To insert your template section before the a block, say "show_form" just create your own template like this:
+To insert your template section before a block, say "show_form" just create your own template like this:
 
 ::
 
@@ -297,7 +297,7 @@ To insert your template section before the a block, say "show_form" just create 
 
 To use your template define you ModelView with **show_template** declaration to your templates relative path
 
-If you have your template on ./your_project/app/templates/show_contacts.html
+If you have your template in ./your_project/app/templates/show_contacts.html
 
 ::
 
@@ -310,7 +310,7 @@ If you have your template on ./your_project/app/templates/show_contacts.html
 Edit/Show Cascade Templates
 ---------------------------
 
-On cascade templates for related views the above rules apply, but you can use an extra block
+In cascade templates for related views the above rules apply, but you can use an extra block
 to insert your template code before, after or over the related view list widget.
 For show cascade templates you have the following structure:
 
@@ -395,27 +395,27 @@ pagination, add button and back button
 
 .. note:: If you just want to add a new control next to the list controls and keep everything else
    from the predefined widget. extend your widget from {% extends 'appbuilder/general/widgets/list.html' %}
-   and just implement **list_header** the way it's done on this example.
+   and just implement **list_header** the way it's done in this example.
 
 Next we will render the values of the list, so we will override the **begin_loop_values**
 block. Widgets have the following jinja2 vars that you should use:
 
-- can_show: Boolean, if the user as access to the show view.
-- can_edit: Boolean, if the user as access to the edit view.
-- can_add: Boolean, if the user as access to the add view.
-- can_delete: Boolean, if the user as access to delete records.
+- can_show: Boolean, if the user has access to the show view.
+- can_edit: Boolean, if the user has access to the edit view.
+- can_add: Boolean, if the user has access to the add view.
+- can_delete: Boolean, if the user has access to delete records.
 - value_columns: A list of Dicts with column names as keys and record values as values.
-- include_columns: A list with columns to include on the list, and their order.
+- include_columns: A list with columns to include in the list, and their order.
 - order_columns: A list with the columns that can be ordered.
 - pks: A list of primary key values.
 - actions: A list of declared actions.
 - modelview_name: The name of the ModelView class responsible for controlling this template.
 
-Save your widget template on your templates folder. I advise you to create a 
-subfolder named *widgets*. So on our example we will keep our template on
+Save your widget template in your templates folder. I advise you to create a 
+subfolder named *widgets*. So in our example we will keep our template in
 */templates/widgets/my_list.html*.
 
-- Next we must create our python class to contain our widget. on your **app** folder
+- Next we must create our python class to contain our widget. In your **app** folder
   create a file named widgets.py::
 
     from flask_appbuilder.widgets import ListWidget
@@ -435,7 +435,7 @@ subfolder named *widgets*. So on our example we will keep our template on
 Example 2: Custom show widget
 `````````````````````````````
 
-By default, :doc:`actions` related buttins are located at the end of the detail
+By default, :doc:`actions` related buttons are located at the end of the detail
 page. If you now have a longer detail page, it can be cumbersome for your users
 to have to go to the bottom of the page to perform the actions. Let's just add
 a second set of buttons to the top of the page.
@@ -473,13 +473,13 @@ To do this, do the following (similar to the steps above):
 Other widget types
 ``````````````````
 
-Flask-AppBuilder already has some widgets you can choose from, try them out:
+Flask-AppBuilder has already some widgets that you can choose from, try them out:
 
 - ListWidget - The default for lists.
 - ListLinkWidget - The default for lists.
 - ListThumbnail - For lists, nice to use with photos.
 - ListItem - Very simple list of items.
-- ListBlock - For lists, Similar to thumbnail.
+- ListBlock - For lists, similar to thumbnail.
 - FormWidget - For add and edit.
 - FormHorizontalWidget - For add and edit.
 - FormInlineWidget - For add and edit
@@ -494,7 +494,7 @@ Library Functions
 
 F.A.B. has the following library functions that you can use to render bootstrap 3
 components easily. Using them will ease your productivity and help you introduce
-new html that shares the same look and feel has the framework.
+new html that shares the same look and feel of the framework.
 
 - Panel component::
 
