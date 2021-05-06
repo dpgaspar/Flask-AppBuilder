@@ -3,9 +3,10 @@ import json
 import logging
 from typing import Set
 
-from flask import Flask, redirect, request, session
+from flask import Flask, make_response, redirect, request, session
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.actions import action
+from flask_appbuilder.baseviews import expose
 from flask_appbuilder.charts.views import (
     ChartView,
     DirectByChartView,
@@ -13,6 +14,7 @@ from flask_appbuilder.charts.views import (
     GroupByChartView,
     TimeChartView,
 )
+from flask_appbuilder.hooks import before_request
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
@@ -525,6 +527,36 @@ class MVCTestCase(BaseMVCTestCase):
         class ModelWithEnumsView(ModelView):
             datamodel = SQLAInterface(ModelWithEnums)
 
+        context = self
+        context._before_request_condition_value = False
+        context._before_request_can_modify = False
+        context._before_request_list_enabled = False
+
+        class ModelBeforeRequest(ModelView):
+            datamodel = SQLAInterface(Model1)
+
+            @before_request
+            def check_condition(self):
+                if not context._before_request_condition_value:
+                    return make_response("Not found", 404)
+                return None
+
+            @before_request(only=["edit", "delete"])
+            def enable_modification(self):
+                if not context._before_request_can_modify:
+                    return make_response("Not found", 404)
+                return None
+
+            @before_request(only=["list"])
+            def list_enabled(self):
+                if not context._before_request_list_enabled:
+                    return make_response("Not found", 404)
+                return None
+
+            @expose("/enabled")
+            def enabled(self):
+                return make_response("Ok", 200)
+
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
         self.appbuilder.add_view(
             Model1ViewWithRedirects, "Model1ViewWithRedirects", category="Model1"
@@ -572,6 +604,8 @@ class MVCTestCase(BaseMVCTestCase):
             role_read_only,
             PASSWORD_READONLY,
         )
+
+        self.appbuilder.add_view(ModelBeforeRequest, "ModelBeforeRequest")
 
     def tearDown(self):
         self.appbuilder = None
@@ -1708,3 +1742,118 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 1)
+
+    def test_before_request(self):
+        """
+            Test before_request hooks
+        """
+        # All flags are false, so all request should 404.
+        self._before_request_condition_value = False
+        self._before_request_list_enabled = False
+        self._before_request_can_modify = False
+
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = client.get("/modelbeforerequest/list/")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/show/1")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.post(
+            "/modelbeforerequest/edit/1",
+            data={"field_string": "editing!"},
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get(
+            "/modelbeforerequest/delete/1",
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 404)
+
+        # Basic condition is true, so some requests should succeed,
+        # but not the ones gated by _before_request_can_modify or
+        # _before_request_list_enabled.
+        self._before_request_condition_value = True
+
+        rv = client.get("/modelbeforerequest/list/")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.post(
+            "/modelbeforerequest/edit/1",
+            data={"field_string": "editing!"},
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get(
+            "/modelbeforerequest/delete/1",
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 404)
+
+        # Now /list/ and others are available, but
+        # not edit or delete
+        self._before_request_condition_value = True
+        self._before_request_list_enabled = True
+
+        rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.post(
+            "/modelbeforerequest/edit/1",
+            data={"field_string": "editing!"},
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get(
+            "/modelbeforerequest/delete/1",
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 404)
+
+        # Everything is available
+        self._before_request_condition_value = True
+        self._before_request_list_enabled = True
+        self._before_request_can_modify = True
+
+        rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.post(
+            "/modelbeforerequest/edit/1",
+            data={"field_string": "editing!"},
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get(
+            "/modelbeforerequest/delete/1",
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 200)
