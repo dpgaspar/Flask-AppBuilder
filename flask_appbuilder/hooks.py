@@ -1,28 +1,40 @@
 def before_request(*args, **kwargs):
     """
-        Use this decorator to add a before_request lifecycle
-        hook to be executed before each handler in the view.
-        If invoked with the `only` kwarg, the hook will only
-        be invoked for the given list of handler methods.
+        Use this decorator to enqueue methods to be invoked
+        before each handler in the view. If method returns
+        a value other than :code:`None`, then that value
+        will be returned to the client. If invoked with the
+        :code:`only` kwarg, the hook will only be invoked for
+        the given list of handler methods.
 
-        Examples:
+        Examples::
 
-            @before_request
-            def ensure_feature_is_enabled(self):
-                if self.feature_is_disabled:
-                    return self.response_404()
-                return None
+            class MyFeature(ModelView)
 
-            @before_request(only=["create", "update", "delete"])
-            def ensure_write_mode_enabled(self):
-                if self.read_only:
-                    return self.response_400()
-                return None
+                @before_request
+                def ensure_feature_is_enabled(self):
+                    if self.feature_is_disabled:
+                        return self.response_404()
+                    return None
 
-        :param only:
-            Only kwarg scopes this hook to run only for
-            the given list of handler methods. If absent,
-            the hook will be invoked before all handlers.
+                # etc...
+
+
+            class MyView(ModelRestAPI):
+
+                @before_request(only=["create", "update", "delete"])
+                def ensure_write_mode_enabled(self):
+                    if self.read_only:
+                        return self.response_400()
+                    return None
+
+                # etc...
+
+
+        :param kwargs:
+            The :code:`only` kwarg scopes the method being decorated
+            to run only for the given list of handler methods. If
+            abset, the method will be invoked before all handlers.
     """
     only = kwargs.get("only", None)
 
