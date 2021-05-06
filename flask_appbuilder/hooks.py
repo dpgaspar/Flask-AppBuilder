@@ -1,11 +1,17 @@
-def before_request(*args, **kwargs):
+from typing import Any, Callable, Dict, List
+
+
+def before_request(
+    hook: Callable[[], Any] = None, only: List[str] = None
+) -> Callable[..., Any]:
     """
-        Use this decorator to enqueue methods to be invoked
-        before each handler in the view. If method returns
-        a value other than :code:`None`, then that value
-        will be returned to the client. If invoked with the
-        :code:`only` kwarg, the hook will only be invoked for
-        the given list of handler methods.
+        This decorator provides a way to hook into the request
+        lifecycle by enqueueing methods to be invoked before
+        each handler in the view. If the method returns a value
+        other than :code:`None`, then that value will be returned
+        to the client. If invoked with the :code:`only` kwarg,
+        the hook will only be invoked for the given list of
+        handler methods.
 
         Examples::
 
@@ -30,23 +36,31 @@ def before_request(*args, **kwargs):
 
                 # etc...
 
-
-        :param kwargs:
-            The :code:`only` kwarg scopes the method being decorated
-            to run only for the given list of handler methods. If
-            abset, the method will be invoked before all handlers.
+        :param hook:
+            A callable to be invoked before handlers in the class. If the
+            hook returns :code:`None`, then the request proceeds and the
+            handler is invoked. If it returns something other than :code:`None`,
+            then execution halts and that value is returned to the client.
+        :param only:
+            An optional list of the names of handler methods. If present,
+            :code:`hook` will only be invoked before the handlers specified
+            in the list. If absent, :code:`hook` will be invoked for before
+            all handlers in the class.
     """
-    only = kwargs.get("only", None)
 
-    def wrap(f):
-        f._before_request_hook = True
-        f._before_request_only = only
-        return f
+    def wrap(hook: Callable[[], Any]) -> Callable[[], Any]:
+        hook._before_request_hook = True
+        hook._before_request_only = only
+        return hook
 
-    return wrap(args[0]) if len(args) == 1 else wrap
+    return wrap if hook is None else wrap(hook)
 
 
-def wrap_route_handler_with_hooks(handler_name, handler, before_request_hooks):
+def wrap_route_handler_with_hooks(
+    handler_name: str,
+    handler: Callable[..., Any],
+    before_request_hooks: List[Callable[[], Any]],
+) -> Callable[..., Any]:
     applicable_hooks = []
     for hook in before_request_hooks:
         only = hook._before_request_only
@@ -57,7 +71,7 @@ def wrap_route_handler_with_hooks(handler_name, handler, before_request_hooks):
     if not applicable_hooks:
         return handler
 
-    def wrapped_handler(*args, **kwargs):
+    def wrapped_handler(*args: List[Any], **kwargs: Dict[str, Any]) -> Any:
         for hook in applicable_hooks:
             result = hook()
             if result is not None:
@@ -67,7 +81,7 @@ def wrap_route_handler_with_hooks(handler_name, handler, before_request_hooks):
     return wrapped_handler
 
 
-def get_before_request_hooks(view_or_api_instance):
+def get_before_request_hooks(view_or_api_instance: Any) -> List[Callable[[], Any]]:
     before_request_hooks = []
     for attr_name in dir(view_or_api_instance):
         attr = getattr(view_or_api_instance, attr_name)
