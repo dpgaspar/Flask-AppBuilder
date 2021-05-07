@@ -9,13 +9,19 @@ from .security.decorators import permission_name, protect
 
 
 class MenuItem(object):
-    def __init__(self, name, href="", icon="", label="", childs=None, baseview=None):
+    def __init__(
+        self, name, href="", icon="", label="", childs=None, baseview=None, cond=None
+    ):
         self.name = name
         self.href = href
         self.icon = icon
         self.label = label
         self.childs = childs or []
         self.baseview = baseview
+        self.cond = cond
+
+    def should_render(self) -> bool:
+        return bool(self.cond()) if self.cond is not None else True
 
     def get_url(self):
         if not self.href:
@@ -65,6 +71,9 @@ class Menu(object):
         )
 
         for i, item in enumerate(menu):
+            if not item.should_render():
+                continue
+
             if item.name == "-" and not i == len(menu) - 1:
                 ret_list.append("-")
             elif item.name not in allowed_menus:
@@ -125,20 +134,31 @@ class Menu(object):
         category_icon="",
         category_label="",
         baseview=None,
+        cond=None,
     ):
         label = label or name
         category_label = category_label or category
         if category == "":
             self.menu.append(
                 MenuItem(
-                    name=name, href=href, icon=icon, label=label, baseview=baseview
+                    name=name,
+                    href=href,
+                    icon=icon,
+                    label=label,
+                    baseview=baseview,
+                    cond=cond,
                 )
             )
         else:
             menu_item = self.find(category)
             if menu_item:
                 new_menu_item = MenuItem(
-                    name=name, href=href, icon=icon, label=label, baseview=baseview
+                    name=name,
+                    href=href,
+                    icon=icon,
+                    label=label,
+                    baseview=baseview,
+                    cond=cond,
                 )
                 menu_item.childs.append(new_menu_item)
             else:
@@ -146,14 +166,19 @@ class Menu(object):
                     category=category, icon=category_icon, label=category_label
                 )
                 new_menu_item = MenuItem(
-                    name=name, href=href, icon=icon, label=label, baseview=baseview
+                    name=name,
+                    href=href,
+                    icon=icon,
+                    label=label,
+                    baseview=baseview,
+                    cond=cond,
                 )
                 self.find(category).childs.append(new_menu_item)
 
-    def add_separator(self, category=""):
+    def add_separator(self, category="", cond=None):
         menu_item = self.find(category)
         if menu_item:
-            menu_item.childs.append(MenuItem("-"))
+            menu_item.childs.append(MenuItem("-", cond=cond))
         else:
             raise Exception(
                 "Menu separator does not have correct category {}".format(category)
