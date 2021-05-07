@@ -528,28 +528,28 @@ class MVCTestCase(BaseMVCTestCase):
             datamodel = SQLAInterface(ModelWithEnums)
 
         context = self
-        context._before_request_condition_value = False
-        context._before_request_can_modify = False
-        context._before_request_list_enabled = False
+        context._before_request_enabled = False
+        context._before_request_can_show = False
+        context._before_request_can_list = False
 
         class ModelBeforeRequest(ModelView):
             datamodel = SQLAInterface(Model1)
 
             @before_request
             def check_condition(self):
-                if not context._before_request_condition_value:
+                if not context._before_request_enabled:
                     return make_response("Not found", 404)
                 return None
 
-            @before_request(only=["edit", "delete"])
+            @before_request(only=["show"])
             def enable_modification(self):
-                if not context._before_request_can_modify:
+                if not context._before_request_can_show:
                     return make_response("Not found", 404)
                 return None
 
             @before_request(only=["list"])
             def list_enabled(self):
-                if not context._before_request_list_enabled:
+                if not context._before_request_can_list:
                     return make_response("Not found", 404)
                 return None
 
@@ -1748,12 +1748,15 @@ class MVCTestCase(BaseMVCTestCase):
             Test before_request hooks
         """
         # All flags are false, so all request should 404.
-        self._before_request_condition_value = False
-        self._before_request_list_enabled = False
-        self._before_request_can_modify = False
+        self._before_request_enabled = False
+        self._before_request_can_list = False
+        self._before_request_can_show = False
 
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 404)
 
         rv = client.get("/modelbeforerequest/list/")
         self.assertEqual(rv.status_code, 404)
@@ -1761,87 +1764,41 @@ class MVCTestCase(BaseMVCTestCase):
         rv = client.get("/modelbeforerequest/show/1")
         self.assertEqual(rv.status_code, 404)
 
+        # /enable is available, but not others
+        self._before_request_enabled = True
+
         rv = client.get("/modelbeforerequest/enabled")
-        self.assertEqual(rv.status_code, 404)
-
-        rv = client.post(
-            "/modelbeforerequest/edit/1",
-            data={"field_string": "editing!"},
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 404)
-
-        rv = client.get("/modelbeforerequest/delete/1", follow_redirects=True)
-        self.assertEqual(rv.status_code, 404)
-
-        # Basic condition is true, so some requests should succeed,
-        # but not the ones gated by _before_request_can_modify or
-        # _before_request_list_enabled.
-        self._before_request_condition_value = True
+        self.assertEqual(rv.status_code, 200)
 
         rv = client.get("/modelbeforerequest/list/")
         self.assertEqual(rv.status_code, 404)
 
         rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
-        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 404)
+
+        # Now list is available, but not show
+        self._before_request_enabled = True
+        self._before_request_can_list = True
 
         rv = client.get("/modelbeforerequest/enabled")
         self.assertEqual(rv.status_code, 200)
-
-        rv = client.post(
-            "/modelbeforerequest/edit/1",
-            data={"field_string": "editing!"},
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 404)
-
-        rv = client.get("/modelbeforerequest/delete/1", follow_redirects=True)
-        self.assertEqual(rv.status_code, 404)
-
-        # Now /list/ and others are available, but
-        # not edit or delete
-        self._before_request_condition_value = True
-        self._before_request_list_enabled = True
 
         rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
 
         rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
-        self.assertEqual(rv.status_code, 200)
-
-        rv = client.get("/modelbeforerequest/enabled")
-        self.assertEqual(rv.status_code, 200)
-
-        rv = client.post(
-            "/modelbeforerequest/edit/1",
-            data={"field_string": "editing!"},
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 404)
-
-        rv = client.get("/modelbeforerequest/delete/1", follow_redirects=True)
         self.assertEqual(rv.status_code, 404)
 
         # Everything is available
-        self._before_request_condition_value = True
-        self._before_request_list_enabled = True
-        self._before_request_can_modify = True
+        self._before_request_enabled = True
+        self._before_request_can_list = True
+        self._before_request_can_show = True
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
 
         rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
 
         rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
-        self.assertEqual(rv.status_code, 200)
-
-        rv = client.get("/modelbeforerequest/enabled")
-        self.assertEqual(rv.status_code, 200)
-
-        rv = client.post(
-            "/modelbeforerequest/edit/1",
-            data={"field_string": "editing!"},
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 200)
-
-        rv = client.get("/modelbeforerequest/delete/1", follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
