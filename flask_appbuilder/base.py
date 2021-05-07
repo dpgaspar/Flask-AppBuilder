@@ -386,7 +386,7 @@ class AppBuilder(object):
         :param menu_cond:
             If a callable, :code:`menu_cond` will be invoked when
             constructing the menu items. If it returns :code:`True`,
-            then this link will part of the menu. Otherwise, it
+            then this link will be a part of the menu. Otherwise, it
             will not be included in the menu items. Defaults to
             :code:`None`, meaning the item will always be present.
 
@@ -484,7 +484,7 @@ class AppBuilder(object):
             :param cond:
                 If a callable, :code:`cond` will be invoked when
                 constructing the menu items. If it returns :code:`True`,
-                then this link will part of the menu. Otherwise, it
+                then this link will be a part of the menu. Otherwise, it
                 will not be included in the menu items. Defaults to
                 :code:`None`, meaning the item will always be present.
         """
@@ -513,8 +513,8 @@ class AppBuilder(object):
             :param cond:
                 If a callable, :code:`cond` will be invoked when
                 constructing the menu items. If it returns :code:`True`,
-                then this separator will part of the menu. Otherwise, it
-                will not be included in the menu items. Defaults to
+                then this separator will be a part of the menu. Otherwise,
+                it will not be included in the menu items. Defaults to
                 :code:`None`, meaning the separator will always be present.
         """
         self.menu.add_separator(category, cond=cond)
