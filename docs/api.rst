@@ -12,7 +12,7 @@ AppBuilder
 
     .. autoclass:: AppBuilder
         :members:
-        
+
         .. automethod:: __init__
 
 flask_appbuilder.security.decorators
@@ -30,6 +30,12 @@ flask_appbuilder.models.decorators
 .. automodule:: flask_appbuilder.models.decorators
 
     .. autofunction:: renders
+
+flask_appbuilder.hooks
+======================
+.. automodule:: flask_appbuilder.hooks
+
+    .. autofunction:: before_request
 
 flask_appbuilder.api
 ==============================
