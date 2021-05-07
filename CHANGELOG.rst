@@ -1,6 +1,14 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.2.4
+-----------------------------------
+
+- feat: Support for conditional menu item rendering (#1631) [Ben Reinhart]
+- docs: fix number of languages in i18n.rst (#1630) [Aleksandr Gordienko]
+- feat: Add support for before_request hooks (#1629) [Ben Reinhart]
+- docs: Typos and small changes in docs/templates.rst (#1625) [Federico Padua]
+
 Improvements and Bug fixes on 3.2.3
 -----------------------------------
 
@@ -302,7 +310,7 @@ Improvements and Bug fixes on 2.1.0
 Improvements and Bug fixes on 2.0.0
 -----------------------------------
 
-- BREAKING CHANGES, Python 3.6+ is now required 
+- BREAKING CHANGES, Python 3.6+ is now required
 - Fix, #951 M-M fields are always required, now they default to not required with optional required flag on col info dict
 - Fix, #885 list view ordering problem of related model with dotted notation, fixes #884
 - Fix, #946 Factory app pattern
