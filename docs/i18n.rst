@@ -4,7 +4,7 @@ i18n Translations
 Introduction
 ------------
 
-F.A.B. has support for seven languages (planning for some more):
+F.A.B. has support for 14 languages (planning for some more):
  - Chinese
  - Dutch
  - English
