@@ -595,7 +595,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         # active-directory-protocols-oauth-code
         if provider == "azure":
             log.debug("Azure response received : {0}".format(resp))
-            id_token = resp["id_token"]
+            id_token = resp["access_token"]
             log.debug(str(id_token))
             me = self._azure_jwt_token_parse(id_token)
             log.debug("Parse JWT token : {0}".format(me))
