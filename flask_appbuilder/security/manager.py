@@ -630,9 +630,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             return {}
 
-    def _azure_parse_jwt(self, id_token):
+    def _azure_parse_jwt(self, access_token):
         jwt_token_parts = r"^([^\.\s]*)\.([^\.\s]+)\.([^\.\s]*)$"
-        matches = re.search(jwt_token_parts, id_token)
+        matches = re.search(jwt_token_parts, access_token)
         if not matches or len(matches.groups()) < 3:
             log.error("Unable to parse token.")
             return {}
@@ -642,8 +642,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             "Sig": matches.group(3),
         }
 
-    def _azure_jwt_token_parse(self, id_token):
-        jwt_split_token = self._azure_parse_jwt(id_token)
+    def _azure_jwt_token_parse(self, access_token):
+        jwt_split_token = self._azure_parse_jwt(access_token)
         if not jwt_split_token:
             return
 
@@ -654,7 +654,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         decoded_payload = base64.urlsafe_b64decode(payload_b64_string.encode("ascii"))
 
         if not decoded_payload:
-            log.error("Payload of id_token could not be base64 url decoded.")
+            log.error("Payload of access_token could not be base64 url decoded.")
             return
 
         jwt_decoded_payload = json.loads(decoded_payload.decode("utf-8"))
