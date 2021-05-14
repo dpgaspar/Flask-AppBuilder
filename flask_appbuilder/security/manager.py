@@ -833,6 +833,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         if user is None:
             user = self.find_user(email=username)
         if user is None or (not user.is_active):
+            # Balance failure and success
+            check_password_hash(
+                "pbkdf2:sha256:150000$Z3t6fmj2$22da622d94a1f8118"
+                "c0976a03d2f18f680bfff877c9a965db9eedc51bc0be87c",
+                "password",
+            )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
         elif check_password_hash(user.password, password):
