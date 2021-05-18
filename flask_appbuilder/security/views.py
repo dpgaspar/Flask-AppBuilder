@@ -17,8 +17,10 @@ from ..actions import action
 from ..baseviews import BaseView
 from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
+from ..utils.base import lazy_formatter_gettext
 from ..views import expose, ModelView, SimpleFormView
 from ..widgets import ListWidget, ShowWidget
+
 
 log = logging.getLogger(__name__)
 
@@ -119,6 +121,15 @@ class UserInfoEditView(SimpleFormView):
         flash(as_unicode(self.message), "info")
 
 
+def _roles_custom_formatter(string: str) -> str:
+    if current_app.config.get("AUTH_ROLES_SYNC_AT_LOGIN", False):
+        string += (
+            ". <b>Warning: AUTH_ROLES_SYNC_AT_LOGIN is enabled. "
+            "Changes to this field will not persiste."
+        )
+    return string
+
+
 class UserModelView(ModelView):
     route_base = "/users"
 
@@ -159,9 +170,10 @@ class UserModelView(ModelView):
             "It's not a good policy to remove a user, just make it inactive"
         ),
         "email": lazy_gettext("The user's email, this will also be used for OID auth"),
-        "roles": lazy_gettext(
+        "roles": lazy_formatter_gettext(
             "The user role on the application,"
-            " this will associate with a list of permissions"
+            " this will associate with a list of permissions",
+            _roles_custom_formatter,
         ),
         "conf_password": lazy_gettext("Please rewrite the user's password to confirm"),
     }
