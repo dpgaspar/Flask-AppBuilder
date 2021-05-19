@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Any, Callable
 
 from flask_babel import gettext
 from flask_babel.speaklater import LazyString
@@ -21,12 +21,14 @@ def is_column_dotted(column: str) -> bool:
 
 
 def _wrap_lazy_formatter_gettext(
-    string, lazy_formater: Callable[[str], str], **variables
-):
+    string: str, lazy_formater: Callable[[str], str], **variables
+) -> str:
     return gettext(lazy_formater(string), **variables)
 
 
-def lazy_formatter_gettext(string, lazy_formatter: Callable[[str], str], **variables):
+def lazy_formatter_gettext(
+    string: str, lazy_formatter: Callable[[str], str], **variables: Any
+) -> LazyString:
     """Formats a lazy_gettext string with a custom function
 
     Example::
