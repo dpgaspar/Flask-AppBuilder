@@ -125,7 +125,7 @@ def _roles_custom_formatter(string: str) -> str:
     if current_app.config.get("AUTH_ROLES_SYNC_AT_LOGIN", False):
         string += (
             ". <b>Warning: AUTH_ROLES_SYNC_AT_LOGIN is enabled. "
-            "Changes to this field will not persiste."
+            "Changes to this field will not persist."
         )
     return string
 
