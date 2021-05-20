@@ -124,8 +124,10 @@ class UserInfoEditView(SimpleFormView):
 def _roles_custom_formatter(string: str) -> str:
     if current_app.config.get("AUTH_ROLES_SYNC_AT_LOGIN", False):
         string += (
-            ". <b>Warning: AUTH_ROLES_SYNC_AT_LOGIN is enabled. "
-            "Changes to this field will not persist."
+            ". <div class='alert alert-warning' role='alert'>"
+            "AUTH_ROLES_SYNC_AT_LOGIN is enabled, changes to this field will "
+            "not persist between user logins."
+            "</div>"
         )
     return string
 
