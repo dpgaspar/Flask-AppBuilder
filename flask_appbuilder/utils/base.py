@@ -21,7 +21,7 @@ def is_column_dotted(column: str) -> bool:
 
 
 def _wrap_lazy_formatter_gettext(
-    string: str, lazy_formater: Callable[[str], str], **variables
+    string: str, lazy_formater: Callable[[str], str], **variables: Any
 ) -> str:
     return gettext(lazy_formater(string), **variables)
 
