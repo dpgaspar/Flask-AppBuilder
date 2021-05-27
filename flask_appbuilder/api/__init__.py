@@ -58,6 +58,7 @@ from ..const import (
     PERMISSION_PREFIX,
 )
 from ..exceptions import FABException, InvalidOrderByColumnFABException
+from ..hooks import get_before_request_hooks, wrap_route_handler_with_hooks
 from ..security.decorators import permission_name, protect
 
 log = logging.getLogger(__name__)
@@ -522,6 +523,7 @@ class BaseApi(object):
                 pass
 
     def _register_urls(self) -> None:
+        before_request_hooks = get_before_request_hooks(self)
         for attr_name in dir(self):
             if (
                 self.include_route_methods is not None
@@ -537,7 +539,12 @@ class BaseApi(object):
                     log.info(
                         f"Registering route {self.blueprint.url_prefix}{url} {methods}"
                     )
-                    self.blueprint.add_url_rule(url, attr_name, attr, methods=methods)
+                    route_handler = wrap_route_handler_with_hooks(
+                        attr_name, attr, before_request_hooks
+                    )
+                    self.blueprint.add_url_rule(
+                        url, attr_name, route_handler, methods=methods
+                    )
 
     def path_helper(
         self, path: str = None, operations: Dict[str, Dict] = None, **kwargs
