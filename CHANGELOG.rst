@@ -1,6 +1,23 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.3.0
+-----------------------------------
+
+- fix: auth balance (#1634) [Daniel Gaspar]
+- feat: Support for conditional menu item rendering (#1631) [Ben Reinhart]
+- docs: fix number of languages in i18n.rst (#1630) [Aleksandr Gordienko]
+- feat: Add support for before_request hooks (#1629) [Ben Reinhart]
+- docs: Typos and small changes in docs/templates.rst (#1625) [Federico Padua]
+
+Improvements and Bug fixes on 3.2.3
+-----------------------------------
+
+- fix: improve performance for get role permissions (#1624) [Daniel Gaspar]
+- feat: get user permissions API (#1620) [Daniel Gaspar]
+- fix: Ignore LDAP search referrals (#1602) [Fred Thomsen]
+- fix: relax AzureAD mandatory fields (#1608) [hyunjong.lee]
+
 Improvements and Bug fixes on 3.2.2
 -----------------------------------
 

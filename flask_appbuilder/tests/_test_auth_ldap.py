@@ -1,7 +1,7 @@
 import logging
 import os
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
@@ -222,6 +222,39 @@ class LDAPSearchTestCase(unittest.TestCase):
                     self.call_search_alice_filter,
                 ],
             )
+
+    def test___search_ldap_with_search_referrals(self):
+        """
+        LDAP: test `_search_ldap` method w/returned search referrals
+        """
+        self.app.config["AUTH_LDAP_BIND_USER"] = "uid=admin,ou=users,o=test"
+        self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,o=test"
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        sm = self.appbuilder.sm
+
+        # run `_search_ldap` method w/mocked ldap connection
+        mock_con = Mock()
+        mock_con.search_s.return_value = [
+            (
+                None,
+                [
+                    "ldap://ForestDnsZones.mycompany.com/"
+                    "DC=ForestDnsZones,DC=mycompany,DC=com"
+                ],
+            ),
+            self.user_alice,
+            (None, ["ldap://mycompany.com/CN=Configuration,DC=mycompany,DC=com"]),
+        ]
+        user_dn, user_attributes = sm._search_ldap(ldap, mock_con, "alice")
+
+        # validate - search returned expected data
+        self.assertEqual(user_dn, self.user_alice[0])
+        self.assertEqual(user_attributes["givenName"], self.user_alice[1]["givenName"])
+        self.assertEqual(user_attributes["sn"], self.user_alice[1]["sn"])
+        self.assertEqual(user_attributes["email"], self.user_alice[1]["email"])
+
+        mock_con.search_s.assert_called()
 
     def test__missing_credentials(self):
         """

@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Tuple
 
 from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
@@ -600,10 +600,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             me = self._azure_jwt_token_parse(id_token)
             log.debug("Parse JWT token : {0}".format(me))
             return {
-                "name": me["name"],
+                "name": me.get("name", ""),
                 "email": me["upn"],
-                "first_name": me["given_name"],
-                "last_name": me["family_name"],
+                "first_name": me.get("given_name", ""),
+                "last_name": me.get("family_name", ""),
                 "id": me["oid"],
                 "username": me["oid"],
             }
@@ -833,6 +833,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         if user is None:
             user = self.find_user(email=username)
         if user is None or (not user.is_active):
+            # Balance failure and success
+            check_password_hash(
+                "pbkdf2:sha256:150000$Z3t6fmj2$22da622d94a1f8118"
+                "c0976a03d2f18f680bfff877c9a965db9eedc51bc0be87c",
+                "password",
+            )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
         elif check_password_hash(user.password, password):
@@ -878,10 +884,17 @@ class BaseSecurityManager(AbstractSecurityManager):
                 filter_str, request_fields, self.auth_ldap_search
             )
         )
-        search_result = con.search_s(
+        raw_search_result = con.search_s(
             self.auth_ldap_search, ldap.SCOPE_SUBTREE, filter_str, request_fields
         )
-        log.debug("LDAP search returned: {0}".format(search_result))
+        log.debug("LDAP search returned: {0}".format(raw_search_result))
+
+        # Remove any search referrals from results
+        search_result = [
+            (dn, attrs)
+            for dn, attrs in raw_search_result
+            if dn is not None and isinstance(attrs, dict)
+        ]
 
         # only continue if 0 or 1 results were returned
         if len(search_result) > 1:
@@ -1387,6 +1400,37 @@ class BaseSecurityManager(AbstractSecurityManager):
         # If it's not a builtin role check against database store roles
         return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
 
+    def get_user_roles(self, user) -> List[object]:
+        """
+        Get current user roles, if user is not authenticated returns the public role
+        """
+        if not user.is_authenticated:
+            return [self.get_public_role()]
+        return user.roles
+
+    def get_role_permissions(self, role) -> Set[Tuple[str, str]]:
+        """
+        Get all permissions for a certain role
+        """
+        result = set()
+        if role.name in self.builtin_roles:
+            for permission in self.builtin_roles[role.name]:
+                result.add((permission[1], permission[0]))
+        else:
+            for permission in self.get_db_role_permissions(role.id):
+                result.add((permission.permission.name, permission.view_menu.name))
+        return result
+
+    def get_user_permissions(self, user) -> Set[Tuple[str, str]]:
+        """
+        Get all permissions from the current user
+        """
+        roles = self.get_user_roles(user)
+        result = set()
+        for role in roles:
+            result.update(self.get_role_permissions(role))
+        return result
+
     def _get_user_permission_view_menus(
         self, user: object, permission_name: str, view_menus_name: List[str]
     ) -> Set[str]:
@@ -1425,7 +1469,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def has_access(self, permission_name, view_name):
         """
-            Check if current user or public has access to view or menu
+        Check if current user or public has access to view or menu
         """
         if current_user.is_authenticated:
             return self._has_view_access(g.user, permission_name, view_name)
@@ -1450,13 +1494,13 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def add_permissions_view(self, base_permissions, view_menu):
         """
-            Adds a permission on a view menu to the backend
+        Adds a permission on a view menu to the backend
 
-            :param base_permissions:
-                list of permissions from view (all exposed methods):
-                 'can_add','can_edit' etc...
-            :param view_menu:
-                name of the view or menu to add
+        :param base_permissions:
+            list of permissions from view (all exposed methods):
+             'can_add','can_edit' etc...
+        :param view_menu:
+            name of the view or menu to add
         """
         view_menu_db = self.add_view_menu(view_menu)
         perm_views = self.find_permissions_view_menu(view_menu_db)
@@ -1498,10 +1542,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def add_permissions_menu(self, view_menu_name):
         """
-            Adds menu_access to menu on permission_view_menu
+        Adds menu_access to menu on permission_view_menu
 
-            :param view_menu_name:
-                The menu name
+        :param view_menu_name:
+            The menu name
         """
         self.add_view_menu(view_menu_name)
         pv = self.find_permission_view_menu("menu_access", view_menu_name)
@@ -1513,10 +1557,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def security_cleanup(self, baseviews, menus):
         """
-            Will cleanup all unused permissions from the database
+        Will cleanup all unused permissions from the database
 
-            :param baseviews: A list of BaseViews class
-            :param menus: Menu class
+        :param baseviews: A list of BaseViews class
+        :param menus: Menu class
         """
         viewsmenus = self.get_all_view_menu()
         roles = self.get_all_roles()
@@ -1588,9 +1632,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     @staticmethod
     def _update_del_transitions(state_transitions: Dict, baseviews: List) -> None:
         """
-            Mutates state_transitions, loop baseviews and prunes all
-            views and permissions that are not to delete because references
-            exist.
+        Mutates state_transitions, loop baseviews and prunes all
+        views and permissions that are not to delete because references
+        exist.
 
         :param baseview:
         :param state_transitions:
@@ -1606,14 +1650,14 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def create_state_transitions(self, baseviews: List, menus: List) -> Dict:
         """
-            Creates a Dict with all the necessary vm/permission transitions
+        Creates a Dict with all the necessary vm/permission transitions
 
-            Dict: {
-                    "add": {(<VM>, <PERM>): ((<VM>, PERM), ... )}
-                    "del_role_pvm": ((<VM>, <PERM>), ...)
-                    "del_views": (<VM>, ... )
-                    "del_perms": (<PERM>, ... )
-                  }
+        Dict: {
+                "add": {(<VM>, <PERM>): ((<VM>, PERM), ... )}
+                "del_role_pvm": ((<VM>, <PERM>), ...)
+                "del_views": (<VM>, ... )
+                "del_perms": (<PERM>, ... )
+              }
 
         :param baseviews: List with all the registered BaseView, BaseApi
         :param menus: List with all the menu entries
@@ -1662,10 +1706,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def security_converge(self, baseviews: List, menus: List, dry=False) -> Dict:
         """
-            Converges overridden permissions on all registered views/api
-            will compute all necessary operations from `class_permissions_name`,
-            `previous_class_permission_name`, method_permission_name`,
-            `previous_method_permission_name` class attributes.
+        Converges overridden permissions on all registered views/api
+        will compute all necessary operations from `class_permissions_name`,
+        `previous_class_permission_name`, method_permission_name`,
+        `previous_method_permission_name` class attributes.
 
         :param baseviews: List of registered views/apis
         :param menus: List of menu items
@@ -1749,7 +1793,13 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def get_all_users(self):
         """
-            Generic function that returns all exsiting users
+            Generic function that returns all existing users
+        """
+        raise NotImplementedError
+
+    def get_db_role_permissions(self, role_id: int) -> List[object]:
+        """
+        Get all DB permissions from a role id
         """
         raise NotImplementedError
 
