@@ -356,6 +356,7 @@ class AppBuilder(object):
         category="",
         category_icon="",
         category_label="",
+        menu_cond=None,
     ):
         """
         Add your views associated with menus using this method.
@@ -382,6 +383,12 @@ class AppBuilder(object):
         :param category_label:
             The label that will be displayed on the menu,
             if absent param name will be used
+        :param menu_cond:
+            If a callable, :code:`menu_cond` will be invoked when
+            constructing the menu items. If it returns :code:`True`,
+            then this link will be a part of the menu. Otherwise, it
+            will not be included in the menu items. Defaults to
+            :code:`None`, meaning the item will always be present.
 
         Examples::
 
@@ -407,6 +414,14 @@ class AppBuilder(object):
                 category_icon='fa-envelop',
                 category_label=_('Other View')
             )
+            # Register a view whose menu item will be conditionally displayed
+            appbuilder.add_view(
+                YourFeatureView,
+                "Your Feature",
+                icon='fa-feature',
+                label=_('Your Feature'),
+                menu_cond=lambda: is_feature_enabled("your-feature"),
+            )
             # Add a link
             appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
@@ -429,6 +444,7 @@ class AppBuilder(object):
             category_icon=category_icon,
             category_label=category_label,
             baseview=baseview,
+            cond=menu_cond,
         )
         return baseview
 
@@ -442,6 +458,7 @@ class AppBuilder(object):
         category_icon="",
         category_label="",
         baseview=None,
+        cond=None,
     ):
         """
             Add your own links to menu using this method
@@ -464,7 +481,12 @@ class AppBuilder(object):
             :param category_label:
                 The label that will be displayed on the menu,
                 if absent param name will be used
-
+            :param cond:
+                If a callable, :code:`cond` will be invoked when
+                constructing the menu items. If it returns :code:`True`,
+                then this link will be a part of the menu. Otherwise, it
+                will not be included in the menu items. Defaults to
+                :code:`None`, meaning the item will always be present.
         """
         self.menu.add_link(
             name=name,
@@ -475,20 +497,27 @@ class AppBuilder(object):
             category_icon=category_icon,
             category_label=category_label,
             baseview=baseview,
+            cond=cond,
         )
         if self.app:
             self._add_permissions_menu(name)
             if category:
                 self._add_permissions_menu(category)
 
-    def add_separator(self, category):
+    def add_separator(self, category, cond=None):
         """
             Add a separator to the menu, you will sequentially create the menu
 
             :param category:
                 The menu category where the separator will be included.
+            :param cond:
+                If a callable, :code:`cond` will be invoked when
+                constructing the menu items. If it returns :code:`True`,
+                then this separator will be a part of the menu. Otherwise,
+                it will not be included in the menu items. Defaults to
+                :code:`None`, meaning the separator will always be present.
         """
-        self.menu.add_separator(category)
+        self.menu.add_separator(category, cond=cond)
 
     def add_view_no_menu(self, baseview, endpoint=None, static_folder=None):
         """

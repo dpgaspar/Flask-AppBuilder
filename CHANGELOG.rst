@@ -1,6 +1,50 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.3.0
+-----------------------------------
+
+- fix: auth balance (#1634) [Daniel Gaspar]
+- feat: Support for conditional menu item rendering (#1631) [Ben Reinhart]
+- docs: fix number of languages in i18n.rst (#1630) [Aleksandr Gordienko]
+- feat: Add support for before_request hooks (#1629) [Ben Reinhart]
+- docs: Typos and small changes in docs/templates.rst (#1625) [Federico Padua]
+
+Improvements and Bug fixes on 3.2.3
+-----------------------------------
+
+- fix: improve performance for get role permissions (#1624) [Daniel Gaspar]
+- feat: get user permissions API (#1620) [Daniel Gaspar]
+- fix: Ignore LDAP search referrals (#1602) [Fred Thomsen]
+- fix: relax AzureAD mandatory fields (#1608) [hyunjong.lee]
+
+Improvements and Bug fixes on 3.2.2
+-----------------------------------
+
+- docs: fix, errors in BaseModelView docstring (#1591) [Xiaodong DENG]
+- fix: load user info for okta (#1589) [QP Hou]
+
+Improvements and Bug fixes on 3.2.1
+-----------------------------------
+
+- docs: improve contributing run single test (#1579) [Daniel Vaz Gaspar]
+- fix: sqlalchemy 1.4.0 breaking changes (#1586) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 3.2.0
+-----------------------------------
+
+- fix: issue 1469 error in filters (#1541) [Duy Nguyen Hoang]
+- fix: showing excluded routes in server log (#1565) [runoutnow]
+- refactor: AUTH_LDAP/AUTH_OAUTH + implement role mapping (#1374) [Mathew Wicks]
+- fix(api): OpenAPI spec of nested components without auto generated names (#1547) [Daniel Vaz Gaspar]
+- fix(mvc): action confirmation on single show view (#1539) [Daniel Vaz Gaspar]
+- docs: improve docs around LDAP auth (#1526) [Daniel Vaz Gaspar]
+- ci: tests for python 3.8 and 3.9 (#1525) [Daniel Vaz Gaspar]
+- docs: fix, swagger path in readme (#1518) [Felix Rilling]
+- fix: oauth #1511 (#1522) [Daniel Vaz Gaspar]
+- fix: github actions (#1523) [Daniel Vaz Gaspar]
+- fix: changelog (#1507) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 3.1.1
 -----------------------------------
 

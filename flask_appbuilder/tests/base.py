@@ -83,8 +83,13 @@ class FABTestCase(unittest.TestCase):
         first_name="admin",
         last_name="user",
         email="admin@fab.org",
+        role_names=None,
     ):
-        role_admin = appbuilder.sm.find_role(role_name)
-        appbuilder.sm.add_user(
-            username, first_name, last_name, email, role_admin, password
+        roles = (
+            [appbuilder.sm.find_role(role_name) for role_name in role_names]
+            if role_names
+            else [appbuilder.sm.find_role(role_name)]
+        )
+        return appbuilder.sm.add_user(
+            username, first_name, last_name, email, roles, password
         )

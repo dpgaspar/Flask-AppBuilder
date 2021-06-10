@@ -35,11 +35,55 @@ can run a subset of tests targeting only Postgres.
 
     $ tox -e postgres
 
-3 - Code Formatting
+4 - Code Formatting
 
 .. code-block:: bash
 
     $ black flask_appbuilder
     $ flake8 flask_appbuilder
 
+Run a single test
+-----------------
 
+Using Postgres
+
+1 - Stop and delete Postgres volume, then restart
+
+.. code-block:: bash
+
+    $ docker-compose down -v
+    $ docker-compose up -d
+
+2 - Export the connection string
+
+.. code-block:: bash
+
+   $ export SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://pguser:pguserpassword@0.0.0.0/app
+
+3 - Run the fixtures
+
+.. code-block:: bash
+
+    $ nosetests -v flask_appbuilder.tests.test_0_fixture
+
+
+4 - Run a single test
+
+.. code-block:: bash
+
+    $ nosetests -v flask_appbuilder.tests.test_api:APITestCase.test_get_item_dotted_mo_notation
+
+
+.. note::
+
+    If your using SQLite3, the location of the db is: ./flask_appbuilder/tests/app.db
+    You can safely delete it, if you need to delete the fixtures for example.
+
+
+Responsible disclosure of Security Vulnerabilities
+--------------------------------------------------
+
+We want to keep Flask-AppBuilder safe for everyone. If you've discovered a security vulnerability
+please report to danielvazgaspar@gmail.com.
+Reporting security vulnerabilities through the usual GitHub Issues channel
+is not ideal as it will publicize the flaw before a fix can be applied.
