@@ -29,6 +29,7 @@ from flask_appbuilder.const import (
     API_SHOW_TITLE_RIS_KEY,
     API_URI_RIS_KEY,
 )
+from flask_appbuilder.hooks import before_request
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 import prison
@@ -372,6 +373,54 @@ class APITestCase(FABTestCase):
             include_route_methods = "get"
 
         self.appbuilder.add_api(Model1ApiIncludeRoutes)
+
+        context = self
+        context._before_request_condition_value = False
+        context._before_request_can_read = False
+        context._before_request_can_write = False
+
+        class Model1BeforeRequest(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+
+            @before_request
+            def check_condition(self):
+                if not context._before_request_condition_value:
+                    return self.response_404()
+                return None
+
+            @before_request(only=["get_all", "show"])
+            def can_read(self):
+                if not context._before_request_can_read:
+                    return self.response_404()
+                return None
+
+            @before_request(only=["create", "update"])
+            def can_write(self):
+                if not context._before_request_can_write:
+                    return self.response_404()
+                return None
+
+            @expose("/basic")
+            def basic(self):
+                return self.response(200, message="basic")
+
+            @expose("/")
+            def get_all(self):
+                return self.response(200, message="get_all")
+
+            @expose("/show")
+            def show(self):
+                return self.response(200, message="show")
+
+            @expose("/create", methods=["POST"])
+            def create(self):
+                return self.response(200, message="create")
+
+            @expose("/update", methods=["PUT"])
+            def update(self):
+                return self.response(200, message="update")
+
+        self.appbuilder.add_api(Model1BeforeRequest)
 
     def tearDown(self):
         self.appbuilder.get_session.close()
@@ -2019,7 +2068,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string=f"test0")
+            .filter_by(field_string="test0")
             .one_or_none()
         )
         pk = model1.id
@@ -2788,3 +2837,137 @@ class APITestCase(FABTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 5)
+
+    def test_before_request(self):
+        """
+            REST Api: Test simple before_request filter
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # Everything is disabled
+        self._before_request_condition_value = False
+        self._before_request_can_read = False
+        self._before_request_can_write = False
+
+        uri = "api/v1/model1beforerequest/basic"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/show"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/create"
+        rv = self.auth_client_post(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/update"
+        rv = self.auth_client_put(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        # Basic condition is true, but handlers gated by
+        # reads and writes are still false.
+        self._before_request_condition_value = True
+        self._before_request_can_read = False
+        self._before_request_can_write = False
+
+        uri = "api/v1/model1beforerequest/basic"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/show"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/create"
+        rv = self.auth_client_post(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/update"
+        rv = self.auth_client_put(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        # Everything but writes are enabled
+        self._before_request_condition_value = True
+        self._before_request_can_read = True
+        self._before_request_can_write = False
+
+        uri = "api/v1/model1beforerequest/basic"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/show"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/create"
+        rv = self.auth_client_post(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/update"
+        rv = self.auth_client_put(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        # Everything is enabled
+        self._before_request_condition_value = True
+        self._before_request_can_read = True
+        self._before_request_can_write = True
+
+        uri = "api/v1/model1beforerequest/basic"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/show"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/create"
+        rv = self.auth_client_post(client, token, uri, {})
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/model1beforerequest/update"
+        rv = self.auth_client_put(client, token, uri, {})
+        self.assertEqual(rv.status_code, 200)
+
+        # Everything is disabled, even though read
+        # and write conditions are true
+        self._before_request_condition_value = False
+        self._before_request_can_read = True
+        self._before_request_can_write = True
+
+        uri = "api/v1/model1beforerequest/basic"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/show"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/create"
+        rv = self.auth_client_post(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1beforerequest/update"
+        rv = self.auth_client_put(client, token, uri, {})
+        self.assertEqual(rv.status_code, 404)

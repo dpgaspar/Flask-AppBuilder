@@ -19,6 +19,7 @@ from ._compat import as_unicode
 from .actions import ActionItem
 from .const import PERMISSION_PREFIX
 from .forms import GeneralModelConverter
+from .hooks import get_before_request_hooks, wrap_route_handler_with_hooks
 from .urltools import (
     get_filter_args,
     get_order_args,
@@ -247,6 +248,7 @@ class BaseView(object):
         return self.blueprint
 
     def _register_urls(self):
+        before_request_hooks = get_before_request_hooks(self)
         for attr_name in dir(self):
             if (
                 self.include_route_methods is not None
@@ -256,7 +258,7 @@ class BaseView(object):
             if attr_name in self.exclude_route_methods:
                 log.info(
                     f"Not registering route for method "
-                    "{self.__class__.__name__}.{attr_name}"
+                    f"{self.__class__.__name__}.{attr_name}"
                 )
                 continue
             attr = getattr(self, attr_name)
@@ -265,7 +267,12 @@ class BaseView(object):
                     log.info(
                         f"Registering route {self.blueprint.url_prefix}{url} {methods}"
                     )
-                    self.blueprint.add_url_rule(url, attr_name, attr, methods=methods)
+                    route_handler = wrap_route_handler_with_hooks(
+                        attr_name, attr, before_request_hooks
+                    )
+                    self.blueprint.add_url_rule(
+                        url, attr_name, route_handler, methods=methods
+                    )
 
     def render_template(self, template, **kwargs):
         """
@@ -458,7 +465,7 @@ class BaseModelView(BaseView):
     search_form_extra_fields = None
     """
         A dictionary containing column names and a WTForm
-        Form fields to be added to the Add form, these fields do not
+        Form fields to be added to the search form, these fields do not
         exist on the model itself ex::
 
         search_form_extra_fields = {'some_col':BooleanField('Some Col', default=False)}
@@ -475,7 +482,7 @@ class BaseModelView(BaseView):
 
             class ContactModelView(ModelView):
                 datamodel = SQLAModel(Contact, db.session)
-                search_form_query_rel_fields = [('group':[['name',FilterStartsWith,'W']]}
+                search_form_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
 
     """
 
