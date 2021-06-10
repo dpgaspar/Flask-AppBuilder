@@ -175,7 +175,10 @@ class Filters(object):
     def add_filter_index(
         self, column_name: str, filter_instance_index: int, value: Any
     ):
-        self._add_filter(self._all_filters[column_name][filter_instance_index], value)
+        if column_name in self._all_filters.keys():
+            self._add_filter(
+                self._all_filters[column_name][filter_instance_index], value
+            )
 
     def rest_add_filters(self, data: List[Dict]) -> None:
         """

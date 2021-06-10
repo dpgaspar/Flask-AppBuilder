@@ -85,6 +85,25 @@ OAUTH_PROVIDERS = [
             "authorize_url": "https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/authorize",
         },
     },
+    {
+        "name": "okta",
+        "icon": "fa-circle-o",
+        "token_key": "access_token",
+        "remote_app": {
+            "client_id": os.environ.get("OKTA_KEY"),
+            "client_secret": os.environ.get("OKTA_SECRET"),
+            "api_base_url": "https://{}.okta.com/oauth2/v1/".format(
+                os.environ.get("OKTA_DOMAIN")
+            ),
+            "client_kwargs": {"scope": "openid profile email groups"},
+            "access_token_url": "https://{}.okta.com/oauth2/v1/token".format(
+                os.environ.get("OKTA_DOMAIN")
+            ),
+            "authorize_url": "https://{}.okta.com/oauth2/v1/authorize".format(
+                os.environ.get("OKTA_DOMAIN")
+            ),
+        },
+    },
 ]
 
 # Uncomment to setup Full admin role name
@@ -101,6 +120,19 @@ AUTH_USER_REGISTRATION_ROLE = "Admin"
 
 # Self registration role based on user info
 AUTH_USER_REGISTRATION_ROLE_JMESPATH = "contains(['alice@example.com', 'celine@example.com'], email) && 'Admin' || 'Public'"
+
+# Replace users database roles each login with those received from OAUTH/LDAP
+AUTH_ROLES_SYNC_AT_LOGIN = True
+
+# A mapping from LDAP/OAUTH group names to FAB roles
+AUTH_ROLES_MAPPING = {
+    # For OAUTH
+    "USER_GROUP_NAME": ["User"],
+    "ADMIN_GROUP_NAME": ["Admin"],
+    # For LDAP
+    # "cn=User,ou=groups,dc=example,dc=com": ["User"],
+    # "cn=Admin,ou=groups,dc=example,dc=com": ["Admin"],
+}
 
 # When using LDAP Auth, setup the ldap server
 # AUTH_LDAP_SERVER = "ldap://ldapserver.new"
