@@ -303,7 +303,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def create_builtin_roles(self):
         return self.appbuilder.get_app.config.get("FAB_ROLES", {})
 
-    def get_roles_from_keys(self, role_keys: List[str]) -> List[role_model]:
+    def get_roles_from_keys(self, role_keys: List[str]) -> Set[role_model]:
         """
         Construct a list of FAB role objects, from a list of keys.
 
@@ -314,14 +314,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         :param role_keys: the list of FAB role keys
         :return: a list of RoleModelView
         """
-        _roles = []
+        _roles = set()
         _role_keys = set(role_keys)
         for role_key, fab_role_names in self.auth_roles_mapping.items():
             if role_key in _role_keys:
                 for fab_role_name in fab_role_names:
                     fab_role = self.find_role(fab_role_name)
                     if fab_role:
-                        _roles.append(fab_role)
+                        _roles.add(fab_role)
                     else:
                         log.warning(
                             "Can't find role specified in AUTH_ROLES_MAPPING: {0}".format(
@@ -918,14 +918,14 @@ class BaseSecurityManager(AbstractSecurityManager):
     def _ldap_calculate_user_roles(
         self, user_attributes: Dict[str, bytes]
     ) -> List[str]:
-        user_role_objects = []
+        user_role_objects = set()
 
         # apply AUTH_ROLES_MAPPING
         if len(self.auth_roles_mapping) > 0:
             user_role_keys = self.ldap_extract_list(
                 user_attributes, self.auth_ldap_group_field
             )
-            user_role_objects += self.get_roles_from_keys(user_role_keys)
+            user_role_objects.update(self.get_roles_from_keys(user_role_keys))
 
         # apply AUTH_USER_REGISTRATION
         if self.auth_user_registration:
@@ -934,7 +934,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             # lookup registration role in flask db
             fab_role = self.find_role(registration_role_name)
             if fab_role:
-                user_role_objects.append(fab_role)
+                user_role_objects.add(fab_role)
             else:
                 log.warning(
                     "Can't find AUTH_USER_REGISTRATION role: {0}".format(
@@ -942,7 +942,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     )
                 )
 
-        return user_role_objects
+        return list(user_role_objects)
 
     def _ldap_bind_indirect(self, ldap, con) -> None:
         """
@@ -1243,12 +1243,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         return user
 
     def _oauth_calculate_user_roles(self, userinfo) -> List[str]:
-        user_role_objects = []
+        user_role_objects = set()
 
         # apply AUTH_ROLES_MAPPING
         if len(self.auth_roles_mapping) > 0:
             user_role_keys = userinfo.get("role_keys", [])
-            user_role_objects += self.get_roles_from_keys(user_role_keys)
+            user_role_objects.update(self.get_roles_from_keys(user_role_keys))
 
         # apply AUTH_USER_REGISTRATION_ROLE
         if self.auth_user_registration:
@@ -1266,7 +1266,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             # lookup registration role in flask db
             fab_role = self.find_role(registration_role_name)
             if fab_role:
-                user_role_objects.append(fab_role)
+                user_role_objects.add(fab_role)
             else:
                 log.warning(
                     "Can't find AUTH_USER_REGISTRATION role: {0}".format(
@@ -1274,7 +1274,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     )
                 )
 
-        return user_role_objects
+        return list(user_role_objects)
 
     def auth_user_oauth(self, userinfo):
         """
