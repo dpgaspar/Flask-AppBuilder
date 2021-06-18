@@ -1,6 +1,16 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.3.1
+-----------------------------------
+
+- fix: Handle integrity fails if groups map to same roles (#1605) [Fred Thomsen]
+- refactor: OAuth - redirect direct to provider if just one provider exists (#1618) [hyunjong.lee]
+- feat: Allow using custom Swagger template for SwaggerView. (#1639) [Cristòfol Torrens]
+- chore: Remove polyfill shims for browsers no longer supported (#1606) [Ryan Hamilton]
+- docs: Missing `self` reference for my_custom (#1651) [Marek Šuppa]
+- fix: add warning text to roles when AUTH_ROLES_SYNC_AT_LOGIN (#1642) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 3.3.0
 -----------------------------------
 
