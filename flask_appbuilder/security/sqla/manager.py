@@ -75,7 +75,6 @@ class SecurityManager(BaseSecurityManager):
         self.permissionviewmodelview.datamodel = SQLAInterface(
             self.permissionview_model
         )
-        self.create_db()
 
     @property
     def get_session(self):
@@ -92,7 +91,7 @@ class SecurityManager(BaseSecurityManager):
                 log.info(c.LOGMSG_INF_SEC_NO_DB)
                 Base.metadata.create_all(engine)
                 log.info(c.LOGMSG_INF_SEC_ADD_DB)
-            super(SecurityManager, self).create_db()
+            super().create_db()
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_CREATE_DB.format(str(e)))
             exit(1)

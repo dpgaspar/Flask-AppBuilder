@@ -205,6 +205,7 @@ def create_permissions():
     """
         Creates all permissions and add them to the ADMIN Role.
     """
+    current_app.appbuilder.sm.create_roles()
     current_app.appbuilder.add_permissions(update_perms=True)
     click.echo(click.style("Created all permissions", fg="green"))
 

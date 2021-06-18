@@ -61,7 +61,6 @@ class SecurityManager(BaseSecurityManager):
         self.permissionviewmodelview.datamodel = MongoEngineInterface(
             self.permissionview_model
         )
-        self.create_db()
 
     def find_register_user(self, registration_hash):
         return self.registeruser_model.objects(

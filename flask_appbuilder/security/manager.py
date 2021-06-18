@@ -206,8 +206,12 @@ class BaseSecurityManager(AbstractSecurityManager):
     permissionviewmodelview = PermissionViewModelView
 
     def __init__(self, appbuilder):
-        super(BaseSecurityManager, self).__init__(appbuilder)
+        super().__init__(appbuilder)
         app = self.appbuilder.get_app
+
+        if app.config.get("FAB_CREATE_DB", True):
+            self.create_db()
+
         # Base Security Config
         app.config.setdefault("AUTH_ROLE_ADMIN", "Admin")
         app.config.setdefault("AUTH_ROLE_PUBLIC", "Public")
@@ -769,6 +773,11 @@ class BaseSecurityManager(AbstractSecurityManager):
             )
 
     def create_db(self):
+        # For retro override compatibility
+        if self.appbuilder.get_app.config.get("FAB_CREATE_ROLES", True):
+            self.create_roles()
+
+    def create_roles(self):
         """
             Setups the DB, creates admin and public roles if they don't exist.
         """
