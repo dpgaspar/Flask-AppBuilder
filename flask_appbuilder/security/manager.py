@@ -209,9 +209,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         super().__init__(appbuilder)
         app = self.appbuilder.get_app
 
-        if app.config.get("FAB_CREATE_DB", True):
-            self.create_db()
-
         # Base Security Config
         app.config.setdefault("AUTH_ROLE_ADMIN", "Admin")
         app.config.setdefault("AUTH_ROLE_PUBLIC", "Public")
@@ -281,6 +278,9 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         # Setup Flask-Jwt-Extended
         self.jwt_manager = self.create_jwt_manager(app)
+
+        if app.config.get("FAB_CREATE_DB", True):
+            self.create_db()
 
     def create_login_manager(self, app) -> LoginManager:
         """
