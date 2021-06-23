@@ -518,10 +518,10 @@ class AuthDBView(AuthView):
             )
             if not user:
                 flash(as_unicode(self.invalid_login_message), "warning")
-                return redirect(self.appbuilder.get_url_for_login)
-            login_user(user, remember=False)
-            next_url = request.args.get("next", "")
-            return redirect(get_safe_redirect(next_url))
+            else:
+                login_user(user, remember=False)
+                next_url = request.args.get("next", "")
+                return redirect(get_safe_redirect(next_url))
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -541,10 +541,10 @@ class AuthLDAPView(AuthView):
             )
             if not user:
                 flash(as_unicode(self.invalid_login_message), "warning")
-                return redirect(self.appbuilder.get_url_for_login)
-            login_user(user, remember=False)
-            next_url = request.args.get("next", "")
-            return redirect(get_safe_redirect(next_url))
+            else:
+                login_user(user, remember=False)
+                next_url = request.args.get("next", "")
+                return redirect(get_safe_redirect(next_url))
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
