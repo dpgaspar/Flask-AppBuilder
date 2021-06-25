@@ -12,3 +12,11 @@ services:
       POSTGRES_USER: pguser
     ports:
       - 5432:5432
+  mongo:
+    container_name: fab-mongo
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: app
+    ports:
+      - 27017:27017
