@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
@@ -775,8 +775,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         roles_mapping = self.appbuilder.get_app.config.get("FAB_ROLES_MAPPING", {})
         for pk, name in roles_mapping.items():
             self.update_role(pk, name)
-        for role_name in self.builtin_roles:
-            self.add_role(role_name)
+        for role_name, permission_view_menus in self.builtin_roles.items():
+            permission_view_menus = [
+                self.add_permission_view_menu(permission_name, view_menu_name)
+                for view_menu_name, permission_name in permission_view_menus
+            ]
+            self.add_role(name=role_name, permissions=permission_view_menus)
         if self.auth_role_admin not in self.builtin_roles:
             self.add_role(self.auth_role_admin)
         self.add_role(self.auth_role_public)
@@ -1832,7 +1836,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def find_role(self, name):
         raise NotImplementedError
 
-    def add_role(self, name):
+    def add_role(self, name, permissions=None):
         raise NotImplementedError
 
     def update_role(self, pk, name):
@@ -1989,6 +1993,14 @@ class BaseSecurityManager(AbstractSecurityManager):
             :param perm_view:
                 The PermissionViewMenu object
         """
+        raise NotImplementedError
+
+    def export_roles(self, path: Optional[str] = None) -> None:
+        """ Exports roles to JSON file. """
+        raise NotImplementedError
+
+    def import_roles(self, path: str) -> None:
+        """ Imports roles from JSON file. """
         raise NotImplementedError
 
     def load_user(self, pk):
