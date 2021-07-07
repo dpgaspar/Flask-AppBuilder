@@ -47,7 +47,7 @@ setup(
     install_requires=[
         "apispec[yaml]>=3.3, <4",
         "colorama>=0.3.9, <1",
-        "click>=6.7, <8",
+        "click==8.0.1",
         "email_validator>=1.0.5, <2",
         "Flask>=0.12, <2",
         "Flask-Babel>=1, <2",
