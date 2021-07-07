@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Tuple
 
 from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
@@ -311,7 +311,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def create_builtin_roles(self):
         return self.appbuilder.get_app.config.get("FAB_ROLES", {})
 
-    def get_roles_from_keys(self, role_keys: List[str]) -> List[role_model]:
+    def get_roles_from_keys(self, role_keys: List[str]) -> Set[role_model]:
         """
         Construct a list of FAB role objects, from a list of keys.
 
@@ -322,14 +322,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         :param role_keys: the list of FAB role keys
         :return: a list of RoleModelView
         """
-        _roles = []
+        _roles = set()
         _role_keys = set(role_keys)
         for role_key, fab_role_names in self.auth_roles_mapping.items():
             if role_key in _role_keys:
                 for fab_role_name in fab_role_names:
                     fab_role = self.find_role(fab_role_name)
                     if fab_role:
-                        _roles.append(fab_role)
+                        _roles.add(fab_role)
                     else:
                         log.warning(
                             "Can't find role specified in AUTH_ROLES_MAPPING: {0}".format(
@@ -616,10 +616,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             me = self._azure_jwt_token_parse(id_token)
             log.debug("Parse JWT token : {0}".format(me))
             return {
-                "name": me["name"],
+                "name": me.get("name", ""),
                 "email": me["upn"],
-                "first_name": me["given_name"],
-                "last_name": me["family_name"],
+                "first_name": me.get("given_name", ""),
+                "last_name": me.get("family_name", ""),
                 "id": me["oid"],
                 "username": me["oid"],
             }
@@ -861,6 +861,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         if user is None:
             user = self.find_user(email=username)
         if user is None or (not user.is_active):
+            # Balance failure and success
+            check_password_hash(
+                "pbkdf2:sha256:150000$Z3t6fmj2$22da622d94a1f8118"
+                "c0976a03d2f18f680bfff877c9a965db9eedc51bc0be87c",
+                "password",
+            )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
         elif check_password_hash(user.password, password):
@@ -906,10 +912,17 @@ class BaseSecurityManager(AbstractSecurityManager):
                 filter_str, request_fields, self.auth_ldap_search
             )
         )
-        search_result = con.search_s(
+        raw_search_result = con.search_s(
             self.auth_ldap_search, ldap.SCOPE_SUBTREE, filter_str, request_fields
         )
-        log.debug("LDAP search returned: {0}".format(search_result))
+        log.debug("LDAP search returned: {0}".format(raw_search_result))
+
+        # Remove any search referrals from results
+        search_result = [
+            (dn, attrs)
+            for dn, attrs in raw_search_result
+            if dn is not None and isinstance(attrs, dict)
+        ]
 
         # only continue if 0 or 1 results were returned
         if len(search_result) > 1:
@@ -933,14 +946,14 @@ class BaseSecurityManager(AbstractSecurityManager):
     def _ldap_calculate_user_roles(
         self, user_attributes: Dict[str, bytes]
     ) -> List[str]:
-        user_role_objects = []
+        user_role_objects = set()
 
         # apply AUTH_ROLES_MAPPING
         if len(self.auth_roles_mapping) > 0:
             user_role_keys = self.ldap_extract_list(
                 user_attributes, self.auth_ldap_group_field
             )
-            user_role_objects += self.get_roles_from_keys(user_role_keys)
+            user_role_objects.update(self.get_roles_from_keys(user_role_keys))
 
         # apply AUTH_USER_REGISTRATION
         if self.auth_user_registration:
@@ -949,7 +962,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             # lookup registration role in flask db
             fab_role = self.find_role(registration_role_name)
             if fab_role:
-                user_role_objects.append(fab_role)
+                user_role_objects.add(fab_role)
             else:
                 log.warning(
                     "Can't find AUTH_USER_REGISTRATION role: {0}".format(
@@ -957,7 +970,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     )
                 )
 
-        return user_role_objects
+        return list(user_role_objects)
 
     def _ldap_bind_indirect(self, ldap, con) -> None:
         """
@@ -1258,12 +1271,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         return user
 
     def _oauth_calculate_user_roles(self, userinfo) -> List[str]:
-        user_role_objects = []
+        user_role_objects = set()
 
         # apply AUTH_ROLES_MAPPING
         if len(self.auth_roles_mapping) > 0:
             user_role_keys = userinfo.get("role_keys", [])
-            user_role_objects += self.get_roles_from_keys(user_role_keys)
+            user_role_objects.update(self.get_roles_from_keys(user_role_keys))
 
         # apply AUTH_USER_REGISTRATION_ROLE
         if self.auth_user_registration:
@@ -1281,7 +1294,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             # lookup registration role in flask db
             fab_role = self.find_role(registration_role_name)
             if fab_role:
-                user_role_objects.append(fab_role)
+                user_role_objects.add(fab_role)
             else:
                 log.warning(
                     "Can't find AUTH_USER_REGISTRATION role: {0}".format(
@@ -1289,7 +1302,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     )
                 )
 
-        return user_role_objects
+        return list(user_role_objects)
 
     def auth_user_oauth(self, userinfo):
         """
@@ -1414,6 +1427,37 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         # If it's not a builtin role check against database store roles
         return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
+
+    def get_user_roles(self, user) -> List[object]:
+        """
+        Get current user roles, if user is not authenticated returns the public role
+        """
+        if not user.is_authenticated:
+            return [self.get_public_role()]
+        return user.roles
+
+    def get_role_permissions(self, role) -> Set[Tuple[str, str]]:
+        """
+        Get all permissions for a certain role
+        """
+        result = set()
+        if role.name in self.builtin_roles:
+            for permission in self.builtin_roles[role.name]:
+                result.add((permission[1], permission[0]))
+        else:
+            for permission in self.get_db_role_permissions(role.id):
+                result.add((permission.permission.name, permission.view_menu.name))
+        return result
+
+    def get_user_permissions(self, user) -> Set[Tuple[str, str]]:
+        """
+        Get all permissions from the current user
+        """
+        roles = self.get_user_roles(user)
+        result = set()
+        for role in roles:
+            result.update(self.get_role_permissions(role))
+        return result
 
     def _get_user_permission_view_menus(
         self, user: object, permission_name: str, view_menus_name: List[str]
@@ -1616,9 +1660,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     @staticmethod
     def _update_del_transitions(state_transitions: Dict, baseviews: List) -> None:
         """
-            Mutates state_transitions, loop baseviews and prunes all
-            views and permissions that are not to delete because references
-            exist.
+        Mutates state_transitions, loop baseviews and prunes all
+        views and permissions that are not to delete because references
+        exist.
 
         :param baseview:
         :param state_transitions:
@@ -1634,14 +1678,14 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def create_state_transitions(self, baseviews: List, menus: List) -> Dict:
         """
-            Creates a Dict with all the necessary vm/permission transitions
+        Creates a Dict with all the necessary vm/permission transitions
 
-            Dict: {
-                    "add": {(<VM>, <PERM>): ((<VM>, PERM), ... )}
-                    "del_role_pvm": ((<VM>, <PERM>), ...)
-                    "del_views": (<VM>, ... )
-                    "del_perms": (<PERM>, ... )
-                  }
+        Dict: {
+                "add": {(<VM>, <PERM>): ((<VM>, PERM), ... )}
+                "del_role_pvm": ((<VM>, <PERM>), ...)
+                "del_views": (<VM>, ... )
+                "del_perms": (<PERM>, ... )
+              }
 
         :param baseviews: List with all the registered BaseView, BaseApi
         :param menus: List with all the menu entries
@@ -1690,10 +1734,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def security_converge(self, baseviews: List, menus: List, dry=False) -> Dict:
         """
-            Converges overridden permissions on all registered views/api
-            will compute all necessary operations from `class_permissions_name`,
-            `previous_class_permission_name`, method_permission_name`,
-            `previous_method_permission_name` class attributes.
+        Converges overridden permissions on all registered views/api
+        will compute all necessary operations from `class_permissions_name`,
+        `previous_class_permission_name`, method_permission_name`,
+        `previous_method_permission_name` class attributes.
 
         :param baseviews: List of registered views/apis
         :param menus: List of menu items
@@ -1789,7 +1833,14 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def get_all_users(self):
         """
-        Generic function that returns all exsiting users
+        Generic function that returns all existing users
+        """
+        raise NotImplementedError
+
+    def get_db_role_permissions(self, role_id: int) -> List[object]:
+        """
+        Get all DB permissions from a role id
+
         """
         raise NotImplementedError
 

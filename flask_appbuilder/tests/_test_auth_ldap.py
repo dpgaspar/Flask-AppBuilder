@@ -1,7 +1,7 @@
 import logging
 import os
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
@@ -83,6 +83,21 @@ class LDAPSearchTestCase(unittest.TestCase):
             "email": [b"alice@example.com"],
         },
     )
+    user_natalie = (
+        "uid=natalie,ou=users,o=test",
+        {
+            "uid": ["natalie"],
+            "userPassword": ["natalie_password"],
+            "memberOf": [
+                b"cn=staff,ou=groups,o=test",
+                b"cn=admin,ou=groups,o=test",
+                b"cn=exec,ou=groups,o=test",
+            ],
+            "givenName": [b"Natalie"],
+            "sn": [b"Smith"],
+            "email": [b"natalie@example.com"],
+        },
+    )
     group_admins = (
         "cn=admins,ou=groups,o=test",
         {"cn": ["admins"], "member": [user_admin[0]]},
@@ -92,7 +107,16 @@ class LDAPSearchTestCase(unittest.TestCase):
         {"cn": ["staff"], "member": [user_alice[0]]},
     )
     directory = dict(
-        [top, ou_users, ou_groups, user_admin, user_alice, group_admins, group_staff]
+        [
+            top,
+            ou_users,
+            ou_groups,
+            user_admin,
+            user_alice,
+            user_natalie,
+            group_admins,
+            group_staff,
+        ]
     )
 
     # ----------------
@@ -111,6 +135,11 @@ class LDAPSearchTestCase(unittest.TestCase):
         tuple(["uid=alice,ou=users,o=test", "alice_password"]),
         {},
     )
+    call_bind_natalie = (
+        "simple_bind_s",
+        tuple(["uid=natalie,ou=users,o=test", "natalie_password"]),
+        {},
+    )
     call_search_alice = (
         "search_s",
         tuple(["ou=users,o=test", 2, "(uid=alice)", ["givenName", "sn", "email"]]),
@@ -123,6 +152,18 @@ class LDAPSearchTestCase(unittest.TestCase):
                 "ou=users,o=test",
                 2,
                 "(uid=alice)",
+                ["givenName", "sn", "email", "memberOf"],
+            ]
+        ),
+        {},
+    )
+    call_search_natalie_memberof = (
+        "search_s",
+        tuple(
+            [
+                "ou=users,o=test",
+                2,
+                "(uid=natalie)",
                 ["givenName", "sn", "email", "memberOf"],
             ]
         ),
@@ -223,6 +264,39 @@ class LDAPSearchTestCase(unittest.TestCase):
                 ],
             )
 
+    def test___search_ldap_with_search_referrals(self):
+        """
+        LDAP: test `_search_ldap` method w/returned search referrals
+        """
+        self.app.config["AUTH_LDAP_BIND_USER"] = "uid=admin,ou=users,o=test"
+        self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,o=test"
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        sm = self.appbuilder.sm
+
+        # run `_search_ldap` method w/mocked ldap connection
+        mock_con = Mock()
+        mock_con.search_s.return_value = [
+            (
+                None,
+                [
+                    "ldap://ForestDnsZones.mycompany.com/"
+                    "DC=ForestDnsZones,DC=mycompany,DC=com"
+                ],
+            ),
+            self.user_alice,
+            (None, ["ldap://mycompany.com/CN=Configuration,DC=mycompany,DC=com"]),
+        ]
+        user_dn, user_attributes = sm._search_ldap(ldap, mock_con, "alice")
+
+        # validate - search returned expected data
+        self.assertEqual(user_dn, self.user_alice[0])
+        self.assertEqual(user_attributes["givenName"], self.user_alice[1]["givenName"])
+        self.assertEqual(user_attributes["sn"], self.user_alice[1]["sn"])
+        self.assertEqual(user_attributes["email"], self.user_alice[1]["email"])
+
+        mock_con.search_s.assert_called()
+
     def test__missing_credentials(self):
         """
         LDAP: test login flow for - missing credentials
@@ -286,6 +360,59 @@ class LDAPSearchTestCase(unittest.TestCase):
 
         # validate - expected LDAP methods were called
         self.assertEquals(self.ldapobj.methods_called(with_args=True), [])
+
+    def test__multi_group_user_mapping_to_same_role(self):
+        """
+        LDAP: test login flow for - user in multiple groups mapping to same role
+        """
+        self.app.config["AUTH_ROLES_MAPPING"] = {
+            "cn=staff,ou=groups,o=test": ["Admin"],
+            "cn=admin,ou=groups,o=test": ["Admin", "User"],
+            "cn=exec,ou=groups,o=test": ["Public"],
+        }
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,o=test"
+        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "uid=%s,ou=users,o=test"
+        self.app.config["AUTH_USER_REGISTRATION"] = True
+        self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        sm = self.appbuilder.sm
+
+        # add User role
+        sm.add_role("User")
+
+        # validate - no users are registered
+        self.assertEqual(sm.get_all_users(), [])
+
+        # attempt login
+        user = sm.auth_user_ldap("natalie", "natalie_password")
+
+        # validate - user was allowed to log in
+        self.assertIsInstance(user, sm.user_model)
+
+        # validate - user was registered
+        self.assertEqual(len(sm.get_all_users()), 1)
+
+        # validate - user was given the correct roles
+        self.assertListEqual(
+            user.roles,
+            [sm.find_role("Admin"), sm.find_role("Public"), sm.find_role("User")],
+        )
+
+        # validate - user was given the correct attributes (read from LDAP)
+        self.assertEqual(user.first_name, "Natalie")
+        self.assertEqual(user.last_name, "Smith")
+        self.assertEqual(user.email, "natalie@example.com")
+
+        # validate - expected LDAP methods were called
+        self.assertEqual(
+            self.ldapobj.methods_called(with_args=True),
+            [
+                self.call_initialize,
+                self.call_set_option,
+                self.call_bind_natalie,
+                self.call_search_natalie_memberof,
+            ],
+        )
 
     def test__direct_bind__unregistered(self):
         """

@@ -3,9 +3,10 @@ import json
 import logging
 from typing import Set
 
-from flask import Flask, redirect, request, session
+from flask import Flask, make_response, redirect, request, session
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.actions import action
+from flask_appbuilder.baseviews import expose
 from flask_appbuilder.charts.views import (
     ChartView,
     DirectByChartView,
@@ -13,6 +14,7 @@ from flask_appbuilder.charts.views import (
     GroupByChartView,
     TimeChartView,
 )
+from flask_appbuilder.hooks import before_request
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
@@ -525,6 +527,36 @@ class MVCTestCase(BaseMVCTestCase):
         class ModelWithEnumsView(ModelView):
             datamodel = SQLAInterface(ModelWithEnums)
 
+        context = self
+        context._before_request_enabled = False
+        context._before_request_can_show = False
+        context._before_request_can_list = False
+
+        class ModelBeforeRequest(ModelView):
+            datamodel = SQLAInterface(Model1)
+
+            @before_request
+            def check_condition(self):
+                if not context._before_request_enabled:
+                    return make_response("Not found", 404)
+                return None
+
+            @before_request(only=["show"])
+            def enable_modification(self):
+                if not context._before_request_can_show:
+                    return make_response("Not found", 404)
+                return None
+
+            @before_request(only=["list"])
+            def list_enabled(self):
+                if not context._before_request_can_list:
+                    return make_response("Not found", 404)
+                return None
+
+            @expose("/enabled")
+            def enabled(self):
+                return make_response("Ok", 200)
+
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
         self.appbuilder.add_view(
             Model1ViewWithRedirects, "Model1ViewWithRedirects", category="Model1"
@@ -573,6 +605,8 @@ class MVCTestCase(BaseMVCTestCase):
             PASSWORD_READONLY,
         )
 
+        self.appbuilder.add_view(ModelBeforeRequest, "ModelBeforeRequest")
+
     def tearDown(self):
         self.appbuilder = None
         self.app = None
@@ -583,7 +617,9 @@ class MVCTestCase(BaseMVCTestCase):
         """
         Test views creation and registration
         """
+
         self.assertEqual(len(self.appbuilder.baseviews), 38)
+
 
     def test_back(self):
         """
@@ -1708,3 +1744,63 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 1)
+
+    def test_before_request(self):
+        """
+            Test before_request hooks
+        """
+        # All flags are false, so all request should 404.
+        self._before_request_enabled = False
+        self._before_request_can_list = False
+        self._before_request_can_show = False
+
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/list/")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/show/1")
+        self.assertEqual(rv.status_code, 404)
+
+        # /enable is available, but not others
+        self._before_request_enabled = True
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/list/")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 404)
+
+        # Now list is available, but not show
+        self._before_request_enabled = True
+        self._before_request_can_list = True
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 404)
+
+        # Everything is available
+        self._before_request_enabled = True
+        self._before_request_can_list = True
+        self._before_request_can_show = True
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)

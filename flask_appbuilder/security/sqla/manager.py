@@ -13,6 +13,7 @@ from flask_babel import lazy_gettext
 
 from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
 
 
@@ -504,6 +505,21 @@ class SecurityManager(BaseSecurityManager):
                 self.role_model.id.in_(role_ids),
             )
         ).all()
+
+    def get_db_role_permissions(self, role_id: int) -> List[PermissionView]:
+        """
+        Get all DB permissions from a role (one single query)
+        """
+        return (
+            self.appbuilder.get_session.query(PermissionView)
+            .join(Permission)
+            .join(ViewMenu)
+            .join(PermissionView.role)
+            .filter(Role.id == role_id)
+            .options(contains_eager(PermissionView.permission))
+            .options(contains_eager(PermissionView.view_menu))
+            .all()
+        )
 
     def add_permission(self, name):
         """
