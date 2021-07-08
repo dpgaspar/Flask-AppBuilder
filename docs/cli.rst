@@ -41,6 +41,10 @@ Take a quick look to the current possibilities. (The bold ones require app conte
 
   - **collect-static** - Copies static files from flask-appbuilder to your static folder. Nice to have on certain deploys
 
+  - **export-roles** - Export roles with permissions and view menus to JSON file.
+
+  - **import-roles** - Import roles with permissions and view menus from JSON file.
+
   - **list-users** - List all users on the database.
 
   - **list-views** - List all registered views.

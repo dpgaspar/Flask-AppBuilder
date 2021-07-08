@@ -1,6 +1,7 @@
 from io import BytesIO
 import os
 import shutil
+from typing import Optional
 from urllib.request import urlopen
 from zipfile import ZipFile
 
@@ -144,6 +145,24 @@ def create_db():
     engine = current_app.appbuilder.get_session.get_bind(mapper=None, clause=None)
     Model.metadata.create_all(engine)
     click.echo(click.style("DB objects created", fg="green"))
+
+
+@fab.command("export-roles")
+@with_appcontext
+@click.option("--path", "-path", help="Specify filepath to export roles to")
+def export_roles(path: Optional[str] = None) -> None:
+    """ Exports roles with permissions and view menus to JSON file """
+    current_app.appbuilder.sm.export_roles(path)
+
+
+@fab.command("import-roles")
+@with_appcontext
+@click.option(
+    "--path", "-p", help="Path to a JSON file containing roles", required=True
+)
+def import_roles(path: str) -> None:
+    """ Imports roles with permissions and view menus from JSON file """
+    current_app.appbuilder.sm.import_roles(path)
 
 
 @fab.command("version")
