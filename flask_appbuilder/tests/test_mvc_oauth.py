@@ -48,7 +48,7 @@ class APICSRFTestCase(FABTestCase):
         state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
 
         response = client.get(f"/oauth-authorized/google?state={state.decode('utf-8')}")
-        self.assertEqual(response.location, "http://localhost")
+        self.assertEqual(response.location, "http://localhost/")
 
     def test_oauth_login_next(self):
         """
