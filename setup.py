@@ -67,7 +67,10 @@ setup(
         "PyJWT>=1.7.1, <2.0.0",
         "sqlalchemy-utils>=0.32.21, <1",
     ],
-    extras_require={"jmespath": ["jmespath>=0.9.5"]},
+    extras_require={
+        "jmespath": ["jmespath>=0.9.5"],
+        "oauth": ["Authlib>=0.14, <1.0.0"]
+    },
     tests_require=["nose>=1.0", "mockldap>=0.3.0"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
