@@ -50,6 +50,20 @@ class APICSRFTestCase(FABTestCase):
         response = client.get(f"/oauth-authorized/google?state={state.decode('utf-8')}")
         self.assertEqual(response.location, "http://localhost/")
 
+    def test_oauth_login_unknown_provider(self):
+        """
+        OAuth: Test login with unknown provider
+        """
+        client = self.app.test_client()
+
+        self.appbuilder.sm.oauth_remotes = {"google": OAuthRemoteMock()}
+
+        raw_state = {}
+        state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
+
+        response = client.get(f"/oauth-authorized/unknown_provider?state={state.decode('utf-8')}")
+        self.assertEqual(response.location, "http://localhost/login/")
+
     def test_oauth_login_next(self):
         """
         OAuth: Test login next
