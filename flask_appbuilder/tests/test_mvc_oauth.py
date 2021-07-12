@@ -61,7 +61,9 @@ class APICSRFTestCase(FABTestCase):
         raw_state = {}
         state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
 
-        response = client.get(f"/oauth-authorized/unknown_provider?state={state.decode('utf-8')}")
+        response = client.get(
+            f"/oauth-authorized/unknown_provider?state={state.decode('utf-8')}"
+        )
         self.assertEqual(response.location, "http://localhost/login/")
 
     def test_oauth_login_next(self):
