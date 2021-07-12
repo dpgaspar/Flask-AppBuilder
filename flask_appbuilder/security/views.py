@@ -712,7 +712,6 @@ class AuthOAuthView(AuthView):
                 parsed_uri = urlparse(state["next"][0])
                 if parsed_uri.netloc != request.host:
                     log.warning("Got an invalid next URL: %s", parsed_uri.netloc)
-                    next_url = self.appbuilder.get_url_for_index
                 else:
                     next_url = state["next"][0]
             return redirect(next_url)
