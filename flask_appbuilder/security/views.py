@@ -1,8 +1,20 @@
 import datetime
 import logging
 import re
+from typing import Optional
+from urllib.parse import urlparse
 
-from flask import abort, current_app, flash, g, redirect, request, session, url_for
+from flask import (
+    abort,
+    current_app,
+    flash,
+    g,
+    redirect,
+    request,
+    Response,
+    session,
+    url_for,
+)
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
 import jwt
@@ -537,53 +549,6 @@ class AuthLDAPView(AuthView):
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
 
-    """
-        For Future Use, API Auth, must check howto keep REST stateless
-    """
-
-    """
-    @expose_api(name='auth',url='/api/auth')
-    def auth(self):
-        if g.user is not None and g.user.is_authenticated:
-            http_return_code = 401
-            response = make_response(
-                jsonify(
-                    {
-                        'message': 'Login Failed already authenticated',
-                        'severity': 'critical'
-                    }
-                ),
-                http_return_code
-            )
-        username = str(request.args.get('username'))
-        password = str(request.args.get('password'))
-        user = self.appbuilder.sm.auth_user_ldap(username, password)
-        if not user:
-            http_return_code = 401
-            response = make_response(
-                jsonify(
-                    {
-                        'message': 'Login Failed',
-                        'severity': 'critical'
-                    }
-                ),
-                http_return_code
-            )
-        else:
-            login_user(user, remember=False)
-            http_return_code = 201
-            response = make_response(
-                jsonify(
-                    {
-                        'message': 'Login Success',
-                         'severity': 'info'
-                    }
-                ),
-                http_return_code
-            )
-        return response
-    """
-
 
 class AuthOIDView(AuthView):
     login_template = "appbuilder/general/security/login_oid.html"
@@ -641,7 +606,9 @@ class AuthOAuthView(AuthView):
     @expose("/login/")
     @expose("/login/<provider>")
     @expose("/login/<provider>/<register>")
-    def login(self, provider=None, register=None):
+    def login(
+        self, provider: Optional[str] = None, register: Optional[str] = None
+    ) -> Response:
         log.debug("Provider: {0}".format(provider))
         if g.user is not None and g.user.is_authenticated:
             log.debug("Already authenticated {0}".format(g.user))
@@ -690,8 +657,12 @@ class AuthOAuthView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
 
     @expose("/oauth-authorized/<provider>")
-    def oauth_authorized(self, provider):
+    def oauth_authorized(self, provider: str) -> Response:
         log.debug("Authorized init")
+        if provider not in self.appbuilder.sm.oauth_remotes:
+            flash(u"Provider not supported.", "warning")
+            log.warning("OAuth authorized got an unknown provider %s", provider)
+            return redirect(self.appbuilder.get_url_for_login)
         resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token()
         if resp is None:
             flash(u"You denied the request to sign in.", "warning")
@@ -735,11 +706,14 @@ class AuthOAuthView(AuthView):
             except jwt.InvalidTokenError:
                 raise Exception("State signature is not valid!")
 
-            try:
-                next_url = state["next"][0] or self.appbuilder.get_url_for_index
-            except (KeyError, IndexError):
-                next_url = self.appbuilder.get_url_for_index
-
+            next_url = self.appbuilder.get_url_for_index
+            # Check if there is a next url on state
+            if "next" in state and len(state["next"]) > 0:
+                parsed_uri = urlparse(state["next"][0])
+                if parsed_uri.netloc != request.host:
+                    log.warning("Got an invalid next URL: %s", parsed_uri.netloc)
+                else:
+                    next_url = state["next"][0]
             return redirect(next_url)
 
 
