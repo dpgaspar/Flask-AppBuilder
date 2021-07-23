@@ -225,7 +225,7 @@ This needs a small explanation, you basically have five special keys:
 
 :name: the name of the provider:
     you can choose whatever you want, but FAB has builtin logic in `BaseSecurityManager.get_oauth_user_info()` for:
-    'azure', 'github', 'google', 'linkedin', 'okta', 'openshift', 'twitter'
+    'azure', 'github', 'google', 'linkedin', 'okta', 'openshift', 'twitter', 'gitlab'
 
 :icon: the font-awesome icon for this provider
 
