@@ -69,6 +69,20 @@ OAUTH_PROVIDERS = [
         },
     },
     {
+        "name": "gitlab",
+        "icon": "fa-gitlab",
+        "token_key": "access_token",
+        "remote_app": {
+            "client_id": os.environ.get("GITLAB_APPLICATION_ID"),
+            "client_secret": os.environ.get("GITLAB_SECRET"),
+            "api_base_url": "https://www.gitlab.com/api/v4/",
+            "client_kwargs": {"scope": "read_user email profile"},
+            "request_token_url": None,
+            "access_token_url": "https://gitlab.com/oauth/token",
+            "authorize_url": "https://gitlab.com/oauth/authorize",
+        },
+    },
+    {
         "name": "azure",
         "icon": "fa-windows",
         "token_key": "access_token",
