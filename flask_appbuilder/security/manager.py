@@ -558,6 +558,15 @@ class BaseSecurityManager(AbstractSecurityManager):
             data = me.json()
             log.debug("User info from Github: {0}".format(data))
             return {"username": "github_" + data.get("login")}
+        # for Gitlab
+        if provider == "gitlab":
+            me = self.appbuilder.sm.oauth_remotes[provider].get("user")
+            data = me.json()
+            log.debug("User info from Gitlab: {0}".format(data))
+            return {
+                "username": "gitlab_" + data.get("username"),
+                "email": data.get("email"),
+            }
         # for twitter
         if provider == "twitter":
             me = self.appbuilder.sm.oauth_remotes[provider].get("account/settings.json")
