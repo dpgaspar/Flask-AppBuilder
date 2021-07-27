@@ -1,6 +1,13 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.3.2
+-----------------------------------
+
+- fix: improve next URL on OAuth (#1668) [Daniel Vaz Gaspar]
+- chore: Bump click to 8.0.1 (#1665) [Hugh A. Miles II]
+- feat(cli): Add import/export of roles with permissions (#1662) [krsnik93]
+
 Improvements and Bug fixes on 3.3.1
 -----------------------------------
 
