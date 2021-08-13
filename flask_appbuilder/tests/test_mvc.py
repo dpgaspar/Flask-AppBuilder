@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 from typing import Set
+from urllib.parse import quote
 
 from flask import Flask, make_response, redirect, request, session
 from flask_appbuilder import AppBuilder, SQLA
@@ -813,11 +814,6 @@ class MVCTestCase(BaseMVCTestCase):
             MVC CRUD generic-alter datasource where model has composite
             primary keys
         """
-        try:
-            from urllib import quote
-        except Exception:
-            from urllib.parse import quote
-
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -1244,11 +1240,6 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(rv.status_code, 200)
 
         # test with composite pk
-        try:
-            from urllib import quote
-        except Exception:
-            from urllib.parse import quote
-
         pk = '[3, {"_type": "datetime", "value": "2017-03-03T00:00:00"}]'
         rv = client.post(
             "/model3compactview/edit/" + quote(pk),
