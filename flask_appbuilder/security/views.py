@@ -504,50 +504,37 @@ class AuthView(BaseView):
         )
 
 
-class AuthDBView(AuthView):
+class AuthBasicView(AuthView):
+    auth_method = "auth_user_?"  # Must be overridden
+
+    @expose("/login/", methods=["GET", "POST"])
+    def login(self):
+        if g.user is not None and g.user.is_authenticated:
+            return redirect(self.appbuilder.get_url_for_index)
+        form = LoginForm_db()
+        if form.validate_on_submit():
+            user = getattr(self.appbuilder.sm, self.auth_method)(
+                form.username.data, form.password.data
+            )
+            if not user:
+                flash(as_unicode(self.invalid_login_message), "warning")
+            else:
+                login_user(user, remember=False)
+                next_url = request.args.get("next", "")
+                return redirect(get_safe_redirect(next_url))
+        return self.render_template(
+            self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
+        )
+
+
+class AuthDBView(AuthBasicView):
     login_template = "appbuilder/general/security/login_db.html"
-
-    @expose("/login/", methods=["GET", "POST"])
-    def login(self):
-        if g.user is not None and g.user.is_authenticated:
-            return redirect(self.appbuilder.get_url_for_index)
-        form = LoginForm_db()
-        if form.validate_on_submit():
-            user = self.appbuilder.sm.auth_user_db(
-                form.username.data, form.password.data
-            )
-            if not user:
-                flash(as_unicode(self.invalid_login_message), "warning")
-            else:
-                login_user(user, remember=False)
-                next_url = request.args.get("next", "")
-                return redirect(get_safe_redirect(next_url))
-        return self.render_template(
-            self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
-        )
+    auth_method = "auth_user_db"
 
 
-class AuthLDAPView(AuthView):
+class AuthLDAPView(AuthBasicView):
     login_template = "appbuilder/general/security/login_ldap.html"
-
-    @expose("/login/", methods=["GET", "POST"])
-    def login(self):
-        if g.user is not None and g.user.is_authenticated:
-            return redirect(self.appbuilder.get_url_for_index)
-        form = LoginForm_db()
-        if form.validate_on_submit():
-            user = self.appbuilder.sm.auth_user_ldap(
-                form.username.data, form.password.data
-            )
-            if not user:
-                flash(as_unicode(self.invalid_login_message), "warning")
-            else:
-                login_user(user, remember=False)
-                next_url = request.args.get("next", "")
-                return redirect(get_safe_redirect(next_url))
-        return self.render_template(
-            self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
-        )
+    auth_method = "auth_user_ldap"
 
 
 class AuthOIDView(AuthView):
