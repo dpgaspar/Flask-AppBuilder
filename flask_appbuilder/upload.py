@@ -152,9 +152,9 @@ class FileUploadField(fields.TextField):
 
     def pre_validate(self, form):
         if (
-            self.data and
-                isinstance(self.data, FileStorage) and
-                not self.filemanager.is_file_allowed(self.data.filename)
+            self.data
+            and isinstance(self.data, FileStorage)
+            and not self.filemanager.is_file_allowed(self.data.filename)
         ):
             raise ValidationError(gettext("Invalid file extension"))
 
@@ -205,9 +205,9 @@ class ImageUploadField(fields.StringField):
 
     def pre_validate(self, form):
         if (
-            self.data and
-                isinstance(self.data, FileStorage) and
-                not self.imagemanager.is_file_allowed(self.data.filename)
+            self.data
+            and isinstance(self.data, FileStorage)
+            and not self.imagemanager.is_file_allowed(self.data.filename)
         ):
             raise ValidationError(gettext("Invalid file extension"))
 

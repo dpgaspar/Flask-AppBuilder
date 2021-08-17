@@ -9,7 +9,7 @@ from wtforms import (
     FloatField,
     IntegerField,
     StringField,
-    TextAreaField
+    TextAreaField,
 )
 from wtforms import validators
 
@@ -20,14 +20,14 @@ from .fieldwidgets import (
     DatePickerWidget,
     DateTimePickerWidget,
     Select2ManyWidget,
-    Select2Widget
+    Select2Widget,
 )
 from .models.mongoengine.fields import MongoFileField, MongoImageField
 from .upload import (
     BS3FileUploadFieldWidget,
     BS3ImageUploadFieldWidget,
     FileUploadField,
-    ImageUploadField
+    ImageUploadField,
 )
 from .validators import Unique
 
@@ -46,22 +46,26 @@ class FieldConverter(object):
         it has a conversion table with type method checks from model
         interfaces, these methods are invoked with a column name
     """
-    conversion_table = (('is_image', ImageUploadField, BS3ImageUploadFieldWidget),
-                        ('is_file', FileUploadField, BS3FileUploadFieldWidget),
-                        ('is_gridfs_file', MongoFileField, BS3FileUploadFieldWidget),
-                        ('is_gridfs_image', MongoImageField, BS3ImageUploadFieldWidget),
-                        ('is_text', TextAreaField, BS3TextAreaFieldWidget),
-                        ('is_binary', TextAreaField, BS3TextAreaFieldWidget),
-                        ('is_string', StringField, BS3TextFieldWidget),
-                        ('is_integer', IntegerField, BS3TextFieldWidget),
-                        ('is_numeric', DecimalField, BS3TextFieldWidget),
-                        ('is_float', FloatField, BS3TextFieldWidget),
-                        ('is_boolean', BooleanField, None),
-                        ('is_date', DateField, DatePickerWidget),
-                        ('is_datetime', DateTimeField, DateTimePickerWidget),
-                        )
 
-    def __init__(self, datamodel, colname, label, description, validators, default=None):
+    conversion_table = (
+        ("is_image", ImageUploadField, BS3ImageUploadFieldWidget),
+        ("is_file", FileUploadField, BS3FileUploadFieldWidget),
+        ("is_gridfs_file", MongoFileField, BS3FileUploadFieldWidget),
+        ("is_gridfs_image", MongoImageField, BS3ImageUploadFieldWidget),
+        ("is_text", TextAreaField, BS3TextAreaFieldWidget),
+        ("is_binary", TextAreaField, BS3TextAreaFieldWidget),
+        ("is_string", StringField, BS3TextFieldWidget),
+        ("is_integer", IntegerField, BS3TextFieldWidget),
+        ("is_numeric", DecimalField, BS3TextFieldWidget),
+        ("is_float", FloatField, BS3TextFieldWidget),
+        ("is_boolean", BooleanField, None),
+        ("is_date", DateField, DatePickerWidget),
+        ("is_datetime", DateTimeField, DateTimePickerWidget),
+    )
+
+    def __init__(
+        self, datamodel, colname, label, description, validators, default=None
+    ):
         self.datamodel = datamodel
         self.colname = colname
         self.label = label
@@ -72,29 +76,35 @@ class FieldConverter(object):
     def convert(self):
         # sqlalchemy.types.Enum inherits from String, therefore `is_enum` must be
         # checked before checking for `is_string`:
-        if getattr(self.datamodel, 'is_enum')(self.colname):
+        if getattr(self.datamodel, "is_enum")(self.colname):
             col_type = self.datamodel.list_columns[self.colname].type
-            return EnumField(enum_class=col_type.enum_class,
-                             enums=col_type.enums,
-                             label=self.label,
-                             description=self.description,
-                             validators=self.validators,
-                             widget=Select2Widget(),
-                             default=self.default)
+            return EnumField(
+                enum_class=col_type.enum_class,
+                enums=col_type.enums,
+                label=self.label,
+                description=self.description,
+                validators=self.validators,
+                widget=Select2Widget(),
+                default=self.default,
+            )
         for type_marker, field, widget in self.conversion_table:
             if getattr(self.datamodel, type_marker)(self.colname):
                 if widget:
-                    return field(self.label,
-                                 description=self.description,
-                                 validators=self.validators,
-                                 widget=widget(),
-                                 default=self.default)
+                    return field(
+                        self.label,
+                        description=self.description,
+                        validators=self.validators,
+                        widget=widget(),
+                        default=self.default,
+                    )
                 else:
-                    return field(self.label,
-                                 description=self.description,
-                                 validators=self.validators,
-                                 default=self.default)
-        log.error('Column %s Type not supported' % self.colname)
+                    return field(
+                        self.label,
+                        description=self.description,
+                        validators=self.validators,
+                        default=self.default,
+                    )
+        log.error("Column %s Type not supported" % self.colname)
 
 
 class GeneralModelConverter(object):
@@ -129,13 +139,19 @@ class GeneralModelConverter(object):
         return lambda: self.datamodel.get_related_interface(col_name).query()[1]
 
     def _get_related_pk_func(self, col_name):
-        return lambda obj: self.datamodel.get_related_interface(
-            col_name
-        ).get_pk_value(obj)
+        return lambda obj: self.datamodel.get_related_interface(col_name).get_pk_value(
+            obj
+        )
 
-    def _convert_many_to_one(self, col_name, label, description,
-                             lst_validators, filter_rel_fields,
-                             form_props):
+    def _convert_many_to_one(
+        self,
+        col_name,
+        label,
+        description,
+        lst_validators,
+        filter_rel_fields,
+        form_props,
+    ):
         """
             Creates a WTForm field for many to one related fields,
             will use a Select box based on a query. Will only
@@ -150,19 +166,26 @@ class GeneralModelConverter(object):
             allow_blank = False
         else:
             lst_validators.append(validators.Optional())
-        form_props[col_name] = \
-            QuerySelectField(label,
-                             description=description,
-                             query_func=query_func,
-                             get_pk_func=get_pk_func,
-                             allow_blank=allow_blank,
-                             validators=lst_validators,
-                             widget=Select2Widget(extra_classes=extra_classes))
+        form_props[col_name] = QuerySelectField(
+            label,
+            description=description,
+            query_func=query_func,
+            get_pk_func=get_pk_func,
+            allow_blank=allow_blank,
+            validators=lst_validators,
+            widget=Select2Widget(extra_classes=extra_classes),
+        )
         return form_props
 
-    def _convert_many_to_many(self, col_name, label, description,
-                              lst_validators, filter_rel_fields,
-                              form_props):
+    def _convert_many_to_many(
+        self,
+        col_name,
+        label,
+        description,
+        lst_validators,
+        filter_rel_fields,
+        form_props,
+    ):
         query_func = self._get_related_query_func(col_name, filter_rel_fields)
         get_pk_func = self._get_related_pk_func(col_name)
         allow_blank = True
@@ -173,7 +196,7 @@ class GeneralModelConverter(object):
             get_pk_func=get_pk_func,
             allow_blank=allow_blank,
             validators=lst_validators,
-            widget=Select2ManyWidget()
+            widget=Select2ManyWidget(),
         )
         return form_props
 
@@ -198,44 +221,59 @@ class GeneralModelConverter(object):
             label,
             description,
             lst_validators,
-            default=default_value
+            default=default_value,
         )
         form_props[col_name] = fc.convert()
         return form_props
 
-    def _convert_col(self, col_name,
-                     label, description,
-                     lst_validators, filter_rel_fields,
-                     form_props):
+    def _convert_col(
+        self,
+        col_name,
+        label,
+        description,
+        lst_validators,
+        filter_rel_fields,
+        form_props,
+    ):
         if self.datamodel.is_relation(col_name):
-            if self.datamodel.is_relation_many_to_one(col_name) or \
-                    self.datamodel.is_relation_one_to_one(col_name):
-                return self._convert_many_to_one(col_name, label,
-                                                 description,
-                                                 lst_validators,
-                                                 filter_rel_fields,
-                                                 form_props)
-            elif self.datamodel.is_relation_many_to_many(col_name) or \
-                    self.datamodel.is_relation_one_to_many(col_name):
-                return self._convert_many_to_many(col_name, label,
-                                                  description,
-                                                  lst_validators,
-                                                  filter_rel_fields,
-                                                  form_props)
+            if self.datamodel.is_relation_many_to_one(
+                col_name
+            ) or self.datamodel.is_relation_one_to_one(col_name):
+                return self._convert_many_to_one(
+                    col_name,
+                    label,
+                    description,
+                    lst_validators,
+                    filter_rel_fields,
+                    form_props,
+                )
+            elif self.datamodel.is_relation_many_to_many(
+                col_name
+            ) or self.datamodel.is_relation_one_to_many(col_name):
+                return self._convert_many_to_many(
+                    col_name,
+                    label,
+                    description,
+                    lst_validators,
+                    filter_rel_fields,
+                    form_props,
+                )
             else:
                 log.warning("Relation {0} not supported".format(col_name))
         else:
             return self._convert_simple(
-                col_name,
-                label,
-                description,
-                lst_validators,
-                form_props
+                col_name, label, description, lst_validators, form_props
             )
 
-    def create_form(self, label_columns=None, inc_columns=None,
-                    description_columns=None, validators_columns=None,
-                    extra_fields=None, filter_rel_fields=None):
+    def create_form(
+        self,
+        label_columns=None,
+        inc_columns=None,
+        description_columns=None,
+        validators_columns=None,
+        extra_fields=None,
+        filter_rel_fields=None,
+    ):
         """
             Converts a model to a form given
 
@@ -270,11 +308,15 @@ class GeneralModelConverter(object):
             if col_name in extra_fields:
                 form_props[col_name] = extra_fields.get(col_name)
             else:
-                self._convert_col(col_name, self._get_label(col_name, label_columns),
-                                  self._get_description(col_name, description_columns),
-                                  self._get_validators(col_name, validators_columns),
-                                  filter_rel_fields, form_props)
-        return type('DynamicForm', (DynamicForm,), form_props)
+                self._convert_col(
+                    col_name,
+                    self._get_label(col_name, label_columns),
+                    self._get_description(col_name, description_columns),
+                    self._get_validators(col_name, validators_columns),
+                    filter_rel_fields,
+                    form_props,
+                )
+        return type("DynamicForm", (DynamicForm,), form_props)
 
 
 class DynamicForm(FlaskForm):

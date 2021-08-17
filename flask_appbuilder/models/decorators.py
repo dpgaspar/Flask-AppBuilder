@@ -11,7 +11,7 @@ def renders(col_name):
                 @renders('custom')
                 def my_custom(self):
                     # will render this columns as bold on ListWidget
-                    return Markup('<b>' + custom + '</b>')
+                    return Markup('<b>' + self.custom + '</b>')
 
             class MyModelView(ModelView):
                 datamodel = SQLAInterface(MyTable)
@@ -20,7 +20,7 @@ def renders(col_name):
     """
 
     def wrap(f):
-        if not hasattr(f, '_col_name'):
+        if not hasattr(f, "_col_name"):
             f._col_name = col_name
         return f
 

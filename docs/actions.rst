@@ -13,8 +13,9 @@ Just use the @action decorator on your own functions. Here's an example
 ::
 
     from flask_appbuilder.actions import action
-    from flask_appbuilder import ModeView
+    from flask_appbuilder import ModelView
     from flask_appbuilder.models.sqla.interface import SQLAInterface
+    from flask import redirect
 
     class GroupModelView(ModelView):
         datamodel = SQLAInterface(Group)
@@ -30,7 +31,7 @@ Just use the @action decorator on your own functions. Here's an example
 This will create the necessary permissions for the item,
 so that you can include or remove them from a particular role.
 
-You can easily implement a massive delete option on list's. Just add the following code
+You can easily implement a massive delete option on lists. Just add the following code
 to your view. This example will tell F.A.B. to implement the action just for list views and not
 show the option on the show view. You can do this by disabling the *single* or *multiple*
 parameters on the **@action** decorator.

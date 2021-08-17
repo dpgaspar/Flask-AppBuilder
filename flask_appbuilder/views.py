@@ -1,5 +1,7 @@
 import json
 import logging
+import os.path as op
+from typing import Set
 
 from flask import (
     abort,
@@ -10,7 +12,7 @@ from flask import (
     request,
     send_file,
     session,
-    url_for
+    url_for,
 )
 
 from ._compat import as_unicode, string_types
@@ -153,6 +155,26 @@ class RestCRUDView(BaseCRUDView):
     """
         This class view exposes REST method for CRUD operations on you models
     """
+
+    disable_api_route_methods: bool = False
+    """ Flag to disable this class exposed methods, note that this class
+    will eventually get deprecated """
+
+    def __init__(self, **kwargs):
+        if self.disable_api_route_methods:
+            api_route_methods: Set = {
+                "api",
+                "api_read",
+                "api_get",
+                "api_create",
+                "api_update",
+                "api_delete",
+                "api_column_add",
+                "api_column_edit",
+                "api_readvalues",
+            }
+            self.exclude_route_methods = self.exclude_route_methods | api_route_methods
+        super().__init__(**kwargs)
 
     def _search_form_json(self):
         pass
@@ -594,9 +616,15 @@ class ModelView(RestCRUDView):
     ---------------------------
     """
 
-    @expose("/delete/<pk>")
+    @expose("/delete/<pk>", methods=["GET", "POST"])
     @has_access
     def delete(self, pk):
+        # Maintains compatibility but refuses to delete on GET methods if CSRF is enabled
+        if not self.is_get_mutation_allowed():
+            self.update_redirect()
+            log.warning("CSRF is enabled and a delete using GET was invoked")
+            flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
+            return self.post_delete_redirect()
         pk = self._deserialize_pk_if_composite(pk)
         self._delete(pk)
         return self.post_delete_redirect()
@@ -605,7 +633,7 @@ class ModelView(RestCRUDView):
     @has_access
     def download(self, filename):
         return send_file(
-            self.appbuilder.app.config["UPLOAD_FOLDER"] + filename,
+            op.join(self.appbuilder.app.config["UPLOAD_FOLDER"], filename),
             attachment_filename=uuid_originalname(filename),
             as_attachment=True,
         )
@@ -622,11 +650,18 @@ class ModelView(RestCRUDView):
         else:
             return name
 
-    @expose("/action/<string:name>/<pk>", methods=["GET"])
+    @expose("/action/<string:name>/<pk>", methods=["GET", "POST"])
     def action(self, name, pk):
         """
             Action method to handle actions from a show view
         """
+        # Maintains compatibility but refuses to proceed if CSRF is enabled
+        if not self.is_get_mutation_allowed():
+            self.update_redirect()
+            log.warning("CSRF is enabled and a action using GET was invoked")
+            flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
+            return redirect(self.get_redirect())
+
         pk = self._deserialize_pk_if_composite(pk)
         permission_name = self.get_action_permission_name(name)
         if self.appbuilder.sm.has_access(permission_name, self.class_permission_name):
@@ -856,9 +891,16 @@ class CompactCRUDMixin(BaseCRUDView):
             self.set_key("session_form_edit_pk", pk)
             return redirect(self.get_redirect())
 
-    @expose("/delete/<pk>")
+    @expose("/delete/<pk>", methods=["GET", "POST"])
     @has_access
     def delete(self, pk):
+        # Maintains compatibility but refuses to delete on GET methods if CSRF is enabled
+        if not self.is_get_mutation_allowed():
+            self.update_redirect()
+            log.warning("CSRF is enabled and a delete using GET was invoked")
+            flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
+            return redirect(self.get_redirect())
+
         pk = self._deserialize_pk_if_composite(pk)
         self._delete(pk)
         edit_pk = self.get_key("session_form_edit_pk")

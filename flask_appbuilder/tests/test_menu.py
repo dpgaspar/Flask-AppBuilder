@@ -28,7 +28,19 @@ class FlaskTestCase(FABTestCase):
         class Model1View(ModelView):
             datamodel = SQLAInterface(Model1)
 
+        context = self
+        context._conditional_value = True
+
+        class Model1ViewDynamic(ModelView):
+            datamodel = SQLAInterface(Model1)
+
         self.appbuilder.add_view(Model1View, "Model1")
+        self.appbuilder.add_view(
+            Model1ViewDynamic,
+            "Model1Dynamic",
+            label="Model1 Dynamic",
+            menu_cond=lambda: context._conditional_value,
+        )
 
     def tearDown(self):
         self.appbuilder = None
@@ -55,12 +67,16 @@ class FlaskTestCase(FABTestCase):
         uri = "/api/v1/menu/"
         client = self.app.test_client()
 
+        # Enable Model1Dynamic
+        self._conditional_value = True
+
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
         self.assertIn("Security", data)
         self.assertIn("Model1", data)
+        self.assertIn("Model1Dynamic", data)
 
     def test_menu_api_limited(self):
         """
@@ -73,6 +89,10 @@ class FlaskTestCase(FABTestCase):
         role = self.appbuilder.sm.add_role(limited_role)
         pvm = self.appbuilder.sm.find_permission_view_menu("menu_access", "Model1")
         self.appbuilder.sm.add_permission_role(role, pvm)
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "menu_access", "Model1Dynamic"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
         pvm = self.appbuilder.sm.find_permission_view_menu("can_get", "MenuApi")
         self.appbuilder.sm.add_permission_role(role, pvm)
         self.appbuilder.sm.add_user(
@@ -83,11 +103,26 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         # as limited user
         token = self.login(client, limited_user, limited_password)
+
+        # Enable Model1Dynamic
+        self._conditional_value = True
+
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
         self.assertNotIn("Security", data)
         self.assertIn("Model1", data)
+        self.assertIn("Model1Dynamic", data)
+
+        # Disable Model1Dynamic
+        self._conditional_value = False
+
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        self.assertNotIn("Security", data)
+        self.assertIn("Model1", data)
+        self.assertNotIn("Model1Dynamic", data)
 
         self.browser_logout(client)
 
@@ -105,16 +140,34 @@ class FlaskTestCase(FABTestCase):
         role = self.appbuilder.sm.find_role("Public")
         pvm = self.appbuilder.sm.find_permission_view_menu("menu_access", "Model1")
         self.appbuilder.sm.add_permission_role(role, pvm)
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "menu_access", "Model1Dynamic"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
         pvm = self.appbuilder.sm.find_permission_view_menu("can_get", "MenuApi")
         self.appbuilder.sm.add_permission_role(role, pvm)
 
+        # Enable Model1Dynamic
+        self._conditional_value = True
+
         uri = "/api/v1/menu/"
         client = self.app.test_client()
-        # as limited user
         rv = client.get(uri)
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
         self.assertIn("Model1", data)
+        self.assertIn("Model1Dynamic", data)
+
+        # Disable Model1Dynamic
+        self._conditional_value = False
+
+        uri = "/api/v1/menu/"
+        client = self.app.test_client()
+        rv = client.get(uri)
+        self.assertEqual(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Model1", data)
+        self.assertNotIn("Model1Dynamic", data)
 
         # Revert test data
         role = self.appbuilder.sm.find_role("Public")

@@ -4,18 +4,28 @@ import json
 import logging
 import re
 
-from flask import abort, Blueprint, flash, render_template, request, session, url_for
+from flask import (
+    abort,
+    Blueprint,
+    current_app,
+    flash,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 from ._compat import as_unicode
 from .actions import ActionItem
 from .const import PERMISSION_PREFIX
 from .forms import GeneralModelConverter
+from .hooks import get_before_request_hooks, wrap_route_handler_with_hooks
 from .urltools import (
     get_filter_args,
     get_order_args,
     get_page_args,
     get_page_size_args,
-    Stack
+    Stack,
 )
 from .widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
 
@@ -110,6 +120,29 @@ class BaseView(object):
         Use same structure as method_permission_name. If set security converge
         will replace all method permissions by the new ones
     """
+    exclude_route_methods = set()
+    """
+        Does not register routes for a set of builtin ModelView functions.
+        example::
+
+            class ContactModelView(ModelView):
+                datamodel = SQLAInterface(Contact)
+                exclude_route_methods = {"delete", "edit"}
+
+    """
+    include_route_methods = None
+    """
+        If defined will assume a white list setup, where all endpoints are excluded
+        except those define on this attribute
+        example::
+
+            class ContactModelView(ModelView):
+                datamodel = SQLAInterface(Contact)
+                include_route_methods = {"list"}
+
+
+        The previous example will exclude all endpoints except the `list` endpoint
+    """
     default_view = "list"
     """ the default view for this BaseView, to be used with url_for (method name) """
     extra_args = None
@@ -127,8 +160,9 @@ class BaseView(object):
         # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
             self.previous_class_permission_name = self.__class__.__name__
-        self.class_permission_name = (self.class_permission_name or
-                                      self.__class__.__name__)
+        self.class_permission_name = (
+            self.class_permission_name or self.__class__.__name__
+        )
 
         # Init previous permission override attrs
         is_collect_previous = False
@@ -142,7 +176,17 @@ class BaseView(object):
         if self.base_permissions is None:
             self.base_permissions = set()
             is_add_base_permissions = True
+
         for attr_name in dir(self):
+            # If include_route_methods is not None white list
+            if (
+                self.include_route_methods is not None
+                and attr_name not in self.include_route_methods
+            ):
+                continue
+            # Don't create permission for excluded routes
+            if attr_name in self.exclude_route_methods:
+                continue
             if hasattr(getattr(self, attr_name), "_permission_name"):
                 if is_collect_previous:
                     self.previous_method_permission_name[attr_name] = getattr(
@@ -152,7 +196,6 @@ class BaseView(object):
                 if is_add_base_permissions:
                     self.base_permissions.add(PERMISSION_PREFIX + _permission_name)
         self.base_permissions = list(self.base_permissions)
-
         if not self.extra_args:
             self.extra_args = dict()
         self._apis = dict()
@@ -205,14 +248,31 @@ class BaseView(object):
         return self.blueprint
 
     def _register_urls(self):
+        before_request_hooks = get_before_request_hooks(self)
         for attr_name in dir(self):
+            if (
+                self.include_route_methods is not None
+                and attr_name not in self.include_route_methods
+            ):
+                continue
+            if attr_name in self.exclude_route_methods:
+                log.info(
+                    f"Not registering route for method "
+                    f"{self.__class__.__name__}.{attr_name}"
+                )
+                continue
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
                     log.info(
                         f"Registering route {self.blueprint.url_prefix}{url} {methods}"
                     )
-                    self.blueprint.add_url_rule(url, attr_name, attr, methods=methods)
+                    route_handler = wrap_route_handler_with_hooks(
+                        attr_name, attr, before_request_hooks
+                    )
+                    self.blueprint.add_url_rule(
+                        url, attr_name, route_handler, methods=methods
+                    )
 
     def render_template(self, template, **kwargs):
         """
@@ -300,8 +360,7 @@ class BaseView(object):
         if permission:
             return permission
         else:
-            return getattr(
-                getattr(self, method_name), "_permission_name")
+            return getattr(getattr(self, method_name), "_permission_name")
 
 
 class BaseFormView(BaseView):
@@ -406,7 +465,7 @@ class BaseModelView(BaseView):
     search_form_extra_fields = None
     """
         A dictionary containing column names and a WTForm
-        Form fields to be added to the Add form, these fields do not
+        Form fields to be added to the search form, these fields do not
         exist on the model itself ex::
 
         search_form_extra_fields = {'some_col':BooleanField('Some Col', default=False)}
@@ -423,7 +482,7 @@ class BaseModelView(BaseView):
 
             class ContactModelView(ModelView):
                 datamodel = SQLAModel(Contact, db.session)
-                search_form_query_rel_fields = [('group':[['name',FilterStartsWith,'W']]}
+                search_form_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
 
     """
 
@@ -614,7 +673,7 @@ class BaseCRUDView(BaseModelView):
     """
     order_columns = None
     """ Allowed order columns """
-    page_size = 10
+    page_size = 25
     """
         Use this property to change default page size
     """
@@ -760,8 +819,9 @@ class BaseCRUDView(BaseModelView):
                 if self.method_permission_name.get(attr_name):
                     if not self.previous_method_permission_name.get(attr_name):
                         self.previous_method_permission_name[attr_name] = action.name
-                    permission_name = \
+                    permission_name = (
                         PERMISSION_PREFIX + self.method_permission_name.get(attr_name)
+                    )
                 if permission_name not in self.base_permissions:
                     self.base_permissions.append(permission_name)
                 self.actions[action.name] = action
@@ -828,8 +888,8 @@ class BaseCRUDView(BaseModelView):
         self.list_columns = self.list_columns or [list_cols[0]]
         self._gen_labels_columns(self.list_columns)
         self.order_columns = (
-            self.order_columns or
-            self.datamodel.get_order_columns_list(list_columns=self.list_columns)
+            self.order_columns
+            or self.datamodel.get_order_columns_list(list_columns=self.list_columns)
         )
         if self.show_fieldsets:
             self.show_columns = []
@@ -872,13 +932,13 @@ class BaseCRUDView(BaseModelView):
     """
 
     def _get_related_view_widget(
-            self,
-            item,
-            related_view,
-            order_column="",
-            order_direction="",
-            page=None,
-            page_size=None,
+        self,
+        item,
+        related_view,
+        order_column="",
+        order_direction="",
+        page=None,
+        page_size=None,
     ):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
@@ -913,7 +973,7 @@ class BaseCRUDView(BaseModelView):
         )
 
     def _get_related_views_widgets(
-            self, item, orders=None, pages=None, page_sizes=None, widgets=None, **args
+        self, item, orders=None, pages=None, page_sizes=None, widgets=None, **args
     ):
         """
             :return:
@@ -947,15 +1007,15 @@ class BaseCRUDView(BaseModelView):
         return self._get_list_widget(**kwargs).get("list")
 
     def _get_list_widget(
-            self,
-            filters,
-            actions=None,
-            order_column="",
-            order_direction="",
-            page=None,
-            page_size=None,
-            widgets=None,
-            **args
+        self,
+        filters,
+        actions=None,
+        order_column="",
+        order_direction="",
+        page=None,
+        page_size=None,
+        widgets=None,
+        **args,
     ):
 
         """ get joined base filter and current active filter for query """
@@ -994,7 +1054,7 @@ class BaseCRUDView(BaseModelView):
         return widgets
 
     def _get_show_widget(
-            self, pk, item, widgets=None, actions=None, show_fieldsets=None
+        self, pk, item, widgets=None, actions=None, show_fieldsets=None
     ):
         widgets = widgets or {}
         actions = actions or self.actions
@@ -1258,6 +1318,17 @@ class BaseCRUDView(BaseModelView):
             if hasattr(form, filter_key):
                 field = getattr(form, filter_key)
                 field.data = rel_obj
+
+    def is_get_mutation_allowed(self) -> bool:
+        """
+            Check is mutations on HTTP GET methods are allowed.
+            Always called on a request
+        """
+        if current_app.config.get("FAB_ALLOW_GET_UNSAFE_MUTATIONS", False):
+            return True
+        return not (
+            request.method == "GET" and self.appbuilder.app.extensions.get("csrf")
+        )
 
     def prefill_form(self, form, pk):
         """

@@ -1,4 +1,5 @@
 import os
+from flask import session
 from flask_appbuilder.security.manager import (
     AUTH_OID,
     AUTH_REMOTE_USER,
@@ -44,12 +45,13 @@ OAUTH_PROVIDERS = [
         "name": "twitter",
         "icon": "fa-twitter",
         "remote_app": {
-            "consumer_key": os.environ.get("TWITTER_KEY"),
-            "consumer_secret": os.environ.get("TWITTER_SECRET"),
-            "base_url": "https://api.twitter.com/1.1/",
+            "client_id": os.environ.get("TWITTER_KEY"),
+            "client_secret": os.environ.get("TWITTER_SECRET"),
+            "api_base_url": "https://api.twitter.com/1.1/",
             "request_token_url": "https://api.twitter.com/oauth/request_token",
             "access_token_url": "https://api.twitter.com/oauth/access_token",
             "authorize_url": "https://api.twitter.com/oauth/authenticate",
+            "fetch_token": lambda: session.get("oauth_token"), # DON'T DO THIS IN PRODUCTION
         },
     },
     {
@@ -57,10 +59,10 @@ OAUTH_PROVIDERS = [
         "icon": "fa-google",
         "token_key": "access_token",
         "remote_app": {
-            "consumer_key": os.environ.get("GOOGLE_KEY"),
-            "consumer_secret": os.environ.get("GOOGLE_SECRET"),
-            "base_url": "https://www.googleapis.com/oauth2/v2/",
-            "request_token_params": {"scope": "email profile"},
+            "client_id": os.environ.get("GOOGLE_KEY"),
+            "client_secret": os.environ.get("GOOGLE_SECRET"),
+            "api_base_url": "https://www.googleapis.com/oauth2/v2/",
+            "client_kwargs": {"scope": "email profile"},
             "request_token_url": None,
             "access_token_url": "https://accounts.google.com/o/oauth2/token",
             "authorize_url": "https://accounts.google.com/o/oauth2/auth",
@@ -71,16 +73,35 @@ OAUTH_PROVIDERS = [
         "icon": "fa-windows",
         "token_key": "access_token",
         "remote_app": {
-            "consumer_key": os.environ.get("AZURE_APPLICATION_ID"),
-            "consumer_secret": os.environ.get("AZURE_SECRET"),
-            "base_url": "https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2",
-            "request_token_params": {
-                "scope": "User.read name preferred_username email profile",
+            "client_id": os.environ.get("AZURE_APPLICATION_ID"),
+            "client_secret": os.environ.get("AZURE_SECRET"),
+            "api_base_url": "https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2",
+            "client_kwargs": {
+                "scope": "User.read name preferred_username email profile upn",
                 "resource": os.environ.get("AZURE_APPLICATION_ID"),
             },
             "request_token_url": None,
             "access_token_url": "https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/token",
             "authorize_url": "https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/authorize",
+        },
+    },
+    {
+        "name": "okta",
+        "icon": "fa-circle-o",
+        "token_key": "access_token",
+        "remote_app": {
+            "client_id": os.environ.get("OKTA_KEY"),
+            "client_secret": os.environ.get("OKTA_SECRET"),
+            "api_base_url": "https://{}.okta.com/oauth2/v1/".format(
+                os.environ.get("OKTA_DOMAIN")
+            ),
+            "client_kwargs": {"scope": "openid profile email groups"},
+            "access_token_url": "https://{}.okta.com/oauth2/v1/token".format(
+                os.environ.get("OKTA_DOMAIN")
+            ),
+            "authorize_url": "https://{}.okta.com/oauth2/v1/authorize".format(
+                os.environ.get("OKTA_DOMAIN")
+            ),
         },
     },
 ]
@@ -94,8 +115,24 @@ OAUTH_PROVIDERS = [
 # Will allow user self registration
 AUTH_USER_REGISTRATION = True
 
-# The default user self registration role
+# The default user self registration role for all users
 AUTH_USER_REGISTRATION_ROLE = "Admin"
+
+# Self registration role based on user info
+AUTH_USER_REGISTRATION_ROLE_JMESPATH = "contains(['alice@example.com', 'celine@example.com'], email) && 'Admin' || 'Public'"
+
+# Replace users database roles each login with those received from OAUTH/LDAP
+AUTH_ROLES_SYNC_AT_LOGIN = True
+
+# A mapping from LDAP/OAUTH group names to FAB roles
+AUTH_ROLES_MAPPING = {
+    # For OAUTH
+    "USER_GROUP_NAME": ["User"],
+    "ADMIN_GROUP_NAME": ["Admin"],
+    # For LDAP
+    # "cn=User,ou=groups,dc=example,dc=com": ["User"],
+    # "cn=Admin,ou=groups,dc=example,dc=com": ["Admin"],
+}
 
 # When using LDAP Auth, setup the ldap server
 # AUTH_LDAP_SERVER = "ldap://ldapserver.new"
@@ -155,3 +192,5 @@ IMG_UPLOAD_URL = "/static/uploads/"
 # APP_THEME = "spacelab.css"
 # APP_THEME = "united.css"
 # APP_THEME = "yeti.css"
+
+FAB_SECURITY_MANAGER_CLASS = "app.security.MySecurityManager"

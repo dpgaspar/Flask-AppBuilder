@@ -26,20 +26,17 @@ class Product(Model):
 
     def photo_img(self):
         im = ImageManager()
+        productPubViewUrl = url_for("ProductPubView.show", pk=str(self.id))
         if self.photo:
+            photoUrl = im.get_url(self.photo)
             return Markup(
-                '<a href="' +
-                url_for("ProductPubView.show", pk=str(self.id)) +
-                '" class="thumbnail"><img src="' +
-                im.get_url(self.photo) +
-                '" alt="Photo" class="img-rounded img-responsive"></a>'
+                f'<a href="{productPubViewUrl}" class="thumbnail"><img src="{photoUrl}" '
+                f'alt="Photo" class="img-rounded img-responsive"></a>'
             )
         else:
             return Markup(
-                '<a href="' +
-                + url_for("ProductPubView.show", pk=str(self.id)) +
-                '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive">'
-                '</a>'
+                f'<a href="{productPubViewUrl}"" class="thumbnail"><img src="//:0" '
+                f'alt="Photo" class="img-responsive">' '</a>'
             )
 
     def price_label(self):

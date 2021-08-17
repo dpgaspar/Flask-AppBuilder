@@ -4,8 +4,6 @@ import logging
 
 from flask import flash, redirect, request, session, url_for
 from flask_babel import lazy_gettext
-from flask_openid import OpenIDResponse, SessionWrapper
-from openid.consumer.consumer import CANCEL, Consumer, SUCCESS
 
 from .forms import LoginForm_oid, RegisterUserDBForm, RegisterUserOIDForm
 from .. import const as c
@@ -234,6 +232,9 @@ class RegisterUserOIDView(BaseRegisterUser):
         """
             Hackish method to make use of oid.login_handler decorator.
         """
+        from flask_openid import OpenIDResponse, SessionWrapper
+        from openid.consumer.consumer import CANCEL, Consumer, SUCCESS
+
         if request.args.get("openid_complete") != u"yes":
             return f(False)
         consumer = Consumer(SessionWrapper(self), oid.store_factory())

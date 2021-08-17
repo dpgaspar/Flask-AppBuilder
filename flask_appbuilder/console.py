@@ -22,8 +22,13 @@ except ImportError:
     # Fall back to Python 2's urllib2
     from urllib2 import urlopen
 
-click.echo(click.style("fabmanager is going to be deprecated in 2.2.X, you can use "
-           "the same commands on the improved 'flask fab <command>'", fg="red"))
+click.echo(
+    click.style(
+        "fabmanager is going to be deprecated in 2.2.X, you can use "
+        "the same commands on the improved 'flask fab <command>'",
+        fg="red",
+    )
+)
 
 SQLA_REPO_URL = (
     "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip"

@@ -20,7 +20,7 @@
 	background-color: #f5f5f5;
 	bottom:0;
 	left:0;
-	right:0;	
+	right:0;
 	width:100%;
 	margin:auto;
 }
@@ -45,8 +45,4 @@ th.action_checkboxes {
 
 .fa-black {
     color: black;
-}
-
-.btn.filter {
-    text-align: left;
 }

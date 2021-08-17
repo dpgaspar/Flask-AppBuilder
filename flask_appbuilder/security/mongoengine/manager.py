@@ -1,3 +1,5 @@
+from datetime import datetime
+import json
 import logging
 from typing import List, Optional
 import uuid
@@ -123,7 +125,7 @@ class SecurityManager(BaseSecurityManager):
             user.username = username
             user.email = email
             user.active = True
-            user.roles.append(role)
+            user.roles = role if isinstance(role, list) else [role]
             if hashed_password:
                 user.password = hashed_password
             else:
@@ -157,11 +159,16 @@ class SecurityManager(BaseSecurityManager):
     -----------------------
     """
 
-    def add_role(self, name):
+    def add_role(
+        self, name: str, permissions: Optional[List[PermissionView]] = None
+    ) -> Optional[Role]:
+        if not permissions:
+            permissions = []
+
         role = self.find_role(name)
         if role is None:
             try:
-                role = self.role_model(name=name)
+                role = self.role_model(name=name, permissions=permissions)
                 role.save()
                 log.info(c.LOGMSG_INF_SEC_ADD_ROLE.format(name))
                 return role
@@ -194,10 +201,7 @@ class SecurityManager(BaseSecurityManager):
         return self.permission_model.objects(name=name).first()
 
     def exist_permission_on_roles(
-            self,
-            view_name: str,
-            permission_name: str,
-            role_ids: List[int],
+        self, view_name: str, permission_name: str, role_ids: List[int]
     ) -> bool:
         for role_id in role_ids:
             role = self.role_model.objects(id=role_id).first()
@@ -205,7 +209,7 @@ class SecurityManager(BaseSecurityManager):
             if permissions:
                 for permission in permissions:
                     if (view_name == permission.view_menu.name) and (
-                            permission_name == permission.permission.name
+                        permission_name == permission.permission.name
                     ):
                         return True
         return False
@@ -323,10 +327,7 @@ class SecurityManager(BaseSecurityManager):
         """
         if not (permission_name and view_menu_name):
             return None
-        pv = self.find_permission_view_menu(
-            permission_name,
-            view_menu_name
-        )
+        pv = self.find_permission_view_menu(permission_name, view_menu_name)
         if pv:
             return pv
         vm = self.add_view_menu(view_menu_name)
@@ -406,3 +407,46 @@ class SecurityManager(BaseSecurityManager):
                 )
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))
+
+    def export_roles(self, path: Optional[str] = None) -> None:
+        """ Exports roles to JSON file. """
+        timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
+        filename = path or f"roles_export_{timestamp}.json"
+
+        roles = self.get_all_roles()
+
+        serialized_roles = []
+
+        for role in roles:
+            serialized_role = {"name": role.name, "permissions": []}
+            for pvm in role.permissions:
+                permission = pvm.permission
+                view_menu = pvm.view_menu
+                permission_view_menu = {
+                    "permission": {"name": permission.name},
+                    "view_menu": {"name": view_menu.name},
+                }
+                serialized_role["permissions"].append(permission_view_menu)
+            serialized_roles.append(serialized_role)
+
+        with open(filename, "w") as fd:
+            fd.write(json.dumps(serialized_roles))
+
+    def import_roles(self, path: str) -> None:
+        """ Imports roles from JSON file. """
+        with open(path, "r") as fd:
+            serialized_roles = json.loads(fd.read())
+
+        for role_kwargs in serialized_roles:
+            role = self.add_role(role_kwargs["name"])
+
+            permission_view_menus = [
+                self.add_permission_view_menu(
+                    permission_name=pvm_kwargs["permission"]["name"],
+                    view_menu_name=pvm_kwargs["view_menu"]["name"],
+                )
+                for pvm_kwargs in role_kwargs["permissions"]
+            ]
+            role.permissions = permission_view_menus
+
+            role.save()

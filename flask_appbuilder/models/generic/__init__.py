@@ -369,7 +369,7 @@ class GenericSession(object):
             items = self._order_by(items, self._order_by_cmd)
         total_length = len(items)
         if self._limit != 0:
-            items = items[self._offset: self._offset + self._limit]
+            items = items[self._offset : self._offset + self._limit]
         return total_length, items
 
     def add(self, model):

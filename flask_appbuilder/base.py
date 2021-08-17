@@ -14,7 +14,7 @@ from .const import (
     LOGMSG_ERR_FAB_ADDON_PROCESS,
     LOGMSG_INF_FAB_ADD_VIEW,
     LOGMSG_INF_FAB_ADDON_ADDED,
-    LOGMSG_WAR_FAB_VIEW_EXISTS
+    LOGMSG_WAR_FAB_VIEW_EXISTS,
 )
 from .filters import TemplateFilters
 from .menu import Menu, MenuApiManager
@@ -109,7 +109,7 @@ class AppBuilder(object):
         static_folder="static/appbuilder",
         static_url_path="/appbuilder",
         security_manager_class=None,
-        update_perms=True
+        update_perms=True,
     ):
         """
             AppBuilder constructor
@@ -167,42 +167,34 @@ class AppBuilder(object):
 
         self.app = app
 
-        self.base_template = app.config.get(
-            "FAB_BASE_TEMPLATE",
-            self.base_template,
-        )
-        self.static_folder = app.config.get(
-            "FAB_STATIC_FOLDER",
-            self.static_folder,
-        )
+        self.base_template = app.config.get("FAB_BASE_TEMPLATE", self.base_template)
+        self.static_folder = app.config.get("FAB_STATIC_FOLDER", self.static_folder)
         self.static_url_path = app.config.get(
-            "FAB_STATIC_URL_PATH",
-            self.static_url_path,
+            "FAB_STATIC_URL_PATH", self.static_url_path
         )
-        _index_view = app.config.get('FAB_INDEX_VIEW', None)
+        _index_view = app.config.get("FAB_INDEX_VIEW", None)
         if _index_view is not None:
-            self.indexview = dynamic_class_import(
-                _index_view
-            )
+            self.indexview = dynamic_class_import(_index_view)
         else:
             self.indexview = self.indexview or IndexView
-        _menu = app.config.get('FAB_MENU', None)
+        _menu = app.config.get("FAB_MENU", None)
         if _menu is not None:
-            self.menu = dynamic_class_import(
-                _menu
-            )
+            self.menu = dynamic_class_import(_menu)
         else:
             self.menu = self.menu or Menu()
 
         if self.update_perms:  # default is True, if False takes precedence from config
-            self.update_perms = app.config.get('FAB_UPDATE_PERMS', True)
-        _security_manager_class_name = app.config.get('FAB_SECURITY_MANAGER_CLASS', None)
+            self.update_perms = app.config.get("FAB_UPDATE_PERMS", True)
+        _security_manager_class_name = app.config.get(
+            "FAB_SECURITY_MANAGER_CLASS", None
+        )
         if _security_manager_class_name is not None:
             self.security_manager_class = dynamic_class_import(
                 _security_manager_class_name
             )
         if self.security_manager_class is None:
             from flask_appbuilder.security.sqla.manager import SecurityManager
+
             self.security_manager_class = SecurityManager
 
         self._addon_managers = app.config["ADDON_MANAGERS"]
@@ -364,6 +356,7 @@ class AppBuilder(object):
         category="",
         category_icon="",
         category_label="",
+        menu_cond=None,
     ):
         """
         Add your views associated with menus using this method.
@@ -390,6 +383,12 @@ class AppBuilder(object):
         :param category_label:
             The label that will be displayed on the menu,
             if absent param name will be used
+        :param menu_cond:
+            If a callable, :code:`menu_cond` will be invoked when
+            constructing the menu items. If it returns :code:`True`,
+            then this link will be a part of the menu. Otherwise, it
+            will not be included in the menu items. Defaults to
+            :code:`None`, meaning the item will always be present.
 
         Examples::
 
@@ -415,6 +414,14 @@ class AppBuilder(object):
                 category_icon='fa-envelop',
                 category_label=_('Other View')
             )
+            # Register a view whose menu item will be conditionally displayed
+            appbuilder.add_view(
+                YourFeatureView,
+                "Your Feature",
+                icon='fa-feature',
+                label=_('Your Feature'),
+                menu_cond=lambda: is_feature_enabled("your-feature"),
+            )
             # Add a link
             appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
@@ -437,6 +444,7 @@ class AppBuilder(object):
             category_icon=category_icon,
             category_label=category_label,
             baseview=baseview,
+            cond=menu_cond,
         )
         return baseview
 
@@ -450,6 +458,7 @@ class AppBuilder(object):
         category_icon="",
         category_label="",
         baseview=None,
+        cond=None,
     ):
         """
             Add your own links to menu using this method
@@ -472,7 +481,12 @@ class AppBuilder(object):
             :param category_label:
                 The label that will be displayed on the menu,
                 if absent param name will be used
-
+            :param cond:
+                If a callable, :code:`cond` will be invoked when
+                constructing the menu items. If it returns :code:`True`,
+                then this link will be a part of the menu. Otherwise, it
+                will not be included in the menu items. Defaults to
+                :code:`None`, meaning the item will always be present.
         """
         self.menu.add_link(
             name=name,
@@ -483,20 +497,27 @@ class AppBuilder(object):
             category_icon=category_icon,
             category_label=category_label,
             baseview=baseview,
+            cond=cond,
         )
         if self.app:
             self._add_permissions_menu(name)
             if category:
                 self._add_permissions_menu(category)
 
-    def add_separator(self, category):
+    def add_separator(self, category, cond=None):
         """
             Add a separator to the menu, you will sequentially create the menu
 
             :param category:
                 The menu category where the separator will be included.
+            :param cond:
+                If a callable, :code:`cond` will be invoked when
+                constructing the menu items. If it returns :code:`True`,
+                then this separator will be a part of the menu. Otherwise,
+                it will not be included in the menu items. Defaults to
+                :code:`None`, meaning the separator will always be present.
         """
-        self.menu.add_separator(category)
+        self.menu.add_separator(category, cond=cond)
 
     def add_view_no_menu(self, baseview, endpoint=None, static_folder=None):
         """
@@ -635,7 +656,7 @@ class AppBuilder(object):
             for inner_class in view.get_uninit_inner_views():
                 for v in self.baseviews:
                     if (
-                        isinstance(v, inner_class) and
-                            v not in view.get_init_inner_views()
+                        isinstance(v, inner_class)
+                        and v not in view.get_init_inner_views()
                     ):
                         view.get_init_inner_views().append(v)

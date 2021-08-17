@@ -37,18 +37,10 @@ LOGMSG_ERR_SEC_DEL_PERMVIEW = "Remove Permission from View Error: {0}"
 LOGMSG_WAR_SEC_DEL_PERMVIEW = (
     "Refused to delete permission view, assoc with role exists {}.{} {}"
 )
-LOGMSG_WAR_SEC_DEL_PERMISSION = (
-    "Refused to delete, permission {} does not exist"
-)
-LOGMSG_WAR_SEC_DEL_VIEWMENU = (
-    "Refused to delete, view menu {} does not exist"
-)
-LOGMSG_WAR_SEC_DEL_PERM_PVM = (
-    "Refused to delete permission {}, PVM exists {}"
-)
-LOGMSG_WAR_SEC_DEL_VIEWMENU_PVM = (
-    "Refused to delete view menu {}, PVM exists {}"
-)
+LOGMSG_WAR_SEC_DEL_PERMISSION = "Refused to delete, permission {} does not exist"
+LOGMSG_WAR_SEC_DEL_VIEWMENU = "Refused to delete, view menu {} does not exist"
+LOGMSG_WAR_SEC_DEL_PERM_PVM = "Refused to delete permission {}, PVM exists {}"
+LOGMSG_WAR_SEC_DEL_VIEWMENU_PVM = "Refused to delete view menu {}, PVM exists {}"
 LOGMSG_ERR_SEC_ADD_PERMROLE = "Add Permission to Role Error: {0}"
 """ Error adding permission to role, format with err message """
 LOGMSG_ERR_SEC_DEL_PERMROLE = "Remove Permission to Role Error: {0}"
@@ -71,9 +63,7 @@ LOGMSG_ERR_SEC_UPD_USER = "Error updating user to database. {0} "
 """ Error updating user, format with err message """
 LOGMSG_WAR_SEC_NO_USER = "No user yet created, use flask fab command to do it."
 """ Warning when app starts if no user exists on db """
-LOGMSG_WAR_SEC_NOLDAP_OBJ = (
-    "User self registration failed no LDAP object found for: {0}"
-)
+LOGMSG_WAR_SEC_NOLDAP_OBJ = "No LDAP object found for: {0}"
 
 LOGMSG_INF_SEC_ADD_PERMVIEW = "Created Permission View: {0}"
 """ Info when adding permission view, format with permission view class string """

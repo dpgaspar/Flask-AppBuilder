@@ -6,6 +6,7 @@ import uuid
 
 from flask.globals import _request_ctx_stack
 from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename
 from wtforms import ValidationError
 
 try:
@@ -31,7 +32,7 @@ class FileManager(object):
         relative_path="",
         namegen=None,
         allowed_extensions=None,
-        permission=0o666,
+        permission=0o755,
         **kwargs
     ):
 
@@ -56,8 +57,8 @@ class FileManager(object):
         if not self.allowed_extensions:
             return True
         return (
-            "." in filename and
-            filename.rsplit(".", 1)[1].lower() in self.allowed_extensions
+            "." in filename
+            and filename.rsplit(".", 1)[1].lower() in self.allowed_extensions
         )
 
     def generate_name(self, obj, file_data):
@@ -74,11 +75,12 @@ class FileManager(object):
             os.remove(path)
 
     def save_file(self, data, filename):
-        path = self.get_path(filename)
+        filename_ = secure_filename(filename)
+        path = self.get_path(filename_)
         if not op.exists(op.dirname(path)):
             os.makedirs(os.path.dirname(path), self.permission)
         data.save(path)
-        return filename
+        return filename_
 
 
 class ImageManager(FileManager):
@@ -98,7 +100,7 @@ class ImageManager(FileManager):
         allowed_extensions=None,
         thumbgen=None,
         thumbnail_size=None,
-        permission=0o666,
+        permission=0o755,
         **kwargs
     ):
 

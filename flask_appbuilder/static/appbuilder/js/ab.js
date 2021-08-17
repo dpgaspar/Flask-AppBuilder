@@ -45,25 +45,25 @@ function loadSelectData() {
 //---------------------------------------
 // Setup date time modal views, select2
 //---------------------------------------
-$(document).ready(function() {
+$(function() {
 
     $('.appbuilder_datetime').datetimepicker({pickTime: false});
     $('.appbuilder_date').datetimepicker({
         pickTime: false });
     $(".my_select2").select2({placeholder: "Select a State", allowClear: true});
+    $(".my_select2.readonly").select2("readonly", true);
     loadSelectData();
     loadSelectDataSlave();
-    $(".my_select2.readonly").select2("readonly",true);
     $("a").tooltip({container:'.row', 'placement': 'bottom'});
 });
 
 
 $( ".my_change" ).on("change", function(e) {
- var theForm=document.getElementById("model_form");
-  theForm.action = "";
-  theForm.method = "get";
-  theForm.submit();
- })
+    var theForm=document.getElementById("model_form");
+    theForm.action = "";
+    theForm.method = "get";
+    theForm.trigger('submit');
+})
 
 
 //---------------------------------------
@@ -83,8 +83,8 @@ function ab_alert(text) {
 //---------------------------------------
 
 // On link attr "data-text" is set to the modal text
-$(document).ready(function(){
-    $(".confirm").click(function() {
+$(function(){
+    $(".confirm").on('click', function() {
         $('.modal-text').text($(this).data('text'));
     });
 });

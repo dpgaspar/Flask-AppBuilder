@@ -8,7 +8,7 @@ from mongoengine import (
     IntField,
     ListField,
     ReferenceField,
-    StringField
+    StringField,
 )
 
 from ..._compat import as_unicode

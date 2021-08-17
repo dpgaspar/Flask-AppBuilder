@@ -1,8 +1,8 @@
 Flask App Builder
 =================
 
-.. image:: https://travis-ci.org/dpgaspar/Flask-AppBuilder.png?branch=master
-        :target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
+.. image:: https://github.com/dpgaspar/Flask-AppBuilder/workflows/Python/badge.svg
+        :target: https://github.com/dpgaspar/Flask-AppBuilder/actions
 
 .. image:: https://img.shields.io/pypi/v/Flask-AppBuilder.svg
         :alt: PyPI
@@ -13,6 +13,9 @@ Flask App Builder
 
 .. image:: https://codecov.io/github/dpgaspar/Flask-AppBuilder/coverage.svg?branch=master
         :target: https://codecov.io/github/dpgaspar/Flask-AppBuilder
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
 
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
@@ -37,7 +40,51 @@ Change Log
 
 `Versions <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/CHANGELOG.rst>`_ for further detail on what changed.
 
-Since 2.0.0 that `fabmanager` command line is considered **deprecated**, use the new `flask fab <command>` instead
+BREAKING CHANGE on 3.0.0 (OAuth)
+
+Major version 3, changed it's **OAuth** dependency from flask-oauth to authlib, due to this OAuth configuration
+changed:
+
+Before:
+
+.. code-block::
+
+    OAUTH_PROVIDERS = [
+        {'name':'google', 'icon':'fa-google', 'token_key':'access_token',
+            'remote_app': {
+                'consumer_key':'GOOGLE KEY',
+                'consumer_secret':'GOOGLE SECRET',
+                'base_url':'https://www.googleapis.com/oauth2/v2/',
+                'request_token_params':{
+                  'scope': 'email profile'
+                },
+                'request_token_url':None,
+                'access_token_url':'https://accounts.google.com/o/oauth2/token',
+                'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+        }
+    ]
+
+Now:
+
+.. code-block::
+
+    OAUTH_PROVIDERS = [
+        {'name':'google', 'icon':'fa-google', 'token_key':'access_token',
+            'remote_app': {
+                'client_id':'GOOGLE KEY',
+                'client_secret':'GOOGLE SECRET',
+                'api_base_url':'https://www.googleapis.com/oauth2/v2/',
+                'client_kwargs':{
+                  'scope': 'email profile'
+                },
+                'request_token_url':None,
+                'access_token_url':'https://accounts.google.com/o/oauth2/token',
+                'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+        }
+    ]
+
+Also make sure you change your dependency for flask-oauth to `authlib <https://github.com/lepture/authlib>`_
+
 
 Fixes, Bugs and contributions
 -----------------------------
@@ -47,25 +94,6 @@ You're welcome to report bugs, propose new features, or even better contribute t
 `Issues, bugs and new features <https://github.com/dpgaspar/Flask-AppBuilder/issues/new>`_
 
 `Contribute <https://github.com/dpgaspar/Flask-AppBuilder/fork>`_
-
-Projects/Organizations using FAB
---------------------------------
-
-If you would like to share your project, or let everyone know that you're using FAB
-on your organization please submit a PR or send me an email with the details.
-
-Projects:
-
-- `Superset <https://github.com/apache/incubator-superset>`_ - a data exploration platform designed to be visual, intuitive, and interactive
-
-- `Airflow <https://github.com/apache/airflow>`_ - a platform to programmatically author, schedule, and monitor workflows.
-
-
-Organizations:
-
-- Miniclip
-- EuroBIC
-- `On Beat Digital <https://onbeat.digital/>`_
 
 Includes:
 ---------
@@ -172,6 +200,26 @@ Group by time chart
 .. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png
     :width: 480px
     :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png
+
+
+Projects/Organizations using FAB
+--------------------------------
+
+If you would like to share your project, or let everyone know that you're using FAB
+on your organization please submit a PR or send me an email with the details.
+
+Projects:
+
+- `Superset <https://github.com/apache/incubator-superset>`_ - a data exploration platform designed to be visual, intuitive, and interactive
+
+- `Airflow <https://github.com/apache/airflow>`_ - a platform to programmatically author, schedule, and monitor workflows.
+
+
+Organizations:
+
+- Miniclip
+- EuroBIC
+- `On Beat Digital <https://onbeat.digital/>`_
 
 
 Depends on:

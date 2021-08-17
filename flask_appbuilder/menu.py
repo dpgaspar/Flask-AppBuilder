@@ -1,6 +1,7 @@
 from typing import List
 
 from flask import current_app, url_for
+from flask_babel import gettext as __
 
 from .api import BaseApi, expose
 from .basemanager import BaseManager
@@ -8,13 +9,19 @@ from .security.decorators import permission_name, protect
 
 
 class MenuItem(object):
-    def __init__(self, name, href="", icon="", label="", childs=None, baseview=None):
+    def __init__(
+        self, name, href="", icon="", label="", childs=None, baseview=None, cond=None
+    ):
         self.name = name
         self.href = href
         self.icon = icon
         self.label = label
         self.childs = childs or []
         self.baseview = baseview
+        self.cond = cond
+
+    def should_render(self) -> bool:
+        return bool(self.cond()) if self.cond is not None else True
 
     def get_url(self):
         if not self.href:
@@ -64,24 +71,31 @@ class Menu(object):
         )
 
         for i, item in enumerate(menu):
-            if item.name == '-' and not i == len(menu) - 1:
-                ret_list.append('-')
+            if not item.should_render():
+                continue
+
+            if item.name == "-" and not i == len(menu) - 1:
+                ret_list.append("-")
             elif item.name not in allowed_menus:
                 continue
             elif item.childs:
-                ret_list.append({
-                    "name": item.name,
-                    "icon": item.icon,
-                    "label": str(item.label),
-                    "childs": self.get_data(menu=item.childs)
-                })
+                ret_list.append(
+                    {
+                        "name": item.name,
+                        "icon": item.icon,
+                        "label": __(str(item.label)),
+                        "childs": self.get_data(menu=item.childs),
+                    }
+                )
             else:
-                ret_list.append({
-                    "name": item.name,
-                    "icon": item.icon,
-                    "label": str(item.label),
-                    "url": item.get_url()
-                })
+                ret_list.append(
+                    {
+                        "name": item.name,
+                        "icon": item.icon,
+                        "label": __(str(item.label)),
+                        "url": item.get_url(),
+                    }
+                )
         return ret_list
 
     def find(self, name, menu=None):
@@ -120,20 +134,31 @@ class Menu(object):
         category_icon="",
         category_label="",
         baseview=None,
+        cond=None,
     ):
         label = label or name
         category_label = category_label or category
         if category == "":
             self.menu.append(
                 MenuItem(
-                    name=name, href=href, icon=icon, label=label, baseview=baseview
+                    name=name,
+                    href=href,
+                    icon=icon,
+                    label=label,
+                    baseview=baseview,
+                    cond=cond,
                 )
             )
         else:
             menu_item = self.find(category)
             if menu_item:
                 new_menu_item = MenuItem(
-                    name=name, href=href, icon=icon, label=label, baseview=baseview
+                    name=name,
+                    href=href,
+                    icon=icon,
+                    label=label,
+                    baseview=baseview,
+                    cond=cond,
                 )
                 menu_item.childs.append(new_menu_item)
             else:
@@ -141,14 +166,19 @@ class Menu(object):
                     category=category, icon=category_icon, label=category_label
                 )
                 new_menu_item = MenuItem(
-                    name=name, href=href, icon=icon, label=label, baseview=baseview
+                    name=name,
+                    href=href,
+                    icon=icon,
+                    label=label,
+                    baseview=baseview,
+                    cond=cond,
                 )
                 self.find(category).childs.append(new_menu_item)
 
-    def add_separator(self, category=""):
+    def add_separator(self, category="", cond=None):
         menu_item = self.find(category)
         if menu_item:
-            menu_item.childs.append(MenuItem("-"))
+            menu_item.childs.append(MenuItem("-", cond=cond))
         else:
             raise Exception(
                 "Menu separator does not have correct category {}".format(category)
@@ -157,14 +187,18 @@ class Menu(object):
 
 class MenuApi(BaseApi):
     resource_name = "menu"
+    openapi_spec_tag = "Menu"
 
-    @expose('/', methods=["GET"])
+    @expose("/", methods=["GET"])
     @protect(allow_browser_login=True)
-    @permission_name('get')
+    @permission_name("get")
     def get_menu_data(self):
         """An endpoint for retreiving the menu.
         ---
         get:
+          description: >-
+            Get the menu data structure.
+            Returns a forest like structure with the menu the user has access to
           responses:
             200:
               description: Get menu data
@@ -174,31 +208,28 @@ class MenuApi(BaseApi):
                     type: object
                     properties:
                       result:
+                        description: Menu items in a forest like data structure
                         type: array
                         items:
-                          oneOf:
-                            Seperator:
+                          type: object
+                          properties:
+                            name:
+                              description: >-
+                                The internal menu item name, maps to permission_name
                               type: string
-                              enum:
-                              - '-'
-                            MenuObject:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                label:
-                                  type: string
-                                icon:
-                                  type: string
-                                url:
-                                  type: string
-                                childs:
-                                  $ref: \
-        '#/paths/menu/data/get/reponses/200/content/application/json/schema/properties/result'
-                              required:
-                                - name
-                                - url
-
+                            label:
+                              description: Pretty name for the menu item
+                              type: string
+                            icon:
+                              description: Icon name to show for this menu item
+                              type: string
+                            url:
+                              description: The URL for the menu item
+                              type: string
+                            childs:
+                              type: array
+                              items:
+                                type: object
             401:
               $ref: '#/components/responses/401'
         """
@@ -207,5 +238,5 @@ class MenuApi(BaseApi):
 
 class MenuApiManager(BaseManager):
     def register_views(self):
-        if self.appbuilder.app.config.get('FAB_ADD_MENU_API', True):
+        if self.appbuilder.app.config.get("FAB_ADD_MENU_API", True):
             self.appbuilder.add_api(MenuApi)

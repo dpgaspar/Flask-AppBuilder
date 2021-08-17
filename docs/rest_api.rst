@@ -138,7 +138,7 @@ so data can be translated back and forth without loss or guesswork::
             if 'name' in kwargs['rison']:
                 return self.response(
                     200,
-                    message="Hello {}".format(kwargs['rison']['name'])
+                    message=f"Hello {kwargs['rison']['name']}"
                 )
             return self.response_400(message="Please send your name")
 
@@ -238,7 +238,7 @@ validate your Rison arguments, this way you can implement a very strict API easi
     def greeting4(self, **kwargs):
         return self.response(
             200,
-            message="Hello {}".format(kwargs['rison']['name'])
+            message=f"Hello {kwargs['rison']['name']}"
         )
 
 Finally to properly handle all possible exceptions use the ``safe`` decorator,
@@ -321,7 +321,7 @@ So our spec for a method that accepts two HTTP verbs::
 
 
 To access Swagger UI you must enable ``FAB_API_SWAGGER_UI = True`` on your config file
-then goto ``http://localhost:8080/swaggerview/v1`` for OpenAPI **v1** definitions
+then goto ``http://localhost:8080/swagger/v1`` for OpenAPI **v1** definitions
 On Swagger UI our example API looks like:
 
 .. image:: ./images/swagger001.png
@@ -396,7 +396,7 @@ easily reference them::
             """
             return self.response(
                 200,
-                message="Hello {}".format(kwargs['rison']['name'])
+                message=f"Hello {kwargs['rison']['name']}"
             )
 
 
@@ -543,8 +543,8 @@ The previous example will enable cookie sessions on the all class::
         def private(self)
             ....
 
-On the previous example, we are enabling signed cookies on the ``private`` method. Not that event then
-valid a valid JWT is also accepted.
+On the previous example, we are enabling signed cookies on the ``private`` method. Note that even then 
+a valid JWT is also accepted.
 
 Model REST API
 --------------
@@ -581,10 +581,10 @@ so you can get free documentation for you API's.
 
 FAB will create all possible permissions and add them to the ``AUTH_ROLE_ADMIN`` config key
 that defaults to **Admin**. you can completely override the default inferred permissions
-and reduce the level of granularity, for mode detail about this read the :doc:`security` chapter.
+and reduce the level of granularity, for more detail about this read the :doc:`security` chapter.
 
 Let's dive into a simple example using the quickhowto.
-The quickhowto example as a Contact's Model and a Group Model,
+The quickhowto example has a Contact's Model and a Group Model,
 so each Contact belongs to a Group.
 
 First let's define a CRUD REST Api for our Group model resource::
@@ -611,7 +611,7 @@ that can be safely serialized and deserialized. Let's recall our Model definitio
         def __repr__(self):
             return self.name
 
-Swagger UI API representation for groups (http://localhost:8080/swaggerview/v1):
+Swagger UI API representation for groups (http://localhost:8080/swagger/v1):
 
 .. image:: ./images/swagger002.png
     :width: 70%
@@ -1015,6 +1015,33 @@ the ``show_columns`` property. This takes precedence from the *Rison* arguments:
         datamodel = SQLAInterface(Contact)
         show_columns = ['name']
 
+By default FAB will issue a query containing the exact fields for `show_columns`, but these are also associated with
+the response object. Sometimes it's useful to distinguish between the query select columns and the response itself.
+Imagine the case you want to use a `@property` to further transform the output, and that transformation implies
+two model fields (concat or sum for example)::
+
+    class ContactModelApi(ModelRestApi):
+        resource_name = 'contact'
+        datamodel = SQLAInterface(Contact)
+        show_columns = ['name', 'age']
+        show_select_columns = ['name', 'birthday']
+
+
+The Model::
+
+    class Contact(Model):
+        id = Column(Integer, primary_key=True)
+        name = Column(String(150), unique=True, nullable=False)
+        ...
+        birthday = Column(Date, nullable=True)
+        ...
+
+        @property
+        def age(self):
+            return date.today().year - self.birthday.year
+
+Note: The same logic is applied on `list_select_columns`
+
 We can add fields that are python functions also, for this on the SQLAlchemy definition,
 let's add a new function::
 
@@ -1034,7 +1061,7 @@ let's add a new function::
             return self.name
 
         def some_function(self):
-            return "Hello {}".format(self.name)
+            return f"Hello {self.name}"
 
 And then on the REST API::
 
@@ -1294,19 +1321,20 @@ And we get an HTTP 422 (Unprocessable Entity).
 How to add custom validation? On our next example we only allow
 group names that start with a capital "A"::
 
-    from marshmallow import Schema, fields, ValidationError, post_load
+    from flask_appbuilder.api.schemas import BaseModelSchema
 
 
     def validate_name(n):
         if n[0] != 'A':
             raise ValidationError('Name must start with an A')
 
-    class GroupCustomSchema(Schema):
+    class GroupCustomSchema(BaseModelSchema):
+        model_cls = ContactGroup
         name = fields.Str(validate=validate_name)
 
-        @post_load
-        def process(self, data):
-            return ContactGroup(**data)
+Note that `BaseModelSchema` extends marshmallow `Schema` class, to support automatic SQLAlchemy model creation and
+update, it's a lighter version of marshmallow-sqlalchemy `ModelSchema`. Declare your SQLAlchemy model on `model_cls`
+so that a model is created on schema load.
 
 Then on our Api class::
 
@@ -1431,6 +1459,26 @@ on all HTTP methods. These methods are nice places to change data before submiss
         :members: pre_get, pre_get_list, pre_update, post_update, pre_add, post_add, pre_delete, post_delete
         :noindex:
 
+Excluding builtin generated routes
+----------------------------------
+
+There may be the case where you want to leverage some of the auto generated endpoints but want to disable others.
+For example you may want to just expose the GET endpoints for fetching a single record or records.
+You can declare which methods don't get registered on the Flask blueprint for the class (no permissions are created
+also, since it's like the methods do not exist)::
+
+
+    class ContactApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        exclude_route_methods = ("put", "post", "delete", "info")
+
+    appbuilder.add_api(ContactApi)
+
+
+On the previous example only the ``get`` and ``get_list`` methods are registered
+
+Note that using by normal OOP, you can override any builtin methods or create new ones
+
 Enum Fields
 -----------
 
@@ -1438,8 +1486,8 @@ Enum Fields
 on a specific way::
 
     class GenderEnum(enum.Enum):
-    male = 'Male'
-    female = 'Female'
+        male = 'Male'
+        female = 'Female'
 
 
     class Contact(Model):

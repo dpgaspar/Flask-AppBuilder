@@ -3,7 +3,7 @@ import logging
 import random
 
 from app import db
-from app.models import Contact, ContactGroup, Gender
+from app.models import Contact, ContactGroup, Gender, ModelOMParent, ModelOMChild
 
 log = logging.getLogger(__name__)
 
@@ -48,6 +48,24 @@ try:
 except Exception as e:
     log.error("Creating Genders: %s", e)
     db.session.rollback()
+
+
+model_oo_parents = list()
+for i in range(20):
+    model = ModelOMParent()
+    model.field_string = f"text{i}"
+    db.session.add(model)
+    db.session.commit()
+    model_oo_parents.append(model)
+
+for i in range(20):
+    for j in range(1, 4):
+        model = ModelOMChild()
+        model.field_string = f"text{i}.{j}"
+        model.parent = model_oo_parents[i]
+        db.session.add(model)
+        db.session.commit()
+
 
 f = open("NAMES.DIC", "rb")
 names_list = [x.strip() for x in f.readlines()]

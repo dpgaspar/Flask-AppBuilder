@@ -1,6 +1,227 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.3.2
+-----------------------------------
+
+- fix: improve next URL on OAuth (#1668) [Daniel Vaz Gaspar]
+- chore: Bump click to 8.0.1 (#1665) [Hugh A. Miles II]
+- feat(cli): Add import/export of roles with permissions (#1662) [krsnik93]
+
+Improvements and Bug fixes on 3.3.1
+-----------------------------------
+
+- fix: Handle integrity fails if groups map to same roles (#1605) [Fred Thomsen]
+- refactor: OAuth - redirect direct to provider if just one provider exists (#1618) [hyunjong.lee]
+- feat: Allow using custom Swagger template for SwaggerView. (#1639) [Cristòfol Torrens]
+- chore: Remove polyfill shims for browsers no longer supported (#1606) [Ryan Hamilton]
+- docs: Missing `self` reference for my_custom (#1651) [Marek Šuppa]
+- fix: add warning text to roles when AUTH_ROLES_SYNC_AT_LOGIN (#1642) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 3.3.0
+-----------------------------------
+
+- fix: auth balance (#1634) [Daniel Gaspar]
+- feat: Support for conditional menu item rendering (#1631) [Ben Reinhart]
+- docs: fix number of languages in i18n.rst (#1630) [Aleksandr Gordienko]
+- feat: Add support for before_request hooks (#1629) [Ben Reinhart]
+- docs: Typos and small changes in docs/templates.rst (#1625) [Federico Padua]
+
+Improvements and Bug fixes on 3.2.3
+-----------------------------------
+
+- fix: improve performance for get role permissions (#1624) [Daniel Gaspar]
+- feat: get user permissions API (#1620) [Daniel Gaspar]
+- fix: Ignore LDAP search referrals (#1602) [Fred Thomsen]
+- fix: relax AzureAD mandatory fields (#1608) [hyunjong.lee]
+
+Improvements and Bug fixes on 3.2.2
+-----------------------------------
+
+- docs: fix, errors in BaseModelView docstring (#1591) [Xiaodong DENG]
+- fix: load user info for okta (#1589) [QP Hou]
+
+Improvements and Bug fixes on 3.2.1
+-----------------------------------
+
+- docs: improve contributing run single test (#1579) [Daniel Vaz Gaspar]
+- fix: sqlalchemy 1.4.0 breaking changes (#1586) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 3.2.0
+-----------------------------------
+
+- fix: issue 1469 error in filters (#1541) [Duy Nguyen Hoang]
+- fix: showing excluded routes in server log (#1565) [runoutnow]
+- refactor: AUTH_LDAP/AUTH_OAUTH + implement role mapping (#1374) [Mathew Wicks]
+- fix(api): OpenAPI spec of nested components without auto generated names (#1547) [Daniel Vaz Gaspar]
+- fix(mvc): action confirmation on single show view (#1539) [Daniel Vaz Gaspar]
+- docs: improve docs around LDAP auth (#1526) [Daniel Vaz Gaspar]
+- ci: tests for python 3.8 and 3.9 (#1525) [Daniel Vaz Gaspar]
+- docs: fix, swagger path in readme (#1518) [Felix Rilling]
+- fix: oauth #1511 (#1522) [Daniel Vaz Gaspar]
+- fix: github actions (#1523) [Daniel Vaz Gaspar]
+- fix: changelog (#1507) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 3.1.1
+-----------------------------------
+
+- fix: MVC order by related column use alias (#1504) [Daniel Vaz Gaspar]
+- fix: remove unnecessary CSS class/styling from dropdowns (#1503) [Ryan Hamilton]
+- deps: constraint pre 1 packages following semver (#1502) [Daniel Vaz Gaspar]
+- fix: MVC order by on relation (#1500) [Daniel Vaz Gaspar]
+- docs: add github actions badge (#1501) [Daniel Vaz Gaspar]
+- fix: remove unnecessary classes from dropdowns (#1491) [Ryan Hamilton]
+- ci: migrate from travis to github actions (#1497) [Daniel Vaz Gaspar]
+- fix: lint (#1498) [Daniel Vaz Gaspar]
+- fix: Improve UX by moving drop-down caret within clickable target (#1492) [Ryan Hamilton]
+- style: use a clearer visual representation for "delete" actions (#1495) [Ryan Hamilton]
+- fix: "actions" on ModelViews with composite primary keys (#1493) [Ash Berlin-Taylor]
+- docs: migrate examples/quickhowto3 to version 3.x.x (#1488) [luizduma]
+- fix: REST API inner joins eager loading (#1486) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 3.1.0
+-----------------------------------
+
+- Fix, sanitize the uploaded filename (#1482)
+- Fix, add missing font file format for glyphicons (#1483)
+- Docs, Remove incorrect possessive. `list's => lists`. (#1476)
+- Fix, select2 readonly not working (#1467)
+- Fix, improve type annotations on SQLAlchemy (#1458)
+- New, Support for OpenShift OAuth (#1454)
+- Fix, remove unnecessary strict option from schemas (#1466)
+- Fix, check if locale exists before loading it (#1460)
+- Fix, Update SQLAlchemy query for count_users (#1445)
+- Docs, Contributing (#1440)
+- Docs, improve, help contributions (#1438)
+
+Improvements and Bug fixes on 3.0.1
+-----------------------------------
+
+- Fix, google charts (#1431)
+- Fix, del permission assertion on roles (#1434)
+
+Improvements and Bug fixes on 3.0.0
+-----------------------------------
+
+- Fix, swagger test (#1423)
+- Fix, change openapi tags and swagger access URL (breaking) (#1422)
+- Fix, replace deprecated flask-oauthlib with authlib (#1411)
+- Refactor, interface query on m-m joins and select specific columns (#1398)
+- Fix, docs on has_view_access (#1419)
+- New, Examples/react api (#1071)
+- Fix, action confirmation disabling (#1408)
+- New, add API descriptions and examples to OpenAPI spec (#1396)
+- New, Dynamic user registration role (#1410)
+- Fix, typos and improved bit of the German translation (#1406)
+- New, Added Dutch language to docs (#1393)
+- New, Added Dutch translation (#1387)
+- Fix, load options and limits for many to many truncating results (#1389)
+- Fix, SQLAlchemyAutoSchema needs marshmallow-sqlalchemy>=0.22.0 (#1392)
+- New, [api] support marshmallow 3 (#1334)
+- Fix, hardcoded url on oauth (#1331)
+- Fix, [examples] Update models.py (#1380)
+- Fix: add a panel body to panel_begin/panel_end macros (#1377)
+- Fix, name column resizing in ab_view_menu table #1367 (#1368)
+- Fix, typos in the documentation (#1375)
+
+Improvements and Bug fixes on 2.3.4
+-----------------------------------
+
+- Fix, [api] SQL selects and many to many joins (#1361)
+- Fix, [frontend] Revert "Bump jQuery to 3.5 (#1351)" (#1363)
+
+Improvements and Bug fixes on 2.3.3
+-----------------------------------
+
+- New, [cli] Fix, reset-password cli option (#1347)
+- New, Bump jQuery to 3.5 (#1351)
+- New, [menu] fix, add translation lookup in menu.get_data (#1352)
+- Fix, [menu] add translation lookup in menu.get_data (#1352)
+- Fix, [menu] translations on menu v2 (#1355)
+- Fix, [dependencies] include email_validator for new wtforms (#1360)
+
+Improvements and Bug fixes on 2.3.2
+-----------------------------------
+
+- New, [deploy] Add release script
+- New, [i18n] Add italian translation (#1324)
+- New, [api] Add custom filters to search (#1327)
+- Fix, [style] Better formatting on jinja template (#1321)
+- New, [examples] integrate Dash by Plotly in FAB (#1330)
+- Fix, [api] [mvc] Make like filters case insensitive (#1338)
+
+Improvements and Bug fixes on 2.3.1
+-----------------------------------
+
+[dependencies] Fix, marshmallow 3 breaks compat (#1333)
+
+Improvements and Bug fixes on 2.3.0
+-----------------------------------
+
+- New, [i18n] Add korean language (#1297)
+- New, [api] support one to many relations (#1307)
+- Fix, [mvc] reverts select2 to version 3.5.2 (#1308)
+- Fix, [mvc] Upgrade to Jquery 3 and select2 4
+- Fix, [api] List filters validation schema (#1303)
+- Fix, [api] Soften marshmallow version restriction (#1295)
+- Fix, [mvc] GET delete and action endpoints (#1294)
+- Fix, [style] impose black code style (#1292)
+
+Improvements and Bug fixes on 2.2.4
+-----------------------------------
+
+- Fix, [docs] read the docs requirements (#1288)
+- New, [mvc] [security] toggle pvm, perm and vm mvc views config options (#1259)
+- Fix, [docs] Update actions.rst (#1277)
+- Fix, [docs] changelog formatting (#1286)
+- Fix, [mvc] Use os.path.join for downloads (#1281)
+- Fix, [filemanager] Fix, use a sane mode for directories (#1282)
+- Fix, [docs] add missing import (#1278)
+- Fix, [mvc] Use formatters_columns with show_fieldsets (#1280)
+
+Improvements and Bug fixes on 2.2.3
+-----------------------------------
+
+- Fix, [dependencies] update requirements (#1272)
+- Fix, [dependencies] Update version of Flask-Babel to support Werkzeug 1.0 (#1266)
+- Fix, [api] set api jwt user on flask g (#1270)
+- Fix, [api] make REST API easier to override (#1264)
+- New, [auth] make CI optional (#1263)
+- New, [auth] make CI optional (#1263)
+- Fix, [api] many to many filters (#1256)
+- New, [api] override merge openapi docs specs (#1252)
+
+Improvements and Bug fixes on 2.2.2
+-----------------------------------
+
+- Fix, [mvc] List page's pagination start with 1 (#1216)
+- Fix, AttributeError in manager.py when a permission is null (#1217)
+- Fix, [api] using default method name when unspecified in method_permission_name (#1235)
+- New, [api] New, http 403 forbidden on default responses (#1237)
+- New, [mvc] [api] exclude and include route methods (#1234)
+- New, [mvc] [security] make userstatschartview optional (#1239)
+- New, [mvc] Disable old API flag and tests (#1244)
+- Fix, [mvc] jinja2 crashes with defined actions and removed action routes (#1245)
+
+Improvements and Bug fixes on 2.2.1
+-----------------------------------
+
+- Fix, [api] OpenAPI method and config exclusions (#1211)
+- Fix, [mvc] default page size out of sync with jinja macro (#1209)
+- New, [api] Support for json encoded content on URI parameter (#1205)
+- Fix, [api] Re-allow filtering by booleans (default generated list) (#1204)
+- Fix, [api] [menu] openapi spec (#1203)
+- New, [api] Exclude route methods from ModelRestApi (#1202)
+- Fix, [api] Don't crash on invalid filters (#1200)
+- Fix, authentication error when using oracle (#1193)
+- Fix, [api] openapi spec for the info endpoint (#1197)
+- Fix, New, Show widget template: Add some basic blocks (#1158)
+- New, State reason for LDAP login failure (#1164)
+- Fix, [docs] Get list result (#1196)
+- Fix, [examples] Update views.py (#1165)
+- Fix, create filters even when search_columns is empty (#1173)
+- Fix, jwt refresh endpoint should return new access_token (#1187)
+
 Improvements and Bug fixes on 2.2.0
 -----------------------------------
 
@@ -107,6 +328,7 @@ Improvements and Bug fixes on 2.1.0
 Improvements and Bug fixes on 2.0.0
 -----------------------------------
 
+- BREAKING CHANGES, Python 3.6+ is now required 
 - Fix, #951 M-M fields are always required, now they default to not required with optional required flag on col info dict
 - Fix, #885 list view ordering problem of related model with dotted notation, fixes #884
 - Fix, #946 Factory app pattern

@@ -81,7 +81,7 @@ class FilterStartsWith(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(field.like(value + "%"))
+        return query.filter(field.ilike(value + "%"))
 
 
 class FilterNotStartsWith(BaseFilter):
@@ -90,7 +90,7 @@ class FilterNotStartsWith(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(~field.like(value + "%"))
+        return query.filter(~field.ilike(value + "%"))
 
 
 class FilterEndsWith(BaseFilter):
@@ -99,7 +99,7 @@ class FilterEndsWith(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(field.like("%" + value))
+        return query.filter(field.ilike("%" + value))
 
 
 class FilterNotEndsWith(BaseFilter):
@@ -108,7 +108,7 @@ class FilterNotEndsWith(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(~field.like("%" + value))
+        return query.filter(~field.ilike("%" + value))
 
 
 class FilterContains(BaseFilter):
@@ -117,7 +117,7 @@ class FilterContains(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(field.like("%" + value + "%"))
+        return query.filter(field.ilike("%" + value + "%"))
 
 
 class FilterNotContains(BaseFilter):
@@ -126,7 +126,7 @@ class FilterNotContains(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(~field.like("%" + value + "%"))
+        return query.filter(~field.ilike("%" + value + "%"))
 
 
 class FilterEqual(BaseFilter):
@@ -146,6 +146,7 @@ class FilterNotEqual(BaseFilter):
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
         value = set_value_to_type(self.datamodel, self.column_name, value)
+
         return query.filter(field != value)
 
 
@@ -156,6 +157,10 @@ class FilterGreater(BaseFilter):
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
         value = set_value_to_type(self.datamodel, self.column_name, value)
+
+        if value is None:
+            return query
+
         return query.filter(field > value)
 
 
@@ -166,6 +171,10 @@ class FilterSmaller(BaseFilter):
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
         value = set_value_to_type(self.datamodel, self.column_name, value)
+
+        if value is None:
+            return query
+
         return query.filter(field < value)
 
 
@@ -193,10 +202,33 @@ class FilterRelationManyToManyEqual(FilterRelation):
     name = lazy_gettext("Relation as Many")
     arg_name = "rel_m_m"
 
+    def apply_item(self, query, field, value_item):
+        """
+        Get object by column_name and value_item, then apply filter if object exists
+        Query with new filter applied
+        """
+        rel_obj = self.datamodel.get_related_obj(self.column_name, value_item)
+
+        if rel_obj:
+            return query.filter(field.contains(rel_obj))
+        else:
+            log.error(
+                "Related object for column: %s, value: %s return Null",
+                self.column_name,
+                value_item,
+            )
+
+        return query
+
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        return query.filter(field.contains(rel_obj))
+
+        if isinstance(value, list):
+            for value_item in value:
+                query = self.apply_item(query, field, value_item)
+            return query
+
+        return self.apply_item(query, field, value)
 
 
 class FilterEqualFunction(BaseFilter):

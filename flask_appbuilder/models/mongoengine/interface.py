@@ -11,7 +11,7 @@ from mongoengine.fields import (
     ListField,
     ObjectIdField,
     ReferenceField,
-    StringField
+    StringField,
 )
 
 from . import filters
@@ -20,7 +20,7 @@ from ..._compat import as_unicode
 from ...const import (
     LOGMSG_ERR_DBI_ADD_GENERIC,
     LOGMSG_ERR_DBI_DEL_GENERIC,
-    LOGMSG_ERR_DBI_EDIT_GENERIC
+    LOGMSG_ERR_DBI_EDIT_GENERIC,
 )
 
 log = logging.getLogger(__name__)
@@ -84,7 +84,7 @@ class MongoEngineInterface(BaseInterface):
                 log.warn("Retrieving %s %s items from DB" % (count, str(self.obj)))
         else:  # get data segment for paginated page
             offset = (page or 0) * page_size
-            objs = objs[offset: offset + page_size]
+            objs = objs[offset : offset + page_size]
 
         return count, objs
 
@@ -138,8 +138,9 @@ class MongoEngineInterface(BaseInterface):
 
     def is_relation(self, col_name):
         try:
-            return (isinstance(self.obj._fields[col_name], ReferenceField) or
-                    isinstance(self.obj._fields[col_name], ListField))
+            return isinstance(self.obj._fields[col_name], ReferenceField) or isinstance(
+                self.obj._fields[col_name], ListField
+            )
         except Exception:
             return False
 

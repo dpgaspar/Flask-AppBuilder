@@ -3,21 +3,20 @@ import datetime
 import json
 import logging
 import re
-from typing import Dict, List, Set
+from typing import Dict, List, Optional, Set, Tuple
 
 from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
 from flask_login import current_user, LoginManager
-from flask_openid import OpenID
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .api import SecurityApi
 from .registerviews import (
     RegisterUserDBView,
     RegisterUserOAuthView,
-    RegisterUserOIDView
+    RegisterUserOIDView,
 )
 from .views import (
     AuthDBView,
@@ -38,7 +37,7 @@ from .views import (
     UserOIDModelView,
     UserRemoteUserModelView,
     UserStatsChartView,
-    ViewMenuModelView
+    ViewMenuModelView,
 )
 from ..basemanager import BaseManager
 from ..const import (
@@ -47,12 +46,13 @@ from ..const import (
     AUTH_OAUTH,
     AUTH_OID,
     AUTH_REMOTE_USER,
+    LOGMSG_ERR_SEC_ADD_REGISTER_USER,
     LOGMSG_ERR_SEC_AUTH_LDAP,
     LOGMSG_ERR_SEC_AUTH_LDAP_TLS,
     LOGMSG_WAR_SEC_LOGIN_FAILED,
     LOGMSG_WAR_SEC_NO_USER,
     LOGMSG_WAR_SEC_NOLDAP_OBJ,
-    PERMISSION_PREFIX
+    PERMISSION_PREFIX,
 )
 
 log = logging.getLogger(__name__)
@@ -215,6 +215,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Self Registration
         app.config.setdefault("AUTH_USER_REGISTRATION", False)
         app.config.setdefault("AUTH_USER_REGISTRATION_ROLE", self.auth_role_public)
+        app.config.setdefault("AUTH_USER_REGISTRATION_ROLE_JMESPATH", None)
+        # Role Mapping
+        app.config.setdefault("AUTH_ROLES_MAPPING", {})
+        app.config.setdefault("AUTH_ROLES_SYNC_AT_LOGIN", False)
 
         # LDAP Config
         if self.auth_type == AUTH_LDAP:
@@ -225,9 +229,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                 )
             app.config.setdefault("AUTH_LDAP_SEARCH", "")
             app.config.setdefault("AUTH_LDAP_SEARCH_FILTER", "")
-            app.config.setdefault("AUTH_LDAP_BIND_USER", "")
             app.config.setdefault("AUTH_LDAP_APPEND_DOMAIN", "")
             app.config.setdefault("AUTH_LDAP_USERNAME_FORMAT", "")
+            app.config.setdefault("AUTH_LDAP_BIND_USER", "")
             app.config.setdefault("AUTH_LDAP_BIND_PASSWORD", "")
             # TLS options
             app.config.setdefault("AUTH_LDAP_USE_TLS", False)
@@ -239,21 +243,24 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_TLS_KEYFILE", "")
             # Mapping options
             app.config.setdefault("AUTH_LDAP_UID_FIELD", "uid")
+            app.config.setdefault("AUTH_LDAP_GROUP_FIELD", "memberOf")
             app.config.setdefault("AUTH_LDAP_FIRSTNAME_FIELD", "givenName")
             app.config.setdefault("AUTH_LDAP_LASTNAME_FIELD", "sn")
             app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
 
         if self.auth_type == AUTH_OID:
+            from flask_openid import OpenID
+
             self.oid = OpenID(app)
         if self.auth_type == AUTH_OAUTH:
-            from flask_oauthlib.client import OAuth
+            from authlib.integrations.flask_client import OAuth
 
-            self.oauth = OAuth()
+            self.oauth = OAuth(app)
             self.oauth_remotes = dict()
             for _provider in self.oauth_providers:
                 provider_name = _provider["name"]
                 log.debug("OAuth providers init {0}".format(provider_name))
-                obj_provider = self.oauth.remote_app(
+                obj_provider = self.oauth.register(
                     provider_name, **_provider["remote_app"]
                 )
                 obj_provider._tokengetter = self.oauth_tokengetter
@@ -290,11 +297,38 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         jwt_manager = JWTManager()
         jwt_manager.init_app(app)
-        jwt_manager.user_loader_callback_loader(self.load_user)
+        jwt_manager.user_loader_callback_loader(self.load_user_jwt)
         return jwt_manager
 
     def create_builtin_roles(self):
-        return self.appbuilder.get_app.config.get('FAB_ROLES', {})
+        return self.appbuilder.get_app.config.get("FAB_ROLES", {})
+
+    def get_roles_from_keys(self, role_keys: List[str]) -> Set[role_model]:
+        """
+        Construct a list of FAB role objects, from a list of keys.
+
+        NOTE:
+        - keys are things like: "LDAP group DNs" or "OAUTH group names"
+        - we use AUTH_ROLES_MAPPING to map from keys, to FAB role names
+
+        :param role_keys: the list of FAB role keys
+        :return: a list of RoleModelView
+        """
+        _roles = set()
+        _role_keys = set(role_keys)
+        for role_key, fab_role_names in self.auth_roles_mapping.items():
+            if role_key in _role_keys:
+                for fab_role_name in fab_role_names:
+                    fab_role = self.find_role(fab_role_name)
+                    if fab_role:
+                        _roles.add(fab_role)
+                    else:
+                        log.warning(
+                            "Can't find role specified in AUTH_ROLES_MAPPING: {0}".format(
+                                fab_role_name
+                            )
+                        )
+        return _roles
 
     @property
     def get_url_for_registeruser(self):
@@ -320,6 +354,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["AUTH_TYPE"]
 
     @property
+    def auth_username_ci(self):
+        return self.appbuilder.get_app.config.get("AUTH_USERNAME_CI", True)
+
+    @property
     def auth_role_admin(self):
         return self.appbuilder.get_app.config["AUTH_ROLE_ADMIN"]
 
@@ -342,6 +380,18 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_user_registration_role(self):
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE"]
+
+    @property
+    def auth_user_registration_role_jmespath(self) -> str:
+        return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"]
+
+    @property
+    def auth_roles_mapping(self) -> Dict[str, List[str]]:
+        return self.appbuilder.get_app.config["AUTH_ROLES_MAPPING"]
+
+    @property
+    def auth_roles_sync_at_login(self) -> bool:
+        return self.appbuilder.get_app.config["AUTH_ROLES_SYNC_AT_LOGIN"]
 
     @property
     def auth_ldap_search(self):
@@ -370,6 +420,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_uid_field(self):
         return self.appbuilder.get_app.config["AUTH_LDAP_UID_FIELD"]
+
+    @property
+    def auth_ldap_group_field(self) -> str:
+        return self.appbuilder.get_app.config["AUTH_LDAP_GROUP_FIELD"]
 
     @property
     def auth_ldap_firstname_field(self):
@@ -451,9 +505,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             if not type(ret) == dict:
                 log.error(
                     "OAuth user info decorated function "
-                    "did not returned a dict, but: {0}".format(
-                        type(ret)
-                    )
+                    "did not returned a dict, but: {0}".format(type(ret))
                 )
                 return {}
             return ret
@@ -503,34 +555,38 @@ class BaseSecurityManager(AbstractSecurityManager):
         # for GITHUB
         if provider == "github" or provider == "githublocal":
             me = self.appbuilder.sm.oauth_remotes[provider].get("user")
-            log.debug("User info from Github: {0}".format(me.data))
-            return {"username": "github_" + me.data.get("login")}
+            data = me.json()
+            log.debug("User info from Github: {0}".format(data))
+            return {"username": "github_" + data.get("login")}
         # for twitter
         if provider == "twitter":
             me = self.appbuilder.sm.oauth_remotes[provider].get("account/settings.json")
-            log.debug("User info from Twitter: {0}".format(me.data))
-            return {"username": "twitter_" + me.data.get("screen_name", "")}
+            data = me.json()
+            log.debug("User info from Twitter: {0}".format(data))
+            return {"username": "twitter_" + data.get("screen_name", "")}
         # for linkedin
         if provider == "linkedin":
             me = self.appbuilder.sm.oauth_remotes[provider].get(
                 "people/~:(id,email-address,first-name,last-name)?format=json"
             )
-            log.debug("User info from Linkedin: {0}".format(me.data))
+            data = me.json()
+            log.debug("User info from Linkedin: {0}".format(data))
             return {
-                "username": "linkedin_" + me.data.get("id", ""),
-                "email": me.data.get("email-address", ""),
-                "first_name": me.data.get("firstName", ""),
-                "last_name": me.data.get("lastName", ""),
+                "username": "linkedin_" + data.get("id", ""),
+                "email": data.get("email-address", ""),
+                "first_name": data.get("firstName", ""),
+                "last_name": data.get("lastName", ""),
             }
         # for Google
         if provider == "google":
             me = self.appbuilder.sm.oauth_remotes[provider].get("userinfo")
-            log.debug("User info from Google: {0}".format(me.data))
+            data = me.json()
+            log.debug("User info from Google: {0}".format(data))
             return {
-                "username": "google_" + me.data.get("id", ""),
-                "first_name": me.data.get("given_name", ""),
-                "last_name": me.data.get("family_name", ""),
-                "email": me.data.get("email", ""),
+                "username": "google_" + data.get("id", ""),
+                "first_name": data.get("given_name", ""),
+                "last_name": data.get("family_name", ""),
+                "email": data.get("email", ""),
             }
         # for Azure AD Tenant. Azure OAuth response contains
         # JWT token which has user info.
@@ -544,12 +600,32 @@ class BaseSecurityManager(AbstractSecurityManager):
             me = self._azure_jwt_token_parse(id_token)
             log.debug("Parse JWT token : {0}".format(me))
             return {
-                "name": me["name"],
+                "name": me.get("name", ""),
                 "email": me["upn"],
-                "first_name": me["given_name"],
-                "last_name": me["family_name"],
+                "first_name": me.get("given_name", ""),
+                "last_name": me.get("family_name", ""),
                 "id": me["oid"],
                 "username": me["oid"],
+            }
+        # for OpenShift
+        if provider == "openshift":
+            me = self.appbuilder.sm.oauth_remotes[provider].get(
+                "apis/user.openshift.io/v1/users/~"
+            )
+            data = me.json()
+            log.debug("User info from OpenShift: {0}".format(data))
+            return {"username": "openshift_" + data.get("metadata").get("name")}
+        # for Okta
+        if provider == "okta":
+            me = self.appbuilder.sm.oauth_remotes[provider].get("userinfo")
+            data = me.json()
+            log.debug("User info from Okta: %s", data)
+            return {
+                "username": "okta_" + data.get("sub", ""),
+                "first_name": data.get("given_name", ""),
+                "last_name": data.get("family_name", ""),
+                "email": data.get("email", ""),
+                "role_keys": data.get("groups", []),
             }
         else:
             return {}
@@ -586,7 +662,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         return jwt_decoded_payload
 
     def register_views(self):
-        if not self.appbuilder.app.config.get('FAB_ADD_SECURITY_VIEWS', True):
+        if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEWS", True):
             return
         # Security APIs
         self.appbuilder.add_api(self.security_api)
@@ -648,13 +724,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         role_view.related_views = [self.user_view.__class__]
 
-        self.appbuilder.add_view(
-            self.userstatschartview,
-            "User's Statistics",
-            icon="fa-bar-chart-o",
-            label=_("User's Statistics"),
-            category="Security",
-        )
+        if self.userstatschartview:
+            self.appbuilder.add_view(
+                self.userstatschartview,
+                "User's Statistics",
+                icon="fa-bar-chart-o",
+                label=_("User's Statistics"),
+                category="Security",
+            )
         if self.auth_user_registration:
             self.appbuilder.add_view(
                 self.registerusermodelview,
@@ -664,37 +741,46 @@ class BaseSecurityManager(AbstractSecurityManager):
                 category="Security",
             )
         self.appbuilder.menu.add_separator("Security")
-        self.appbuilder.add_view(
-            self.permissionmodelview,
-            "Base Permissions",
-            icon="fa-lock",
-            label=_("Base Permissions"),
-            category="Security",
-        )
-        self.appbuilder.add_view(
-            self.viewmenumodelview,
-            "Views/Menus",
-            icon="fa-list-alt",
-            label=_("Views/Menus"),
-            category="Security",
-        )
-        self.appbuilder.add_view(
-            self.permissionviewmodelview,
-            "Permission on Views/Menus",
-            icon="fa-link",
-            label=_("Permission on Views/Menus"),
-            category="Security",
-        )
+        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_PERMISSION_VIEW", True):
+            self.appbuilder.add_view(
+                self.permissionmodelview,
+                "Base Permissions",
+                icon="fa-lock",
+                label=_("Base Permissions"),
+                category="Security",
+            )
+        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEW_MENU_VIEW", True):
+            self.appbuilder.add_view(
+                self.viewmenumodelview,
+                "Views/Menus",
+                icon="fa-list-alt",
+                label=_("Views/Menus"),
+                category="Security",
+            )
+        if self.appbuilder.app.config.get(
+            "FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW", True
+        ):
+            self.appbuilder.add_view(
+                self.permissionviewmodelview,
+                "Permission on Views/Menus",
+                icon="fa-link",
+                label=_("Permission on Views/Menus"),
+                category="Security",
+            )
 
     def create_db(self):
         """
             Setups the DB, creates admin and public roles if they don't exist.
         """
-        roles_mapping = self.appbuilder.get_app.config.get('FAB_ROLES_MAPPING', {})
+        roles_mapping = self.appbuilder.get_app.config.get("FAB_ROLES_MAPPING", {})
         for pk, name in roles_mapping.items():
             self.update_role(pk, name)
-        for role_name in self.builtin_roles:
-            self.add_role(role_name)
+        for role_name, permission_view_menus in self.builtin_roles.items():
+            permission_view_menus = [
+                self.add_permission_view_menu(permission_name, view_menu_name)
+                for view_menu_name, permission_name in permission_view_menus
+            ]
+            self.add_role(name=role_name, permissions=permission_view_menus)
         if self.auth_role_admin not in self.builtin_roles:
             self.add_role(self.auth_role_admin)
         self.add_role(self.auth_role_public)
@@ -751,6 +837,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         if user is None:
             user = self.find_user(email=username)
         if user is None or (not user.is_active):
+            # Balance failure and success
+            check_password_hash(
+                "pbkdf2:sha256:150000$Z3t6fmj2$22da622d94a1f8118"
+                "c0976a03d2f18f680bfff877c9a965db9eedc51bc0be87c",
+                "password",
+            )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
         elif check_password_hash(user.password, password):
@@ -763,186 +855,351 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def _search_ldap(self, ldap, con, username):
         """
-            Searches LDAP for user, assumes ldap_search is set.
+            Searches LDAP for user.
 
             :param ldap: The ldap module reference
             :param con: The ldap connection
-            :param username: username to match with auth_ldap_uid_field
+            :param username: username to match with AUTH_LDAP_UID_FIELD
             :return: ldap object array
         """
-        if self.auth_ldap_append_domain:
-            username = username + "@" + self.auth_ldap_append_domain
+        # always check AUTH_LDAP_SEARCH is set before calling this method
+        assert self.auth_ldap_search, "AUTH_LDAP_SEARCH must be set"
+
+        # build the filter string for the LDAP search
         if self.auth_ldap_search_filter:
-            filter_str = "(&%s(%s=%s))" % (
-                self.auth_ldap_search_filter,
-                self.auth_ldap_uid_field,
-                username,
+            filter_str = "(&{0}({1}={2}))".format(
+                self.auth_ldap_search_filter, self.auth_ldap_uid_field, username
             )
         else:
-            filter_str = "(%s=%s)" % (self.auth_ldap_uid_field, username)
-        user = con.search_s(
-            self.auth_ldap_search,
-            ldap.SCOPE_SUBTREE,
-            filter_str,
-            [
-                self.auth_ldap_firstname_field,
-                self.auth_ldap_lastname_field,
-                self.auth_ldap_email_field,
-            ],
-        )
-        if user:
-            if not user[0][0]:
-                return None
-        return user
+            filter_str = "({0}={1})".format(self.auth_ldap_uid_field, username)
 
-    def _bind_indirect_user(self, ldap, con):
+        # build what fields to request in the LDAP search
+        request_fields = [
+            self.auth_ldap_firstname_field,
+            self.auth_ldap_lastname_field,
+            self.auth_ldap_email_field,
+        ]
+        if len(self.auth_roles_mapping) > 0:
+            request_fields.append(self.auth_ldap_group_field)
+
+        # preform the LDAP search
+        log.debug(
+            "LDAP search for '{0}' with fields {1} in scope '{2}'".format(
+                filter_str, request_fields, self.auth_ldap_search
+            )
+        )
+        raw_search_result = con.search_s(
+            self.auth_ldap_search, ldap.SCOPE_SUBTREE, filter_str, request_fields
+        )
+        log.debug("LDAP search returned: {0}".format(raw_search_result))
+
+        # Remove any search referrals from results
+        search_result = [
+            (dn, attrs)
+            for dn, attrs in raw_search_result
+            if dn is not None and isinstance(attrs, dict)
+        ]
+
+        # only continue if 0 or 1 results were returned
+        if len(search_result) > 1:
+            log.error(
+                "LDAP search for '{0}' in scope '{1}' returned multiple results".format(
+                    filter_str, self.auth_ldap_search
+                )
+            )
+            return None, None
+
+        try:
+            # extract the DN
+            user_dn = search_result[0][0]
+            # extract the other attributes
+            user_info = search_result[0][1]
+            # return
+            return user_dn, user_info
+        except (IndexError, NameError):
+            return None, None
+
+    def _ldap_calculate_user_roles(
+        self, user_attributes: Dict[str, bytes]
+    ) -> List[str]:
+        user_role_objects = set()
+
+        # apply AUTH_ROLES_MAPPING
+        if len(self.auth_roles_mapping) > 0:
+            user_role_keys = self.ldap_extract_list(
+                user_attributes, self.auth_ldap_group_field
+            )
+            user_role_objects.update(self.get_roles_from_keys(user_role_keys))
+
+        # apply AUTH_USER_REGISTRATION
+        if self.auth_user_registration:
+            registration_role_name = self.auth_user_registration_role
+
+            # lookup registration role in flask db
+            fab_role = self.find_role(registration_role_name)
+            if fab_role:
+                user_role_objects.add(fab_role)
+            else:
+                log.warning(
+                    "Can't find AUTH_USER_REGISTRATION role: {0}".format(
+                        registration_role_name
+                    )
+                )
+
+        return list(user_role_objects)
+
+    def _ldap_bind_indirect(self, ldap, con) -> None:
         """
-            If using AUTH_LDAP_BIND_USER bind this user before performing search
+            Attempt to bind to LDAP using the AUTH_LDAP_BIND_USER.
+
             :param ldap: The ldap module reference
             :param con: The ldap connection
         """
-        indirect_user = self.auth_ldap_bind_user
-        if indirect_user:
-            indirect_password = self.auth_ldap_bind_password
-            log.debug("LDAP indirect bind with: {0}".format(indirect_user))
-            con.bind_s(indirect_user, indirect_password)
-            log.debug("LDAP BIND indirect OK")
+        # always check AUTH_LDAP_BIND_USER is set before calling this method
+        assert self.auth_ldap_bind_user, "AUTH_LDAP_BIND_USER must be set"
 
-    def _bind_ldap(self, ldap, con, username, password):
+        try:
+            log.debug(
+                "LDAP bind indirect TRY with username: '{0}'".format(
+                    self.auth_ldap_bind_user
+                )
+            )
+            con.simple_bind_s(self.auth_ldap_bind_user, self.auth_ldap_bind_password)
+            log.debug(
+                "LDAP bind indirect SUCCESS with username: '{0}'".format(
+                    self.auth_ldap_bind_user
+                )
+            )
+        except ldap.INVALID_CREDENTIALS as ex:
+            log.error(
+                "AUTH_LDAP_BIND_USER and AUTH_LDAP_BIND_PASSWORD are"
+                " not valid LDAP bind credentials"
+            )
+            raise ex
+
+    @staticmethod
+    def _ldap_bind(ldap, con, dn: str, password: str) -> bool:
         """
-            Private to bind/Authenticate a user.
-            If AUTH_LDAP_BIND_USER exists then it will bind first with it,
-            next will search the LDAP server using the username with UID
-            and try to bind to it (OpenLDAP).
-            If AUTH_LDAP_BIND_USER does not exit, will bind with username/password
+            Validates/binds the provided dn/password with the LDAP sever.
         """
         try:
-            if self.auth_ldap_bind_user:
-                self._bind_indirect_user(ldap, con)
-                user = self._search_ldap(ldap, con, username)
-                if user:
-                    log.debug("LDAP got User {0}".format(user))
-                    # username = DN from search
-                    username = user[0][0]
-                else:
-                    log.debug("LDAP bind failure: user not found")
-                    return False
-            log.debug("LDAP bind with: {0} {1}".format(username, "XXXXXX"))
-            if self.auth_ldap_username_format:
-                username = self.auth_ldap_username_format % username
-            if self.auth_ldap_append_domain:
-                username = username + "@" + self.auth_ldap_append_domain
-            con.bind_s(username, password)
-            log.debug("LDAP bind OK: {0}".format(username))
+            log.debug("LDAP bind TRY with username: '{0}'".format(dn))
+            con.simple_bind_s(dn, password)
+            log.debug("LDAP bind SUCCESS with username: '{0}'".format(dn))
             return True
         except ldap.INVALID_CREDENTIALS:
-            log.debug("LDAP bind failure: invalid credentials")
             return False
 
     @staticmethod
-    def ldap_extract(ldap_dict, field, fallback):
-        if not ldap_dict.get(field):
-            return fallback
-        return ldap_dict[field][0].decode("utf-8") or fallback
+    def ldap_extract(
+        ldap_dict: Dict[str, bytes], field_name: str, fallback: str
+    ) -> str:
+        raw_value = ldap_dict.get(field_name, [bytes()])
+        # decode - if empty string, default to fallback, otherwise take first element
+        return raw_value[0].decode("utf-8") or fallback
+
+    @staticmethod
+    def ldap_extract_list(ldap_dict: Dict[str, bytes], field_name: str) -> List[str]:
+        raw_list = ldap_dict.get(field_name, [])
+        # decode - removing empty strings
+        return [x.decode("utf-8") for x in raw_list if x.decode("utf-8")]
 
     def auth_user_ldap(self, username, password):
         """
-            Method for authenticating user, auth LDAP style.
-            depends on ldap module that is not mandatory requirement
-            for F.A.B.
+            Method for authenticating user with LDAP.
 
-            :param username:
-                The username
-            :param password:
-                The password
+            NOTE: this depends on python-ldap module
+
+            :param username: the username
+            :param password: the password
         """
-        if username is None or username == "":
+        # If no username is provided, go away
+        if (username is None) or username == "":
             return None
+
+        # Search the DB for this user
         user = self.find_user(username=username)
-        if user is not None and (not user.is_active):
+
+        # If user is not active, go away
+        if user and (not user.is_active):
             return None
-        else:
-            try:
-                import ldap
-            except Exception:
-                raise Exception("No ldap library for python.")
-            try:
-                if self.auth_ldap_allow_self_signed:
-                    ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
-                    ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
-                elif self.auth_ldap_tls_demand:
-                    ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
-                    ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
-                if self.auth_ldap_tls_cacertdir:
-                    ldap.set_option(
-                        ldap.OPT_X_TLS_CACERTDIR, self.auth_ldap_tls_cacertdir
+
+        # If user is not registered, and not self-registration, go away
+        if (not user) and (not self.auth_user_registration):
+            return None
+
+        # Ensure python-ldap is installed
+        try:
+            import ldap
+        except ImportError:
+            log.error("python-ldap library is not installed")
+            return None
+
+        try:
+            # LDAP certificate settings
+            if self.auth_ldap_allow_self_signed:
+                ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
+                ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+            elif self.auth_ldap_tls_demand:
+                ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
+                ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+            if self.auth_ldap_tls_cacertdir:
+                ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, self.auth_ldap_tls_cacertdir)
+            if self.auth_ldap_tls_cacertfile:
+                ldap.set_option(
+                    ldap.OPT_X_TLS_CACERTFILE, self.auth_ldap_tls_cacertfile
+                )
+            if self.auth_ldap_tls_certfile:
+                ldap.set_option(ldap.OPT_X_TLS_CERTFILE, self.auth_ldap_tls_certfile)
+            if self.auth_ldap_tls_keyfile:
+                ldap.set_option(ldap.OPT_X_TLS_KEYFILE, self.auth_ldap_tls_keyfile)
+
+            # Initialise LDAP connection
+            con = ldap.initialize(self.auth_ldap_server)
+            con.set_option(ldap.OPT_REFERRALS, 0)
+            if self.auth_ldap_use_tls:
+                try:
+                    con.start_tls_s()
+                except Exception:
+                    log.error(
+                        LOGMSG_ERR_SEC_AUTH_LDAP_TLS.format(self.auth_ldap_server)
                     )
-                if self.auth_ldap_tls_cacertfile:
-                    ldap.set_option(
-                        ldap.OPT_X_TLS_CACERTFILE, self.auth_ldap_tls_cacertfile
+                    return None
+
+            # Define variables, so we can check if they are set in later steps
+            user_dn = None
+            user_attributes = {}
+
+            # Flow 1 - (Indirect Search Bind):
+            #  - in this flow, special bind credentials are used to preform the
+            #    LDAP search
+            #  - in this flow, AUTH_LDAP_SEARCH must be set
+            if self.auth_ldap_bind_user:
+                # Bind with AUTH_LDAP_BIND_USER/AUTH_LDAP_BIND_PASSWORD
+                # (authorizes for LDAP search)
+                self._ldap_bind_indirect(ldap, con)
+
+                # Search for `username`
+                #  - returns the `user_dn` needed for binding to validate credentials
+                #  - returns the `user_attributes` needed for
+                #    AUTH_USER_REGISTRATION/AUTH_ROLES_SYNC_AT_LOGIN
+                if self.auth_ldap_search:
+                    user_dn, user_attributes = self._search_ldap(ldap, con, username)
+                else:
+                    log.error(
+                        "AUTH_LDAP_SEARCH must be set when using AUTH_LDAP_BIND_USER"
                     )
-                if self.auth_ldap_tls_certfile and self.auth_ldap_tls_keyfile:
-                    ldap.set_option(
-                        ldap.OPT_X_TLS_CERTFILE, self.auth_ldap_tls_certfile
-                    )
-                    ldap.set_option(ldap.OPT_X_TLS_KEYFILE, self.auth_ldap_tls_keyfile)
-                con = ldap.initialize(self.auth_ldap_server)
-                con.set_option(ldap.OPT_REFERRALS, 0)
-                if self.auth_ldap_use_tls:
-                    try:
-                        con.start_tls_s()
-                    except Exception:
-                        log.info(
-                            LOGMSG_ERR_SEC_AUTH_LDAP_TLS.format(self.auth_ldap_server)
-                        )
-                        return None
-                # Authenticate user
-                if not self._bind_ldap(ldap, con, username, password):
+                    return None
+
+                # If search failed, go away
+                if user_dn is None:
+                    log.info(LOGMSG_WAR_SEC_NOLDAP_OBJ.format(username))
+                    return None
+
+                # Bind with user_dn/password (validates credentials)
+                if not self._ldap_bind(ldap, con, user_dn, password):
                     if user:
                         self.update_user_auth_stat(user, False)
-                    log.warning(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
-                    return None
-                # If user does not exist on the DB and not self user registration, go away
-                if not user and not self.auth_user_registration:
-                    return None
-                # User does not exist, create one if self registration.
-                elif not user and self.auth_user_registration:
-                    self._bind_indirect_user(ldap, con)
-                    new_user = self._search_ldap(ldap, con, username)
-                    if not new_user:
-                        log.warning(LOGMSG_WAR_SEC_NOLDAP_OBJ.format(username))
-                        return None
-                    ldap_user_info = new_user[0][1]
-                    if self.auth_user_registration and user is None:
-                        user = self.add_user(
-                            username=username,
-                            first_name=self.ldap_extract(
-                                ldap_user_info, self.auth_ldap_firstname_field, username
-                            ),
-                            last_name=self.ldap_extract(
-                                ldap_user_info, self.auth_ldap_lastname_field, username
-                            ),
-                            email=self.ldap_extract(
-                                ldap_user_info,
-                                self.auth_ldap_email_field,
-                                username + "@email.notfound",
-                            ),
-                            role=self.find_role(self.auth_user_registration_role),
-                        )
 
+                    # Invalid credentials, go away
+                    log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
+                    return None
+
+            # Flow 2 - (Direct Search Bind):
+            #  - in this flow, the credentials provided by the end-user are used
+            #    to preform the LDAP search
+            #  - in this flow, we only search LDAP if AUTH_LDAP_SEARCH is set
+            #     - features like AUTH_USER_REGISTRATION & AUTH_ROLES_SYNC_AT_LOGIN
+            #       will only work if AUTH_LDAP_SEARCH is set
+            else:
+                # Copy the provided username (so we can apply formatters)
+                bind_username = username
+
+                # update `bind_username` by applying AUTH_LDAP_APPEND_DOMAIN
+                #  - for Microsoft AD, which allows binding with userPrincipalName
+                if self.auth_ldap_append_domain:
+                    bind_username = bind_username + "@" + self.auth_ldap_append_domain
+
+                # Update `bind_username` by applying AUTH_LDAP_USERNAME_FORMAT
+                #  - for transforming the username into a DN,
+                #    for example: "uid=%s,ou=example,o=test"
+                if self.auth_ldap_username_format:
+                    bind_username = self.auth_ldap_username_format % bind_username
+
+                # Bind with bind_username/password
+                # (validates credentials & authorizes for LDAP search)
+                if not self._ldap_bind(ldap, con, bind_username, password):
+                    if user:
+                        self.update_user_auth_stat(user, False)
+
+                    # Invalid credentials, go away
+                    log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(bind_username))
+                    return None
+
+                # Search for `username` (if AUTH_LDAP_SEARCH is set)
+                #  - returns the `user_attributes`
+                #    needed for AUTH_USER_REGISTRATION/AUTH_ROLES_SYNC_AT_LOGIN
+                #  - we search on `username` not `bind_username`,
+                #    because AUTH_LDAP_APPEND_DOMAIN and AUTH_LDAP_USERNAME_FORMAT
+                #    would result in an invalid search filter
+                if self.auth_ldap_search:
+                    user_dn, user_attributes = self._search_ldap(ldap, con, username)
+
+                    # If search failed, go away
+                    if user_dn is None:
+                        log.info(LOGMSG_WAR_SEC_NOLDAP_OBJ.format(username))
+                        return None
+
+            # Sync the user's roles
+            if user and user_attributes and self.auth_roles_sync_at_login:
+                user.roles = self._ldap_calculate_user_roles(user_attributes)
+                log.debug(
+                    "Calculated new roles for user='{0}' as: {1}".format(
+                        user_dn, user.roles
+                    )
+                )
+
+            # If the user is new, register them
+            if (not user) and user_attributes and self.auth_user_registration:
+                user = self.add_user(
+                    username=username,
+                    first_name=self.ldap_extract(
+                        user_attributes, self.auth_ldap_firstname_field, ""
+                    ),
+                    last_name=self.ldap_extract(
+                        user_attributes, self.auth_ldap_lastname_field, ""
+                    ),
+                    email=self.ldap_extract(
+                        user_attributes,
+                        self.auth_ldap_email_field,
+                        f"{username}@email.notfound",
+                    ),
+                    role=self._ldap_calculate_user_roles(user_attributes),
+                )
+                log.debug("New user registered: {0}".format(user))
+
+                # If user registration failed, go away
+                if not user:
+                    log.info(LOGMSG_ERR_SEC_ADD_REGISTER_USER.format(username))
+                    return None
+
+            # LOGIN SUCCESS (only if user is now registered)
+            if user:
                 self.update_user_auth_stat(user)
                 return user
+            else:
+                return None
 
-            except ldap.LDAPError as e:
-                msg = None
-                if isinstance(e, dict):
-                    msg = getattr(e, 'message', None)
-                if msg is not None and "desc" in msg:
-                    log.error(LOGMSG_ERR_SEC_AUTH_LDAP.format(e.message["desc"]))
-                    return None
-                else:
-                    log.error(e)
-                    return None
+        except ldap.LDAPError as e:
+            msg = None
+            if isinstance(e, dict):
+                msg = getattr(e, "message", None)
+            if (msg is not None) and ("desc" in msg):
+                log.error(LOGMSG_ERR_SEC_AUTH_LDAP.format(e.message["desc"]))
+                return None
+            else:
+                log.error(e)
+                return None
 
     def auth_user_oid(self, email):
         """
@@ -976,7 +1233,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 username=username,
                 first_name=username,
                 last_name="-",
-                email=username + '@email.notfound',
+                email=username + "@email.notfound",
                 role=self.find_role(self.auth_user_registration_role),
             )
 
@@ -989,41 +1246,104 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.update_user_auth_stat(user)
         return user
 
+    def _oauth_calculate_user_roles(self, userinfo) -> List[str]:
+        user_role_objects = set()
+
+        # apply AUTH_ROLES_MAPPING
+        if len(self.auth_roles_mapping) > 0:
+            user_role_keys = userinfo.get("role_keys", [])
+            user_role_objects.update(self.get_roles_from_keys(user_role_keys))
+
+        # apply AUTH_USER_REGISTRATION_ROLE
+        if self.auth_user_registration:
+            registration_role_name = self.auth_user_registration_role
+
+            # if AUTH_USER_REGISTRATION_ROLE_JMESPATH is set,
+            # use it for the registration role
+            if self.auth_user_registration_role_jmespath:
+                import jmespath
+
+                registration_role_name = jmespath.search(
+                    self.auth_user_registration_role_jmespath, userinfo
+                )
+
+            # lookup registration role in flask db
+            fab_role = self.find_role(registration_role_name)
+            if fab_role:
+                user_role_objects.add(fab_role)
+            else:
+                log.warning(
+                    "Can't find AUTH_USER_REGISTRATION role: {0}".format(
+                        registration_role_name
+                    )
+                )
+
+        return list(user_role_objects)
+
     def auth_user_oauth(self, userinfo):
         """
-            OAuth user Authentication
+            Method for authenticating user with OAuth.
 
-            :userinfo: dict with user information the keys have the same name
-            as User model columns.
+            :userinfo: dict with user information
+                       (keys are the same as User model columns)
         """
+        # extract the username from `userinfo`
         if "username" in userinfo:
-            user = self.find_user(username=userinfo["username"])
+            username = userinfo["username"]
         elif "email" in userinfo:
-            user = self.find_user(email=userinfo["email"])
+            username = userinfo["email"]
         else:
-            log.error("User info does not have username or email {0}".format(userinfo))
+            log.error(
+                "OAUTH userinfo does not have username or email {0}".format(userinfo)
+            )
             return None
-        # User is disabled
-        if user and not user.is_active:
-            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(userinfo))
+
+        # If username is empty, go away
+        if (username is None) or username == "":
             return None
-        # If user does not exist on the DB and not self user registration, go away
-        if not user and not self.auth_user_registration:
+
+        # Search the DB for this user
+        user = self.find_user(username=username)
+
+        # If user is not active, go away
+        if user and (not user.is_active):
             return None
-        # User does not exist, create one if self registration.
-        if not user:
+
+        # If user is not registered, and not self-registration, go away
+        if (not user) and (not self.auth_user_registration):
+            return None
+
+        # Sync the user's roles
+        if user and self.auth_roles_sync_at_login:
+            user.roles = self._oauth_calculate_user_roles(userinfo)
+            log.debug(
+                "Calculated new roles for user='{0}' as: {1}".format(
+                    username, user.roles
+                )
+            )
+
+        # If the user is new, register them
+        if (not user) and self.auth_user_registration:
             user = self.add_user(
-                username=userinfo["username"],
+                username=username,
                 first_name=userinfo.get("first_name", ""),
                 last_name=userinfo.get("last_name", ""),
-                email=userinfo.get("email", ""),
-                role=self.find_role(self.auth_user_registration_role),
+                email=userinfo.get("email", "") or f"{username}@email.notfound",
+                role=self._oauth_calculate_user_roles(userinfo),
             )
+            log.debug("New user registered: {0}".format(user))
+
+            # If user registration failed, go away
             if not user:
-                log.error("Error creating a new OAuth user %s" % userinfo["username"])
+                log.error("Error creating a new OAuth user {0}".format(username))
                 return None
-        self.update_user_auth_stat(user)
-        return user
+
+        # LOGIN SUCCESS (only if user is now registered)
+        if user:
+            self.update_user_auth_stat(user)
+            return user
+        else:
+            return None
 
     """
         ----------------------------------------
@@ -1052,10 +1372,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             return False
 
     def _has_access_builtin_roles(
-            self,
-            role,
-            permission_name: str,
-            view_name: str
+        self, role, permission_name: str, view_name: str
     ) -> bool:
         """
             Checks permission on builtin role
@@ -1064,13 +1381,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         for pvm in builtin_pvms:
             _view_name = pvm[0]
             _permission_name = pvm[1]
-            if (re.match(_view_name, view_name) and
-                    re.match(_permission_name, permission_name)):
+            if re.match(_view_name, view_name) and re.match(
+                _permission_name, permission_name
+            ):
                 return True
         return False
 
     def _has_view_access(
-            self, user: object, permission_name: str, view_name: str
+        self, user: object, permission_name: str, view_name: str
     ) -> bool:
         roles = user.roles
         db_role_ids = list()
@@ -1078,27 +1396,47 @@ class BaseSecurityManager(AbstractSecurityManager):
         # because no database query is needed
         for role in roles:
             if role.name in self.builtin_roles:
-                if self._has_access_builtin_roles(
-                        role,
-                        permission_name,
-                        view_name
-                ):
+                if self._has_access_builtin_roles(role, permission_name, view_name):
                     return True
             else:
                 db_role_ids.append(role.id)
 
-        # Then check against database-stored roles
-        return self.exist_permission_on_roles(
-            view_name,
-            permission_name,
-            db_role_ids,
-        )
+        # If it's not a builtin role check against database store roles
+        return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
+
+    def get_user_roles(self, user) -> List[object]:
+        """
+        Get current user roles, if user is not authenticated returns the public role
+        """
+        if not user.is_authenticated:
+            return [self.get_public_role()]
+        return user.roles
+
+    def get_role_permissions(self, role) -> Set[Tuple[str, str]]:
+        """
+        Get all permissions for a certain role
+        """
+        result = set()
+        if role.name in self.builtin_roles:
+            for permission in self.builtin_roles[role.name]:
+                result.add((permission[1], permission[0]))
+        else:
+            for permission in self.get_db_role_permissions(role.id):
+                result.add((permission.permission.name, permission.view_menu.name))
+        return result
+
+    def get_user_permissions(self, user) -> Set[Tuple[str, str]]:
+        """
+        Get all permissions from the current user
+        """
+        roles = self.get_user_roles(user)
+        result = set()
+        for role in roles:
+            result.update(self.get_role_permissions(role))
+        return result
 
     def _get_user_permission_view_menus(
-        self,
-        user: object,
-        permission_name: str,
-        view_menus_name: List[str]
+        self, user: object, permission_name: str, view_menus_name: List[str]
     ) -> Set[str]:
         """
         Return a set of view menu names with a certain permission name
@@ -1118,9 +1456,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             if role.name in self.builtin_roles:
                 for view_menu_name in view_menus_name:
                     if self._has_access_builtin_roles(
-                            role,
-                            permission_name,
-                            view_menu_name
+                        role, permission_name, view_menu_name
                     ):
                         result.add(view_menu_name)
             else:
@@ -1128,14 +1464,16 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Then check against database-stored roles
         pvms_names = [
             pvm.view_menu.name
-            for pvm in self.find_roles_permission_view_menus(permission_name, db_role_ids)
+            for pvm in self.find_roles_permission_view_menus(
+                permission_name, db_role_ids
+            )
         ]
         result.update(pvms_names)
         return result
 
     def has_access(self, permission_name, view_name):
         """
-            Check if current user or public has access to view or menu
+        Check if current user or public has access to view or menu
         """
         if current_user.is_authenticated:
             return self._has_view_access(g.user, permission_name, view_name)
@@ -1147,23 +1485,26 @@ class BaseSecurityManager(AbstractSecurityManager):
     def get_user_menu_access(self, menu_names: List[str] = None) -> Set[str]:
         if current_user.is_authenticated:
             return self._get_user_permission_view_menus(
-                g.user, "menu_access", view_menus_name=menu_names)
+                g.user, "menu_access", view_menus_name=menu_names
+            )
         elif current_user_jwt:
             return self._get_user_permission_view_menus(
-                current_user_jwt, "menu_access", view_menus_name=menu_names)
+                current_user_jwt, "menu_access", view_menus_name=menu_names
+            )
         else:
             return self._get_user_permission_view_menus(
-                None, "menu_access", view_menus_name=menu_names)
+                None, "menu_access", view_menus_name=menu_names
+            )
 
     def add_permissions_view(self, base_permissions, view_menu):
         """
-            Adds a permission on a view menu to the backend
+        Adds a permission on a view menu to the backend
 
-            :param base_permissions:
-                list of permissions from view (all exposed methods):
-                 'can_add','can_edit' etc...
-            :param view_menu:
-                name of the view or menu to add
+        :param base_permissions:
+            list of permissions from view (all exposed methods):
+             'can_add','can_edit' etc...
+        :param view_menu:
+            name of the view or menu to add
         """
         view_menu_db = self.add_view_menu(view_menu)
         perm_views = self.find_permissions_view_menu(view_menu_db)
@@ -1185,6 +1526,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                     if self.auth_role_admin not in self.builtin_roles:
                         self.add_permission_role(role_admin, pv)
             for perm_view in perm_views:
+                if perm_view.permission is None:
+                    # Skip this perm_view, it has a null permission
+                    continue
                 if perm_view.permission.name not in base_permissions:
                     # perm to delete
                     roles = self.get_all_roles()
@@ -1193,17 +1537,19 @@ class BaseSecurityManager(AbstractSecurityManager):
                     for role in roles:
                         self.del_permission_role(role, perm)
                     self.del_permission_view_menu(perm_view.permission.name, view_menu)
-                elif (self.auth_role_admin not in self.builtin_roles and
-                        perm_view not in role_admin.permissions):
+                elif (
+                    self.auth_role_admin not in self.builtin_roles
+                    and perm_view not in role_admin.permissions
+                ):
                     # Role Admin must have all permissions
                     self.add_permission_role(role_admin, perm_view)
 
     def add_permissions_menu(self, view_menu_name):
         """
-            Adds menu_access to menu on permission_view_menu
+        Adds menu_access to menu on permission_view_menu
 
-            :param view_menu_name:
-                The menu name
+        :param view_menu_name:
+            The menu name
         """
         self.add_view_menu(view_menu_name)
         pv = self.find_permission_view_menu("menu_access", view_menu_name)
@@ -1215,10 +1561,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def security_cleanup(self, baseviews, menus):
         """
-            Will cleanup all unused permissions from the database
+        Will cleanup all unused permissions from the database
 
-            :param baseviews: A list of BaseViews class
-            :param menus: Menu class
+        :param baseviews: A list of BaseViews class
+        :param menus: Menu class
         """
         viewsmenus = self.get_all_view_menu()
         roles = self.get_all_roles()
@@ -1249,85 +1595,83 @@ class BaseSecurityManager(AbstractSecurityManager):
                 method_name
             )
             # Actions do not get prefix when normally defined
-            if (hasattr(baseview, 'actions') and
-                    baseview.actions.get(old_permission_name)):
-                permission_prefix = ''
+            if hasattr(baseview, "actions") and baseview.actions.get(
+                old_permission_name
+            ):
+                permission_prefix = ""
             else:
                 permission_prefix = PERMISSION_PREFIX
             if old_permission_name:
                 if PERMISSION_PREFIX + permission_name not in ret:
-                    ret[
-                        PERMISSION_PREFIX + permission_name
-                    ] = {permission_prefix + old_permission_name, }
+                    ret[PERMISSION_PREFIX + permission_name] = {
+                        permission_prefix + old_permission_name
+                    }
                 else:
-                    ret[
-                        PERMISSION_PREFIX + permission_name
-                    ].add(permission_prefix + old_permission_name)
+                    ret[PERMISSION_PREFIX + permission_name].add(
+                        permission_prefix + old_permission_name
+                    )
         return ret
 
     @staticmethod
     def _add_state_transition(
-            state_transition: Dict,
-            old_view_name: str,
-            old_perm_name: str,
-            view_name: str,
-            perm_name: str
+        state_transition: Dict,
+        old_view_name: str,
+        old_perm_name: str,
+        view_name: str,
+        perm_name: str,
     ) -> None:
-        old_pvm = state_transition['add'].get((old_view_name, old_perm_name))
+        old_pvm = state_transition["add"].get((old_view_name, old_perm_name))
         if old_pvm:
-            state_transition['add'][(old_view_name, old_perm_name)].add(
+            state_transition["add"][(old_view_name, old_perm_name)].add(
                 (view_name, perm_name)
             )
         else:
-            state_transition['add'][(old_view_name, old_perm_name)] = {
+            state_transition["add"][(old_view_name, old_perm_name)] = {
                 (view_name, perm_name)
             }
-        state_transition['del_role_pvm'].add((old_view_name, old_perm_name))
-        state_transition['del_views'].add(old_view_name)
-        state_transition['del_perms'].add(old_perm_name)
+        state_transition["del_role_pvm"].add((old_view_name, old_perm_name))
+        state_transition["del_views"].add(old_view_name)
+        state_transition["del_perms"].add(old_perm_name)
 
     @staticmethod
     def _update_del_transitions(state_transitions: Dict, baseviews: List) -> None:
         """
-            Mutates state_transitions, loop baseviews and prunes all
-            views and permissions that are not to delete because references
-            exist.
+        Mutates state_transitions, loop baseviews and prunes all
+        views and permissions that are not to delete because references
+        exist.
 
         :param baseview:
         :param state_transitions:
         :return:
         """
         for baseview in baseviews:
-            state_transitions['del_views'].discard(baseview.class_permission_name)
+            state_transitions["del_views"].discard(baseview.class_permission_name)
             for permission in baseview.base_permissions:
-                state_transitions['del_role_pvm'].discard(
-                    (
-                        baseview.class_permission_name,
-                        permission
-                    )
+                state_transitions["del_role_pvm"].discard(
+                    (baseview.class_permission_name, permission)
                 )
-                state_transitions['del_perms'].discard(permission)
+                state_transitions["del_perms"].discard(permission)
 
     def create_state_transitions(self, baseviews: List, menus: List) -> Dict:
         """
-            Creates a Dict with all the necessary vm/permission transitions
+        Creates a Dict with all the necessary vm/permission transitions
 
-            Dict: {
-                    "add": {(<VM>, <PERM>): ((<VM>, PERM), ... )}
-                    "del_role_pvm": ((<VM>, <PERM>), ...)
-                    "del_views": (<VM>, ... )
-                    "del_perms": (<PERM>, ... )
-                  }
+        Dict: {
+                "add": {(<VM>, <PERM>): ((<VM>, PERM), ... )}
+                "del_role_pvm": ((<VM>, <PERM>), ...)
+                "del_views": (<VM>, ... )
+                "del_perms": (<PERM>, ... )
+              }
 
         :param baseviews: List with all the registered BaseView, BaseApi
         :param menus: List with all the menu entries
         :return: Dict with state transitions
         """
         state_transitions = {
-            'add': {},
-            'del_role_pvm': set(),
-            'del_views': set(),
-            'del_perms': set()
+            "add": {},
+            "del_role_pvm": set(),
+            "del_views": set(),
+            "del_perms": set(),
         }
         for baseview in baseviews:
             add_all_flag = False
@@ -1349,7 +1693,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                             old_view_name,
                             old_perm_name,
                             new_view_name,
-                            new_perm_name
+                            new_perm_name,
                         )
                 else:
                     old_perm_names = permission_mapping.get(new_perm_name) or set()
@@ -1359,17 +1703,17 @@ class BaseSecurityManager(AbstractSecurityManager):
                             old_view_name,
                             old_perm_name,
                             new_view_name,
-                            new_perm_name
+                            new_perm_name,
                         )
         self._update_del_transitions(state_transitions, baseviews)
         return state_transitions
 
     def security_converge(self, baseviews: List, menus: List, dry=False) -> Dict:
         """
-            Converges overridden permissions on all registered views/api
-            will compute all necessary operations from `class_permissions_name`,
-            `previous_class_permission_name`, method_permission_name`,
-            `previous_method_permission_name` class attributes.
+        Converges overridden permissions on all registered views/api
+        will compute all necessary operations from `class_permissions_name`,
+        `previous_class_permission_name`, method_permission_name`,
+        `previous_method_permission_name` class attributes.
 
         :param baseviews: List of registered views/apis
         :param menus: List of menu items
@@ -1387,7 +1731,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         for role in roles:
             permissions = list(role.permissions)
             for pvm in permissions:
-                new_pvm_states = state_transitions['add'].get(
+                new_pvm_states = state_transitions["add"].get(
                     (pvm.view_menu.name, pvm.permission.name)
                 )
                 if not new_pvm_states:
@@ -1398,16 +1742,17 @@ class BaseSecurityManager(AbstractSecurityManager):
                     )
                     self.add_permission_role(role, new_pvm)
                 if (pvm.view_menu.name, pvm.permission.name) in state_transitions[
-                    'del_role_pvm'
+                    "del_role_pvm"
                 ]:
                     self.del_permission_role(role, pvm)
-        for pvm in state_transitions['del_role_pvm']:
+        for pvm in state_transitions["del_role_pvm"]:
             self.del_permission_view_menu(pvm[1], pvm[0], cascade=False)
-        for view_name in state_transitions['del_views']:
+        for view_name in state_transitions["del_views"]:
             self.del_view_menu(view_name)
-        for permission_name in state_transitions['del_perms']:
+        for permission_name in state_transitions["del_perms"]:
             self.del_permission(permission_name)
         return state_transitions
+
     """
      ---------------------------
      INTERFACE ABSTRACT METHODS
@@ -1452,7 +1797,13 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def get_all_users(self):
         """
-            Generic function that returns all exsiting users
+            Generic function that returns all existing users
+        """
+        raise NotImplementedError
+
+    def get_db_role_permissions(self, role_id: int) -> List[object]:
+        """
+        Get all DB permissions from a role id
         """
         raise NotImplementedError
 
@@ -1485,7 +1836,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def find_role(self, name):
         raise NotImplementedError
 
-    def add_role(self, name):
+    def add_role(self, name, permissions=None):
         raise NotImplementedError
 
     def update_role(self, pk, name):
@@ -1519,17 +1870,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def find_roles_permission_view_menus(
-        self,
-        permission_name: str,
-        role_ids: List[int],
+        self, permission_name: str, role_ids: List[int]
     ):
         raise NotImplementedError
 
     def exist_permission_on_roles(
-        self,
-        view_name: str,
-        permission_name: str,
-        role_ids: List[int],
+        self, view_name: str, permission_name: str, role_ids: List[int]
     ) -> bool:
         """
             Finds and returns permission views for a group of roles
@@ -1649,8 +1995,22 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
+    def export_roles(self, path: Optional[str] = None) -> None:
+        """ Exports roles to JSON file. """
+        raise NotImplementedError
+
+    def import_roles(self, path: str) -> None:
+        """ Imports roles from JSON file. """
+        raise NotImplementedError
+
     def load_user(self, pk):
         return self.get_user_by_id(int(pk))
+
+    def load_user_jwt(self, pk):
+        user = self.load_user(pk)
+        # Set flask g.user to JWT user, we can't do it on before request
+        g.user = user
+        return user
 
     @staticmethod
     def before_request():

@@ -1,9 +1,12 @@
 import datetime
 import json
 import logging
+from typing import Set
 
-from flask import redirect, request, session
-from flask_appbuilder import SQLA
+from flask import Flask, make_response, redirect, request, session
+from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder.actions import action
+from flask_appbuilder.baseviews import expose
 from flask_appbuilder.charts.views import (
     ChartView,
     DirectByChartView,
@@ -11,12 +14,15 @@ from flask_appbuilder.charts.views import (
     GroupByChartView,
     TimeChartView,
 )
+from flask_appbuilder.hooks import before_request
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 from flask_appbuilder.models.sqla.filters import FilterEqual, FilterStartsWith
-from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView, ModelView
+from flask_wtf import CSRFProtect
 import jinja2
 
 from .base import FABTestCase
@@ -39,7 +45,6 @@ from .sqla.models import (
     TmpEnum,
 )
 
-
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
 
@@ -56,14 +61,11 @@ NOTNULL_VALIDATION_STRING = "This field is required"
 log = logging.getLogger(__name__)
 
 
-class AMVCBabelTestCase(FABTestCase):
+class MVCBabelTestCase(FABTestCase):
     def test_babel_empty_languages(self):
         """
             MVC: Test babel empty languages
         """
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-
         app = Flask(__name__)
         app.config.from_object("flask_appbuilder.tests.config_api")
         app.config["LANGUAGES"] = {}
@@ -82,9 +84,6 @@ class AMVCBabelTestCase(FABTestCase):
         """
             MVC: Test babel languages
         """
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-
         app = Flask(__name__)
         app.config.from_object("flask_appbuilder.tests.config_api")
         app.config["LANGUAGES"] = {
@@ -106,13 +105,8 @@ class AMVCBabelTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 302)
 
 
-class FlaskTestCase(FABTestCase):
+class BaseMVCTestCase(FABTestCase):
     def setUp(self):
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-        from flask_appbuilder.models.sqla.interface import SQLAInterface
-        from flask_appbuilder.views import ModelView
-
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
         self.app.config.from_object("flask_appbuilder.tests.config_api")
@@ -121,6 +115,272 @@ class FlaskTestCase(FABTestCase):
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
+    @property
+    def registered_endpoints(self) -> Set:
+        return {item.endpoint for item in self.app.url_map.iter_rules()}
+
+    def get_registered_view_endpoints(self, view_name) -> Set:
+        return {
+            item.endpoint
+            for item in self.app.url_map.iter_rules()
+            if item.endpoint.split(".")[0] == view_name
+        }
+
+
+class ListFilterTestCase(BaseMVCTestCase):
+    def test_list_filter_in_valid_object(self):
+        """
+        MVC: Test Filter with related object not found
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Roles doesn't exists
+            rv = c.get("/users/list/?_flt_0_roles=-1")
+            self.assertEqual(rv.status_code, 200)
+
+    def test_list_filter_unknow_column(self):
+        """
+        MVC: Test Filter with unknown field
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+            # UNKNOWN_COLUMN is not a valid column
+            rv = c.get("/users/list/?_flt_0_UNKNOWN_COLUMN=-1")
+            self.assertEqual(rv.status_code, 200)
+
+    def test_list_filter_invalid_value_format(self):
+        """
+        MVC: Test Filter with invalid value of date filter
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            #  Greater than wrong value
+            rv = c.get("/users/list/?_flt_1_created_on=wrongvalue")
+            self.assertEqual(rv.status_code, 200)
+
+            #  Smaller than wrong value
+            rv = c.get("/users/list/?_flt_2_created_on=wrongvalue")
+            self.assertEqual(rv.status_code, 200)
+
+
+class MVCCSRFTestCase(BaseMVCTestCase):
+    def setUp(self):
+
+        self.app = Flask(__name__)
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config["WTF_CSRF_ENABLED"] = True
+
+        self.csrf = CSRFProtect(self.app)
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        class Model2View(ModelView):
+            datamodel = SQLAInterface(Model1)
+
+        self.appbuilder.add_view(Model2View, "Model2", category="Model2")
+
+    def test_a_csrf_delete_not_allowed(self):
+        """
+            MVC: Test GET delete with CSRF is not allowed
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        model = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
+        pk = model.id
+        rv = client.get(f"/model2view/delete/{pk}")
+
+        self.assertEqual(rv.status_code, 302)
+        model = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
+        self.assertIsNotNone(model)
+
+    def test_a_csrf_delete_protected(self):
+        """
+            MVC: Test POST delete with CSRF
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        model = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
+        pk = model.id
+        rv = client.post(f"/model2view/delete/{pk}")
+        # Missing CSRF token
+        self.assertEqual(rv.status_code, 400)
+
+
+class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
+    """
+    Specific to test ModelView's:
+        - include_route_methods
+        - exclude_route_methods
+        - disable_api_route_methods
+    """
+
+    def setUp(self):
+        super().setUp()
+
+        class Model2IncludeView(ModelView):
+            datamodel = SQLAInterface(Model2)
+            include_route_methods = {"list", "show"}
+
+        self.appbuilder.add_view(Model2IncludeView, "Model2IncludeView")
+
+        class Model2ExcludeView(ModelView):
+            datamodel = SQLAInterface(Model2)
+            exclude_route_methods: Set = {
+                "api",
+                "api_read",
+                "api_get",
+                "api_create",
+                "api_update",
+                "api_delete",
+                "api_column_add",
+                "api_column_edit",
+                "api_readvalues",
+            }
+
+        self.appbuilder.add_view(Model2ExcludeView, "Model2ExcludeView")
+
+        class Model2IncludeExcludeView(ModelView):
+            datamodel = SQLAInterface(Model2)
+            include_route_methods: Set = {
+                "api",
+                "api_read",
+                "api_get",
+                "api_create",
+                "api_update",
+                "api_delete",
+                "api_column_add",
+                "api_column_edit",
+                "api_readvalues",
+            }
+            exclude_route_methods: Set = {
+                "api_create",
+                "api_update",
+                "api_delete",
+                "api_column_add",
+                "api_column_edit",
+                "api_readvalues",
+            }
+
+        self.appbuilder.add_view_no_menu(
+            Model2IncludeExcludeView, "Model2IncludeExcludeView"
+        )
+
+        class Model2DisableMVCApiView(ModelView):
+            datamodel = SQLAInterface(Model2)
+            disable_api_route_methods = True
+
+        self.appbuilder.add_view(Model2DisableMVCApiView, "Model2DisableMVCApiView")
+
+    def test_include_route_methods(self):
+        """
+            MVC: Include route methods
+        """
+        expected_endpoints = {"Model2IncludeView.list", "Model2IncludeView.show"}
+        self.assertEqual(
+            expected_endpoints, self.get_registered_view_endpoints("Model2IncludeView")
+        )
+        # Check that permissions do not exist
+        unexpected_permissions = [
+            ("can_add", "Model2IncludeView"),
+            ("can_edit", "Model2IncludeView"),
+            ("can_delete", "Model2IncludeView"),
+            ("can_download", "Model2IncludeView"),
+        ]
+        for unexpected_permission in unexpected_permissions:
+            pvm = self.appbuilder.sm.find_permission_view_menu(*unexpected_permission)
+            self.assertIsNone(pvm)
+        # Login and list with admin, check that mutation links are not rendered
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = client.get("/model2includeview/list/")
+        self.assertEqual(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        self.assertNotIn("/model2includeview/add", data)
+        self.assertNotIn("/model2includeview/edit", data)
+        self.assertNotIn("/model2includeview/delete", data)
+
+    def test_exclude_route_methods(self):
+        """
+            MVC: Exclude route methods
+        """
+        expected_endpoints: Set = {
+            "Model2ExcludeView.list",
+            "Model2ExcludeView.show",
+            "Model2ExcludeView.edit",
+            "Model2ExcludeView.download",
+            "Model2ExcludeView.action",
+            "Model2ExcludeView.delete",
+            "Model2ExcludeView.add",
+            "Model2ExcludeView.action_post",
+        }
+        self.assertEqual(
+            expected_endpoints, self.get_registered_view_endpoints("Model2ExcludeView")
+        )
+
+    def test_include_exclude_route_methods(self):
+        """
+            MVC: Include and Exclude route methods
+        """
+
+        expected_endpoints: Set = {
+            "Model2IncludeExcludeView.api",
+            "Model2IncludeExcludeView.api_read",
+            "Model2IncludeExcludeView.api_get",
+        }
+        self.assertEqual(
+            expected_endpoints,
+            self.get_registered_view_endpoints("Model2IncludeExcludeView"),
+        )
+        # Check that permissions do not exist
+        unexpected_permissions = [
+            ("can_add", "Model2IncludeExcludeView"),
+            ("can_edit", "Model2IncludeExcludeView"),
+            ("can_delete", "Model2IncludeExcludeView"),
+            ("can_download", "Model2IncludeExcludeView"),
+        ]
+        for unexpected_permission in unexpected_permissions:
+            pvm = self.appbuilder.sm.find_permission_view_menu(*unexpected_permission)
+            self.assertIsNone(pvm)
+
+    def test_disable_mvc_api_methods(self):
+        """
+            MVC: Disable MVC API
+        """
+        expected_endpoints: Set = {
+            "Model2DisableMVCApiView.list",
+            "Model2DisableMVCApiView.show",
+            "Model2DisableMVCApiView.add",
+            "Model2DisableMVCApiView.edit",
+            "Model2DisableMVCApiView.delete",
+            "Model2DisableMVCApiView.action",
+            "Model2DisableMVCApiView.download",
+            "Model2DisableMVCApiView.action_post",
+        }
+        self.assertEqual(
+            expected_endpoints,
+            self.get_registered_view_endpoints("Model2DisableMVCApiView"),
+        )
+
+
+class MVCTestCase(BaseMVCTestCase):
+    def setUp(self):
+        super().setUp()
         sess = PSSession()
 
         class PSView(ModelView):
@@ -145,6 +405,8 @@ class FlaskTestCase(FABTestCase):
                 "group": [["field_string", FilterEqual, "test0"]]
             }
 
+            order_columns = ["field_string", "group.field_string"]
+
         class Model22View(ModelView):
             datamodel = SQLAInterface(Model2)
             list_columns = [
@@ -161,13 +423,21 @@ class FlaskTestCase(FABTestCase):
         class Model1View(ModelView):
             datamodel = SQLAInterface(Model1)
             related_views = [Model2View]
-            list_columns = ["field_string", "field_file"]
+            list_columns = ["field_string", "field_integer"]
 
         class Model3View(ModelView):
             datamodel = SQLAInterface(Model3)
             list_columns = ["pk1", "pk2", "field_string"]
             add_columns = ["pk1", "pk2", "field_string"]
             edit_columns = ["pk1", "pk2", "field_string"]
+
+            @action(
+                "muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False
+            )
+            def muldelete(self, items):
+                self.datamodel.delete_all(items)
+                self.update_redirect()
+                return redirect(self.get_redirect())
 
         class Model1CompactView(CompactCRUDMixin, ModelView):
             datamodel = SQLAInterface(Model1)
@@ -256,6 +526,36 @@ class FlaskTestCase(FABTestCase):
         class ModelWithEnumsView(ModelView):
             datamodel = SQLAInterface(ModelWithEnums)
 
+        context = self
+        context._before_request_enabled = False
+        context._before_request_can_show = False
+        context._before_request_can_list = False
+
+        class ModelBeforeRequest(ModelView):
+            datamodel = SQLAInterface(Model1)
+
+            @before_request
+            def check_condition(self):
+                if not context._before_request_enabled:
+                    return make_response("Not found", 404)
+                return None
+
+            @before_request(only=["show"])
+            def enable_modification(self):
+                if not context._before_request_can_show:
+                    return make_response("Not found", 404)
+                return None
+
+            @before_request(only=["list"])
+            def list_enabled(self):
+                if not context._before_request_can_list:
+                    return make_response("Not found", 404)
+                return None
+
+            @expose("/enabled")
+            def enabled(self):
+                return make_response("Ok", 200)
+
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
         self.appbuilder.add_view(
             Model1ViewWithRedirects, "Model1ViewWithRedirects", category="Model1"
@@ -304,6 +604,8 @@ class FlaskTestCase(FABTestCase):
             PASSWORD_READONLY,
         )
 
+        self.appbuilder.add_view(ModelBeforeRequest, "ModelBeforeRequest")
+
     def tearDown(self):
         self.appbuilder = None
         self.app = None
@@ -314,7 +616,7 @@ class FlaskTestCase(FABTestCase):
         """
             Test views creation and registration
         """
-        self.assertEqual(len(self.appbuilder.baseviews), 36)
+        self.assertEqual(len(self.appbuilder.baseviews), 37)
 
     def test_back(self):
         """
@@ -609,6 +911,33 @@ class FlaskTestCase(FABTestCase):
         model = self.db.session.query(Model3).filter_by(pk1=2).one_or_none()
         self.assertEqual(model, None)
 
+        # Add it back, then delete via muldelete
+        self.appbuilder.get_session.add(
+            Model3(pk1=1, pk2=datetime.datetime(2017, 1, 1), field_string="baz")
+        )
+        self.appbuilder.get_session.commit()
+        rv = client.post(
+            "/model3view/action_post",
+            data=dict(
+                action="muldelete",
+                rowid=[
+                    json.dumps(
+                        [
+                            "1",
+                            {
+                                "_type": "datetime",
+                                "value": "2017-01-01T00:00:00.000000",
+                            },
+                        ]
+                    )
+                ],
+            ),
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 200)
+        model = self.db.session.query(Model3).filter_by(pk1=1).one_or_none()
+        self.assertEqual(model, None)
+
     def test_model_crud_add_with_enum(self):
         """
             Test Model add for Model with Enum Columns
@@ -804,7 +1133,7 @@ class FlaskTestCase(FABTestCase):
         rv = client.get("/model2view/add")
         data = rv.data.decode("utf-8")
         self.assertIn("test0", data)
-        self.assertNotIn(f"test1", data)
+        self.assertNotIn("test1", data)
 
         model2 = (
             self.appbuilder.get_session.query(Model2)
@@ -814,7 +1143,7 @@ class FlaskTestCase(FABTestCase):
         # Base filter string starts with
         rv = client.get(f"/model2view/edit/{model2.id}")
         data = rv.data.decode("utf-8")
-        self.assertIn(f"test1", data)
+        self.assertIn("test1", data)
 
     def test_model_list_order(self):
         """
@@ -838,9 +1167,22 @@ class FlaskTestCase(FABTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn(f"test{MODEL1_DATA_SIZE-1}", data)
 
+    def test_model_list_order_related(self):
+        """
+        Test Model order related field on lists
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = client.get(
+            "/model2view/list?_oc_Model2View=group.field_string&_od_Model2View=asc",
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 200)
+
     def test_model_add_unique_validation(self):
         """
-            Test Model add unique field validation
+        Test Model add unique field validation
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -940,7 +1282,7 @@ class FlaskTestCase(FABTestCase):
         rv = client.get("/model2view/list/")
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        self.assertIn("field_method_value", data)
+        self.assertIn("_field_method", data)
 
     def test_compactCRUDMixin(self):
         """
@@ -1237,7 +1579,7 @@ class FlaskTestCase(FABTestCase):
         # Unauthorized delete
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string=f"test1")
+            .filter_by(field_string="test1")
             .one_or_none()
         )
         pk = model1.id
@@ -1399,3 +1741,63 @@ class FlaskTestCase(FABTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 1)
+
+    def test_before_request(self):
+        """
+            Test before_request hooks
+        """
+        # All flags are false, so all request should 404.
+        self._before_request_enabled = False
+        self._before_request_can_list = False
+        self._before_request_can_show = False
+
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/list/")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/show/1")
+        self.assertEqual(rv.status_code, 404)
+
+        # /enable is available, but not others
+        self._before_request_enabled = True
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/list/")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 404)
+
+        # Now list is available, but not show
+        self._before_request_enabled = True
+        self._before_request_can_list = True
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 404)
+
+        # Everything is available
+        self._before_request_enabled = True
+        self._before_request_can_list = True
+        self._before_request_can_show = True
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)

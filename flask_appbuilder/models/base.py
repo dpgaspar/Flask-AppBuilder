@@ -1,10 +1,11 @@
 import datetime
 from functools import reduce
 import logging
+from typing import Any, Type
 
 from flask_babel import lazy_gettext
 
-from .filters import Filters
+from .filters import BaseFilterConverter, Filters
 
 try:
     import enum
@@ -22,9 +23,7 @@ class BaseInterface(object):
         Sub class it to implement your own interface for some data engine.
     """
 
-    obj = None
-
-    filter_converter_class = None
+    filter_converter_class = Type[BaseFilterConverter]
     """ when sub classing override with your own custom filter converter """
 
     """ Messages to display on CRUD Events """
@@ -45,7 +44,7 @@ class BaseInterface(object):
     """ Tuple with message and text with severity type ex: ("Added Row", "info") """
     message = ()
 
-    def __init__(self, obj):
+    def __init__(self, obj: Type[Any]):
         self.obj = obj
 
     def _get_attr(self, col_name):
@@ -83,9 +82,14 @@ class BaseInterface(object):
                 return value.value
             return value
 
-    def get_filters(self, search_columns=None):
+    def get_filters(self, search_columns=None, search_filters=None):
         search_columns = search_columns or []
-        return Filters(self.filter_converter_class, self, search_columns)
+        return Filters(
+            self.filter_converter_class,
+            self,
+            search_columns=search_columns,
+            search_filters=search_filters,
+        )
 
     def get_values_item(self, item, show_columns):
         return [self._get_attr_value(item, col) for col in show_columns]
