@@ -117,6 +117,7 @@ class MVCBabelTestCase(FABTestCase):
         self.assertIn('href="/lang/en"', data)
         self.assertIn('<h4 class="panel-title">Lista de Utilizadores</h4>', data)
 
+
 class BaseMVCTestCase(FABTestCase):
     def setUp(self):
         self.app = Flask(__name__)
