@@ -1,4 +1,4 @@
-from flask import abort, redirect, session, request
+from flask import abort, redirect, request, session
 from flask_babel import refresh
 
 from ..baseviews import BaseView, expose
