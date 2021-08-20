@@ -104,6 +104,18 @@ class MVCBabelTestCase(FABTestCase):
         rv = client.get("/lang/pt")
         self.assertEqual(rv.status_code, 302)
 
+        client.get("/")
+        rv = client.get("/lang/en", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        self.assertIn('href="/lang/pt"', data)
+        self.assertIn('<h2><center>Welcome<center></h2>', data)
+
+        rv = client.get("/lang/pt", follow_redirects=True, headers={"Referer": "/users/list/"})
+        self.assertEqual(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        self.assertIn('href="/lang/en"', data)
+        self.assertIn('<h4 class="panel-title">Lista de Utilizadores</h4>', data)
 
 class BaseMVCTestCase(FABTestCase):
     def setUp(self):
