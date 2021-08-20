@@ -109,9 +109,11 @@ class MVCBabelTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
         self.assertIn('href="/lang/pt"', data)
-        self.assertIn('<h2><center>Welcome<center></h2>', data)
+        self.assertIn("<h2><center>Welcome<center></h2>", data)
 
-        rv = client.get("/lang/pt", follow_redirects=True, headers={"Referer": "/users/list/"})
+        rv = client.get(
+            "/lang/pt", follow_redirects=True, headers={"Referer": "/users/list/"}
+        )
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
         self.assertIn('href="/lang/en"', data)
