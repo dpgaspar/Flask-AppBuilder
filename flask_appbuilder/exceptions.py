@@ -26,3 +26,9 @@ class InterfaceQueryWithoutSession(FABException):
     """You need to setup a session on the interface to perform queries"""
 
     ...
+
+
+class PasswordComplexityValidationError(FABException):
+    """Raise this when implementing your own password complexity function"""
+
+    ...

@@ -2,6 +2,7 @@ import re
 from typing import Optional
 
 from flask import current_app
+from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.base import BaseInterface
 from flask_babel import gettext
 from wtforms import Field, Form, ValidationError
@@ -63,19 +64,25 @@ class PasswordComplexityValidator:
             "FAB_PASSWORD_COMPLEXITY_VALIDATOR", None
         )
         if password_complexity_validator is not None:
-            password_complexity_validator(form, field)
+            try:
+                password_complexity_validator(field.data)
+            except PasswordComplexityValidationError as exc:
+                raise ValidationError(str(exc))
         if current_app.config.get("FAB_PASSWORD_COMPLEXITY_ENABLED", False):
-            default_password_complexity(form, field)
+            try:
+                default_password_complexity(field.data)
+            except PasswordComplexityValidationError as exc:
+                raise ValidationError(str(exc))
 
 
-def default_password_complexity(form: Form, field: Field) -> None:
+def default_password_complexity(password: str) -> None:
     """
     FAB's default password complexity validator, set FAB_PASSWORD_COMPLEXITY_ENABLED
     to True to enable it
     """
-    match = re.search(password_complexity_regex, field.data)
+    match = re.search(password_complexity_regex, password)
     if not match:
-        raise ValidationError(
+        raise PasswordComplexityValidationError(
             gettext(
                 "Must have at least two capital letters,"
                 " one special character, two digits, three lower case letters and"

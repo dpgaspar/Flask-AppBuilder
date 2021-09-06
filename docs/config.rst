@@ -286,8 +286,7 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        |                                            |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
 | FAB_PASSWORD_COMPLEXITY_VALIDATOR      | Hook for your own custom password          |           |
-|                                        | validator function. Expects a WTForm       |           |
-|                                        | validation function.                       |   No      |
+|                                        | validator function.                        |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
 | FAB_PASSWORD_COMPLEXITY_ENABLED        | Enables the default password complexity    |           |
 |                                        | validation for AUTH database users.        |   No      |

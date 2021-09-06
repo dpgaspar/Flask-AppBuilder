@@ -1,7 +1,7 @@
 import os
 
 from flask_appbuilder.const import AUTH_DB
-from wtforms import ValidationError
+from flask_appbuilder.exceptions import PasswordComplexityValidationError
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -41,16 +41,16 @@ LANGUAGES = {
 FAB_API_MAX_PAGE_SIZE = 100
 
 
-def custom_password_validator(form, field):
+def custom_password_validator(password: str) -> None:
     """
     A simplistic example for a password validator
     """
-    if len(field.data) < 8:
-        raise ValidationError("Must have at least 8 characters")
+    if len(password) < 8:
+        raise PasswordComplexityValidationError("Must have at least 8 characters")
 
-# FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
+FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
 
-FAB_PASSWORD_COMPLEXITY_ENABLED = True
+# FAB_PASSWORD_COMPLEXITY_ENABLED = True
 
 # ------------------------------
 # GLOBALS FOR GENERAL APP's
