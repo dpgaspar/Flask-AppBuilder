@@ -175,8 +175,7 @@ class UserModelView(ModelView):
             "Username valid for authentication on DB or LDAP, unused for OID auth"
         ),
         "password": lazy_gettext(
-            "Please use a good password policy,"
-            " this application does not check this for you"
+            "The user's password for authentication"
         ),
         "active": lazy_gettext(
             "It's not a good policy to remove a user, just make it inactive"
