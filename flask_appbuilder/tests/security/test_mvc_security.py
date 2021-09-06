@@ -19,8 +19,8 @@ def custom_password_validator(password: str) -> None:
     """
     A simplistic example for a password validator
     """
-    if len(password) < 8:
-        raise PasswordComplexityValidationError("Must have at least 8 characters")
+    if password != "password":
+        raise PasswordComplexityValidationError("Password must be password")
 
 
 class MVCSecurityTestCase(BaseMVCTestCase):
@@ -208,23 +208,11 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         data = rv.data.decode("utf-8")
 
-        self.assertIn("Must have at least 8 characters", data)
+        self.assertIn("Password must be password", data)
 
         rv = client.post(
-            "/resetmypassword/form",
-            data=dict(password="12345678", conf_password="12345678"),
-            follow_redirects=True,
-        )
-        data = rv.data.decode("utf-8")
-
-        self.assertNotIn(PASSWORD_COMPLEXITY_ERROR, data)
-
-        # Revert changes
-        self.app.config["FAB_PASSWORD_COMPLEXITY_VALIDATOR"] = None
-        _ = client.post(
             "/resetmypassword/form",
             data=dict(password="password", conf_password="password"),
             follow_redirects=True,
         )
-
         self.browser_logout(client)

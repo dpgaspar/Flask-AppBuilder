@@ -7,3 +7,5 @@ tox==3.5.3
 mockldap>=0.3.0
 black==19.3b0
 jmespath==0.9.5
+mypy==0.910
+mypy-extensions==0.4.3

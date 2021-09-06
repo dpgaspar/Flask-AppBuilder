@@ -7,6 +7,8 @@ from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.const import AUTH_OAUTH
 import jinja2
 
+from ..const import USERNAME_ADMIN, USERNAME_READONLY
+
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -30,6 +32,12 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.db = SQLA(self.app)
 
     def tearDown(self):
+        # Remove test user
+        user_alice = self.appbuilder.sm.find_user("alice")
+        if user_alice:
+            self.db.session.delete(user_alice)
+            self.db.session.commit()
+
         # stop Flask
         self.app = None
 
@@ -38,8 +46,12 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
 
         # stop Database
         self.db.session.remove()
-        self.db.drop_all()
         self.db = None
+
+    def assertOnlyDefaultUsers(self):
+        users = self.appbuilder.sm.get_all_users()
+        user_names = [user.username for user in users]
+        self.assertEquals(user_names, [USERNAME_ADMIN, USERNAME_READONLY])
 
     # ----------------
     # Userinfo Objects
@@ -63,7 +75,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(
@@ -75,7 +87,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # set user inactive
         new_user.active = False
@@ -94,7 +106,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # create userinfo with missing info
         userinfo_missing = self.userinfo_alice.copy()
@@ -107,7 +119,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertIsNone(user)
 
         # validate - no users were created
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
     def test__unregistered(self):
         """
@@ -119,7 +131,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_oauth(self.userinfo_alice)
@@ -128,7 +140,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the AUTH_USER_REGISTRATION_ROLE role
         self.assertEqual(user.roles, [sm.find_role("Public")])
@@ -147,7 +159,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_oauth(self.userinfo_alice)
@@ -156,7 +168,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertIsNone(user)
 
         # validate - no users were registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
     def test__unregistered__single_role(self):
         """
@@ -176,7 +188,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_oauth(self.userinfo_alice)
@@ -185,7 +197,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
         self.assertListEqual(
@@ -212,7 +224,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_oauth(self.userinfo_alice)
@@ -221,7 +233,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
         self.assertListEqual(
@@ -249,7 +261,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_oauth(self.userinfo_alice)
@@ -258,7 +270,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
         self.assertListEqual(user.roles, [sm.find_role("User")])
@@ -281,7 +293,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -293,7 +305,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_oauth(self.userinfo_alice)
@@ -317,7 +329,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -329,7 +341,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_oauth(self.userinfo_alice)
@@ -356,7 +368,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -368,7 +380,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_oauth(self.userinfo_alice)
@@ -395,7 +407,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -407,7 +419,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_oauth(self.userinfo_alice)
