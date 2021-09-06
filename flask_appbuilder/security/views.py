@@ -682,7 +682,7 @@ class AuthOAuthView(AuthView):
                 whitelist = self.appbuilder.sm.oauth_whitelists[provider]
                 allow = False
                 for e in whitelist:
-                    if re.search(e, userinfo["email"]):
+                    if "email" in userinfo and re.search(e, userinfo["email"]):
                         allow = True
                         break
                 if not allow:
