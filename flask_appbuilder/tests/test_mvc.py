@@ -734,7 +734,24 @@ class MVCTestCase(BaseMVCTestCase):
         self.browser_login(client, USERNAME_ADMIN, "password")
         rv = client.post(
             "/resetmypassword/form",
-            data=dict(password=PASSWORD_ADMIN, conf_password=PASSWORD_ADMIN),
+            data=dict(
+                current_password="password",
+                password=PASSWORD_ADMIN,
+                conf_password=PASSWORD_ADMIN,
+            ),
+            follow_redirects=True,
+        )
+        self.assertEqual(rv.status_code, 200)
+
+        # Reset My Password wrong current pass
+        self.browser_login(client, USERNAME_ADMIN, "password")
+        rv = client.post(
+            "/resetmypassword/form",
+            data=dict(
+                current_password="1",
+                password=PASSWORD_ADMIN,
+                conf_password=PASSWORD_ADMIN,
+            ),
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 200)
