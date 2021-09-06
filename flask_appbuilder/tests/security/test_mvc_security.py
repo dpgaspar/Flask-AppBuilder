@@ -1,15 +1,10 @@
 from flask_appbuilder import ModelView
+from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.exceptions import PasswordComplexityValidationError
 
 from ..base import BaseMVCTestCase
-from ..const import (
-    PASSWORD_ADMIN,
-    PASSWORD_READONLY,
-    USERNAME_ADMIN,
-    USERNAME_READONLY,
-)
+from ..const import PASSWORD_ADMIN, PASSWORD_READONLY, USERNAME_ADMIN, USERNAME_READONLY
 from ..sqla.models import Model1, Model2
 
 INVALID_LOGIN_STRING = "Invalid login"
