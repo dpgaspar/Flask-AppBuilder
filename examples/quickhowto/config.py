@@ -48,9 +48,9 @@ def custom_password_validator(password: str) -> None:
     if len(password) < 8:
         raise PasswordComplexityValidationError("Must have at least 8 characters")
 
-FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
+# FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
 
-# FAB_PASSWORD_COMPLEXITY_ENABLED = True
+FAB_PASSWORD_COMPLEXITY_ENABLED = True
 
 # ------------------------------
 # GLOBALS FOR GENERAL APP's
