@@ -10,6 +10,9 @@ import jinja2
 import ldap
 from mockldap import MockLdap
 
+
+from ..const import USERNAME_ADMIN, USERNAME_READONLY
+
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -47,6 +50,16 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.db = SQLA(self.app)
 
     def tearDown(self):
+        # Remove test user
+        user_alice = self.appbuilder.sm.find_user("alice")
+        if user_alice:
+            self.db.session.delete(user_alice)
+            self.db.session.commit()
+        user_natalie = self.appbuilder.sm.find_user("natalie")
+        if user_natalie:
+            self.db.session.delete(user_natalie)
+            self.db.session.commit()
+
         # stop MockLdap
         self.mockldap.stop()
         del self.ldapobj
@@ -59,8 +72,12 @@ class LDAPSearchTestCase(unittest.TestCase):
 
         # stop Database
         self.db.session.remove()
-        self.db.drop_all()
         self.db = None
+
+    def assertOnlyDefaultUsers(self):
+        users = self.appbuilder.sm.get_all_users()
+        user_names = [user.username for user in users]
+        self.assertEquals(user_names, [USERNAME_ADMIN, USERNAME_READONLY])
 
     # ----------------
     # LDAP Directory
@@ -305,7 +322,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # validate - login failure (missing username)
         self.assertIsNone(sm.auth_user_ldap(None, "password"))
@@ -322,7 +339,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertIsNone(sm.auth_user_ldap(None, ""))
 
         # validate - no users were created
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # validate - expected LDAP methods were called
         self.assertEquals(self.ldapobj.methods_called(with_args=True), [])
@@ -335,7 +352,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(
@@ -347,7 +364,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # set user inactive
         new_user.active = False
@@ -381,7 +398,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_ldap("natalie", "natalie_password")
@@ -390,7 +407,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
         self.assertListEqual(
@@ -426,7 +443,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -435,7 +452,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the AUTH_USER_REGISTRATION_ROLE role
         self.assertEqual(user.roles, [sm.find_role("Public")])
@@ -467,7 +484,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -476,7 +493,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertIsNone(user)
 
         # validate - no users were registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # validate - expected LDAP methods were called
         self.assertEqual(self.ldapobj.methods_called(with_args=True), [])
@@ -492,7 +509,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -516,7 +533,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -528,7 +545,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -557,7 +574,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -569,7 +586,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -596,7 +613,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -605,7 +622,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the AUTH_USER_REGISTRATION_ROLE role
         self.assertListEqual(user.roles, [sm.find_role("Public")])
@@ -639,7 +656,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -648,7 +665,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertIsNone(user)
 
         # validate - no users were registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # validate - expected LDAP methods were called
         self.assertEqual(self.ldapobj.methods_called(with_args=True), [])
@@ -666,7 +683,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -692,7 +709,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -704,7 +721,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -735,7 +752,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -747,7 +764,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -781,7 +798,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -790,7 +807,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
         self.assertListEqual(user.roles, [sm.find_role("Public"), sm.find_role("User")])
@@ -829,7 +846,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -838,7 +855,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
         self.assertListEqual(
@@ -879,7 +896,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -891,7 +908,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -930,7 +947,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -942,7 +959,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -981,7 +998,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -990,7 +1007,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
         self.assertListEqual(user.roles, [sm.find_role("Public"), sm.find_role("User")])
@@ -1031,7 +1048,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -1040,7 +1057,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
         self.assertListEqual(
@@ -1083,7 +1100,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -1095,7 +1112,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")
@@ -1136,7 +1153,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         sm.add_role("User")
 
         # validate - no users are registered
-        self.assertEqual(sm.get_all_users(), [])
+        self.assertOnlyDefaultUsers()
 
         # register a user
         new_user = sm.add_user(  # noqa
@@ -1148,7 +1165,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         )
 
         # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 1)
+        self.assertEqual(len(sm.get_all_users()), 3)
 
         # attempt login
         user = sm.auth_user_ldap("alice", "alice_password")

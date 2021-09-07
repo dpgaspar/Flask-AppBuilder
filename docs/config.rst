@@ -285,6 +285,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | FAB_STATIC_URL_PATH                    | Path to override default static folder     |           |
 |                                        |                                            |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
+| FAB_PASSWORD_COMPLEXITY_VALIDATOR      | Hook for your own custom password          |           |
+|                                        | validator function.                        |   No      |
++----------------------------------------+--------------------------------------------+-----------+
+| FAB_PASSWORD_COMPLEXITY_ENABLED        | Enables the password complexity            |           |
+|                                        | validation for AUTH database users.        |   No      |
+|                                        | Default is False.                          |           |
++----------------------------------------+--------------------------------------------+-----------+
 
 
 Using config.py
