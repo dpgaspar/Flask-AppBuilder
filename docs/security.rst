@@ -632,6 +632,7 @@ Example on your config::
         raise PasswordComplexityValidationError("Must have at least 8 characters")
 
     FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
+    FAB_PASSWORD_COMPLEXITY_ENABLED = True
 
 
 Your Custom Security

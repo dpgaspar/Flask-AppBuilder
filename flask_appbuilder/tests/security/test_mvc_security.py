@@ -194,6 +194,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         Test Security reset password with custom complexity
         """
         client = self.app.test_client()
+        self.app.config["FAB_PASSWORD_COMPLEXITY_ENABLED"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_VALIDATOR"] = custom_password_validator
 
         # Reset My password
