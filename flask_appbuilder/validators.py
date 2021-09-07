@@ -10,7 +10,7 @@ from wtforms import Field, Form, ValidationError
 password_complexity_regex = re.compile(
     r"""(
     ^(?=.*[A-Z].*[A-Z])                # at least two capital letters
-    (?!([a-zA-Z0-9]))                  # at least one of these special characters
+    (?=.*[^0-9a-zA-Z])                 # at least one of these special characters
     (?=.*[0-9].*[0-9])                 # at least two numeric digits
     (?=.*[a-z].*[a-z].*[a-z])          # at least three lower case letters
     .{10,}                             # at least 10 total characters
@@ -60,19 +60,20 @@ class PasswordComplexityValidator:
     """
 
     def __call__(self, form: Form, field: Field) -> None:
-        password_complexity_validator = current_app.config.get(
-            "FAB_PASSWORD_COMPLEXITY_VALIDATOR", None
-        )
-        if password_complexity_validator is not None:
-            try:
-                password_complexity_validator(field.data)
-            except PasswordComplexityValidationError as exc:
-                raise ValidationError(str(exc))
         if current_app.config.get("FAB_PASSWORD_COMPLEXITY_ENABLED", False):
-            try:
-                default_password_complexity(field.data)
-            except PasswordComplexityValidationError as exc:
-                raise ValidationError(str(exc))
+            password_complexity_validator = current_app.config.get(
+                "FAB_PASSWORD_COMPLEXITY_VALIDATOR", None
+            )
+            if password_complexity_validator is not None:
+                try:
+                    password_complexity_validator(field.data)
+                except PasswordComplexityValidationError as exc:
+                    raise ValidationError(str(exc))
+            else:
+                try:
+                    default_password_complexity(field.data)
+                except PasswordComplexityValidationError as exc:
+                    raise ValidationError(str(exc))
 
 
 def default_password_complexity(password: str) -> None:
