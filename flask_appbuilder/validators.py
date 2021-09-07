@@ -10,10 +10,10 @@ from wtforms import Field, Form, ValidationError
 password_complexity_regex = re.compile(
     r"""(
     ^(?=.*[A-Z].*[A-Z])                # at least two capital letters
-    (?=.*[!@#$&*])                     # at least one of these special characters
+    (?!([a-zA-Z0-9]))                  # at least one of these special characters
     (?=.*[0-9].*[0-9])                 # at least two numeric digits
     (?=.*[a-z].*[a-z].*[a-z])          # at least three lower case letters
-    .{10,}                              # at least 10 total digits
+    .{10,}                             # at least 10 total characters
     $
     )""",
     re.VERBOSE,
