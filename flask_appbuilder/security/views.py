@@ -174,9 +174,7 @@ class UserModelView(ModelView):
         "username": lazy_gettext(
             "Username valid for authentication on DB or LDAP, unused for OID auth"
         ),
-        "password": lazy_gettext(
-            "The user's password for authentication"
-        ),
+        "password": lazy_gettext("The user's password for authentication"),
         "active": lazy_gettext(
             "It's not a good policy to remove a user, just make it inactive"
         ),
@@ -305,10 +303,7 @@ class UserDBModelView(UserModelView):
     add_form_extra_fields = {
         "password": PasswordField(
             lazy_gettext("Password"),
-            description=lazy_gettext(
-                "Please use a good password policy,"
-                " this application does not check this for you"
-            ),
+            description=lazy_gettext("The user's password for authentication"),
             validators=[validators.DataRequired(), PasswordComplexityValidator()],
             widget=BS3PasswordFieldWidget(),
         ),
