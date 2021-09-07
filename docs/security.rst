@@ -614,7 +614,7 @@ This default enforces:
 - At least 3 Lowercase letters
 - At least 1 special character
 - At least 2 numeric digits
-- At least 10 total digits
+- At least 10 total characters
 
 
 If you want to set your own password complexity validation, you can write your own validation function:
