@@ -1,5 +1,8 @@
 import os
 
+from flask_appbuilder.const import AUTH_DB
+from flask_appbuilder.exceptions import PasswordComplexityValidationError
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 CSRF_ENABLED = True
@@ -36,13 +39,26 @@ LANGUAGES = {
 }
 
 FAB_API_MAX_PAGE_SIZE = 100
+
+
+def custom_password_validator(password: str) -> None:
+    """
+    A simplistic example for a password validator
+    """
+    if len(password) < 8:
+        raise PasswordComplexityValidationError("Must have at least 8 characters")
+
+# FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
+
+FAB_PASSWORD_COMPLEXITY_ENABLED = True
+
 # ------------------------------
 # GLOBALS FOR GENERAL APP's
 # ------------------------------
 UPLOAD_FOLDER = basedir + "/app/static/uploads/"
 IMG_UPLOAD_FOLDER = basedir + "/app/static/uploads/"
 IMG_UPLOAD_URL = "/static/uploads/"
-AUTH_TYPE = 1
+AUTH_TYPE = AUTH_DB
 # AUTH_LDAP_SERVER = "ldap://dc.domain.net"
 AUTH_ROLE_ADMIN = "Admin"
 AUTH_ROLE_PUBLIC = "Public"
@@ -65,3 +81,4 @@ APP_THEME = ""  # default
 # APP_THEME = "sandstone.css"
 # APP_THEME = "solar.css"
 # APP_THEME = "superhero.css"
+

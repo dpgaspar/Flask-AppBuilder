@@ -602,6 +602,39 @@ exclude them from add and edit form. Using our example you will define our view 
         edit_columns = ['name']
 
 
+Password complexity validation
+------------------------------
+
+This feature only makes sense when using AUTH database.
+By default you can enable password complexity validation by setting `FAB_PASSWORD_COMPLEXITY_ENABLED = True`.
+
+This default enforces:
+
+- At least 2 Uppercase letters
+- At least 3 Lowercase letters
+- At least 1 special character
+- At least 2 numeric digits
+- At least 10 total characters
+
+
+If you want to set your own password complexity validation, you can write your own validation function:
+
+Example on your config::
+
+    from flask_appbuilder.exceptions import PasswordComplexityValidationError
+    ...
+
+    def custom_password_validator(password: str) -> None:
+    """
+    A simplistic example for a password validator
+    """
+    if len(password) < 8:
+        raise PasswordComplexityValidationError("Must have at least 8 characters")
+
+    FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
+    FAB_PASSWORD_COMPLEXITY_ENABLED = True
+
+
 Your Custom Security
 --------------------
 
