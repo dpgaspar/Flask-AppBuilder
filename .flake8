@@ -1,5 +1,0 @@
-[flake8]
-import-order-style = google
-max-line-length = 90
-exclude = .tox,build,docs,bin,examples,flask_appbuilder/templates,flask_appbuilder/static,venv
-ignore = E203,W503,W605
