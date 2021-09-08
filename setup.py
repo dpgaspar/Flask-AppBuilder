@@ -52,7 +52,7 @@ setup(
         "Flask>=0.12, <2",
         "Flask-Babel>=1, <2",
         "Flask-Login>=0.3, <0.5",
-        "Flask-OpenID>=1.2.5, <2",
+        "Flask-OpenID @ https://github.com/apache/airflow-flask-openid-fork/releases/download/v1.2.6/Flask-OpenID-1.2.6.tar.gz",
         # SQLAlchemy 1.4.0 breaks flask-sqlalchemy and sqlalchemy-utils
         "SQLAlchemy<1.4.0",
         "Flask-SQLAlchemy>=2.4, <3",
