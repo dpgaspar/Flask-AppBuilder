@@ -1,4 +1,4 @@
-from typing import List, Optional, Type
+from typing import Any, Callable, Dict, List, Optional, Type
 
 from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -10,11 +10,11 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 
 class TreeNode:
-    def __init__(self, data):
+    def __init__(self, data: Any) -> None:
         self.data = data
-        self.childs = list()
+        self.childs: List[TreeNode] = list()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.data}.{str(self.childs)}"
 
 
@@ -23,14 +23,14 @@ class Tree:
     Simplistic one level Tree
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.root = TreeNode("+")
 
-    def add(self, data):
+    def add(self, data: Any) -> None:
         node = TreeNode(data)
         self.root.childs.append(node)
 
-    def add_child(self, parent, data):
+    def add_child(self, parent: Any, data: Any) -> None:
         node = TreeNode(data)
         for n in self.root.childs:
             if n.data == parent:
@@ -40,7 +40,7 @@ class Tree:
         self.root.childs.append(root)
         root.childs.append(node)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         ret = ""
         for node in self.root.childs:
             ret += str(node)
@@ -58,14 +58,19 @@ def columns2Tree(columns: List[str]) -> Tree:
 
 
 class BaseModel2SchemaConverter(object):
-    def __init__(self, datamodel: SQLAInterface, validators_columns):
+    def __init__(self, datamodel: SQLAInterface, validators_columns: Dict[str, Callable[[Any], None]]) -> None:
         """
         :param datamodel: SQLAInterface
         """
         self.datamodel = datamodel
         self.validators_columns = validators_columns
 
-    def convert(self, columns, **kwargs):
+    def convert(
+        self,
+        columns: List[str],
+        model: Optional[Type[Model]] = None,
+        **kwargs: Any
+    ) -> SQLAlchemyAutoSchema:
         pass
 
 
@@ -74,20 +79,20 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         Class that converts Models to marshmallow Schemas
     """
 
-    def __init__(self, datamodel: SQLAInterface, validators_columns):
+    def __init__(self, datamodel: SQLAInterface, validators_columns: Dict[str, Callable[[Any], None]]) -> None:
         """
         :param datamodel: SQLAInterface
         """
         super(Model2SchemaConverter, self).__init__(datamodel, validators_columns)
 
     @staticmethod
-    def _debug_schema(schema):
+    def _debug_schema(schema: SQLAlchemyAutoSchema) -> None:
         for k, v in schema._declared_fields.items():
             print(k, v)
 
     def _meta_schema_factory(
-        self, columns: List[str], model: Model, class_mixin, parent_schema_name=None
-    ):
+        self, columns: List[str], model: Type[Model], class_mixin: Type[object], parent_schema_name: Optional[str] = None
+    ) -> "MetaSchema":
         """
         Creates ModelSchema marshmallow-sqlalchemy
 
@@ -128,7 +133,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         datamodel: SQLAInterface,
         column: TreeNode,
         enum_dump_by_name: bool = False,
-    ):
+    ) -> EnumField:
         required = not datamodel.is_nullable(column.data)
         enum_class = datamodel.list_columns[column.data].info.get(
             "enum_class", datamodel.list_columns[column.data].type
@@ -147,7 +152,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         column: TreeNode,
         nested: bool = False,
         parent_schema_name: Optional[str] = None,
-    ):
+    ) -> Field:
         if nested:
             required = not datamodel.is_nullable(column.data)
             nested_model = datamodel.get_related_model(column.data)
@@ -233,14 +238,16 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         nested: bool = True,
         enum_dump_by_name: bool = False,
         parent_schema_name: Optional[str] = None,
-    ):
+    ) -> SQLAlchemyAutoSchema:
         """
-            Creates a Marshmallow ModelSchema class
-
+        Creates a Marshmallow ModelSchema class
 
         :param columns: List with columns to include, if empty converts all on model
         :param model: Override Model to convert
         :param nested: Generate relation with nested schemas
+        :param enum_dump_by_name: change the enum dump behaviour
+        :param parent_schema_name: optional parent schema name to use
+        to sufix the current schema name
         :return: ModelSchema object
         """
         super(Model2SchemaConverter, self).convert(

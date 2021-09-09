@@ -1,6 +1,7 @@
-from marshmallow import post_load, Schema
+from typing import Any, Dict, Optional, Type
 
-from ..const import (
+from flask_appbuilder.models.sqla import Model
+from flask_appbuilder.const import (
     API_ADD_COLUMNS_RIS_KEY,
     API_ADD_TITLE_RIS_KEY,
     API_DESCRIPTION_COLUMNS_RIS_KEY,
@@ -21,6 +22,7 @@ from ..const import (
     API_SHOW_COLUMNS_RIS_KEY,
     API_SHOW_TITLE_RIS_KEY,
 )
+from marshmallow import post_load, Schema
 
 
 class BaseModelSchema(Schema):
@@ -29,22 +31,22 @@ class BaseModelSchema(Schema):
     for creating and updating SQLAlchemy models on load
     """
 
-    model_cls = None
+    model_cls: Type[Model] = Model
     """Declare the SQLAlchemy model when creating a new model on load"""
 
-    def __init__(self, *arg, **kwargs):
-        super().__init__()
+    def __init__(self, *arg: Any, **kwargs: Any) -> None:
+        super().__init__(*arg, **kwargs)
         self.instance = None
 
     @post_load
-    def process(self, data, **kwargs):
+    def process(self, data: Dict[str, Any], **kwargs: Any) -> Model:
         if self.instance is not None:
             for key, value in data.items():
                 setattr(self.instance, key, value)
             return self.instance
         return self.model_cls(**data)
 
-    def load(self, data, *, instance=None, **kwargs):
+    def load(self, data: Dict[str, Any], instance: Optional[Model] = None, **kwargs: Any) -> None:
         self.instance = instance
         try:
             return super().load(data, **kwargs)
