@@ -58,19 +58,32 @@ def columns2Tree(columns: List[str]) -> Tree:
 
 
 class BaseModel2SchemaConverter(object):
-    def __init__(self, datamodel: SQLAInterface, validators_columns: Dict[str, Callable[[Any], None]]) -> None:
+    """
+    Base class for a Model2Schema converter so that it's possible to override
+    and create your own.
+    """
+
+    def __init__(
+        self,
+        datamodel: SQLAInterface,
+        validators_columns: Dict[str, Callable[[Any], None]],
+    ) -> None:
         """
         :param datamodel: SQLAInterface
+        :param validators_columns: A list of callables that are marshmallow validators
         """
         self.datamodel = datamodel
         self.validators_columns = validators_columns
 
     def convert(
-        self,
-        columns: List[str],
-        model: Optional[Type[Model]] = None,
-        **kwargs: Any
+        self, columns: List[str], model: Optional[Type[Model]] = None, **kwargs: Any
     ) -> SQLAlchemyAutoSchema:
+        """
+        Contract for a converter. Should convert a model type to a marshmallow schema
+        :param columns: restrict the list of columns to include on the schema
+        :param model: The type SQLAlchemy Model itself
+        :return: A SQLAlchemy auto schema
+        """
         pass
 
 
@@ -79,9 +92,14 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         Class that converts Models to marshmallow Schemas
     """
 
-    def __init__(self, datamodel: SQLAInterface, validators_columns: Dict[str, Callable[[Any], None]]) -> None:
+    def __init__(
+        self,
+        datamodel: SQLAInterface,
+        validators_columns: Dict[str, Callable[[Any], None]],
+    ) -> None:
         """
         :param datamodel: SQLAInterface
+        :param validators_columns: A list of callables that are marshmallow validators
         """
         super(Model2SchemaConverter, self).__init__(datamodel, validators_columns)
 
@@ -91,21 +109,28 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             print(k, v)
 
     def _meta_schema_factory(
-        self, columns: List[str], model: Type[Model], class_mixin: Type[object], parent_schema_name: Optional[str] = None
-    ) -> "MetaSchema":
+        self,
+        columns: List[str],
+        model: Type[Model],
+        class_mixin: Any,
+        parent_schema_name: Optional[str] = None,
+    ) -> SQLAlchemyAutoSchema:
         """
         Creates ModelSchema marshmallow-sqlalchemy
 
         :param columns: a list of columns to mix
-        :param model: Model
-        :param class_mixin: a marshamallow Schema to mix
+        :param model: type Model
+        :param class_mixin: a marshamallow Schema to mix to the final schema
         :return: ModelSchema
         """
         _model = model
         _parent_schema_name = parent_schema_name
+
+        # needed for mypy: https://github.com/python/mypy/issues/5865
+        base_class_mixin: Any = class_mixin
         if columns:
 
-            class MetaSchema(SQLAlchemyAutoSchema, class_mixin):
+            class MetaSchema(SQLAlchemyAutoSchema, base_class_mixin):
                 class Meta:
                     model = _model
                     fields = columns
@@ -117,7 +142,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
 
         else:
 
-            class MetaSchema(SQLAlchemyAutoSchema, class_mixin):
+            class MetaSchema(SQLAlchemyAutoSchema, base_class_mixin):  # type: ignore
                 class Meta:
                     model = _model
                     load_instance = True
@@ -238,6 +263,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         nested: bool = True,
         enum_dump_by_name: bool = False,
         parent_schema_name: Optional[str] = None,
+        **kwargs: Any,
     ) -> SQLAlchemyAutoSchema:
         """
         Creates a Marshmallow ModelSchema class

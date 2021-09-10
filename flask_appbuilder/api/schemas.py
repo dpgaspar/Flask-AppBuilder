@@ -46,7 +46,9 @@ class BaseModelSchema(Schema):
             return self.instance
         return self.model_cls(**data)
 
-    def load(self, data: Dict[str, Any], instance: Optional[Model] = None, **kwargs: Any) -> None:
+    def load(
+        self, data: Dict[str, Any], instance: Optional[Model] = None, **kwargs: Any
+    ) -> None:
         self.instance = instance
         try:
             return super().load(data, **kwargs)

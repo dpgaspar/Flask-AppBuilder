@@ -64,7 +64,7 @@ from ..security.decorators import permission_name, protect
 log = logging.getLogger(__name__)
 
 
-def get_error_msg():
+def get_error_msg() -> str:
     """
         (inspired on Superset code)
     :return: (str)
