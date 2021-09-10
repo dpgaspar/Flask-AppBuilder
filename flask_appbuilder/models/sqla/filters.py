@@ -2,9 +2,13 @@ import datetime
 import logging
 
 from dateutil import parser
+from flask_appbuilder.models.filters import (
+    BaseFilter,
+    BaseFilterConverter,
+    FilterRelation,
+)
 from flask_babel import lazy_gettext
-
-from ..filters import BaseFilter, BaseFilterConverter, FilterRelation
+from sqlalchemy.exc import SQLAlchemyError
 
 log = logging.getLogger(__name__)
 
@@ -184,7 +188,14 @@ class FilterRelationOneToManyEqual(FilterRelation):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        rel_obj = self.datamodel.get_related_obj(self.column_name, value)
+        try:
+            rel_obj = self.datamodel.get_related_obj(self.column_name, value)
+        except SQLAlchemyError:
+            logging.warning(
+                "Filter exception for %s with value %s, will not apply", field, value
+            )
+            self.datamodel.session.rollback()
+            return query
         return query.filter(field == rel_obj)
 
 
@@ -194,7 +205,14 @@ class FilterRelationOneToManyNotEqual(FilterRelation):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        rel_obj = self.datamodel.get_related_obj(self.column_name, value)
+        try:
+            rel_obj = self.datamodel.get_related_obj(self.column_name, value)
+        except SQLAlchemyError:
+            logging.warning(
+                "Filter exception for %s with value %s, will not apply", field, value
+            )
+            self.datamodel.session.rollback()
+            return query
         return query.filter(field != rel_obj)
 
 
@@ -207,7 +225,16 @@ class FilterRelationManyToManyEqual(FilterRelation):
         Get object by column_name and value_item, then apply filter if object exists
         Query with new filter applied
         """
-        rel_obj = self.datamodel.get_related_obj(self.column_name, value_item)
+        try:
+            rel_obj = self.datamodel.get_related_obj(self.column_name, value_item)
+        except SQLAlchemyError:
+            logging.warning(
+                "Filter exception for %s with value %s, will not apply",
+                field,
+                value_item,
+            )
+            self.datamodel.session.rollback()
+            return query
 
         if rel_obj:
             return query.filter(field.contains(rel_obj))
