@@ -1,6 +1,5 @@
 from typing import Any, Dict, Optional, Type
 
-from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.const import (
     API_ADD_COLUMNS_RIS_KEY,
     API_ADD_TITLE_RIS_KEY,
@@ -22,6 +21,7 @@ from flask_appbuilder.const import (
     API_SHOW_COLUMNS_RIS_KEY,
     API_SHOW_TITLE_RIS_KEY,
 )
+from flask_appbuilder.models.sqla import Model
 from marshmallow import post_load, Schema
 
 

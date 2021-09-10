@@ -3,25 +3,21 @@ import json
 import logging
 import re
 import traceback
-from typing import Callable, Dict, List, Optional, Set
+from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union
 import urllib.parse
 
 from apispec import APISpec, yaml_utils
 from apispec.exceptions import DuplicateComponentNameError
 from flask import Blueprint, current_app, jsonify, make_response, request, Response
-from flask_babel import lazy_gettext as _
-import jsonschema
-from marshmallow import Schema, ValidationError
-from marshmallow_sqlalchemy.fields import Related, RelatedList
-import prison
-from sqlalchemy.exc import IntegrityError
-from werkzeug.exceptions import BadRequest
-import yaml
-
-from .convert import Model2SchemaConverter
-from .schemas import get_info_schema, get_item_schema, get_list_schema
-from .._compat import as_unicode
-from ..const import (
+from flask_appbuilder._compat import as_unicode
+from flask_appbuilder.api.convert import Model2SchemaConverter
+from flask_appbuilder.api.schemas import (
+    get_info_schema,
+    get_item_schema,
+    get_list_schema,
+)
+from flask_appbuilder.base import AppBuilder
+from flask_appbuilder.const import (
     API_ADD_COLUMNS_RES_KEY,
     API_ADD_COLUMNS_RIS_KEY,
     API_ADD_TITLE_RES_KEY,
@@ -57,9 +53,20 @@ from ..const import (
     API_URI_RIS_KEY,
     PERMISSION_PREFIX,
 )
-from ..exceptions import FABException, InvalidOrderByColumnFABException
-from ..hooks import get_before_request_hooks, wrap_route_handler_with_hooks
-from ..security.decorators import permission_name, protect
+from flask_appbuilder.exceptions import FABException, InvalidOrderByColumnFABException
+from flask_appbuilder.hooks import (
+    get_before_request_hooks,
+    wrap_route_handler_with_hooks,
+)
+from flask_appbuilder.security.decorators import permission_name, protect
+from flask_babel import lazy_gettext as _
+import jsonschema
+from marshmallow import Schema, ValidationError
+from marshmallow_sqlalchemy.fields import Related, RelatedList
+import prison
+from sqlalchemy.exc import IntegrityError
+from werkzeug.exceptions import BadRequest
+import yaml
 
 log = logging.getLogger(__name__)
 
@@ -74,13 +81,15 @@ def get_error_msg() -> str:
     return "Fatal error"
 
 
-def safe(f):
+def safe(f: Callable[..., Response]) -> Callable[..., Response]:
     """
     A decorator that catches uncaught exceptions and
     return the response in JSON format (inspired on Superset code)
     """
 
-    def wraps(self, *args, **kwargs):
+    def wraps(
+        self: Union[BaseApi, ModelRestApi], *args: Any, **kwargs: Any
+    ) -> Response:
         try:
             return f(self, *args, **kwargs)
         except BadRequest as e:
@@ -92,43 +101,47 @@ def safe(f):
     return functools.update_wrapper(wraps, f)
 
 
-def rison(schema=None):
+def rison(
+    schema: Dict[str, Any] = None
+) -> Callable[[Callable[..., Response]], Callable[..., Response]]:
     """
-        Use this decorator to parse URI *Rison* arguments to
-        a python data structure, your method gets the data
-        structure on kwargs['rison']. Response is HTTP 400
-        if *Rison* is not correct::
+    Use this decorator to parse URI *Rison* arguments to
+    a python data structure, your method gets the data
+    structure on kwargs['rison']. Response is HTTP 400
+    if *Rison* is not correct::
 
-            class ExampleApi(BaseApi):
-                    @expose('/risonjson')
-                    @rison()
-                    def rison_json(self, **kwargs):
-                        return self.response(200, result=kwargs['rison'])
+        class ExampleApi(BaseApi):
+                @expose('/risonjson')
+                @rison()
+                def rison_json(self, **kwargs):
+                    return self.response(200, result=kwargs['rison'])
 
-        You can additionally pass a JSON schema to
-        validate Rison arguments::
+    You can additionally pass a JSON schema to
+    validate Rison arguments::
 
-            schema = {
-                "type": "object",
-                "properties": {
-                    "arg1": {
-                        "type": "integer"
-                    }
+        schema = {
+            "type": "object",
+            "properties": {
+                "arg1": {
+                    "type": "integer"
                 }
             }
+        }
 
-            class ExampleApi(BaseApi):
-                    @expose('/risonjson')
-                    @rison(schema)
-                    def rison_json(self, **kwargs):
-                        return self.response(200, result=kwargs['rison'])
+        class ExampleApi(BaseApi):
+                @expose('/risonjson')
+                @rison(schema)
+                def rison_json(self, **kwargs):
+                    return self.response(200, result=kwargs['rison'])
 
     """
 
-    def _rison(f):
-        def wraps(self, *args, **kwargs):
+    def _rison(f: Callable[..., Response]) -> Callable[..., Response]:
+        def wraps(
+            self: Union[BaseApi, ModelRestApi], *args: Any, **kwargs: Any
+        ) -> Response:
             value = request.args.get(API_URI_RIS_KEY, None)
-            kwargs["rison"] = dict()
+            kwargs["rison"] = {}
             if value:
                 try:
                     kwargs["rison"] = prison.loads(value)
@@ -136,17 +149,23 @@ def rison(schema=None):
                     if current_app.config.get("FAB_API_ALLOW_JSON_QS", True):
                         # Rison failed try json encoded content
                         try:
-                            kwargs["rison"] = json.loads(
-                                urllib.parse.parse_qs(f"{API_URI_RIS_KEY}={value}").get(
-                                    API_URI_RIS_KEY
-                                )[0]
+                            parsed_qs: Dict[str, List[str]] = urllib.parse.parse_qs(
+                                f"{API_URI_RIS_KEY}={value}"
                             )
+                            json_qs = parsed_qs.get(API_URI_RIS_KEY)
+                            if json_qs:
+                                kwargs["rison"] = json.loads(json_qs[0])
+                            else:
+                                return self.response_400(
+                                    message="Not a valid rison/json argument"
+                                )
                         except Exception:
                             return self.response_400(
                                 message="Not a valid rison/json argument"
                             )
                     else:
                         return self.response_400(message="Not a valid rison argument")
+            # check against a json schema if we have one to validate
             if schema:
                 try:
                     jsonschema.validate(instance=kwargs["rison"], schema=schema)
@@ -159,58 +178,62 @@ def rison(schema=None):
     return _rison
 
 
-def expose(url="/", methods=("GET",)):
+def expose(
+    url: str = "/", methods: Iterable[str] = ("GET",)
+) -> Callable[[Callable[..., Response]], Callable[..., Response]]:
     """
-        Use this decorator to expose API endpoints on your API classes.
+    Use this decorator to expose API endpoints on your API classes.
 
-        :param url:
-            Relative URL for the endpoint
-        :param methods:
-            Allowed HTTP methods. By default only GET is allowed.
+    :param url:
+        Relative URL for the endpoint
+    :param methods:
+        Allowed HTTP methods. By default only GET is allowed.
     """
 
-    def wrap(f):
+    def wrap(f: Callable[..., Response]) -> Callable[..., Response]:
         if not hasattr(f, "_urls"):
-            f._urls = []
-        f._urls.append((url, methods))
+            setattr(f, "_urls", [])
+        f._urls.append((url, methods))  # type: ignore
         return f
 
     return wrap
 
 
-def merge_response_func(func, key):
+def merge_response_func(
+    func: Callable[..., Response], key: str
+) -> Callable[[Callable[..., Response]], Callable[..., Response]]:
     """
-        Use this decorator to set a new merging
-        response function to HTTP endpoints
+    Use this decorator to set a new merging
+    response function to HTTP endpoints
 
-        candidate function must have the following signature
-        and be childs of BaseApi:
-        ```
-            def merge_some_function(self, response, rison_args):
-        ```
+    candidate function must have the following signature
+    and be childs of BaseApi:
+    ```
+        def merge_some_function(self, response, rison_args):
+    ```
 
     :param func: Name of the merge function where the key is allowed
     :param key: The key name for rison selection
     :return: None
     """
 
-    def wrap(f):
+    def wrap(f: Callable[..., Response]) -> Callable[..., Response]:
         if not hasattr(f, "_response_key_func_mappings"):
-            f._response_key_func_mappings = dict()
-        f._response_key_func_mappings[key] = func
+            setattr(f, "_response_key_func_mappings", {})
+        f._response_key_func_mappings[key] = func  # type: ignore
         return f
 
     return wrap
 
 
-class BaseApi(object):
+class BaseApi:
     """
-        All apis inherit from this class.
-        it's constructor will register your exposed urls on flask
-        as a Blueprint.
+    All apis inherit from this class.
+    it's constructor will register your exposed urls on flask
+    as a Blueprint.
 
-        This class does not expose any urls,
-        but provides a common base for all APIS.
+    This class does not expose any urls,
+    but provides a common base for all APIS.
     """
 
     appbuilder = None
@@ -219,80 +242,79 @@ class BaseApi(object):
 
     version: Optional[str] = "v1"
     """
-        Define the Api version for this resource/class
+    Define the Api version for this resource/class
     """
     route_base: Optional[str] = None
     """
-        Define the route base where all methods will suffix from
+    Define the route base where all methods will suffix from
     """
     resource_name: Optional[str] = None
     """
-        Defines a custom resource name, overrides the inferred from Class name
-        makes no sense to use it with route base
+    Defines a custom resource name, overrides the inferred from Class name
+    makes no sense to use it with route base
     """
     base_permissions: Optional[List[str]] = None
     """
-        A list of allowed base permissions::
+    A list of allowed base permissions::
 
-            class ExampleApi(BaseApi):
-                base_permissions = ['can_get']
+        class ExampleApi(BaseApi):
+            base_permissions = ['can_get']
 
     """
     class_permission_name: Optional[str] = None
     """
-        Override class permission name default fallback to self.__class__.__name__
+    Override class permission name default fallback to self.__class__.__name__
     """
     previous_class_permission_name: Optional[str] = None
     """
-        If set security converge will replace all permissions tuples
-        with this name by the class_permission_name or self.__class__.__name__
+    If set security converge will replace all permissions tuples
+    with this name by the class_permission_name or self.__class__.__name__
     """
     method_permission_name: Optional[Dict[str, str]] = None
     """
-        Override method permission names, example::
+    Override method permission names, example::
 
-            method_permissions_name = {
-                'get_list': 'read',
-                'get': 'read',
-                'put': 'write',
-                'post': 'write',
-                'delete': 'write'
-            }
+        method_permissions_name = {
+            'get_list': 'read',
+            'get': 'read',
+            'put': 'write',
+            'post': 'write',
+            'delete': 'write'
+        }
     """
     previous_method_permission_name: Optional[Dict[str, str]] = None
     """
-        Use same structure as method_permission_name. If set security converge
-        will replace all method permissions by the new ones
+    Use same structure as method_permission_name. If set security converge
+    will replace all method permissions by the new ones
     """
     allow_browser_login = False
     """
-        Will allow flask-login cookie authorization on the API
-        default is False.
+    Will allow flask-login cookie authorization on the API
+    default is False.
     """
     csrf_exempt = True
     """
-        If using flask-wtf CSRFProtect exempt the API from check
+    If using flask-wtf CSRFProtect exempt the API from check
     """
     apispec_parameter_schemas: Optional[Dict[str, Dict]] = None
     """
-        Set your custom Rison parameter schemas here so that
-        they get registered on the OpenApi spec::
+    Set your custom Rison parameter schemas here so that
+    they get registered on the OpenApi spec::
 
-            custom_parameter = {
-                "type": "object"
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    }
+        custom_parameter = {
+            "type": "object"
+            "properties": {
+                "name": {
+                    "type": "string"
                 }
             }
+        }
 
-            class CustomApi(BaseApi):
-                apispec_parameter_schemas = {
-                    "custom_parameter": custom_parameter
-                }
+        class CustomApi(BaseApi):
+            apispec_parameter_schemas = {
+                "custom_parameter": custom_parameter
+            }
     """
-    _apispec_parameter_schemas = None
 
     responses = {
         "400": {
@@ -363,10 +385,10 @@ class BaseApi(object):
         },
     }
     """
-        Override custom OpenApi responses
+    Override custom OpenApi responses
     """
 
-    exclude_route_methods = set()
+    exclude_route_methods: Set[str] = set()
     """
         Does not register routes for a set of builtin ModelRestApi functions.
         example::
@@ -378,7 +400,7 @@ class BaseApi(object):
 
         The previous examples will only register the `put`, `post` and `delete` routes
     """
-    include_route_methods: Set[str] = None
+    include_route_methods: Optional[Set[str]] = None
     """
         If defined will assume a white list setup, where all endpoints are excluded
         except those define on this attribute
@@ -421,9 +443,9 @@ class BaseApi(object):
             Initialization of extra args
         """
         # Init OpenAPI
-        self._response_key_func_mappings = dict()
-        self.apispec_parameter_schemas = self.apispec_parameter_schemas or dict()
-        self._apispec_parameter_schemas = self._apispec_parameter_schemas or dict()
+        self._response_key_func_mappings: Dict[str, Any] = {}
+        self.apispec_parameter_schemas = self.apispec_parameter_schemas or {}
+        self._apispec_parameter_schemas: Dict[str, Any] = {}
         self._apispec_parameter_schemas.update(self.apispec_parameter_schemas)
 
         # Init class permission override attrs
@@ -436,14 +458,14 @@ class BaseApi(object):
         # Init previous permission override attrs
         is_collect_previous = False
         if not self.previous_method_permission_name and self.method_permission_name:
-            self.previous_method_permission_name = dict()
+            self.previous_method_permission_name = {}
             is_collect_previous = True
         self.method_permission_name = self.method_permission_name or dict()
 
         # Collect base_permissions and infer previous permissions
         is_add_base_permissions = False
         if self.base_permissions is None:
-            self.base_permissions = set()
+            self.base_permissions = []
             is_add_base_permissions = True
         for attr_name in dir(self):
             # If include_route_methods is not None white list
@@ -457,15 +479,32 @@ class BaseApi(object):
                 continue
             if hasattr(getattr(self, attr_name), "_permission_name"):
                 if is_collect_previous:
-                    self.previous_method_permission_name[attr_name] = getattr(
-                        getattr(self, attr_name), "_permission_name"
-                    )
+                    if self.previous_method_permission_name is not None:
+                        self.previous_method_permission_name[attr_name] = getattr(
+                            getattr(self, attr_name), "_permission_name"
+                        )
                 _permission_name = self.get_method_permission(attr_name)
                 if is_add_base_permissions:
-                    self.base_permissions.add(PERMISSION_PREFIX + _permission_name)
-        self.base_permissions = list(self.base_permissions)
+                    self.base_permissions.append(PERMISSION_PREFIX + _permission_name)
+        # remove duplicates
+        self.base_permissions = list(set(self.base_permissions))
 
-    def create_blueprint(self, appbuilder, endpoint=None, static_folder=None):
+    def create_blueprint(
+        self,
+        appbuilder: AppBuilder,
+        endpoint: Optional[str] = None,
+        static_folder: Optional[str] = None,
+    ) -> Blueprint:
+        """
+        Creates a Flask blueprint for this class
+
+        :param appbuilder: The appbuilder main class
+        :param endpoint: (optional) the endpoint name for this blueprint,
+        if not provided is infered from this class name
+        :param static_folder: (optional) The blueprint static folder,
+        null value for a REST API, here for compatibility between FAB views MVC and API
+        :return: The Flask blueprint for this class
+        """
         # Store appbuilder instance
         self.appbuilder = appbuilder
         # If endpoint name is not provided, get it from the class name
@@ -501,7 +540,7 @@ class BaseApi(object):
                     if attr_name in self.exclude_route_methods:
                         log.info(f"Not registering api spec for method {attr_name}")
                         continue
-                    operations = dict()
+                    operations: Dict[str, Any] = {}
                     path = self.path_helper(path=url, operations=operations)
                     self.operation_helper(
                         path=path, operations=operations, methods=methods, func=attr
@@ -531,13 +570,16 @@ class BaseApi(object):
             ):
                 continue
             if attr_name in self.exclude_route_methods:
-                log.info(f"Not registering route for method {attr_name}")
+                log.info("Not registering route for method %s", attr_name)
                 continue
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
                     log.info(
-                        f"Registering route {self.blueprint.url_prefix}{url} {methods}"
+                        "Registering route %s%s %s",
+                        self.blueprint.url_prefix,
+                        url,
+                        methods,
                     )
                     route_handler = wrap_route_handler_with_hooks(
                         attr_name, attr, before_request_hooks

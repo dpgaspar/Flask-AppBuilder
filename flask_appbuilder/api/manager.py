@@ -3,14 +3,14 @@ from typing import Union
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec.ext.marshmallow.common import resolve_schema_cls
-from marshmallow import Schema
-from marshmallow_sqlalchemy import SQLAlchemySchema
 from flask import current_app, Response
 from flask_appbuilder.api import BaseApi
 from flask_appbuilder.api import expose, protect, safe
 from flask_appbuilder.basemanager import BaseManager
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.security.decorators import has_access
+from marshmallow import Schema
+from marshmallow_sqlalchemy import SQLAlchemySchema
 
 
 def resolver(schema: Union[Schema, SQLAlchemySchema]) -> str:
