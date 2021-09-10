@@ -137,6 +137,17 @@ class ListFilterTestCase(BaseMVCTestCase):
             rv = c.get("/users/list/?_flt_0_created_by=aaaa")
             self.assertEqual(rv.status_code, 200)
 
+    def test_list_filter_not_o_m_invalid_object_type(self):
+        """
+        MVC: Test Filter one to many with not equal related object with invalid type
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Roles doesn't exists
+            rv = c.get("/users/list/?_flt_1_created_by=aaaa")
+            self.assertEqual(rv.status_code, 200)
+
     def test_list_filter_unknown_column(self):
         """
         MVC: Test Filter with unknown field
