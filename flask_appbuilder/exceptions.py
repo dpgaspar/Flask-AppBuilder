@@ -1,7 +1,15 @@
+from typing import Optional
+
+
 class FABException(Exception):
     """Base FAB Exception"""
 
-    ...
+    def __init__(self, *args, exception: Optional[Exception] = None) -> None:
+        self.exception = exception
+        super().__init__(*args)
+
+    def __str__(self):
+        return f"{self.__class__.__name__}: {self.exception}"
 
 
 class InvalidColumnFilterFABException(FABException):
@@ -30,5 +38,11 @@ class InterfaceQueryWithoutSession(FABException):
 
 class PasswordComplexityValidationError(FABException):
     """Raise this when implementing your own password complexity function"""
+
+    ...
+
+
+class ApplyFilterException(FABException):
+    """When executing an apply filter a SQLAlchemy exception happens"""
 
     ...
