@@ -9,7 +9,11 @@ class FABException(Exception):
         super().__init__(*args)
 
     def __str__(self):
-        return f"{self.__class__.__name__}: {self.exception}"
+        return (
+            f"{self.__class__.__name__}: {self.exception}"
+            if self.exception
+            else super().__str__()
+        )
 
 
 class InvalidColumnFilterFABException(FABException):
