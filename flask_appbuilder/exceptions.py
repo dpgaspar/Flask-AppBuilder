@@ -10,7 +10,7 @@ class FABException(Exception):
 
     def __str__(self):
         return (
-            f"{self.__class__.__name__}: {self.exception}"
+            f"{self.__class__.__name__}: {self.exception.__class__.__name__}"
             if self.exception
             else super().__str__()
         )

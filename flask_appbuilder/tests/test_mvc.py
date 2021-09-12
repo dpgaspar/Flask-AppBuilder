@@ -125,8 +125,9 @@ class ListFilterTestCase(BaseMVCTestCase):
             # Roles doesn't exists
             rv = c.get("/users/list/?_flt_0_roles=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            data = rv.data.decode("utf-8")
-            self.assertIn("An error occurred", data)
+            if self.db.session.bind.dialect.name == "mysql":
+                data = rv.data.decode("utf-8")
+                self.assertIn("An error occurred", data)
 
     def test_list_filter_o_m_invalid_object_type(self):
         """
@@ -138,8 +139,9 @@ class ListFilterTestCase(BaseMVCTestCase):
             # Roles doesn't exists
             rv = c.get("/users/list/?_flt_0_created_by=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            data = rv.data.decode("utf-8")
-            self.assertIn("An error occurred", data)
+            if self.db.session.bind.dialect.name == "mysql":
+                data = rv.data.decode("utf-8")
+                self.assertIn("An error occurred", data)
 
     def test_list_filter_not_o_m_invalid_object_type(self):
         """
@@ -151,8 +153,9 @@ class ListFilterTestCase(BaseMVCTestCase):
             # Roles doesn't exists
             rv = c.get("/users/list/?_flt_1_created_by=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            data = rv.data.decode("utf-8")
-            self.assertIn("An error occurred", data)
+            if self.db.session.bind.dialect.name == "mysql":
+                data = rv.data.decode("utf-8")
+                self.assertIn("An error occurred", data)
 
     def test_list_filter_unknown_column(self):
         """
