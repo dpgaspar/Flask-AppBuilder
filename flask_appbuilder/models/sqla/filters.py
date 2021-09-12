@@ -191,12 +191,12 @@ class FilterRelationOneToManyEqual(FilterRelation):
         query, field = get_field_setup_query(query, self.model, self.column_name)
         try:
             rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        except SQLAlchemyError:
+        except SQLAlchemyError as exc:
             logging.warning(
                 "Filter exception for %s with value %s, will not apply", field, value
             )
             self.datamodel.session.rollback()
-            raise ApplyFilterException(exception=SQLAlchemyError)
+            raise ApplyFilterException(exception=exc)
         return query.filter(field == rel_obj)
 
 
@@ -208,12 +208,12 @@ class FilterRelationOneToManyNotEqual(FilterRelation):
         query, field = get_field_setup_query(query, self.model, self.column_name)
         try:
             rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        except SQLAlchemyError:
+        except SQLAlchemyError as exc:
             logging.warning(
                 "Filter exception for %s with value %s, will not apply", field, value
             )
             self.datamodel.session.rollback()
-            raise ApplyFilterException(exception=SQLAlchemyError)
+            raise ApplyFilterException(exception=exc)
         return query.filter(field != rel_obj)
 
 
@@ -228,14 +228,14 @@ class FilterRelationManyToManyEqual(FilterRelation):
         """
         try:
             rel_obj = self.datamodel.get_related_obj(self.column_name, value_item)
-        except SQLAlchemyError:
+        except SQLAlchemyError as exc:
             logging.warning(
                 "Filter exception for %s with value %s, will not apply",
                 field,
                 value_item,
             )
             self.datamodel.session.rollback()
-            raise ApplyFilterException(exception=SQLAlchemyError)
+            raise ApplyFilterException(exception=exc)
 
         if rel_obj:
             return query.filter(field.contains(rel_obj))
