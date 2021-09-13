@@ -3,7 +3,7 @@ import json
 import logging
 import re
 import traceback
-from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union, TYPE_CHECKING
 import urllib.parse
 
 from apispec import APISpec, yaml_utils
@@ -16,7 +16,6 @@ from flask_appbuilder.api.schemas import (
     get_item_schema,
     get_list_schema,
 )
-from flask_appbuilder.base import AppBuilder
 from flask_appbuilder.const import (
     API_ADD_COLUMNS_RES_KEY,
     API_ADD_COLUMNS_RIS_KEY,
@@ -67,6 +66,10 @@ import prison
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequest
 import yaml
+
+if TYPE_CHECKING:
+    from flask_appbuilder.base import AppBuilder
+
 
 log = logging.getLogger(__name__)
 
@@ -491,7 +494,7 @@ class BaseApi:
 
     def create_blueprint(
         self,
-        appbuilder: AppBuilder,
+        appbuilder: "AppBuilder",
         endpoint: Optional[str] = None,
         static_folder: Optional[str] = None,
     ) -> Blueprint:
