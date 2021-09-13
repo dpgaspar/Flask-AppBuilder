@@ -11,8 +11,9 @@ from typing import (
     List,
     Optional,
     Set,
-    Union,
+    Tuple,
     TYPE_CHECKING,
+    Union,
 )
 import urllib.parse
 
@@ -67,6 +68,8 @@ from flask_appbuilder.hooks import (
     get_before_request_hooks,
     wrap_route_handler_with_hooks,
 )
+from flask_appbuilder.models.filters import BaseFilter
+from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.decorators import permission_name, protect
 from flask_babel import lazy_gettext as _
 import jsonschema
@@ -739,7 +742,9 @@ class BaseApi:
                 if k in _keys:
                     v(self, response, **kwargs)
 
-    def merge_current_user_permissions(self, response: Dict[str, Any], **kwargs: Any) -> None:
+    def merge_current_user_permissions(
+        self, response: Dict[str, Any], **kwargs: Any
+    ) -> None:
         """
         Adds permission info to the response
         :return:
@@ -825,110 +830,114 @@ class BaseApi:
 
 
 class BaseModelApi(BaseApi):
-    datamodel = None
+    datamodel: Optional[SQLAInterface] = None
     """
-        Your sqla model you must initialize it like::
+    Your sqla model you must initialize it like::
 
-            class MyModelApi(BaseModelApi):
-                datamodel = SQLAInterface(MyTable)
+        class MyModelApi(BaseModelApi):
+            datamodel = SQLAInterface(MyTable)
     """
-    search_columns = None
+    search_columns: Optional[List[str]] = None
     """
-        List with allowed search columns, if not provided all possible search
-        columns will be used. If you want to limit the search (*filter*) columns
-         possibilities, define it with a list of column names from your model::
+    List with allowed search columns, if not provided all possible search
+    columns will be used. If you want to limit the search (*filter*) columns
+     possibilities, define it with a list of column names from your model::
 
-            class MyView(ModelRestApi):
-                datamodel = SQLAInterface(MyTable)
-                search_columns = ['name', 'address']
+        class MyView(ModelRestApi):
+            datamodel = SQLAInterface(MyTable)
+            search_columns = ['name', 'address']
 
     """
     search_filters = None
     """
-        Override default search filters for columns
+    Override default search filters for columns
     """
-    search_exclude_columns = None
+    search_exclude_columns: Optional[List[str]] = None
     """
-        List with columns to exclude from search. Search includes all possible
-        columns by default
+    List with columns to exclude from search. Search includes all possible
+    columns by default
     """
-    label_columns = None
+    label_columns: Optional[Dict[str, str]] = None
     """
-        Dictionary of labels for your columns, override this if you want
-         different pretify labels
+    Dictionary of labels for your columns, override this if you want
+     different pretify labels
 
-        example (will just override the label for name column)::
+    example (will just override the label for name column)::
 
-            class MyView(ModelRestApi):
-                datamodel = SQLAInterface(MyTable)
-                label_columns = {'name':'My Name Label Override'}
-
-    """
-    base_filters = None
-    """
-        Filter the view use: [['column_name',BaseFilter,'value'],]
-
-        example::
-
-            def get_user():
-                return g.user
-
-            class MyView(ModelRestApi):
-                datamodel = SQLAInterface(MyTable)
-                base_filters = [['created_by', FilterEqualFunction, get_user],
-                                ['name', FilterStartsWith, 'a']]
+        class MyView(ModelRestApi):
+            datamodel = SQLAInterface(MyTable)
+            label_columns = {'name':'My Name Label Override'}
 
     """
-
-    base_order = None
+    base_filters: Optional[List[List[Union[str, BaseFilter, Any]]]] = None
     """
-        Use this property to set default ordering for lists
-         ('col_name','asc|desc')::
+    Filter the view use: [['column_name',BaseFilter,'value'],]
 
-            class MyView(ModelRestApi):
-                datamodel = SQLAInterface(MyTable)
-                base_order = ('my_column_name','asc')
+    example::
+
+        def get_user():
+            return g.user
+
+        class MyView(ModelRestApi):
+            datamodel = SQLAInterface(MyTable)
+            base_filters = [['created_by', FilterEqualFunction, get_user],
+                            ['name', FilterStartsWith, 'a']]
+
+    """
+
+    base_order: Optional[Tuple[str]] = None
+    """
+    Use this property to set default ordering for lists
+     ('col_name','asc|desc')::
+
+        class MyView(ModelRestApi):
+            datamodel = SQLAInterface(MyTable)
+            base_order = ('my_column_name','asc')
 
     """
     _base_filters = None
     """ Internal base Filter from class Filters will always filter view """
     _filters = None
     """
-        Filters object will calculate all possible filter types
-        based on search_columns
+    Filters object will calculate all possible filter types
+    based on search_columns
     """
 
-    def __init__(self, **kwargs):
+    def __init__(
+        self, datamodel: Optional[SQLAInterface] = None, **kwargs: Any
+    ) -> None:
         """
-            Constructor
+        Constructor
         """
-        datamodel = kwargs.get("datamodel", None)
         if datamodel:
             self.datamodel = datamodel
         self._init_properties()
         self._init_titles()
         super(BaseModelApi, self).__init__()
 
-    def _gen_labels_columns(self, list_columns):
+    def _gen_labels_columns(self, list_columns: List[str]) -> None:
         """
-            Auto generates pretty label_columns from list of columns
+        Auto generates pretty label_columns from list of columns
         """
         for col in list_columns:
-            if not self.label_columns.get(col):
+            if self.label_columns and not self.label_columns.get(col):
                 self.label_columns[col] = self._prettify_column(col)
 
-    def _label_columns_json(self, cols=None):
+    def _label_columns_json(
+        self, columns: Optional[List[str]] = None
+    ) -> Dict[str, str]:
         """
-            Prepares dict with labels to be JSON serializable
+        Prepares dict with labels to be JSON serializable
         """
         ret = {}
-        cols = cols or []
-        d = {k: v for (k, v) in self.label_columns.items() if k in cols}
+        columns_ = columns or []
+        label_columns: Dict[Any, Any] = self.label_columns or {}
+        d = {k: v for (k, v) in label_columns.items() if k in columns_}
         for key, value in d.items():
             ret[key] = as_unicode(_(value).encode("UTF-8"))
         return ret
 
-    def _init_properties(self):
+    def _init_properties(self) -> None:
         self.label_columns = self.label_columns or {}
         self.base_filters = self.base_filters or []
         self.search_exclude_columns = self.search_exclude_columns or []
