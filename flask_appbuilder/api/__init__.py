@@ -3,7 +3,17 @@ import json
 import logging
 import re
 import traceback
-from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union, TYPE_CHECKING
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Set,
+    Union,
+    TYPE_CHECKING,
+)
 import urllib.parse
 
 from apispec import APISpec, yaml_utils
@@ -91,7 +101,7 @@ def safe(f: Callable[..., Response]) -> Callable[..., Response]:
     """
 
     def wraps(
-        self: Union[BaseApi, ModelRestApi], *args: Any, **kwargs: Any
+        self: Union[BaseApi, "ModelRestApi"], *args: Any, **kwargs: Any
     ) -> Response:
         try:
             return f(self, *args, **kwargs)
@@ -141,7 +151,7 @@ def rison(
 
     def _rison(f: Callable[..., Response]) -> Callable[..., Response]:
         def wraps(
-            self: Union[BaseApi, ModelRestApi], *args: Any, **kwargs: Any
+            self: Union[BaseApi, "ModelRestApi"], *args: Any, **kwargs: Any
         ) -> Response:
             value = request.args.get(API_URI_RIS_KEY, None)
             kwargs["rison"] = {}
@@ -239,8 +249,8 @@ class BaseApi:
     but provides a common base for all APIS.
     """
 
-    appbuilder = None
-    blueprint = None
+    appbuilder: Optional["AppBuilder"] = None
+    blueprint: Optional[Blueprint] = None
     endpoint: Optional[str] = None
 
     version: Optional[str] = "v1"
@@ -317,6 +327,10 @@ class BaseApi:
             apispec_parameter_schemas = {
                 "custom_parameter": custom_parameter
             }
+    """
+    _apispec_parameter_schemas: Optional[Dict[str, Dict]] = None
+    """
+    Final internal, get a possible attr override and merges apispec_parameter_schemas
     """
 
     responses = {
@@ -448,7 +462,7 @@ class BaseApi:
         # Init OpenAPI
         self._response_key_func_mappings: Dict[str, Any] = {}
         self.apispec_parameter_schemas = self.apispec_parameter_schemas or {}
-        self._apispec_parameter_schemas: Dict[str, Any] = {}
+        self._apispec_parameter_schemas = self._apispec_parameter_schemas or {}
         self._apispec_parameter_schemas.update(self.apispec_parameter_schemas)
 
         # Init class permission override attrs
@@ -558,11 +572,12 @@ class BaseApi:
     def add_apispec_components(self, api_spec: APISpec) -> None:
         for k, v in self.responses.items():
             api_spec.components._responses[k] = v
-        for k, v in self._apispec_parameter_schemas.items():
-            try:
-                api_spec.components.schema(k, v)
-            except DuplicateComponentNameError:
-                pass
+        if self._apispec_parameter_schemas:
+            for k, v in self._apispec_parameter_schemas.items():
+                try:
+                    api_spec.components.schema(k, v)
+                except DuplicateComponentNameError:
+                    pass
 
     def _register_urls(self) -> None:
         before_request_hooks = get_before_request_hooks(self)
@@ -573,12 +588,12 @@ class BaseApi:
             ):
                 continue
             if attr_name in self.exclude_route_methods:
-                log.info("Not registering route for method %s", attr_name)
+                log.debug("Not registering route for method %s", attr_name)
                 continue
             attr = getattr(self, attr_name)
-            if hasattr(attr, "_urls"):
+            if hasattr(attr, "_urls") and self.blueprint:
                 for url, methods in attr._urls:
-                    log.info(
+                    log.debug(
                         "Registering route %s%s %s",
                         self.blueprint.url_prefix,
                         url,
@@ -592,7 +607,7 @@ class BaseApi:
                     )
 
     def path_helper(
-        self, path: str = None, operations: Dict[str, Dict] = None, **kwargs
+        self, path: str = None, operations: Dict[str, Dict] = None, **kwargs: Any
     ) -> str:
         """
             Works like an apispec plugin
@@ -606,17 +621,29 @@ class BaseApi:
         is set as the path.
         """
         RE_URL = re.compile(r"<(?:[^:<>]+:)?([^<>]+)>")
-        path = RE_URL.sub(r"{\1}", path)
+        path = RE_URL.sub(r"{\1}", path) if path else ""
         return f"/{self.resource_name}{path}"
 
     def operation_helper(
-        self, path=None, operations=None, methods=None, func=None, **kwargs
-    ):
-        """May mutate operations.
+        self,
+        path: str = None,
+        operations: Optional[Dict[str, Dict]] = None,
+        methods: Optional[List[str]] = None,
+        func: Optional[Callable[..., Response]] = None,
+        **kwargs: Any,
+    ) -> None:
+        """
+        Generates an OpenAPI spec for a list of methods
+
+        May mutate operations.
+
         :param str path: Path to the resource
         :param dict operations: A `dict` mapping HTTP methods to operation object. See
-        :param list methods: A list of methods registered for this path
+        :param list methods: A list of methods registered for this function
+        :param func: A callable
         """
+        if methods is None or not func or operations is None:
+            return
         for method in methods:
             try:
                 # Check if method openapi spec is overridden
@@ -640,43 +667,45 @@ class BaseApi:
                 operations[method.lower()] = {}
 
     @staticmethod
-    def _prettify_name(name):
+    def _prettify_name(name: str) -> str:
         """
-            Prettify pythonic variable name.
+        Prettify pythonic variable name.
 
-            For example, 'HelloWorld' will be converted to 'Hello World'
+        For example, 'HelloWorld' will be converted to 'Hello World'
 
-            :param name:
-                Name to prettify.
+        :param name:
+            Name to prettify.
         """
         return re.sub(r"(?<=.)([A-Z])", r" \1", name)
 
     @staticmethod
-    def _prettify_column(name):
+    def _prettify_column(name: str) -> str:
         """
-            Prettify pythonic variable name.
+        Prettify pythonic variable name.
 
-            For example, 'hello_world' will be converted to 'Hello World'
+        For example, 'hello_world' will be converted to 'Hello World'
 
-            :param name:
-                Name to prettify.
+        :param name:
+            Name to prettify.
         """
         return re.sub("[._]", " ", name).title()
 
-    def get_uninit_inner_views(self):
+    def get_uninit_inner_views(self) -> List[Any]:
         """
-            Will return a list with views that need to be initialized.
-            Normally related_views from ModelView
+        Will return a list with views that need to be initialized.
+        Normally related_views from ModelView.
+
+        Added for compatibility and completeness between BaseView and BaseApi
         """
         return []
 
-    def get_init_inner_views(self, views):
+    def get_init_inner_views(self, views: List[Any]) -> None:
         """
             Sets initialized inner views
         """
         pass  # pragma: no cover
 
-    def get_method_permission(self, method_name: str) -> str:
+    def get_method_permission(self, method_name: str) -> Optional[str]:
         """
             Returns the permission name for a method
         """
@@ -685,20 +714,38 @@ class BaseApi:
         else:
             if hasattr(getattr(self, method_name), "_permission_name"):
                 return getattr(getattr(self, method_name), "_permission_name")
+            return None
 
-    def set_response_key_mappings(self, response, func, rison_args, **kwargs):
+    def set_response_key_mappings(
+        self,
+        response: Dict[str, Any],
+        func: Callable[..., Any],
+        rison_args: Dict[str, Any],
+        **kwargs: Any,
+    ) -> None:
+        """
+        Mutates the REST API response with the func decorated dict with callables that
+        adds more info to the response.
+        This is used to add metadata to the responses
+        """
         if not hasattr(func, "_response_key_func_mappings"):
             return  # pragma: no cover
         _keys = rison_args.get("keys", None)
         if not _keys:
-            for k, v in func._response_key_func_mappings.items():
+            for k, v in func._response_key_func_mappings.items():  # type: ignore
                 v(self, response, **kwargs)
         else:
-            for k, v in func._response_key_func_mappings.items():
+            for k, v in func._response_key_func_mappings.items():  # type: ignore
                 if k in _keys:
                     v(self, response, **kwargs)
 
-    def merge_current_user_permissions(self, response, **kwargs):
+    def merge_current_user_permissions(self, response: Dict[str, Any], **kwargs: Any) -> None:
+        """
+        Adds permission info to the response
+        :return:
+        """
+        if not self.base_permissions or not self.appbuilder:
+            return
         response[API_PERMISSIONS_RES_KEY] = [
             permission
             for permission in self.base_permissions
@@ -706,9 +753,9 @@ class BaseApi:
         ]
 
     @staticmethod
-    def response(code, **kwargs) -> Response:
+    def response(code: int, **kwargs: Any) -> Response:
         """
-            Generic HTTP JSON response method
+        Generic HTTP JSON response method
 
         :param code: HTTP code (int)
         :param kwargs: Data structure for response (dict)
