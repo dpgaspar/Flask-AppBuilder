@@ -1,6 +1,16 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.3.3
+-----------------------------------
+
+- fix: related filters with bogus data (#1695) [Daniel Vaz Gaspar]
+- chore: Bump flask-openid to 1.3.0 (#1693) [Daniel Vaz Gaspar]
+- chore: bump JQuery to 3.6.0 (#1688) [Daniel Vaz Gaspar]
+- chore: bump prison version (#1689) [Beto Dealmeida]
+- feat: password complexity option on DB Auth (#1687) [Daniel Vaz Gaspar]
+- fix: check if there is an email field in userinfo (#1663) [Yoshitaka Sakurai]
+
 Improvements and Bug fixes on 3.3.2
 -----------------------------------
 
