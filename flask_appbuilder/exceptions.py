@@ -1,7 +1,19 @@
+from typing import Optional
+
+
 class FABException(Exception):
     """Base FAB Exception"""
 
-    ...
+    def __init__(self, *args, exception: Optional[Exception] = None) -> None:
+        self.exception = exception
+        super().__init__(*args)
+
+    def __str__(self):
+        return (
+            f"{self.__class__.__name__}: {self.exception.__class__.__name__}"
+            if self.exception
+            else super().__str__()
+        )
 
 
 class InvalidColumnFilterFABException(FABException):
@@ -36,3 +48,11 @@ class PasswordComplexityValidationError(FABException):
 
 class ModelApiInitializationFailed(FABException):
     """Raises when a ModelRestApi is set without a datamodel"""
+
+    ...
+
+
+class ApplyFilterException(FABException):
+    """When executing an apply filter a SQLAlchemy exception happens"""
+
+    ...

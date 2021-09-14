@@ -14,6 +14,8 @@ from flask import (
     session,
     url_for,
 )
+from flask_appbuilder.exceptions import FABException
+
 
 from ._compat import as_unicode, string_types
 from .baseviews import BaseCRUDView, BaseFormView, BaseView, expose, expose_api
@@ -547,8 +549,12 @@ class ModelView(RestCRUDView):
     @expose("/list/")
     @has_access
     def list(self):
-
-        widgets = self._list()
+        self.update_redirect()
+        try:
+            widgets = self._list()
+        except FABException as exc:
+            flash(f"An error occurred: {exc}", "warning")
+            return redirect(self.get_redirect())
         return self.render_template(
             self.list_template, title=self.list_title, widgets=widgets
         )
