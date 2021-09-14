@@ -12,7 +12,6 @@ from typing import (
     Optional,
     Set,
     Tuple,
-    Type,
     TYPE_CHECKING,
     Union,
 )
@@ -1091,9 +1090,10 @@ class ModelRestApi(BaseApi):
         """
         Auto generates pretty label_columns from list of columns
         """
-        for col in list_columns:
-            if self.label_columns and not self.label_columns.get(col):
-                self.label_columns[col] = self._prettify_column(col)
+        if self.label_columns is not None:
+            for col in list_columns:
+                if not self.label_columns.get(col):
+                    self.label_columns[col] = self._prettify_column(col)
 
     def _label_columns_json(
         self, columns: Optional[List[str]] = None
@@ -1458,7 +1458,9 @@ class ModelRestApi(BaseApi):
             **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols},
         )
         if _pruned_select_cols:
-            _show_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
+            _show_model_schema = self._model2schemaconverter.convert(
+                _pruned_select_cols
+            )
         else:
             _show_model_schema = self.show_model_schema
 
@@ -1568,7 +1570,9 @@ class ModelRestApi(BaseApi):
         # Create a response schema with the computed response columns,
         # defined or requested
         if _pruned_select_cols:
-            _list_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
+            _list_model_schema = self._model2schemaconverter.convert(
+                _pruned_select_cols
+            )
         else:
             _list_model_schema = self.list_model_schema
         # handle filters

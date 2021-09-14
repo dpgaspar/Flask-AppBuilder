@@ -680,7 +680,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item(self):
         """
-            REST Api: Test get item
+        REST Api: Test get item
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
