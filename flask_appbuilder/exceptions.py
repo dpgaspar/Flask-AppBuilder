@@ -32,3 +32,7 @@ class PasswordComplexityValidationError(FABException):
     """Raise this when implementing your own password complexity function"""
 
     ...
+
+
+class ModelApiInitializationFailed(FABException):
+    """Raises when a ModelRestApi is set without a datamodel"""

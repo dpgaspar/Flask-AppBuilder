@@ -12,6 +12,7 @@ from typing import (
     Optional,
     Set,
     Tuple,
+    Type,
     TYPE_CHECKING,
     Union,
 )
@@ -63,7 +64,11 @@ from flask_appbuilder.const import (
     API_URI_RIS_KEY,
     PERMISSION_PREFIX,
 )
-from flask_appbuilder.exceptions import FABException, InvalidOrderByColumnFABException
+from flask_appbuilder.exceptions import (
+    FABException,
+    InvalidOrderByColumnFABException,
+    ModelApiInitializationFailed,
+)
 from flask_appbuilder.hooks import (
     get_before_request_hooks,
     wrap_route_handler_with_hooks,
@@ -410,57 +415,57 @@ class BaseApi:
 
     exclude_route_methods: Set[str] = set()
     """
-        Does not register routes for a set of builtin ModelRestApi functions.
-        example::
+    Does not register routes for a set of builtin ModelRestApi functions.
+    example::
 
-            class ContactModelView(ModelRestApi):
-                datamodel = SQLAInterface(Contact)
-                exclude_route_methods = {"info", "get_list", "get"}
+        class ContactModelView(ModelRestApi):
+            datamodel = SQLAInterface(Contact)
+            exclude_route_methods = {"info", "get_list", "get"}
 
 
-        The previous examples will only register the `put`, `post` and `delete` routes
+    The previous examples will only register the `put`, `post` and `delete` routes
     """
     include_route_methods: Optional[Set[str]] = None
     """
-        If defined will assume a white list setup, where all endpoints are excluded
-        except those define on this attribute
-        example::
+    If defined will assume a white list setup, where all endpoints are excluded
+    except those define on this attribute
+    example::
 
-            class ContactModelView(ModelRestApi):
-                datamodel = SQLAInterface(Contact)
-                include_route_methods = {"list"}
+        class ContactModelView(ModelRestApi):
+            datamodel = SQLAInterface(Contact)
+            include_route_methods = {"list"}
 
 
-        The previous example will exclude all endpoints except the `list` endpoint
+    The previous example will exclude all endpoints except the `list` endpoint
     """
     openapi_spec_methods: Dict = {}
     """
-        Merge OpenAPI spec defined on the method's doc.
-        For example to merge/override `get_list`::
+    Merge OpenAPI spec defined on the method's doc.
+    For example to merge/override `get_list`::
 
 
-            class GreetingApi(BaseApi):
-                resource_name = "greeting"
-                openapi_spec_methods = {
-                    "greeting": {
-                        "get": {
-                           "description": "Override description",
-                        }
+        class GreetingApi(BaseApi):
+            resource_name = "greeting"
+            openapi_spec_methods = {
+                "greeting": {
+                    "get": {
+                       "description": "Override description",
                     }
                 }
+            }
     """
     openapi_spec_tag: Optional[str] = None
     """
-        By default all endpoints will be tagged (grouped) to their class name.
-        Use this attribute to override the tag name
+    By default all endpoints will be tagged (grouped) to their class name.
+    Use this attribute to override the tag name
     """
 
     def __init__(self) -> None:
         """
-            Initialization of base permissions
-            based on exposed methods and actions
+        Initialization of base permissions
+        based on exposed methods and actions
 
-            Initialization of extra args
+        Initialization of extra args
         """
         # Init OpenAPI
         self._response_key_func_mappings: Dict[str, Any] = {}
@@ -829,7 +834,7 @@ class BaseApi:
         return self.response(500, **{"message": message})
 
 
-class BaseModelApi(BaseApi):
+class ModelRestApi(BaseApi):
     datamodel: Optional[SQLAInterface] = None
     """
     Your sqla model you must initialize it like::
@@ -903,17 +908,184 @@ class BaseModelApi(BaseApi):
     based on search_columns
     """
 
-    def __init__(
-        self, datamodel: Optional[SQLAInterface] = None, **kwargs: Any
-    ) -> None:
-        """
-        Constructor
-        """
+    list_title = ""
+    """
+    List Title, if not configured the default is
+    'List ' with pretty model name
+    """
+    show_title: Optional[str] = ""
+    """
+    Show Title , if not configured the default is
+    'Show ' with pretty model name
+    """
+    add_title: Optional[str] = ""
+    """
+    Add Title , if not configured the default is
+    'Add ' with pretty model name
+    """
+    edit_title: Optional[str] = ""
+    """
+    Edit Title , if not configured the default is
+    'Edit ' with pretty model name
+    """
+    list_select_columns: Optional[List[str]] = None
+    """
+    A List of column names that will be included on the SQL select.
+    This is useful for including all necessary columns that are referenced
+    by properties listed on `list_columns` without generating N+1 queries.
+    """
+    list_columns: Optional[List[str]] = None
+    """
+    A list of columns (or model's methods) to be displayed on the list view.
+    Use it to control the order of the display
+    """
+    show_select_columns: Optional[List[str]] = None
+    """
+    A List of column names that will be included on the SQL select.
+    This is useful for including all necessary columns that are referenced
+    by properties listed on `show_columns` without generating N+1 queries.
+    """
+    show_columns: Optional[List[str]] = None
+    """
+    A list of columns (or model's methods) for the get item endpoint.
+    Use it to control the order of the results
+    """
+    add_columns: Optional[List[str]] = None
+    """
+    A list of columns (or model's methods) to be allowed to post
+    """
+    edit_columns: Optional[List[str]] = None
+    """
+    A list of columns (or model's methods) to be allowed to update
+    """
+    list_exclude_columns: Optional[List[str]] = None
+    """
+    A list of columns to exclude from the get list endpoint.
+    By default all columns are included.
+    """
+    show_exclude_columns: Optional[List[str]] = None
+    """
+    A list of columns to exclude from the get item endpoint.
+    By default all columns are included.
+    """
+    add_exclude_columns: Optional[List[str]] = None
+    """
+    A list of columns to exclude from the add endpoint.
+    By default all columns are included.
+    """
+    edit_exclude_columns: Optional[List[str]] = None
+    """
+    A list of columns to exclude from the edit endpoint.
+    By default all columns are included.
+    """
+    order_columns: Optional[List[str]] = None
+    """ Allowed order columns """
+    page_size = 20
+    """
+    Use this property to change default page size
+    """
+    max_page_size: Optional[int] = None
+    """
+    class override for the FAB_API_MAX_SIZE, use special -1 to allow for any page
+    size
+    """
+    description_columns: Optional[Dict[str, str]] = None
+    """
+    Dictionary with column descriptions that will be shown on the forms::
+
+        class MyView(ModelView):
+            datamodel = SQLAModel(MyTable, db.session)
+
+            description_columns = {'name':'your models name column',
+                                    'address':'the address column'}
+    """
+    validators_columns: Optional[Dict[str, Callable]] = None
+    """ Dictionary to add your own marshmallow validators """
+
+    add_query_rel_fields: Optional[Dict[str, List[List[str]]]] = None
+    """
+    Add Customized query for related add fields.
+    Assign a dictionary where the keys are the column names of
+    the related models to filter, the value for each key, is a list of lists with the
+    same format as base_filter
+    {'relation col name':[['Related model col',FilterClass,'Filter Value'],...],...}
+    Add a custom filter to form related fields::
+
+        class ContactModelView(ModelRestApi):
+            datamodel = SQLAModel(Contact)
+            add_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
+
+    """
+    edit_query_rel_fields: Optional[Dict[str, List[List[str]]]] = None
+    """
+    Add Customized query for related edit fields.
+    Assign a dictionary where the keys are the column names of
+    the related models to filter, the value for each key, is a list of lists with the
+    same format as base_filter
+    {'relation col name':[['Related model col',FilterClass,'Filter Value'],...],...}
+    Add a custom filter to form related fields::
+
+        class ContactModelView(ModelRestApi):
+            datamodel = SQLAModel(Contact, db.session)
+            edit_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
+
+    """
+    order_rel_fields: Optional[Dict[str, Tuple[str]]] = None
+    """
+    Impose order on related fields.
+    assign a dictionary where the keys are the related column names::
+
+        class ContactModelView(ModelRestApi):
+            datamodel = SQLAModel(Contact)
+            order_rel_fields = {
+                'group': ('name', 'asc')
+                'gender': ('name', 'asc')
+            }
+    """
+    list_model_schema: Optional[Schema] = None
+    """
+    Override to provide your own marshmallow Schema
+    for JSON to SQLA dumps
+    """
+    add_model_schema: Optional[Schema] = None
+    """
+    Override to provide your own marshmallow Schema
+    for JSON to SQLA dumps
+    """
+    edit_model_schema: Optional[Schema] = None
+    """
+    Override to provide your own marshmallow Schema
+    for JSON to SQLA dumps
+    """
+    show_model_schema: Optional[Schema] = None
+    """
+    Override to provide your own marshmallow Schema
+    for JSON to SQLA dumps
+    """
+    model2schemaconverter = Model2SchemaConverter
+    """
+    Override to use your own Model2SchemaConverter
+    (inherit from BaseModel2SchemaConverter)
+    """
+    _apispec_parameter_schemas = {
+        "get_info_schema": get_info_schema,
+        "get_item_schema": get_item_schema,
+        "get_list_schema": get_list_schema,
+    }
+
+    def __init__(self, datamodel: Optional[SQLAInterface] = None) -> None:
+        super().__init__()
         if datamodel:
             self.datamodel = datamodel
+        if not self.datamodel:
+            raise ModelApiInitializationFailed("Missing required datamodel attribute")
+
+        self.validators_columns = self.validators_columns or {}
+        self._model2schemaconverter = self.model2schemaconverter(
+            self.datamodel, self.validators_columns
+        )
+
         self._init_properties()
-        self._init_titles()
-        super(BaseModelApi, self).__init__()
 
     def _gen_labels_columns(self, list_columns: List[str]) -> None:
         """
@@ -937,200 +1109,9 @@ class BaseModelApi(BaseApi):
             ret[key] = as_unicode(_(value).encode("UTF-8"))
         return ret
 
-    def _init_properties(self) -> None:
-        self.label_columns = self.label_columns or {}
-        self.base_filters = self.base_filters or []
-        self.search_exclude_columns = self.search_exclude_columns or []
-        self.search_columns = self.search_columns or []
-
-        self._base_filters = self.datamodel.get_filters().add_filter_list(
-            self.base_filters
-        )
-        search_columns = self.datamodel.get_search_columns_list()
-        if not self.search_columns:
-            self.search_columns = [
-                x for x in search_columns if x not in self.search_exclude_columns
-            ]
-        self._gen_labels_columns(self.datamodel.get_columns_list())
-
-    def _init_titles(self):
-        pass
-
-
-class ModelRestApi(BaseModelApi):
-    list_title = ""
-    """
-        List Title, if not configured the default is
-        'List ' with pretty model name
-    """
-    show_title: Optional[str] = ""
-    """
-        Show Title , if not configured the default is
-        'Show ' with pretty model name
-    """
-    add_title: Optional[str] = ""
-    """
-        Add Title , if not configured the default is
-        'Add ' with pretty model name
-    """
-    edit_title: Optional[str] = ""
-    """
-        Edit Title , if not configured the default is
-        'Edit ' with pretty model name
-    """
-    list_select_columns: Optional[List[str]] = None
-    """
-        A List of column names that will be included on the SQL select.
-        This is useful for including all necessary columns that are referenced
-        by properties listed on `list_columns` without generating N+1 queries.
-    """
-    list_columns: Optional[List[str]] = None
-    """
-        A list of columns (or model's methods) to be displayed on the list view.
-        Use it to control the order of the display
-    """
-    show_select_columns: Optional[List[str]] = None
-    """
-        A List of column names that will be included on the SQL select.
-        This is useful for including all necessary columns that are referenced
-        by properties listed on `show_columns` without generating N+1 queries.
-    """
-    show_columns: Optional[List[str]] = None
-    """
-        A list of columns (or model's methods) for the get item endpoint.
-        Use it to control the order of the results
-    """
-    add_columns: Optional[List[str]] = None
-    """
-        A list of columns (or model's methods) to be allowed to post
-    """
-    edit_columns: Optional[List[str]] = None
-    """
-        A list of columns (or model's methods) to be allowed to update
-    """
-    list_exclude_columns: Optional[List[str]] = None
-    """
-        A list of columns to exclude from the get list endpoint.
-        By default all columns are included.
-    """
-    show_exclude_columns: Optional[List[str]] = None
-    """
-        A list of columns to exclude from the get item endpoint.
-        By default all columns are included.
-    """
-    add_exclude_columns: Optional[List[str]] = None
-    """
-        A list of columns to exclude from the add endpoint.
-        By default all columns are included.
-    """
-    edit_exclude_columns: Optional[List[str]] = None
-    """
-        A list of columns to exclude from the edit endpoint.
-        By default all columns are included.
-    """
-    order_columns: Optional[List[str]] = None
-    """ Allowed order columns """
-    page_size = 20
-    """
-        Use this property to change default page size
-    """
-    max_page_size: Optional[int] = None
-    """
-        class override for the FAB_API_MAX_SIZE, use special -1 to allow for any page
-        size
-    """
-    description_columns: Optional[Dict[str, str]] = None
-    """
-        Dictionary with column descriptions that will be shown on the forms::
-
-            class MyView(ModelView):
-                datamodel = SQLAModel(MyTable, db.session)
-
-                description_columns = {'name':'your models name column',
-                                        'address':'the address column'}
-    """
-    validators_columns: Optional[Dict[str, Callable]] = None
-    """ Dictionary to add your own marshmallow validators """
-
-    add_query_rel_fields = None
-    """
-        Add Customized query for related add fields.
-        Assign a dictionary where the keys are the column names of
-        the related models to filter, the value for each key, is a list of lists with the
-        same format as base_filter
-        {'relation col name':[['Related model col',FilterClass,'Filter Value'],...],...}
-        Add a custom filter to form related fields::
-
-            class ContactModelView(ModelRestApi):
-                datamodel = SQLAModel(Contact)
-                add_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
-
-    """
-    edit_query_rel_fields = None
-    """
-        Add Customized query for related edit fields.
-        Assign a dictionary where the keys are the column names of
-        the related models to filter, the value for each key, is a list of lists with the
-        same format as base_filter
-        {'relation col name':[['Related model col',FilterClass,'Filter Value'],...],...}
-        Add a custom filter to form related fields::
-
-            class ContactModelView(ModelRestApi):
-                datamodel = SQLAModel(Contact, db.session)
-                edit_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
-
-    """
-    order_rel_fields = None
-    """
-        Impose order on related fields.
-        assign a dictionary where the keys are the related column names::
-
-            class ContactModelView(ModelRestApi):
-                datamodel = SQLAModel(Contact)
-                order_rel_fields = {
-                    'group': ('name', 'asc')
-                    'gender': ('name', 'asc')
-                }
-    """
-    list_model_schema: Optional[Schema] = None
-    """
-        Override to provide your own marshmallow Schema
-        for JSON to SQLA dumps
-    """
-    add_model_schema: Optional[Schema] = None
-    """
-        Override to provide your own marshmallow Schema
-        for JSON to SQLA dumps
-    """
-    edit_model_schema: Optional[Schema] = None
-    """
-        Override to provide your own marshmallow Schema
-        for JSON to SQLA dumps
-    """
-    show_model_schema: Optional[Schema] = None
-    """
-        Override to provide your own marshmallow Schema
-        for JSON to SQLA dumps
-    """
-    model2schemaconverter = Model2SchemaConverter
-    """
-        Override to use your own Model2SchemaConverter
-        (inherit from BaseModel2SchemaConverter)
-    """
-    _apispec_parameter_schemas = {
-        "get_info_schema": get_info_schema,
-        "get_item_schema": get_item_schema,
-        "get_list_schema": get_list_schema,
-    }
-
-    def __init__(self):
-        super(ModelRestApi, self).__init__()
-        self.validators_columns = self.validators_columns or {}
-        self.model2schemaconverter = self.model2schemaconverter(
-            self.datamodel, self.validators_columns
-        )
-
-    def create_blueprint(self, appbuilder, *args, **kwargs):
+    def create_blueprint(
+        self, appbuilder: "AppBuilder", *args: Any, **kwargs: Any
+    ) -> Blueprint:
         self._init_model_schemas()
         return super(ModelRestApi, self).create_blueprint(appbuilder, *args, **kwargs)
 
@@ -1150,7 +1131,7 @@ class ModelRestApi(BaseModelApi):
     def edit_model_schema_name(self) -> str:
         return f"{self.__class__.__name__}.put"
 
-    def add_apispec_components(self, api_spec):
+    def add_apispec_components(self, api_spec: APISpec) -> None:
         super(ModelRestApi, self).add_apispec_components(api_spec)
         api_spec.components.schema(
             self.list_model_schema_name, schema=self.list_model_schema
@@ -1165,53 +1146,68 @@ class ModelRestApi(BaseModelApi):
             self.show_model_schema_name, schema=self.show_model_schema
         )
 
-    def _init_model_schemas(self):
+    def _init_model_schemas(self) -> None:
         # Create Marshmalow schemas if one is not specified
         if self.list_model_schema is None:
-            self.list_model_schema = self.model2schemaconverter.convert(
+            self.list_model_schema = self._model2schemaconverter.convert(
                 self.list_columns, parent_schema_name=self.list_model_schema_name
             )
         if self.add_model_schema is None:
-            self.add_model_schema = self.model2schemaconverter.convert(
+            self.add_model_schema = self._model2schemaconverter.convert(
                 self.add_columns,
                 nested=False,
                 enum_dump_by_name=True,
                 parent_schema_name=self.add_model_schema_name,
             )
         if self.edit_model_schema is None:
-            self.edit_model_schema = self.model2schemaconverter.convert(
+            self.edit_model_schema = self._model2schemaconverter.convert(
                 self.edit_columns,
                 nested=False,
                 enum_dump_by_name=True,
                 parent_schema_name=self.edit_model_schema_name,
             )
         if self.show_model_schema is None:
-            self.show_model_schema = self.model2schemaconverter.convert(
+            self.show_model_schema = self._model2schemaconverter.convert(
                 self.show_columns, parent_schema_name=self.show_model_schema_name
             )
 
-    def _init_titles(self):
+    def _init_titles(self) -> None:
         """
-            Init Titles if not defined
+        Init Titles with defaults, for model metadata
         """
-        super(ModelRestApi, self)._init_titles()
-        class_name = self.datamodel.model_name
-        if not self.list_title:
-            self.list_title = "List " + self._prettify_name(class_name)
-        if not self.add_title:
-            self.add_title = "Add " + self._prettify_name(class_name)
-        if not self.edit_title:
-            self.edit_title = "Edit " + self._prettify_name(class_name)
-        if not self.show_title:
-            self.show_title = "Show " + self._prettify_name(class_name)
-        self.title = self.list_title
+        if self.datamodel:
+            class_name = self.datamodel.model_name
+            if not self.list_title:
+                self.list_title = "List " + self._prettify_name(class_name)
+            if not self.add_title:
+                self.add_title = "Add " + self._prettify_name(class_name)
+            if not self.edit_title:
+                self.edit_title = "Edit " + self._prettify_name(class_name)
+            if not self.show_title:
+                self.show_title = "Show " + self._prettify_name(class_name)
+            self.title = self.list_title
 
     def _init_properties(self) -> None:
         """
-            Init Properties
+        Init Properties
         """
-        super(ModelRestApi, self)._init_properties()
-        # Reset init props
+        self.label_columns = self.label_columns or {}
+        self.base_filters = self.base_filters or []
+        self.search_exclude_columns = self.search_exclude_columns or []
+        self.search_columns = self.search_columns or []
+
+        if self.datamodel:
+            self._base_filters = self.datamodel.get_filters().add_filter_list(
+                self.base_filters
+            )
+            search_columns = self.datamodel.get_search_columns_list()
+            if not self.search_columns:
+                self.search_columns = [
+                    x for x in search_columns if x not in self.search_exclude_columns
+                ]
+            self._gen_labels_columns(self.datamodel.get_columns_list())
+
+        # init properties
         self.description_columns = self.description_columns or {}
         self.list_exclude_columns = self.list_exclude_columns or []
         self.show_exclude_columns = self.show_exclude_columns or []
@@ -1221,7 +1217,7 @@ class ModelRestApi(BaseModelApi):
         # Generate base props
         list_cols = self.datamodel.get_user_columns_list()
         if not self.list_columns and self.list_model_schema:
-            list(self.list_model_schema._declared_fields.keys())
+            self.list_columns = list(self.list_model_schema._declared_fields.keys())
         else:
             self.list_columns = self.list_columns or [
                 x
@@ -1254,10 +1250,10 @@ class ModelRestApi(BaseModelApi):
         self._filters = self.datamodel.get_filters(
             search_columns=self.search_columns, search_filters=self.search_filters
         )
-        self.edit_query_rel_fields = self.edit_query_rel_fields or dict()
-        self.add_query_rel_fields = self.add_query_rel_fields or dict()
+        self.edit_query_rel_fields = self.edit_query_rel_fields or {}
+        self.add_query_rel_fields = self.add_query_rel_fields or {}
 
-    def merge_add_field_info(self, response, **kwargs):
+    def merge_add_field_info(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         _kwargs = kwargs.get("add_columns", {})
         response[API_ADD_COLUMNS_RES_KEY] = self._get_fields_info(
             self.add_columns,
@@ -1266,7 +1262,7 @@ class ModelRestApi(BaseModelApi):
             **_kwargs,
         )
 
-    def merge_edit_field_info(self, response, **kwargs):
+    def merge_edit_field_info(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         _kwargs = kwargs.get("edit_columns", {})
         response[API_EDIT_COLUMNS_RES_KEY] = self._get_fields_info(
             self.edit_columns,
@@ -1275,24 +1271,26 @@ class ModelRestApi(BaseModelApi):
             **_kwargs,
         )
 
-    def merge_search_filters(self, response, **kwargs):
+    def merge_search_filters(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         # Get possible search fields and all possible operations
-        search_filters = dict()
-        dict_filters = self._filters.get_search_filters()
-        for col in self.search_columns:
-            search_filters[col] = [
-                {"name": as_unicode(flt.name), "operator": flt.arg_name}
-                for flt in dict_filters[col]
-            ]
+        search_filters = {}
+        if self._filters:
+            dict_filters = self._filters.get_search_filters()
+            if self.search_columns:
+                for col in self.search_columns:
+                    search_filters[col] = [
+                        {"name": as_unicode(flt.name), "operator": flt.arg_name}
+                        for flt in dict_filters[col]
+                    ]
         response[API_FILTERS_RES_KEY] = search_filters
 
-    def merge_add_title(self, response, **kwargs):
+    def merge_add_title(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         response[API_ADD_TITLE_RES_KEY] = self.add_title
 
-    def merge_edit_title(self, response, **kwargs):
+    def merge_edit_title(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         response[API_EDIT_TITLE_RES_KEY] = self.edit_title
 
-    def merge_label_columns(self, response, **kwargs):
+    def merge_label_columns(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
             columns = _pruned_select_cols
@@ -1306,20 +1304,22 @@ class ModelRestApi(BaseModelApi):
                 columns = self.label_columns  # pragma: no cover
         response[API_LABEL_COLUMNS_RES_KEY] = self._label_columns_json(columns)
 
-    def merge_list_label_columns(self, response, **kwargs):
+    def merge_list_label_columns(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         self.merge_label_columns(response, caller="list", **kwargs)
 
-    def merge_show_label_columns(self, response, **kwargs):
+    def merge_show_label_columns(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         self.merge_label_columns(response, caller="show", **kwargs)
 
-    def merge_show_columns(self, response, **kwargs):
+    def merge_show_columns(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
             response[API_SHOW_COLUMNS_RES_KEY] = _pruned_select_cols
         else:
             response[API_SHOW_COLUMNS_RES_KEY] = self.show_columns
 
-    def merge_description_columns(self, response, **kwargs):
+    def merge_description_columns(
+        self, response: Dict[Any, Any], **kwargs: Any
+    ) -> None:
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
             response[API_DESCRIPTION_COLUMNS_RES_KEY] = self._description_columns_json(
@@ -1331,38 +1331,39 @@ class ModelRestApi(BaseModelApi):
                 self.description_columns
             )
 
-    def merge_list_columns(self, response, **kwargs):
+    def merge_list_columns(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
             response[API_LIST_COLUMNS_RES_KEY] = _pruned_select_cols
         else:
             response[API_LIST_COLUMNS_RES_KEY] = self.list_columns
 
-    def merge_order_columns(self, response, **kwargs):
+    def merge_order_columns(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
-            response[API_ORDER_COLUMNS_RES_KEY] = [
-                order_col
-                for order_col in self.order_columns
-                if order_col in _pruned_select_cols
-            ]
+            if self.order_columns:
+                response[API_ORDER_COLUMNS_RES_KEY] = [
+                    order_col
+                    for order_col in self.order_columns
+                    if order_col in _pruned_select_cols
+                ]
         else:
             response[API_ORDER_COLUMNS_RES_KEY] = self.order_columns
 
-    def merge_list_title(self, response, **kwargs):
+    def merge_list_title(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         response[API_LIST_TITLE_RES_KEY] = self.list_title
 
-    def merge_show_title(self, response, **kwargs):
+    def merge_show_title(self, response: Dict[Any, Any], **kwargs: Any) -> None:
         response[API_SHOW_TITLE_RES_KEY] = self.show_title
 
-    def info_headless(self, **kwargs) -> Response:
+    def info_headless(self, **kwargs: Any) -> Response:
         """
-            response for CRUD REST meta data
+        response for CRUD REST meta data
         """
-        _response = dict()
-        _args = kwargs.get("rison", {})
-        self.set_response_key_mappings(_response, self.info, _args, **_args)
-        return self.response(200, **_response)
+        response: Dict[Any, Any] = {}
+        rison_kwargs = kwargs.get("rison", {})
+        self.set_response_key_mappings(response, self.info, rison_kwargs)
+        return self.response(200, **response)
 
     @expose("/_info", methods=["GET"])
     @protect()

@@ -57,7 +57,7 @@ def columns2Tree(columns: List[str]) -> Tree:
     return tree
 
 
-class BaseModel2SchemaConverter(object):
+class BaseModel2SchemaConverter:
     """
     Base class for a Model2Schema converter so that it's possible to override
     and create your own.
@@ -76,7 +76,10 @@ class BaseModel2SchemaConverter(object):
         self.validators_columns = validators_columns
 
     def convert(
-        self, columns: List[str], model: Optional[Type[Model]] = None, **kwargs: Any
+        self,
+        columns: Optional[List[str]] = None,
+        model: Optional[Type[Model]] = None,
+        **kwargs: Any,
     ) -> SQLAlchemyAutoSchema:
         """
         Contract for a converter. Should convert a model type to a marshmallow schema
@@ -110,11 +113,11 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
 
     def _meta_schema_factory(
         self,
-        columns: List[str],
+        columns: Optional[List[str]],
         model: Type[Model],
         class_mixin: Any,
         parent_schema_name: Optional[str] = None,
-    ) -> SQLAlchemyAutoSchema:
+    ) -> Type[SQLAlchemyAutoSchema]:
         """
         Creates ModelSchema marshmallow-sqlalchemy
 
@@ -258,7 +261,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
 
     def convert(
         self,
-        columns: List[str],
+        columns: Optional[List[str]] = None,
         model: Optional[Type[Model]] = None,
         nested: bool = True,
         enum_dump_by_name: bool = False,
@@ -276,8 +279,11 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         to sufix the current schema name
         :return: ModelSchema object
         """
-        super(Model2SchemaConverter, self).convert(
-            columns, model=model, nested=nested, parent_schema_name=parent_schema_name
+        super().convert(
+            columns=columns,
+            model=model,
+            nested=nested,
+            parent_schema_name=parent_schema_name,
         )
 
         class SchemaMixin:
@@ -288,8 +294,9 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
 
         ma_sqla_fields_override = {}
 
-        _columns = list()
-        tree_columns = columns2Tree(columns)
+        _leaf_columns = []
+        _columns = columns or []
+        tree_columns = columns2Tree(_columns)
         for column in tree_columns.root.childs:
             # Get child model is column is dotted notation
             ma_sqla_fields_override[column.data] = self._column2field(
@@ -299,9 +306,9 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                 enum_dump_by_name,
                 parent_schema_name=parent_schema_name,
             )
-            _columns.append(column.data)
+            _leaf_columns.append(column.data)
         for k, v in ma_sqla_fields_override.items():
             setattr(SchemaMixin, k, v)
         return self._meta_schema_factory(
-            _columns, _model, SchemaMixin, parent_schema_name=parent_schema_name
+            _leaf_columns, _model, SchemaMixin, parent_schema_name=parent_schema_name
         )()
