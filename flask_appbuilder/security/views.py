@@ -154,7 +154,7 @@ class UserModelView(ModelView):
                                'The user role on the application, this will associate with a list of permissions'),
                            'conf_password': lazy_gettext('Please rewrite the user\'s password to confirm')}
 
-    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'status']
+    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'status', 'created_by', 'changed_by']
 
     show_fieldsets = [
         (lazy_gettext('User info'),
@@ -176,7 +176,7 @@ class UserModelView(ModelView):
     search_exclude_columns = ['password']
 
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email']
-    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email']
+    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'created_by', 'changed_by']
     user_info_title = lazy_gettext("Your user information")
 
     @expose('/userinfo/')
@@ -193,6 +193,10 @@ class UserModelView(ModelView):
     @action('userinfoedit', lazy_gettext("Edit User"), "", "fa-edit", multiple=False)
     def userinfoedit(self, item):
         return redirect(url_for(self.appbuilder.sm.userinfoeditview.__name__ + '.this_form_get'))
+
+    @action('checkUserDependencies', lazy_gettext("User's dependencies"), "", "fa-table", multiple=False)
+    def checkUserDependencies(self, item):
+        return redirect('/datana/user_dependencies/{0}'.format(item.id))
 
 
 class UserOIDModelView(UserModelView):
