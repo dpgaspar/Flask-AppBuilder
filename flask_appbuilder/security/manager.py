@@ -1287,23 +1287,19 @@ class BaseSecurityManager(AbstractSecurityManager):
             :userinfo: dict with user information
                        (keys are the same as User model columns)
         """
-        # extract the username from `userinfo`
-        if "username" in userinfo:
-            username = userinfo["username"]
-        elif "email" in userinfo:
-            username = userinfo["email"]
+        # extract the username or email from `userinfo`
+        if userinfo.get("username"):
+            user_filter_kwargs = {"username": userinfo["username"]}
+        elif userinfo.get("email"):
+            user_filter_kwargs = {"email": userinfo["email"]}
         else:
             log.error(
                 "OAUTH userinfo does not have username or email {0}".format(userinfo)
             )
             return None
 
-        # If username is empty, go away
-        if (username is None) or username == "":
-            return None
-
         # Search the DB for this user
-        user = self.find_user(username=username)
+        user = self.find_user(**user_filter_kwargs)
 
         # If user is not active, go away
         if user and (not user.is_active):
