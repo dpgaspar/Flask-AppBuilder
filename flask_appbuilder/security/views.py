@@ -596,8 +596,7 @@ class AuthOAuthView(AuthView):
     @expose("/login/<provider>")
     @expose("/login/<provider>/<register>")
     def login(
-        self, provider: Optional[str] = None, register: Optional[str] = None
-    ) -> WerkzeugResponse:
+        self, provider: Optional[str] = None) -> WerkzeugResponse:
         log.debug("Provider: {0}".format(provider))
         if g.user is not None and g.user.is_authenticated:
             log.debug("Already authenticated {0}".format(g.user))
@@ -618,9 +617,6 @@ class AuthOAuthView(AuthView):
             algorithm="HS256",
         )
         try:
-            if register:
-                log.debug("Login to Register")
-                session["register"] = True
             if provider == "twitter":
                 return self.appbuilder.sm.oauth_remotes[provider].authorize_redirect(
                     redirect_uri=url_for(
