@@ -604,15 +604,12 @@ class AuthOAuthView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
 
         if provider is None:
-            if len(self.appbuilder.sm.oauth_providers) > 1:
-                return self.render_template(
-                    self.login_template,
-                    providers=self.appbuilder.sm.oauth_providers,
-                    title=self.title,
-                    appbuilder=self.appbuilder,
-                )
-            else:
-                provider = self.appbuilder.sm.oauth_providers[0]["name"]
+            return self.render_template(
+                self.login_template,
+                providers=self.appbuilder.sm.oauth_providers,
+                title=self.title,
+                appbuilder=self.appbuilder,
+            )
 
         log.debug("Going to call authorize for: {0}".format(provider))
         state = jwt.encode(

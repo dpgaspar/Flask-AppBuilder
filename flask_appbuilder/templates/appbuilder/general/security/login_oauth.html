@@ -40,7 +40,7 @@
                 <div class="panel-title">{{ title }}</div>
             </div>
             <div style="padding-top:30px" class="panel-body">
-
+                {% if providers|length > 1 %}
                 <div class="help-block">{{_("Please choose one of the following providers:")}}</div>
                 <div class="center-block btn-group btn-group-lg" role="group">
                     <center>
@@ -51,6 +51,7 @@
                         {% endfor %}
                     </center>
                 </div>
+                {% endif %}
                 <div>
                     <br></br>
                     <a onclick="signin();" class="btn btn-primary btn-block" type="submit">{{_('Sign In')}}</a>
