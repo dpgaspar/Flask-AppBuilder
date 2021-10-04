@@ -595,8 +595,7 @@ class AuthOAuthView(AuthView):
     @expose("/login/")
     @expose("/login/<provider>")
     @expose("/login/<provider>/<register>")
-    def login(
-        self, provider: Optional[str] = None) -> WerkzeugResponse:
+    def login(self, provider: Optional[str] = None) -> WerkzeugResponse:
         log.debug("Provider: {0}".format(provider))
         if g.user is not None and g.user.is_authenticated:
             log.debug("Already authenticated {0}".format(g.user))
