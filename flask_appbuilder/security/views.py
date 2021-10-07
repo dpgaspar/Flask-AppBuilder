@@ -155,7 +155,7 @@ class UserModelView(ModelView):
                            'conf_password': lazy_gettext('Please rewrite the user\'s password to confirm')}
 
     list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'status', 'created_by', 'changed_by']
-
+    search_columns = list_columns
     show_fieldsets = [
         (lazy_gettext('User info'),
          {'fields': ['username', 'active', 'login_count']}),
@@ -348,6 +348,7 @@ class RoleModelView(ModelView):
     show_columns = list_columns
     edit_columns = list_columns
     add_columns = list_columns
+    search_columns = list_columns
     order_columns = ['name']
     base_filters = [['name', FilterInList, ('Admin-System', 'Admin-Data', 'Creator', 'Viewer')]]
 
