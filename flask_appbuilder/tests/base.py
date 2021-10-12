@@ -1,12 +1,17 @@
 import json
+import logging
+from typing import Set
 import unittest
 
+from flask import Flask
+from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.const import (
     API_SECURITY_PASSWORD_KEY,
     API_SECURITY_PROVIDER_KEY,
     API_SECURITY_USERNAME_KEY,
     API_SECURITY_VERSION,
 )
+import jinja2
 
 
 class FABTestCase(unittest.TestCase):
@@ -93,3 +98,25 @@ class FABTestCase(unittest.TestCase):
         return appbuilder.sm.add_user(
             username, first_name, last_name, email, roles, password
         )
+
+
+class BaseMVCTestCase(FABTestCase):
+    def setUp(self):
+        self.app = Flask(__name__)
+        self.app.jinja_env.undefined = jinja2.StrictUndefined
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        logging.basicConfig(level=logging.ERROR)
+
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+    @property
+    def registered_endpoints(self) -> Set:
+        return {item.endpoint for item in self.app.url_map.iter_rules()}
+
+    def get_registered_view_endpoints(self, view_name) -> Set:
+        return {
+            item.endpoint
+            for item in self.app.url_map.iter_rules()
+            if item.endpoint.split(".")[0] == view_name
+        }

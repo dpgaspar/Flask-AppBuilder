@@ -17,10 +17,10 @@ except ImportError:
 log = logging.getLogger(__name__)
 
 
-class BaseInterface(object):
+class BaseInterface:
     """
-        Base class for all data model interfaces.
-        Sub class it to implement your own interface for some data engine.
+    Base class for all data model interfaces.
+    Sub class it to implement your own interface for some data engine.
     """
 
     filter_converter_class = Type[BaseFilterConverter]
@@ -46,6 +46,13 @@ class BaseInterface(object):
 
     def __init__(self, obj: Type[Any]):
         self.obj = obj
+
+    def __getattr__(self, name: str) -> Any:
+        """
+        Make mypy happy about the injected filters like self.datamodel.FilterEqual
+        https://mypy.readthedocs.io/en/latest/cheat_sheet_py3.html#when-you-re-puzzled-or-when-things-are-complicated
+        """
+        return super().__getattr__(name)
 
     def _get_attr(self, col_name):
         if not hasattr(self.obj, col_name):
