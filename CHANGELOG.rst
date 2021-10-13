@@ -1,6 +1,16 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.3.4
+-----------------------------------
+
+- chore: improve tests more coverage (#1713) [Daniel Vaz Gaspar]
+- docs: fix requirements funcparserlib (#1703) [Daniel Vaz Gaspar]
+- chore: improve schema validation (#1712) [Daniel Vaz Gaspar]
+- chore: bump dependencies (#1697) [Daniel Vaz Gaspar]
+- docs: fix requirements (#1702) [Daniel Vaz Gaspar]
+- docs: fix issue 1700 (#1701) [Federico Padua]
+
 Improvements and Bug fixes on 3.3.3
 -----------------------------------
 
