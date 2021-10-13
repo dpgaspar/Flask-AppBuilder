@@ -15,9 +15,7 @@ provider_to_auth_type = {"db": AUTH_DB, "ldap": AUTH_LDAP}
 
 
 def validate_password(value: Union[bytes, bytearray, str]) -> None:
-    if not value:
-        raise ValidationError("Password is required")
-    if len(value) == 1 and value.encode()[0] == 0:
+    if value and sum(value.encode()) == 0:
         raise ValidationError("Password null is not allowed")
 
 
@@ -31,7 +29,7 @@ def validate_provider(value: Union[bytes, bytearray, str]) -> None:
 class LoginPost(Schema):
     username = fields.String(required=True, allow_none=False, validate=Length(min=1))
     password = fields.String(
-        validate=validate_password, required=True, allow_none=False
+        validate=[Length(min=1), validate_password], required=True, allow_none=False
     )
     provider = fields.String(
         validate=[

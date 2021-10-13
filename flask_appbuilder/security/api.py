@@ -4,6 +4,7 @@ from flask_appbuilder.const import (
     API_SECURITY_ACCESS_TOKEN_KEY,
     API_SECURITY_PROVIDER_DB,
     API_SECURITY_PROVIDER_LDAP,
+    API_SECURITY_REFRESH_TOKEN_KEY,
     API_SECURITY_VERSION,
 )
 from flask_appbuilder.security.schemas import login_post
@@ -107,8 +108,10 @@ class SecurityApi(BaseApi):
         resp[API_SECURITY_ACCESS_TOKEN_KEY] = create_access_token(
             identity=user.id, fresh=True
         )
-        if "refresh" in login_payload:
-            login_payload["refresh"] = create_refresh_token(identity=user.id)
+        if "refresh" in login_payload and login_payload["refresh"]:
+            resp[API_SECURITY_REFRESH_TOKEN_KEY] = create_refresh_token(
+                identity=user.id
+            )
         return self.response(200, **resp)
 
     @expose("/refresh", methods=["POST"])
