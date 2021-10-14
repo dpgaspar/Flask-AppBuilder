@@ -1,24 +1,21 @@
-from flask import request
+from flask import request, Response
+from flask_appbuilder.api import BaseApi, safe
+from flask_appbuilder.const import (
+    API_SECURITY_ACCESS_TOKEN_KEY,
+    API_SECURITY_PROVIDER_DB,
+    API_SECURITY_PROVIDER_LDAP,
+    API_SECURITY_REFRESH_TOKEN_KEY,
+    API_SECURITY_VERSION,
+)
+from flask_appbuilder.security.schemas import login_post
+from flask_appbuilder.views import expose
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     get_jwt_identity,
     jwt_refresh_token_required,
 )
-
-from ..api import BaseApi, safe
-from ..const import (
-    API_SECURITY_ACCESS_TOKEN_KEY,
-    API_SECURITY_PASSWORD_KEY,
-    API_SECURITY_PROVIDER_DB,
-    API_SECURITY_PROVIDER_KEY,
-    API_SECURITY_PROVIDER_LDAP,
-    API_SECURITY_REFRESH_KEY,
-    API_SECURITY_REFRESH_TOKEN_KEY,
-    API_SECURITY_USERNAME_KEY,
-    API_SECURITY_VERSION,
-)
-from ..views import expose
+from marshmallow import ValidationError
 
 
 class SecurityApi(BaseApi):
@@ -35,7 +32,7 @@ class SecurityApi(BaseApi):
 
     @expose("/login", methods=["POST"])
     @safe
-    def login(self):
+    def login(self) -> Response:
         """Login endpoint for the API returns a JWT and optionally a refresh token
         ---
         post:
@@ -88,20 +85,20 @@ class SecurityApi(BaseApi):
         """
         if not request.is_json:
             return self.response_400(message="Request payload is not JSON")
-        username = request.json.get(API_SECURITY_USERNAME_KEY, None)
-        password = request.json.get(API_SECURITY_PASSWORD_KEY, None)
-        provider = request.json.get(API_SECURITY_PROVIDER_KEY, None)
-        refresh = request.json.get(API_SECURITY_REFRESH_KEY, False)
-        if not username or not password or not provider:
-            return self.response_400(message="Missing required parameter")
+        try:
+            login_payload = login_post.load(request.json)
+        except ValidationError as error:
+            return self.response_400(message=error.messages)
+
         # AUTH
-        if provider == API_SECURITY_PROVIDER_DB:
-            user = self.appbuilder.sm.auth_user_db(username, password)
-        elif provider == API_SECURITY_PROVIDER_LDAP:
-            user = self.appbuilder.sm.auth_user_ldap(username, password)
-        else:
-            return self.response_400(
-                message="Provider {} not supported".format(provider)
+        user = None
+        if login_payload["provider"] == API_SECURITY_PROVIDER_DB:
+            user = self.appbuilder.sm.auth_user_db(
+                login_payload["username"], login_payload["password"]
+            )
+        elif login_payload["provider"] == API_SECURITY_PROVIDER_LDAP:
+            user = self.appbuilder.sm.auth_user_ldap(
+                login_payload["username"], login_payload["password"]
             )
         if not user:
             return self.response_401()
@@ -111,7 +108,7 @@ class SecurityApi(BaseApi):
         resp[API_SECURITY_ACCESS_TOKEN_KEY] = create_access_token(
             identity=user.id, fresh=True
         )
-        if refresh:
+        if "refresh" in login_payload and login_payload["refresh"]:
             resp[API_SECURITY_REFRESH_TOKEN_KEY] = create_refresh_token(
                 identity=user.id
             )
@@ -120,7 +117,7 @@ class SecurityApi(BaseApi):
     @expose("/refresh", methods=["POST"])
     @jwt_refresh_token_required
     @safe
-    def refresh(self):
+    def refresh(self) -> Response:
         """
             Security endpoint for the refresh token, so we can obtain a new
             token without forcing the user to login again
