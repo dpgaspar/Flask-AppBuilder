@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
@@ -2023,7 +2023,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def export_roles(self, path: Optional[str] = None) -> None:
+    def export_roles(
+        self, path: Optional[str] = None, indent: Optional[Union[None, int, str]] = None
+    ) -> None:
         """ Exports roles to JSON file. """
         raise NotImplementedError
 
