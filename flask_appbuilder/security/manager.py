@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
@@ -219,6 +219,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Role Mapping
         app.config.setdefault("AUTH_ROLES_MAPPING", {})
         app.config.setdefault("AUTH_ROLES_SYNC_AT_LOGIN", False)
+        app.config.setdefault("AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS", False)
 
         # LDAP Config
         if self.auth_type == AUTH_LDAP:
@@ -331,6 +332,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         return _roles
 
     @property
+    def auth_type_provider_name(self) -> Optional[str]:
+        provider_to_auth_type = {AUTH_DB: "db", AUTH_LDAP: "ldap"}
+        return provider_to_auth_type.get(self.auth_type)
+
+    @property
     def get_url_for_registeruser(self):
         return url_for(
             "%s.%s"
@@ -346,39 +352,43 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.registerusermodelview.datamodel
 
     @property
-    def builtin_roles(self):
+    def builtin_roles(self) -> Dict[str, Any]:
         return self._builtin_roles
 
     @property
-    def auth_type(self):
+    def api_login_allow_multiple_providers(self):
+        return self.appbuilder.get_app.config["AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS"]
+
+    @property
+    def auth_type(self) -> int:
         return self.appbuilder.get_app.config["AUTH_TYPE"]
 
     @property
-    def auth_username_ci(self):
+    def auth_username_ci(self) -> str:
         return self.appbuilder.get_app.config.get("AUTH_USERNAME_CI", True)
 
     @property
-    def auth_role_admin(self):
+    def auth_role_admin(self) -> str:
         return self.appbuilder.get_app.config["AUTH_ROLE_ADMIN"]
 
     @property
-    def auth_role_public(self):
+    def auth_role_public(self) -> str:
         return self.appbuilder.get_app.config["AUTH_ROLE_PUBLIC"]
 
     @property
-    def auth_ldap_server(self):
+    def auth_ldap_server(self) -> str:
         return self.appbuilder.get_app.config["AUTH_LDAP_SERVER"]
 
     @property
-    def auth_ldap_use_tls(self):
+    def auth_ldap_use_tls(self) -> bool:
         return self.appbuilder.get_app.config["AUTH_LDAP_USE_TLS"]
 
     @property
-    def auth_user_registration(self):
+    def auth_user_registration(self) -> bool:
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION"]
 
     @property
-    def auth_user_registration_role(self):
+    def auth_user_registration_role(self) -> str:
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE"]
 
     @property

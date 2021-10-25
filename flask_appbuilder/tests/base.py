@@ -8,6 +8,7 @@ from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.const import (
     API_SECURITY_PASSWORD_KEY,
     API_SECURITY_PROVIDER_KEY,
+    API_SECURITY_REFRESH_KEY,
     API_SECURITY_USERNAME_KEY,
     API_SECURITY_VERSION,
 )
@@ -36,7 +37,7 @@ class FABTestCase(unittest.TestCase):
         )
 
     @staticmethod
-    def _login(client, username, password):
+    def _login(client, username, password, refresh: bool = False):
         """
             Login help method
         :param client: Flask test client
@@ -45,15 +46,13 @@ class FABTestCase(unittest.TestCase):
         :return: Flask client response class
         """
         return client.post(
-            "api/{}/security/login".format(API_SECURITY_VERSION),
-            data=json.dumps(
-                {
-                    API_SECURITY_USERNAME_KEY: username,
-                    API_SECURITY_PASSWORD_KEY: password,
-                    API_SECURITY_PROVIDER_KEY: "db",
-                }
-            ),
-            content_type="application/json",
+            f"api/{API_SECURITY_VERSION}/security/login",
+            json={
+                API_SECURITY_USERNAME_KEY: username,
+                API_SECURITY_PASSWORD_KEY: password,
+                API_SECURITY_PROVIDER_KEY: "db",
+                API_SECURITY_REFRESH_KEY: refresh,
+            },
         )
 
     def login(self, client, username, password):

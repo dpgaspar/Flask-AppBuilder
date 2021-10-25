@@ -202,6 +202,9 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | AUTH_ROLE_PUBLIC                       | Special Role that holds the public         |   No      |
 |                                        | permissions, no authentication needed.     |           |
 +----------------------------------------+--------------------------------------------+-----------+
+| AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS| Allow REST API login with alternative auth |   No      |
+| True|False                             | providers (default False)                  |           |           |
++----------------------------------------+--------------------------------------------+-----------+
 | APP_NAME                               | The name of your application.              |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
 | APP_THEME                              | Various themes for you to choose           |   No      |

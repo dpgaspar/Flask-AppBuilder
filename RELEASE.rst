@@ -3,7 +3,7 @@ Release protocol
 
 1 - Create a release branch named `release/<VERSION>`
 
-2 - Update CHANGELOG.rst with all the changes since last release
+2 - Update CHANGELOG.rst with all the changes since last release (use: `git log --pretty=format:"%s [%an]"`)
 
 3 - Bump version on `flask_appbuilder/__init__.py`
 
