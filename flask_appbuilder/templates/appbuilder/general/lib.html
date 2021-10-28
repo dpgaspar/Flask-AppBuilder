@@ -362,6 +362,7 @@
 {% macro lnk_back() %}
     <a href="{{url_for('UtilView' + '.back')}}" class="btn btn-sm btn-default" data-toggle="tooltip" rel="tooltip"
        title="{{_('Back')}}">
+        <span class="sr-only">Back</span>
         <i class="fa fa-arrow-left"></i>
     </a>
 {% endmacro %}
@@ -370,6 +371,7 @@
 {% macro lnk_add(my_href) %}
     <a href="{{my_href}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
        title="{{_('Add a new record')}}">
+        <span class="sr-only">Add</span>
         <i class="fa fa-plus"></i>
     </a>
 {% endmacro %}
@@ -377,6 +379,7 @@
 {% macro lnk_edit(my_href) %}
     <a href="{{my_href}}" class="btn btn-sm btn-default" data-toggle="tooltip" rel="tooltip"
        title="{{_('Edit record')}}">
+        <span class="sr-only">Edit</span>
         <i class="fa fa-edit"></i>
     </a>
 {% endmacro %}
@@ -384,6 +387,7 @@
 {% macro lnk_show(my_href) %}
     <a href="{{my_href}}" class="btn btn-sm btn-default" data-toggle="tooltip" rel="tooltip"
        title="{{_('Show record')}}">
+        <span class="sr-only">Show</span>
         <i class="fa fa-search"></i>
     </a>
 {% endmacro %}
@@ -391,6 +395,7 @@
 {% macro lnk_delete(my_href) %}
     <a href="javascript:void(0)" class="btn btn-sm btn-default confirm" rel="tooltip" title="{{_('Delete record')}}"
        onclick="var a = new AdminActions(); return a.execute_single_delete('{{my_href}}','{{ _('You sure you want to delete this item?') }}');">
+        <span class="sr-only">Delete</span>
         <i class="fa fa-trash"></i>
     </a>
 {% endmacro %}
