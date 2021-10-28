@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.4.0
+-----------------------------------
+
+- fix: OAuth login flow (#1707) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 3.3.4
 -----------------------------------
 
