@@ -616,6 +616,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "last_name": me.get("family_name", ""),
                 "id": me["oid"],
                 "username": me["oid"],
+                "role_keys": me.get("groups", []),
             }
         # for OpenShift
         if provider == "openshift":
