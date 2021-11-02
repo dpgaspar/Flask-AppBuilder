@@ -595,24 +595,19 @@ class AuthOAuthView(AuthView):
     @expose("/login/")
     @expose("/login/<provider>")
     @expose("/login/<provider>/<register>")
-    def login(
-        self, provider: Optional[str] = None, register: Optional[str] = None
-    ) -> WerkzeugResponse:
+    def login(self, provider: Optional[str] = None) -> WerkzeugResponse:
         log.debug("Provider: {0}".format(provider))
         if g.user is not None and g.user.is_authenticated:
             log.debug("Already authenticated {0}".format(g.user))
             return redirect(self.appbuilder.get_url_for_index)
 
         if provider is None:
-            if len(self.appbuilder.sm.oauth_providers) > 1:
-                return self.render_template(
-                    self.login_template,
-                    providers=self.appbuilder.sm.oauth_providers,
-                    title=self.title,
-                    appbuilder=self.appbuilder,
-                )
-            else:
-                provider = self.appbuilder.sm.oauth_providers[0]["name"]
+            return self.render_template(
+                self.login_template,
+                providers=self.appbuilder.sm.oauth_providers,
+                title=self.title,
+                appbuilder=self.appbuilder,
+            )
 
         log.debug("Going to call authorize for: {0}".format(provider))
         state = jwt.encode(
@@ -621,9 +616,6 @@ class AuthOAuthView(AuthView):
             algorithm="HS256",
         )
         try:
-            if register:
-                log.debug("Login to Register")
-                session["register"] = True
             if provider == "twitter":
                 return self.appbuilder.sm.oauth_remotes[provider].authorize_redirect(
                     redirect_uri=url_for(

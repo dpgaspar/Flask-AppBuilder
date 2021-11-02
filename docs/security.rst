@@ -151,15 +151,9 @@ You can give FlaskAppBuilder roles based on LDAP roles (note, this requires AUTH
 Authentication: OAuth
 ---------------------
 
-This method will authenticate the user's credentials against an OAUTH provider.
+This method will authenticate the user's credentials against an OAuth provider.
 
-WARNING: To use OAuth you need to install `Python AuthLib <https://authlib.org>`_.
-
-By using this method it is possible to use the OAUTH provider's APIs, this is because you're requesting the user to give
-permission to manage the user's account on the provider.
-Therefore, you can send tweets, post on the users Facebook, retrieve the user's LinkedIn profile etc.
-Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
-to get an idea of a simple use for this.
+.. note:: To use OAuth you need to install `Python AuthLib <https://authlib.org>`_.
 
 Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for your users::
 
@@ -269,10 +263,29 @@ To customize the userinfo retrieval, you can create your own method like this::
         else:
             return {}
 
+On Flask-AppBuilder 3.4.0 the login page has changed.
+
+With one provider:
+
+.. image:: ./images/oauth_login_one_provider.png
+    :width: 100%
+
+With multiple providers:
+
+.. image:: ./images/oauth_login.png
+    :width: 100%
+
+Note that on 3.3.X the user would automatically be sent to the provider allow page.
+
 Decorate your method with the SecurityManager **oauth_user_info_getter** decorator.
-Your method should return a dictionary with the userinfo, the keys having the same column names as the User Model.
+Your method should return a dictionary with the userinfo, with the keys having the same column names as the User Model.
 Your method will be called after the user authorizes your application on the OAuth provider.
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
+
+You can also use the OAuth provider APIs.
+Therefore, you can send tweets, post on the users Facebook, retrieve the user's LinkedIn profile etc.
+Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
+to get an idea of a simple use for this.
 
 Role based
 ----------
