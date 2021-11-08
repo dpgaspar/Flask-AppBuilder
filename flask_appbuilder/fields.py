@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import operator
 
 from wtforms import widgets
-from wtforms.compat import string_types, text_type
 from wtforms.fields import Field, SelectField, SelectFieldBase
 from wtforms.validators import ValidationError
 
@@ -100,7 +99,7 @@ class QuerySelectField(SelectFieldBase):
 
         if get_label is None:
             self.get_label = lambda x: x
-        elif isinstance(get_label, string_types):
+        elif isinstance(get_label, str):
             self.get_label = operator.attrgetter(get_label)
         else:
             self.get_label = get_label
@@ -127,7 +126,7 @@ class QuerySelectField(SelectFieldBase):
         if self._object_list is None:
             objs = self.query_func()
             self._object_list = list(
-                (text_type(self.get_pk_func(obj)), obj) for obj in objs
+                (str(self.get_pk_func(obj)), obj) for obj in objs
             )
         return self._object_list
 
@@ -243,7 +242,7 @@ class EnumField(SelectField):
         # Column(Enum(enum.Enum)) case
         if enum_class is not None:
             labels = [
-                text_type(enum_class.__members__[enum_member].value)
+                str(enum_class.__members__[enum_member].value)
                 for enum_member in enums
             ]
 
@@ -262,7 +261,7 @@ class EnumField(SelectField):
             def coerce(value):
                 if value is None:
                     return None
-                return text_type(value)
+                return str(value)
 
         choices = list(zip(enums, labels))
 
