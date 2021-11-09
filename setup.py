@@ -66,7 +66,7 @@ setup(
         "prison>=0.2.1, <1.0.0",
         "PyJWT>=1.7.1, <2.0.0",
         "sqlalchemy-utils>=0.32.21, <1",
-        "WTForms<3.0.0"
+        "WTForms<3.0.0",
     ],
     extras_require={
         "jmespath": ["jmespath>=0.9.5"],
