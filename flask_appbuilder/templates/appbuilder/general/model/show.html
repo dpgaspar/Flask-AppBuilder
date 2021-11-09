@@ -2,10 +2,10 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 
 {% block content %}
-{{ lib.panel_begin(title) }}
+{{ lib.panel_begin(title, "show") }}
 
 {% if related_views is defined %}
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs"  style="{{"display: none;" if not related_views else "" }}">
     <li class="active"><a href="#Home" data-toggle="tab">{{ _("Detail") }}</a> </li>
         {% for view in related_views %}
             <li>

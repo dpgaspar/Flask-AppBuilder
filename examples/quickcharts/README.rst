@@ -3,13 +3,9 @@ Google charts Example
 
 Simple application using Google charts. Will insert random data on init.
 
-Create an Admin user::
-
-    $ fabmanager create-admin
-
-
 Run it::
 
-    $ fabmanager run
-
+    $ export FLASK_APP=app/__init__.py
+    $ flask fab create-admin
+    $ flask run
 

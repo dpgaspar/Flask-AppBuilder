@@ -1,7 +1,7 @@
 AddOn development
 =================
 
-Using AddOn's with the framework it a great way to develop your application
+Using AddOn's with the framework it is a great way to develop your application
 and make public openSource contributions to the community.
 
 With it you can use a more modular design on your application, you can add functionality,
@@ -10,7 +10,7 @@ views and models that you can build independently and install or uninstall (usin
 To start building your own AddOn's you can use issue the following command::
 
 
-    $ fabmanager create-addon --name first
+    $ flask fab create-addon --name first
 
 
 Your addon name will be prefixed by 'fab_addon_' so this addon would be called **fab_addon_first**.
@@ -46,10 +46,12 @@ A very simple manager would look something like this::
 
 
    import logging
+
    from flask_appbuilder.basemanager import BaseManager
    from flask_babelpkg import lazy_gettext as _
-   from .views import FirstModelView1
+
    from .model import MyModel
+   from .views import FirstModelView1
 
 
    log = logging.getLogger(__name__)
@@ -93,5 +95,3 @@ you can install it using::
 The source code is pretty simple, use it as an example to write your own:
 
 https://github.com/dpgaspar/fab_addon_audit
-
-

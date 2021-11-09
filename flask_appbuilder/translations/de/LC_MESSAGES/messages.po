@@ -178,7 +178,7 @@ msgstr "Endet mit"
 
 #: flask_appbuilder/models/sqla/filters.py:36
 msgid "Not Ends with"
-msgstr "Endet nicht  mit"
+msgstr "Endet nicht mit"
 
 #: flask_appbuilder/models/sqla/filters.py:99
 msgid "No Relation"
@@ -214,8 +214,8 @@ msgid ""
 "Please use a good password policy, this application does not check this "
 "for you"
 msgstr ""
-"Bitte benutzen Sie eine gute PAsswortrichtlinie, diese Anwendung "
-"überprüft das nicht für sie"
+"Bitte benutzen Sie eine gute Passwortrichtlinie, diese Anwendung "
+"überprüft das nicht für Sie"
 
 #: flask_appbuilder/security/forms.py:26 flask_appbuilder/security/forms.py:42
 #: flask_appbuilder/security/views.py:212
@@ -285,12 +285,12 @@ msgstr "Kontoaktivierung"
 
 #: flask_appbuilder/security/registerviews.py:59
 msgid "Registration sent to your email"
-msgstr "Registration Ihre E-Mail gesendet"
+msgstr "Registrierung an Ihre E-Mail-Adresse gesendet"
 
 #: flask_appbuilder/security/registerviews.py:61
 msgid "Not possible to register you at the moment, try again later"
 msgstr ""
-"Nicht möglich ist, die Sie im Moment zu registrieren , versuchen Sie es "
+"Nicht möglich ist, die Sie im Moment zu registrieren, versuchen Sie es "
 "später noch einmal"
 
 #: flask_appbuilder/security/registerviews.py:63

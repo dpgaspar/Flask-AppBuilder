@@ -1,11 +1,7 @@
-Quick How to Example
---------------------
+Quick How to Example to show the use of SQL views
+-------------------------------------------------
 
 Simple contacts application.
-
-Create an Admin user::
-
-    $ fabmanager create-admin
 
 Insert test data::
 
@@ -13,6 +9,6 @@ Insert test data::
 
 Run it::
 
-    $ fabmanager run
-
-
+    $ export FLASK_APP=app/__init__.py
+    $ flask fab create-admin
+    $ flask run

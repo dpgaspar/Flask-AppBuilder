@@ -16,13 +16,13 @@ def get_user():
 
 class ContactModelView(ModelView):
     datamodel = MongoEngineInterface(Contact)
-    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
+    list_columns = ["name", "personal_celphone", "birthday", "contact_group.name"]
 
 
 class GroupModelView(ModelView):
     datamodel = MongoEngineInterface(ContactGroup)
     related_views = [ContactModelView]
-    search_columns = ['name']
+    search_columns = ["name"]
 
 
 class TagsModelView(ModelView):
@@ -35,24 +35,18 @@ class MyTagsModelView(ModelView):
 
 class ContactChartView(GroupByChartView):
     datamodel = MongoEngineInterface(Contact)
-    chart_title = 'Grouped contacts'
+    chart_title = "Grouped contacts"
     label_columns = ContactModelView.label_columns
-    chart_type = 'PieChart'
+    chart_type = "PieChart"
 
     definitions = [
-        {
-            'group': 'contact_group',
-            'series': [(aggregate_count, 'contact_group')]
-        },
-        {
-            'group': 'gender',
-            'series': [(aggregate_count, 'gender')]
-        }
+        {"group": "contact_group", "series": [(aggregate_count, "contact_group")]},
+        {"group": "gender", "series": [(aggregate_count, "gender")]},
     ]
 
 
 def pretty_month_year(value):
-    return calendar.month_name[value.month] + ' ' + str(value.year)
+    return calendar.month_name[value.month] + " " + str(value.year)
 
 
 def pretty_year(value):
@@ -62,30 +56,61 @@ def pretty_year(value):
 class ContactTimeChartView(GroupByChartView):
     datamodel = MongoEngineInterface(Contact)
 
-    chart_title = 'Grouped Birth contacts'
-    chart_type = 'AreaChart'
+    chart_title = "Grouped Birth contacts"
+    chart_type = "AreaChart"
     label_columns = ContactModelView.label_columns
     definitions = [
         {
-            'group': 'month_year',
-            'formatter': pretty_month_year,
-            'series': [(aggregate_count, 'contact_group')]
+            "group": "month_year",
+            "formatter": pretty_month_year,
+            "series": [(aggregate_count, "contact_group")],
         },
         {
-            'group': 'year',
-            'formatter': pretty_year,
-            'series': [(aggregate_count, 'contact_group')]
-        }
+            "group": "year",
+            "formatter": pretty_year,
+            "series": [(aggregate_count, "contact_group")],
+        },
     ]
 
 
-appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(TagsModelView, "List Tags", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
+appbuilder.add_view(
+    GroupModelView,
+    "List Groups",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon="fa-envelope",
+)
+appbuilder.add_view(
+    ContactModelView,
+    "List Contacts",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon="fa-envelope",
+)
+appbuilder.add_view(
+    TagsModelView,
+    "List Tags",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon="fa-envelope",
+)
 appbuilder.add_separator("Contacts")
-appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
-appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+appbuilder.add_view(
+    ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts"
+)
+appbuilder.add_view(
+    ContactTimeChartView,
+    "Contacts Birth Chart",
+    icon="fa-dashboard",
+    category="Contacts",
+)
 
-appbuilder.add_view(MyTagsModelView, "My Tag List", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
+appbuilder.add_view(
+    MyTagsModelView,
+    "My Tag List",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon="fa-envelope",
+)
 
 appbuilder.security_cleanup()

@@ -1,14 +1,18 @@
-import logging
-from app import db
-from app.models import ContactGroup, Contact
-import random
 from datetime import datetime
+import logging
+import random
+
+from app import db
+from app.models import Contact, ContactGroup
 
 log = logging.getLogger(__name__)
 
 
 def get_random_name(names_list, size=1):
-    name_lst = [names_list[random.randrange(0, len(names_list))].decode("utf-8").capitalize() for i in range(0, size)]
+    name_lst = [
+        names_list[random.randrange(0, len(names_list))].decode("utf-8").capitalize()
+        for i in range(0, size)
+    ]
     return " ".join(name_lst)
 
 
@@ -16,14 +20,14 @@ try:
     db.session.query(Contact).delete()
     db.session.query(ContactGroup).delete()
     db.session.commit()
-except:
+except Exception:
     db.session.rollback()
 
 try:
     groups = list()
-    groups.append(ContactGroup(name='Friends'))
-    groups.append(ContactGroup(name='Family'))
-    groups.append(ContactGroup(name='Work'))
+    groups.append(ContactGroup(name="Friends"))
+    groups.append(ContactGroup(name="Family"))
+    groups.append(ContactGroup(name="Work"))
     db.session.add(groups[0])
     db.session.add(groups[1])
     db.session.add(groups[2])
@@ -34,16 +38,18 @@ except Exception as e:
     db.session.rollback()
 
 
-f = open('NAMES.DIC', "rb")
+f = open("NAMES.DIC", "rb")
 names_list = [x.strip() for x in f.readlines()]
 
 f.close()
-gender = ['Male', 'Female']
+gender = ["Male", "Female"]
 
 for i in range(1, 1000):
     c = Contact()
     c.name = get_random_name(names_list, random.randrange(2, 6))
-    c.address = 'Street ' + names_list[random.randrange(0, len(names_list))].decode("utf-8")
+    c.address = "Street " + names_list[random.randrange(0, len(names_list))].decode(
+        "utf-8"
+    )
     c.gender = gender[random.randrange(0, len(gender))]
     c.personal_phone = random.randrange(1111111, 9999999)
     c.personal_celphone = random.randrange(1111111, 9999999)
@@ -59,5 +65,3 @@ for i in range(1, 1000):
     except Exception as e:
         log.error("Creating Contact: %s", e)
         db.session.rollback()
-    
-

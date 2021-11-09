@@ -102,19 +102,21 @@ By default menu is constructed based on your classes and in a reversed navbar. L
 		appbuilder = AppBuilder(app, db, menu=Menu(reverse=False))
 		
 	- Add your own menu links, on a default reversed navbar::
-	
-		# Register a view, rendering a top menu without icon
-		appbuilder.add_view(MyModelView, "My View")
-		# Register a view, a submenu "Other View" from "Other" with a phone icon
-		appbuilder.add_view(MyOtherModelView, "Other View", icon='fa-phone', category="Others")
-		# Register a view, with label for babel support (internationalization), setup an icon for the category.
-		appbuilder.add_view(MyOtherModelView, "Other View", icon='fa-phone', label=lazy_gettext('Other View'),
-		                category="Others", category_label=lazy_gettext('Other'), category_label='fa-envelope')
-		# Add a link
-		appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
+
+
+            # Register a view, rendering a top menu without icon
+            appbuilder.add_view(MyModelView, "My View")
+            # Register a view, a submenu "Other View" from "Other" with a phone icon
+            appbuilder.add_view(MyOtherModelView, "Other View", icon='fa-phone', category="Others")
+            # Register a view, with label for babel support (internationalization), setup an icon for the category.
+            appbuilder.add_view(MyOtherModelView, "Other View", icon='fa-phone', label=lazy_gettext('Other View'),
+                            category="Others", category_label=lazy_gettext('Other'), category_label='fa-envelope')
+            # Add a link
+            appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
 		
 	- Add separators::
-	
+
+
 		# Register a view, rendering a top menu without icon
 		appbuilder.add_view(MyModelView1, "My View 1", category="My Views")
 		appbuilder.add_view(MyModelView2, "My View 2", category="My Views")
@@ -135,9 +137,7 @@ or (even better) create them and contribute to the project on git.
 
 All views have templates that will display widgets in a certain layout.
 For example, on the edit or show view, you can display the related list (from *related_views*) on the same page,
-or as tab (default).
-
-::
+or as tab (default).::
 
     class ServerDiskTypeModelView(ModelView):
         datamodel = SQLAInterface(ServerDiskType)
@@ -168,6 +168,7 @@ If you want to change the above example, and change the way the server disks are
         datamodel = SQLAInterface(ServerDiskType)
         list_columns = ['quantity', 'disktype']
         list_widget = ListBlock
+
 
     class ServerModelView(ModelView):
         datamodel = SQLAInterface(Server)
@@ -210,14 +211,13 @@ Change Default View Behaviour
 
 If you want to have Add, edit and list on the same page, this can be done. This could be very helpful on master/detail lists (inline) on views based on tables with very few columns.
 
-All you have to do is to mix *CompactCRUDMixin* class with the *ModelView* class.
-
-::
+All you have to do is to mix *CompactCRUDMixin* class with the *ModelView* class.::
 
     from flask_appbuilder.models.sqla.interface import SQLAInterface
     from flask_appbuilder.views import ModelView, CompactCRUDMixin
-    from app.models import Project, ProjectFiles
-    from app import appbuilder
+
+    from . import appbuilder
+    from .models import Project, ProjectFiles
 
 
     class MyInlineView(CompactCRUDMixin, ModelView):
@@ -266,6 +266,7 @@ Remember you can use charts has related views, you can use it like this::
         chart_type = 'AreaChart'
         label_columns = ContactModelView.label_columns
         group_by_columns = ['birthday']
+
 
     class GroupMasterView(MasterDetailView):
         datamodel = SQLAInterface(Group)

@@ -12,7 +12,7 @@ AppBuilder
 
     .. autoclass:: AppBuilder
         :members:
-        
+
         .. automethod:: __init__
 
 flask_appbuilder.security.decorators
@@ -20,6 +20,7 @@ flask_appbuilder.security.decorators
 
 .. automodule:: flask_appbuilder.security.decorators
 
+    .. autofunction:: protect
     .. autofunction:: has_access
     .. autofunction:: permission_name
 
@@ -29,6 +30,33 @@ flask_appbuilder.models.decorators
 .. automodule:: flask_appbuilder.models.decorators
 
     .. autofunction:: renders
+
+flask_appbuilder.hooks
+======================
+.. automodule:: flask_appbuilder.hooks
+
+    .. autofunction:: before_request
+
+flask_appbuilder.api
+==============================
+
+.. automodule:: flask_appbuilder.api
+
+    .. autofunction:: expose
+    .. autofunction:: rison
+    .. autofunction:: safe
+
+BaseApi
+-------
+
+.. autoclass:: BaseApi
+    :members:
+
+ModelRestApi
+------------
+
+.. autoclass:: ModelRestApi
+    :members:
 
 flask_appbuilder.baseviews
 ==============================

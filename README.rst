@@ -1,51 +1,90 @@
 Flask App Builder
 =================
 
-.. image:: https://travis-ci.org/dpgaspar/Flask-AppBuilder.png?branch=master
-	:target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
-.. image:: https://coveralls.io/repos/dpgaspar/Flask-AppBuilder/badge.png?branch=master
-    :target: https://coveralls.io/r/dpgaspar/Flask-AppBuilder
-.. image:: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master
-   :alt: Code Health
-.. image:: https://img.shields.io/badge/pyversions-2.7%2C3.6-blue.svg
-.. image:: https://badges.gitter.im/Flask-Appbuilder/Lobby.svg
-   :target: https://gitter.im/dpgaspar/Flask-AppBuilder
-   :alt: Join the chat at
+.. image:: https://github.com/dpgaspar/Flask-AppBuilder/workflows/Python/badge.svg
+        :target: https://github.com/dpgaspar/Flask-AppBuilder/actions
+
+.. image:: https://img.shields.io/pypi/v/Flask-AppBuilder.svg
+        :alt: PyPI
+        :target: https://pypi.org/project/Flask-AppBuilder/
+
+.. image:: https://img.shields.io/badge/pyversions-3.6%2C3.7-blue.svg
+        :target: https://www.python.org/
+
+.. image:: https://codecov.io/github/dpgaspar/Flask-AppBuilder/coverage.svg?branch=master
+        :target: https://codecov.io/github/dpgaspar/Flask-AppBuilder
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto CRUD generation for your models, google charts and much more.
 
 Extensive configuration of all functionality, easily integrate with normal Flask/Jinja2 development.
 
-Take a look at installation, quick how to tutorials, API reference etc: `Documentation <http://flask-appbuilder.readthedocs.org/en/latest/>`_
+- Documentation: `Documentation <http://flask-appbuilder.readthedocs.org/en/latest/>`_
+
+- Mailing list: `Google group <https://groups.google.com/forum/#!forum/flask-appbuilder>`_
+
+- Chat: `Gitter <https://gitter.im/dpgaspar/Flask-AppBuilder>`_
+
+- Examples: `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_
 
 Checkout installation video on `YouTube <http://youtu.be/xvum4vfwldg>`_
 
-Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_ and a live quick how to `Demo from the docs <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome).
+Quick how to `Demo from the docs <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome).
 
-Package Version
----------------
+Change Log
+----------
 
-*New 1.12.3*.
+`Versions <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/CHANGELOG.rst>`_ for further detail on what changed.
 
-BREAKING CHANGES relative to 1.12.0: we have bumped flask-login version, this causes breaking changes on the API relative to this package.
+BREAKING CHANGE on 3.0.0 (OAuth)
 
-- Flask-AppBuilder version <= 1.11.1 was using Flask-Login 0.2.X.
+Major version 3, changed it's **OAuth** dependency from flask-oauth to authlib, due to this OAuth configuration
+changed:
 
-- Flask-AppBuilder version > 1.12.0 is using Flask-Login > 0.3.X.
+Before:
 
-The following methods from Flask-Login changed to properties:
+.. code-block::
 
-- is_anonymous() -> is_anonymous
+    OAUTH_PROVIDERS = [
+        {'name':'google', 'icon':'fa-google', 'token_key':'access_token',
+            'remote_app': {
+                'consumer_key':'GOOGLE KEY',
+                'consumer_secret':'GOOGLE SECRET',
+                'base_url':'https://www.googleapis.com/oauth2/v2/',
+                'request_token_params':{
+                  'scope': 'email profile'
+                },
+                'request_token_url':None,
+                'access_token_url':'https://accounts.google.com/o/oauth2/token',
+                'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+        }
+    ]
 
-- is_active() -> is_active
+Now:
 
-- is_authenticated() -> is_authenticated
+.. code-block::
 
-Take at look at: https://github.com/maxcountryman/flask-login/blob/master/CHANGES#L49
+    OAUTH_PROVIDERS = [
+        {'name':'google', 'icon':'fa-google', 'token_key':'access_token',
+            'remote_app': {
+                'client_id':'GOOGLE KEY',
+                'client_secret':'GOOGLE SECRET',
+                'api_base_url':'https://www.googleapis.com/oauth2/v2/',
+                'client_kwargs':{
+                  'scope': 'email profile'
+                },
+                'request_token_url':None,
+                'access_token_url':'https://accounts.google.com/o/oauth2/token',
+                'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+        }
+    ]
 
-Also read the `Versions <http://flask-appbuilder.readthedocs.org/en/latest/versions.html>`_ for further detail on what changed.
+Also make sure you change your dependency for flask-oauth to `authlib <https://github.com/lepture/authlib>`_
+
 
 Fixes, Bugs and contributions
 -----------------------------
@@ -55,28 +94,6 @@ You're welcome to report bugs, propose new features, or even better contribute t
 `Issues, bugs and new features <https://github.com/dpgaspar/Flask-AppBuilder/issues/new>`_
 
 `Contribute <https://github.com/dpgaspar/Flask-AppBuilder/fork>`_
-
-The tests can be run locally (provided Docker and Docker-Compose are installed) by running
-`docker-compose run --rm test`
-
-Or, if you have mongodb and the requirements installed locally-
-`setup.py test`
-
-
-Projects/Organizations using FAB
---------------------------------
-
-If you would like to share your project, or let everyone know that you're using FAB on your organization please submit a PR or send me an email with the details. 
-
-Projects:
-
-- `Superset <https://github.com/airbnb/superset>`_ - a data exploration platform designed to be visual, intuitive, and interactive
-
-Organizations:
-
-- Airbnb
-- Miniclip
-- EuroBIC
 
 Includes:
 ---------
@@ -103,6 +120,13 @@ Includes:
       - Related Select2 fields.
       - Google charts with automatic group by or direct values and filters.
       - AddOn system, write your own and contribute.
+  - CRUD REST API
+      - Automatic CRUD RESTful APIs.
+      - Internationalization
+      - Integration with flask-jwt-extended extension to protect your endpoints.
+      - Metadata for dynamic rendering.
+      - Selectable columns and metadata keys.
+      - Automatic and configurable data validation.
   - Forms
       - Automatic, Add, Edit and Show from Database Models
       - Labels and descriptions for each field.
@@ -176,6 +200,26 @@ Group by time chart
 .. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png
     :width: 480px
     :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png
+
+
+Projects/Organizations using FAB
+--------------------------------
+
+If you would like to share your project, or let everyone know that you're using FAB
+on your organization please submit a PR or send me an email with the details.
+
+Projects:
+
+- `Superset <https://github.com/apache/incubator-superset>`_ - a data exploration platform designed to be visual, intuitive, and interactive
+
+- `Airflow <https://github.com/apache/airflow>`_ - a platform to programmatically author, schedule, and monitor workflows.
+
+
+Organizations:
+
+- Miniclip
+- EuroBIC
+- `On Beat Digital <https://onbeat.digital/>`_
 
 
 Depends on:

@@ -30,7 +30,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	    addRemoveFilter($el, name, labels[name]);
         var i_option = addFilterOptionsValue($el, name, filter_name);
 	
-        var $field = $(form[name])
+        var $field = $(form[name]);
         // if form item complex like <div><input bla></div>, datetime
         if ( $("input", $($field)).html() != undefined ) {
             $field_inner = $("input", $field)
@@ -48,19 +48,19 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
         }
         $el.append(
             $('<td/>').append($field)
-            );;
+            );
     }
 
 	function addRemoveFilter($el, name, label)
 	{
 		$el.append(
-                $('<td class="col-lg-1 col-md-1" />').append(
-                    $('<a href="#" class="btn remove-filter" />')
-                        .append($('<span class="close-icon">&times;</span>'))
-                        .append('&nbsp;')
-                        .append(label)
-                        .click(removeFilter)
-                    )
+            $('<td class="col-lg-1 col-md-1" />').append(
+                $('<a href="#" class="btn remove-filter" />')
+                    .append($('<span class="close-icon">&times;</span>'))
+                    .append('&nbsp;')
+                    .append(label)
+                    .on('click', removeFilter)
+                )
             );
 	}
 
@@ -86,7 +86,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
         );
         // avoids error
         if (i_option == -1) { $select.select2(); }
-        $select.change(function(e) {
+        $select.on('change', function(e) {
         	changeOperation(e, $el, name)
     	});
         
@@ -100,7 +100,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	    addRemoveFilter($el, name, labels[name]);
 
         addFilterOptionsValue($el, name);
-	    var $field = $(form[name])
+	    var $field = $(form[name]);
 	
 	    // if form item complex like <div><input bla></div>, datetime
 	    if ( $("input", $($field)).html() != undefined ) {
@@ -115,7 +115,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	    }
 	    $el.append(
         	$('<td/>').append($field)
-        );;
+        );
         if ($field.hasClass( "my_select2" )) {
         	$field.select2({placeholder: "Select a State", allowClear: true});
         }
@@ -126,7 +126,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
         	$field.datetimepicker({pickTime: false });
         }
         lastCount += 1;
-    };
+    }
 
 	// ----------------------------------------------------------
 	// Trigger for option change will change input element name
@@ -137,8 +137,8 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
     }
 
 
-    $('a.filter').click(function() {
-        var name = $(this).attr('name')
+    $('a.filter').on('click', function() {
+        var name = $(this).attr('name');
         addFilter(name);
     });
     

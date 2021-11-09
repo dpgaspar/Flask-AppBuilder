@@ -17,15 +17,20 @@ class GenericInterface(BaseInterface):
         self.session = session
         super(GenericInterface, self).__init__(obj)
 
-
-    def query(self, filters=None, order_column='', order_direction='',
-              page=None, page_size=None):
+    def query(
+        self,
+        filters=None,
+        order_column="",
+        order_direction="",
+        page=None,
+        page_size=None,
+    ):
 
         query = self.session.query(self.obj)
         if filters:
             query = filters.apply_all(query)
-        if order_column != '':
-            query = query.order_by(order_column + ' ' + order_direction)
+        if order_column != "":
+            query = query.order_by(order_column + " " + order_direction)
         if page:
             query = query.offset(page * page_size)
         if page_size:

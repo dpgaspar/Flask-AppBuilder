@@ -4,8 +4,9 @@ i18n Translations
 Introduction
 ------------
 
-F.A.B. has support for seven languages (planning for some more):
+F.A.B. has support for 14 languages (planning for some more):
  - Chinese
+ - Dutch
  - English
  - French
  - German
@@ -16,6 +17,8 @@ F.A.B. has support for seven languages (planning for some more):
  - Russian
  - Spanish
  - Greek
+ - Korean
+ - Italian
 
 This means that all messages, builtin on the framework are translated to these languages.
 
@@ -44,7 +47,7 @@ First, create your translations, for example to portuguese, spanish and german, 
 
 Next extract your strings to be translated, execute on you projects root::
 
-    $ fabmanager babel-extract
+    $ flask fab babel-extract
 
 If you want to, or if you're using a version prior to 1.3.0 you can use::
 
@@ -73,7 +76,7 @@ so you want to add translations for the menus "List Groups" and "List Contacts".
 
 1 - Run the extraction, from the root directory of your project::
 
-    $ fabmanager babel-extract
+    $ flask fab babel-extract
 
 If you want to, or if you're using a version prior to 1.3.0 you can use::
 
@@ -111,7 +114,7 @@ If you want to, or if you're using a version prior to 1.3.0 you can use::
 
 3 - Compile your translations, from the root directory of your project::
 
-    $ fabmanager babel-compile
+    $ flask fab babel-compile
 
 4 - Add your language support to the framework
 

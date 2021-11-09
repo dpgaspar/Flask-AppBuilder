@@ -4,38 +4,356 @@ Security
 Supported Authentication Types
 ------------------------------
 
-You have four types of authentication methods
-
 :Database: username and password style that is queried from the database to match. Passwords are kept hashed on the database.
 :Open ID: Uses the user's email field to authenticate on Gmail, Yahoo etc...
 :LDAP: Authentication against an LDAP server, like Microsoft Active Directory.
 :REMOTE_USER: Reads the *REMOTE_USER* web server environ var, and verifies if it's authorized with the framework users table.
        It's the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
        is configured to use kerberos, no need for the user to login with username and password on F.A.B.
-:OAUTH: Authentication using OAUTH (v1 or v2). You need to install flask-oauthlib.
+:OAUTH: Authentication using OAUTH (v1 or v2). You need to install authlib.
 
 Configure the authentication type on config.py, take a look at :doc:`config`
 
 The session is preserved and encrypted using Flask-Login, OpenID requires Flask-OpenID.
 
+Authentication Methods
+----------------------
+
+You can choose one from 5 authentication methods. Configure the method to be used
+on the **config.py** (when using the create-app, or following the proposed app structure). First the
+configuration imports the constants for the authentication methods::
+
+    from flask_appbuilder.security.manager import (
+        AUTH_DB,
+        AUTH_LDAP,
+        AUTH_OAUTH,
+        AUTH_OID,
+        AUTH_REMOTE_USER
+    )
+
+Next you will use the **AUTH_TYPE** key to choose the type::
+
+    AUTH_TYPE = AUTH_DB
+
+Additionally you can customize the name of the builtin roles for Admin and Public accesses::
+
+    AUTH_ROLE_ADMIN = 'My Admin Role Name'
+    AUTH_ROLE_PUBLIC = 'My Public Role Name'
+
+Finally you can allow users to self register (take a look at the following chapters for further detail)::
+
+    AUTH_USER_REGISTRATION = True
+    AUTH_USER_REGISTRATION_ROLE = "My Public Role Name"
+
+These settings can apply to all the authentication methods. When you create your first admin user
+using **flask fab** command line, this user will be authenticated using the authentication method
+defined on your **config.py**.
+
+Authentication: Database
+------------------------
+
+The database authentication type is the most *simple* one, it authenticates users against an
+username and hashed password field kept on your database.
+
+Administrators can create users with passwords, and users can change their passwords. This is all done using the UI.
+(You can override and extend the default UI as we'll see on *Your Custom Security*)
+
+Authentication: OpenID
+----------------------
+
+This authentication method uses `Flask-OpenID <https://github.com/mitsuhiko/flask-openid>`_. All configuration is done
+on **config.py** using OPENID_PROVIDERS key, just add or remove from the list the providers you want to enable::
+
+    AUTH_TYPE = AUTH_OID
+    OPENID_PROVIDERS = [
+        { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
+        { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
+        { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
+        { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }
+    ]
+
+Each list entry is a dict with a readable OpenID name and it's url, if the url needs an username just add it using <username>.
+The login template for this method will provide a text box for the user to fillout his/her username.
+
+F.A.B. will ask for the 'email' from OpenID, and if this email belongs to some user on your application he/she will login successfully.
+
+Authentication: LDAP
+--------------------
+
+This method will authenticate the user's credentials against an LDAP server.
+
+WARNING: To use LDAP you need to install `python-ldap <https://www.python-ldap.org>`_.
+
+For a typical Microsoft AD setup (where all users can preform LDAP searches)::
+
+    AUTH_TYPE = AUTH_LDAP
+    AUTH_LDAP_SERVER = "ldap://ldap.example.com"
+    AUTH_LDAP_USE_TLS = False
+
+    # registration configs
+    AUTH_USER_REGISTRATION = True  # allow users who are not already in the FAB DB
+    AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
+    AUTH_LDAP_FIRSTNAME_FIELD = "givenName"
+    AUTH_LDAP_LASTNAME_FIELD = "sn"
+    AUTH_LDAP_EMAIL_FIELD = "mail"  # if null in LDAP, email is set to: "{username}@email.notfound"
+
+    # bind username (for password validation)
+    AUTH_LDAP_USERNAME_FORMAT = "uid=%s,ou=users,dc=example,dc=com"  # %s is replaced with the provided username
+    # AUTH_LDAP_APPEND_DOMAIN = "example.com"  # bind usernames will look like: {USERNAME}@example.com
+
+    # search configs
+    AUTH_LDAP_SEARCH = "ou=users,dc=example,dc=com"  # the LDAP search base (if non-empty, a search will ALWAYS happen)
+    AUTH_LDAP_UID_FIELD = "uid"  # the username field
+
+
+For a typical OpenLDAP setup (where LDAP searches require a special account)::
+
+    AUTH_TYPE = AUTH_LDAP
+    AUTH_LDAP_SERVER = "ldap://ldap.example.com"
+    AUTH_LDAP_USE_TLS = False
+
+    # registration configs
+    AUTH_USER_REGISTRATION = True  # allow users who are not already in the FAB DB
+    AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
+    AUTH_LDAP_FIRSTNAME_FIELD = "givenName"
+    AUTH_LDAP_LASTNAME_FIELD = "sn"
+    AUTH_LDAP_EMAIL_FIELD = "mail"  # if null in LDAP, email is set to: "{username}@email.notfound"
+
+    # search configs
+    AUTH_LDAP_SEARCH = "ou=users,dc=example,dc=com"  # the LDAP search base
+    AUTH_LDAP_UID_FIELD = "uid"  # the username field
+    AUTH_LDAP_BIND_USER = "uid=admin,ou=users,dc=example,dc=com"  # the special bind username for search
+    AUTH_LDAP_BIND_PASSWORD = "admin_password"  # the special bind password for search
+
+
+You can limit the LDAP search scope by configuring::
+
+    # only allow users with memberOf="cn=myTeam,ou=teams,dc=example,dc=com"
+    AUTH_LDAP_SEARCH_FILTER = "(memberOf=cn=myTeam,ou=teams,dc=example,dc=com)"
+
+You can give FlaskAppBuilder roles based on LDAP roles (note, this requires AUTH_LDAP_SEARCH to be set)::
+
+    # a mapping from LDAP DN to a list of FAB roles
+    AUTH_ROLES_MAPPING = {
+        "cn=fab_users,ou=groups,dc=example,dc=com": ["User"],
+        "cn=fab_admins,ou=groups,dc=example,dc=com": ["Admin"],
+    }
+
+    # the LDAP user attribute which has their role DNs
+    AUTH_LDAP_GROUP_FIELD = "memberOf"
+
+    # if we should replace ALL the user's roles each login, or only on registration
+    AUTH_ROLES_SYNC_AT_LOGIN = True
+
+    # force users to re-auth after 30min of inactivity (to keep roles in sync)
+    PERMANENT_SESSION_LIFETIME = 1800
+
+Authentication: OAuth
+---------------------
+
+This method will authenticate the user's credentials against an OAuth provider.
+
+.. note:: To use OAuth you need to install `Python AuthLib <https://authlib.org>`_.
+
+Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for your users::
+
+    AUTH_TYPE = AUTH_OAUTH
+
+    # registration configs
+    AUTH_USER_REGISTRATION = True  # allow users who are not already in the FAB DB
+    AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
+
+    # the list of providers which the user can choose from
+    OAUTH_PROVIDERS = [
+        {'name':'twitter', 'icon':'fa-twitter',
+            'token_key':'oauth_token',
+            'remote_app': {
+                'client_id':'TWITTER_KEY',
+                'client_secret':'TWITTER_SECRET',
+                'api_base_url':'https://api.twitter.com/1.1/',
+                'request_token_url':'https://api.twitter.com/oauth/request_token',
+                'access_token_url':'https://api.twitter.com/oauth/access_token',
+                'authorize_url':'https://api.twitter.com/oauth/authenticate'}
+        },
+        {'name':'google', 'icon':'fa-google',
+            'token_key':'access_token',
+            'remote_app': {
+                'client_id':'GOOGLE_KEY',
+                'client_secret':'GOOGLE_SECRET',
+                'api_base_url':'https://www.googleapis.com/oauth2/v2/',
+                'client_kwargs':{
+                  'scope': 'email profile'
+                },
+                'request_token_url':None,
+                'access_token_url':'https://accounts.google.com/o/oauth2/token',
+                'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+        },
+        {'name':'openshift', 'icon':'fa-circle-o',
+            'token_key':'access_token',
+            'remote_app': {
+                'client_id':'system:serviceaccount:mynamespace:mysa',
+                'client_secret':'<mysa serviceaccount token here>',
+                'api_base_url':'https://openshift.default.svc.cluster.local:443',
+                'client_kwargs':{
+                  'scope': 'user:info'
+                },
+                'redirect_uri':'https://myapp-mynamespace.apps.<cluster_domain>',
+                'access_token_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/token',
+                'authorize_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/authorize',
+                'token_endpoint_auth_method':'client_secret_post'}
+        },{'name': 'okta', 'icon': 'fa-circle-o',
+            'token_key': 'access_token',
+            'remote_app': {
+                'client_id': 'OKTA_KEY',
+                'client_secret': 'OKTA_SECRET',
+                'api_base_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/',
+                'client_kwargs': {
+                    'scope': 'openid profile email groups'
+                },
+                'access_token_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/token',
+                'authorize_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize',
+        }
+    ]
+
+This needs a small explanation, you basically have five special keys:
+
+:name: the name of the provider:
+    you can choose whatever you want, but FAB has builtin logic in `BaseSecurityManager.get_oauth_user_info()` for:
+    'azure', 'github', 'google', 'linkedin', 'okta', 'openshift', 'twitter'
+
+:icon: the font-awesome icon for this provider
+
+:token_key: the token key name that the provider uses, default is *'oauth_token'*
+
+:token_secret: the token secret key name, default is *'oauth_token_secret'*
+
+:remote_app: the actual configs for the provider API
+
+You can give FlaskAppBuilder roles based on Oauth groups::
+
+    # note, this is only natively supported in `okta` currently,
+    # however, if you customize userinfo retrieval to include 'role_keys', this will work for other providers
+
+    # a mapping from the values of `userinfo["role_keys"]` to a list of FAB roles
+    AUTH_ROLES_MAPPING = {
+        "FAB_USERS": ["User"],
+        "FAB_ADMINS": ["Admin"],
+    }
+
+    # if we should replace ALL the user's roles each login, or only on registration
+    AUTH_ROLES_SYNC_AT_LOGIN = True
+
+    # force users to re-auth after 30min of inactivity (to keep roles in sync)
+    PERMANENT_SESSION_LIFETIME = 1800
+
+To customize the userinfo retrieval, you can create your own method like this::
+
+    @appbuilder.sm.oauth_user_info_getter
+    def my_user_info_getter(sm, provider, response=None):
+        if provider == "okta":
+            me = sm.oauth_remotes[provider].get("userinfo")
+            log.debug("User info from Okta: {0}".format(me.data))
+            return {
+                "username": "okta_" + me.data.get("sub", ""),
+                "first_name": me.data.get("given_name", ""),
+                "last_name": me.data.get("family_name", ""),
+                "email": me.data.get("email", ""),
+                "role_keys": me.data.get("groups", []),
+            }
+        else:
+            return {}
+
+On Flask-AppBuilder 3.4.0 the login page has changed.
+
+With one provider:
+
+.. image:: ./images/oauth_login_one_provider.png
+    :width: 100%
+
+With multiple providers:
+
+.. image:: ./images/oauth_login.png
+    :width: 100%
+
+Note that on 3.3.X the user would automatically be sent to the provider allow page.
+
+Decorate your method with the SecurityManager **oauth_user_info_getter** decorator.
+Your method should return a dictionary with the userinfo, with the keys having the same column names as the User Model.
+Your method will be called after the user authorizes your application on the OAuth provider.
+Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
+
+You can also use the OAuth provider APIs.
+Therefore, you can send tweets, post on the users Facebook, retrieve the user's LinkedIn profile etc.
+Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
+to get an idea of a simple use for this.
+
 Role based
 ----------
 
-Each user has multiple roles, and a role holds permissions on views and menus, so a user has permissions on views and menus.
+Each user may have multiple roles, and a role holds permissions on views/API and menus,
+so a user has permissions on views/API and menus.
+
+Roles can be user defined (backed by the backend) and builtin readonly. Builtin readonly roles
+support regex for views/API and permissions, this simplifies security management and
+improve performance since the many to many permissions between a role and it's permissions
+does not need to be fetched from the backend.
+
+Builtin roles are defined on the config using ``FAB_ROLES`` key and respect the following data structure::
+
+    FAB_ROLES = {
+        "<ROLE NAME>": [
+            ["<VIEW/MENU/API NAME>", "PERMISSION NAME"],
+            ....
+        ],
+        ...
+    }
+
+So for example a **Read Only** role might look like::
+
+    FAB_ROLES = {
+        "ReadOnly": [
+            [".*", "can_list"],
+            [".*", "can_show"],
+            [".*", "menu_access"],
+            [".*", "can_get"],
+            [".*", "can_info"]
+        ]
+    }
+
+These roles are inserted automatically to the database (only their name is added), and
+can be associated to users just like a "normal"/user defined role.
+
+If you want to later on change the name of these roles, you can map these roles by their backend id::
+
+    FAB_ROLES = {
+        "ReadOnly_Altered": [
+            [".*", "can_list"],
+            [".*", "can_show"],
+            [".*", "menu_access"],
+            [".*", "can_get"],
+            [".*", "can_info"]
+        ]
+    }
+
+    FAB_ROLES_MAPPING = {
+        1: "ReadOnly_Altered"
+    }
+
 
 There are two special roles, you can define their names on the :doc:`config`
 
-:Admin Role: The framework will assign all the existing permission on views and menus to this role, automatically, this role is for authenticated users only.
-:Public Role: This is a special role for non authenticated users, you can assign all the permissions on views and menus to this role, and everyone will access specific parts of you application.
-	
-Of course you can create any additional role you want and configure them as you like.
+:Admin Role: Special builtin read only Role, will have full access.
+:Public Role: This is a special role for non authenticated users,
+    you can assign all the permissions on views and menus to this role,
+    and everyone will access specific parts of you application.
 
-.. note:: User's with multiple roles is only possible since 1.3.0 version.
+Of course you can create any additional role you want and configure them as you like.
 
 Permissions
 -----------
 
-The framework automatically creates for you all the possible existing permissions on your views or menus, by "inspecting" your code.
+The framework automatically creates for you all the possible existing permissions on your views, API or menus,
+by "inspecting" your code.
 
 Each time you create a new view based on a model (inherit from ModelView) it will create the following permissions:
 
@@ -45,8 +363,17 @@ Each time you create a new view based on a model (inherit from ModelView) it wil
 - can edit
 - can delete
 - can download
-	
-These base permissions will be associated to your view, so if you create a view named "MyModelView" you can assign to any role these permissions:
+
+In the case of CRUD REST API:
+
+- can get
+- can put
+- can post
+- can delete
+- can info
+
+These base permissions will be associated to your view or API, so if you create a view named ``MyModelView``
+you can assign to any role the following permissions:
 
 - can list on MyModelView
 - can show on MyModelView
@@ -54,9 +381,18 @@ These base permissions will be associated to your view, so if you create a view 
 - can edit on MyModelView
 - can delete on MyModelView
 - can download on MyModelView
-	
-If you extend your view with some exposed method via the @expose decorator and you want to protect it
-use the @has_access decorator::
+
+In case your developing a backend REST API subclassing ``ModelRestApi`` with a class named ``MyApi`` will
+generate the following permissions:
+
+- can get on MyApi
+- can put on MyApi
+- can post on MyApi
+- can delete on MyApi
+- can info on MyApi
+
+If you extend your view with some exposed method via the ``@expose`` decorator and you want to protect it
+use the ``@has_access`` decorator::
 
     class MyModelView(ModelView):
         datamodel = SQLAInterface(Group)
@@ -67,16 +403,153 @@ use the @has_access decorator::
             # do something
             pass
 
-The framework will create the following access based on your method's name:
+The framework will create the following access, based on your method's name:
 
 - can mymethod on MyModelView
 	
 You can aggregate some of your method's on a single permission, this can simplify the security configuration
-if there is no need for granular permissions on a group of methods, for this use @permission_name decorator.
+if there is no need for granular permissions on a group of methods, for this use ``@permission_name`` decorator.
 
-You can use the @permission_name to override the permission's name to whatever you like.
+You can use the ``@permission_name`` to override the permission's name to whatever you like.
 
 Take a look at :doc:`api`
+
+
+Permission Customization
+------------------------
+
+The default view/menu, permissions are highly granular, this is a good default since it enables a high level
+of customization, but on medium to large application the amount of permission pairs generated can get a bit daunting.
+You can fully customize the generated permission names generated and if you wish aggregate them::
+
+    class OneApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+
+
+    class TwoApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+
+The previous example will generate half the default permissions, by just creating the following:
+
+- can get on api
+- can put on api
+- can post on api
+- can delete on api
+- can info on api
+
+The ``class_permission_name`` property is available also on BaseViews and their children ``ModelView``,
+``MultipleView``, ``MasterDetailView``, ``FormView``, etc.
+
+You can also aggregate method permissions by using ``method_permission_name`` attribute.
+Use the following ``Dict`` structure::
+
+    method_permission_name = {
+        "<METHOD_NAME>": "<PERMISSION_NAME>",
+        ...
+    }
+
+Example::
+
+    class OneApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+        method_permission_name = {
+            "get_list": "access",
+            "get": "access",
+            "post": "access",
+            "put": "access",
+            "delete": "access",
+            "info": "access"
+        }
+
+
+    class TwoApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+        method_permission_name = {
+            "get_list": "access",
+            "get": "access",
+            "post": "access",
+            "put": "access",
+            "delete": "access",
+            "info": "access"
+        }
+
+Now FAB will only generate one permission pair:
+
+- can access on api
+
+If you want to revert back your permission names override, or change just them again, you need to hint FAB
+about what were your last permissions, so that the security converge procedure knows what to do::
+
+
+    class OneApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "OneApi"
+        previous_class_permission_name = "api"
+        method_permission_name = {
+            "get_list": "get",
+            "get": "get",
+            "post": "post",
+            "put": "put",
+            "delete": "delete",
+            "info": "info"
+        }
+        previous_method_permission_name = {
+            "get_list": "access",
+            "get": "access",
+            "post": "access",
+            "put": "access",
+            "delete": "access",
+            "info": "access"
+        }
+
+An example for compressing permissions using MVC Model Views::
+
+    class OneView(ModelView):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "view"
+        method_permission_name = {
+            'add': 'write',
+            'delete': 'write',
+            'download': 'write',
+            'edit': 'write',
+            'list': 'read',
+            'muldelete': 'write',
+            'show': 'read',
+            'api': 'read',
+            'api_column_add': 'write',
+            'api_column_edit': 'write',
+            'api_create': 'write',
+            'api_delete': 'write',
+            'api_get': 'read',
+            'api_read': 'read',
+            'api_readvalues': 'read',
+            'api_update': 'write'
+        }
+
+Note that if your changing an already existing application, you need to migrate the old permission names to the new
+ones. Before doing that you should disable the boot automatic create/delete permissions,
+so set ``FAB_UPDATE_PERMS = False``. Then run the following FAB cli command::
+
+    $ flask fab security-converge
+
+
+Security converge will migrate all your permissions from the previous names to the current names, and
+also change all your roles, so you can migrate smoothly to your new security naming. After converging
+you can delete all your ``previous_*`` attributes if you have set them.
+
+You can also migrate back by switching ``previous_*`` attributes to their target, ie switch
+``previous_method_permission_name`` by ``method_permission_name`` and
+``previous_class_permission_name`` by ``class_permission_name``.
+Then run security converge will expand back all permissions
+on all your Roles.
+
+:note: You should backup your production database before migrating your permissions. Also note that you
+       can run ``flask fab security-converge --dry-run`` to get a list of operations the converge will perform.
+
 
 Automatic Cleanup
 -----------------
@@ -141,175 +614,39 @@ exclude them from add and edit form. Using our example you will define our view 
         add_columns = ['name']
         edit_columns = ['name']
 
-Authentication Methods
-----------------------
 
-We are now looking at the authentication methods, and how you can configure them and customize them.
-The framework has 5 authentication methods and you choose one of them, you configure the method to be used
-on the **config.py** (when using the create-app, or following the proposed app structure). First the
-configuration imports the constants for the authentication methods::
+Password complexity validation
+------------------------------
 
-    from flask_appbuilder.security.manager import AUTH_OID, \ 
-                                              AUTH_REMOTE_USER, \ 
-                                              AUTH_DB, AUTH_LDAP, \ 
-                                              AUTH_OAUTH
+This feature only makes sense when using AUTH database.
+By default you can enable password complexity validation by setting `FAB_PASSWORD_COMPLEXITY_ENABLED = True`.
 
-Next you will use the **AUTH_TYPE** key to choose the type::
+This default enforces:
 
-    AUTH_TYPE = AUTH_DB
-    
-Additionally you can customize the name of the builtin roles for Admin and Public accesses::
-
-    AUTH_ROLE_ADMIN = 'My Admin Role Name'
-    AUTH_ROLE_PUBLIC = 'My Public Role Name'
-
-Finally you can allow users to self register (take a look at the following chapters for further detail)::
-
-    AUTH_USER_REGISTRATION = True
-    AUTH_USER_REGISTRATION_ROLE = "My Public Role Name"
-
-These settings can apply to all the authentication methods. When you create your first admin user
-using **fabmanager** command line, this user will be authenticated using the authentication method
-defined on your **config.py**.
-
-Authentication: Database
-------------------------
-
-The database authentication type is the most *simple* one, it authenticates users against an
-username and hashed password field kept on your database.
-
-Administrators can create users with passwords, and users can change their passwords. This is all done using the UI.
-(You can override and extend the default UI as we'll see on *Your Custom Security*)
-
-Authentication: OpenID
-----------------------
-
-This authentication method uses `Flask-OpenID <https://github.com/mitsuhiko/flask-openid>`_. All configuration is done
-on **config.py** using OPENID_PROVIDERS key, just add or remove from the list the providers you want to enable::
-
-    AUTH_TYPE = AUTH_OID
-    OPENID_PROVIDERS = [
-        { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
-        { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
-        { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
-        { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
-
-Each list entry is a dict with a readable OpenID name and it's url, if the url needs an username just add it using <username>.
-The login template for this method will provide a text box for the user to fillout his/her username.
-
-F.A.B. will ask for the 'email' from OpenID, and if this email belongs to some user on your application he/she will login successfully.
-
-Authentication: LDAP
---------------------
-
-This method will authenticate the user's credentials against an LDAP server. Using this method without self user registration
-is very simple, for MSFT AD just define the LDAP server::
-
-    AUTH_TYPE = AUTH_LDAP
-    AUTH_LDAP_SERVER = "ldap://ldapserver.local"
-    AUTH_LDAP_USE_TLS = False
-
-For OpenLDAP or if you need/want to bind first with a query LDAP user, 
-then using username to search the LDAP server and binding to it (using the user provided password)::
-
-    AUTH_TYPE = AUTH_LDAP
-    AUTH_LDAP_SERVER = "ldap://ldapserver.local"
-    AUTH_LDAP_USE_TLS = False
-    AUTH_LDAP_SEARCH = "dc=domain,dc=local"
-    AUTH_LDAP_BIND_USER = "CN=Query User,OU=People,dc=domain,dc=local"
-    AUTH_LDAP_BIND_PASSWORD = "password"
-
-for MSFT AD users will be authenticated using the attribute 'userPrincipalName', so username's will be of the form
-'someuser@somedomail.local'. Since 1.6.1 you can use a new configuration to set all domains to a certain default,
-this will allow users to authenticate using 'someuser' be setting::
-
-    AUTH_LDAP_APPEND_DOMAIN = 'somedomain.local'
-
-When using self user registration, you can use the following to config further:
-
-- AUTH_LDAP_UID_FIELD: Default to 'uid' will be used to search the user on the LDAP server. For MSFT AD you can set it to 'userPrincipalName'
-- AUTH_LDAP_FIRSTNAME_FIELD: Default to 'givenName' will use MSFT AD attribute to register first_name on the db.
-- AUTH_LDAP_LASTTNAME_FIELD: Default to 'sn' will use MSFT AD attribute to register last_name on the db.
-- AUTH_LDAP_EMAIL_FIELD: Default to 'mail' will use MSFT AD attribute to register email on the db. If this attribute is null the framework will register <username + '@email.notfound'>
-- AUTH_LDAP_SEARCH: This must be set when using self user registration.
+- At least 2 Uppercase letters
+- At least 3 Lowercase letters
+- At least 1 special character
+- At least 2 numeric digits
+- At least 10 total characters
 
 
-Authentication: OAuth
----------------------
+If you want to set your own password complexity validation, you can write your own validation function:
 
-By using this method it will be possible to use the provider API, this is because you're requesting the user to give
-permission to your app to access or manage the user's account on the provider.
+Example on your config::
 
-So you can send tweets, post on the users facebook, retrieve the user's linkedin profile etc.
+    from flask_appbuilder.exceptions import PasswordComplexityValidationError
+    ...
 
-To use OAuth you need to install `Flask-OAuthLib <https://flask-oauthlib.readthedocs.org/en/latest/>`_. It's useful
-to get to know this library since F.A.B. will expose the remote application object for you to play with.
+    def custom_password_validator(password: str) -> None:
+    """
+    A simplistic example for a password validator
+    """
+    if len(password) < 8:
+        raise PasswordComplexityValidationError("Must have at least 8 characters")
 
-Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_ 
-to get an idea of a simple use for this.
+    FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
+    FAB_PASSWORD_COMPLEXITY_ENABLED = True
 
-Use **config.py** configure OAUTH_PROVIDERS with a list of oauth providers, notice that the remote_app
-key is just the configuration for flask-oauthlib::
-
-    AUTH_TYPE = AUTH_OAUTH
-    
-    OAUTH_PROVIDERS = [
-        {'name':'twitter', 'icon':'fa-twitter',
-            'remote_app': {
-                'consumer_key':'TWITTER KEY',
-                'consumer_secret':'TWITTER SECRET',
-                'base_url':'https://api.twitter.com/1.1/',
-                'request_token_url':'https://api.twitter.com/oauth/request_token',
-                'access_token_url':'https://api.twitter.com/oauth/access_token',
-                'authorize_url':'https://api.twitter.com/oauth/authenticate'}
-        },
-        {'name':'google', 'icon':'fa-google', 'token_key':'access_token',
-            'remote_app': {
-                'consumer_key':'GOOGLE KEY',
-                'consumer_secret':'GOOGLE SECRET',
-                'base_url':'https://www.googleapis.com/oauth2/v2/',
-                'request_token_params':{
-                  'scope': 'email profile'
-                },
-                'request_token_url':None,
-                'access_token_url':'https://accounts.google.com/o/oauth2/token',
-                'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
-        }
-    ]
-
-This needs a small explanation, you basically have five special keys:
-
-:name: The name of the provider, you can choose whatever you want. But the framework as some 
-    builtin logic to retrieve information about a user that you can make use of if you choose:
-    'twitter', 'google', 'github','linkedin'.
- 
-:icon: The font-awesome icon for this provider.
-:token_key: The token key name that this provider uses, google and github uses *'access_token'*,
-    twitter uses *'oauth_token'* and thats the default.
-:token_secret: The token secret key name, default is *'oauth_token_secret'*
-
-After the user authenticates and grants access permissions to your application
-the framework retrieves information about the user, username and email. This info
-will be checked with the internal user (user record on User Model), first by username next by email.
-
-To override/customize the user information retrieval from oauth, you can create your own method like this::
-
-    @appbuilder.sm.oauth_user_info_getter
-    def my_user_info_getter(sm, provider, response=None):
-        if provider == 'github':
-            me = sm.oauth_remotes[provider].get('user')
-            return {'username': me.data.get('login')}
-        else:
-            return {}
-        
-Decorate your method with the SecurityManager **oauth_user_info_getter** decorator.
-Make your method accept the exact parameters as on this example, and then return a dictionary 
-with the retrieved user information. The dictionary keys must have the same column names as the User Model.
-Your method will be called after the user authorizes your application on the OAuth provider, and it will
-receive the following: **sm** is F.A.B's SecurityManager class, **provider** is a string with the name you configured 
-this provider with, **response** is the response.
-
-Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
 
 Your Custom Security
 --------------------
@@ -342,11 +679,16 @@ Then on the __init__.py initialize AppBuilder with you own security class::
     appbuilder = AppBuilder(app, db.session, security_manager_class=MySecurityManager)
 
 
+Alternatively since 1.13.1 you can declare your custom **SecurityManager** on the config.
+This is a must have if your using the factory app pattern, on the config declare you class the following way::
+
+    FAB_SECURITY_MANAGER_CLASS='app.security.MySecurityManager'
+
 F.A.B. uses a different user view for each authentication method
 
-- UserDBModelView - for database auth method
-- UserOIDModelView - for Open ID auth method
-- UserLDAPModelView - for LDAP auth method
+:UserDBModelView: For database auth method
+:UserOIDModelView: For Open ID auth method
+:UserLDAPModelView: For LDAP auth method
 
 You can extend or create from scratch your own, and then tell F.A.B. to use them instead, by overriding their
 correspondent lower case properties on **SecurityManager** (just like on the given example).
@@ -376,13 +718,13 @@ First extend the User Model (create a sec_models.py file)::
 Next define a new User view, just like the default User view but with the extra column (create a sec_view.py)
 If you're using:
 
-- AUTH_DB extend UserDBModelView
-- AUTH_LDAP extend UserLDAPModelView
-- AUTH_REMOTE_USER extend UserRemoteUserModelView
-- AUTH_OID extend UserOIDModelView
-- AUTH_OAUTH extend UserOAuthModelView
+:AUTH_DB: Extend UserDBModelView
+:AUTH_LDAP: Extend UserLDAPModelView
+:AUTH_REMOTE_USER: Extend UserRemoteUserModelView
+:AUTH_OID: Extend UserOIDModelView
+:AUTH_OAUTH: Extend UserOAuthModelView
 
-::
+So using AUTH_DB::
 
     from flask_appbuilder.security.views import UserDBModelView
     from flask_babelpkg import lazy_gettext
@@ -411,9 +753,34 @@ If you're using:
              {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
         ]
 
-        add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'extra', 'password', 'conf_password']
-        list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles']
-        edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'extra']
+        add_columns = [
+            'first_name',
+            'last_name',
+            'username',
+            'active',
+            'email',
+            'roles',
+            'extra',
+            'password',
+            'conf_password'
+        ]
+        list_columns = [
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'active',
+            'roles'
+        ]
+        edit_columns = [
+            'first_name',
+            'last_name',
+            'username',
+            'active',
+            'email',
+            'roles',
+            'extra'
+        ]
 
 Next create your own SecurityManager class, overriding your model and view for User (create a sec.py)::
 
@@ -427,10 +794,10 @@ Next create your own SecurityManager class, overriding your model and view for U
 
 Note that this is for AUTH_DB, so if you're using:
 
-- AUTH_DB override userdbmodelview
-- AUTH_LDAP override userldapmodelview
-- AUTH_REMOTE_USER override userremoteusermodelview
-- AUTH_OID override useroidmodelview
+:AUTH_DB: Override userdbmodelview
+:AUTH_LDAP: Override userldapmodelview
+:AUTH_REMOTE_USER: Override userremoteusermodelview
+:AUTH_OID: Override useroidmodelview
 
 Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
 **AppBuilder** (on __init__.py)::

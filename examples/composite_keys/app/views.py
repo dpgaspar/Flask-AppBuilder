@@ -1,9 +1,8 @@
 from flask_appbuilder import ModelView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-
-from app import db, appbuilder
-from .models import Datacenter, Rack, Item, Inventory
+from . import appbuilder, db
+from .models import Datacenter, Inventory, Item, Rack
 
 
 class InventoryModelView(ModelView):
@@ -37,13 +36,28 @@ class DatacenterModelView(ModelView):
     edit_columns = ["name", "address"]
     show_columns = ["name", "address"]
     related_views = [RackModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-    edit_template = 'appbuilder/general/model/edit_cascade.html'
-
+    show_template = "appbuilder/general/model/show_cascade.html"
+    edit_template = "appbuilder/general/model/edit_cascade.html"
 
 
 db.create_all()
-appbuilder.add_view(DatacenterModelView, "List Datacenters", icon="fa-folder-open-o", category="Datacenters", category_icon='fa-envelope')
-appbuilder.add_view(RackModelView, "List Racks", icon="fa-envelope", category="Datacenters")
-appbuilder.add_view(ItemModelView, "List Items", icon="fa-folder-open-o", category="Datacenters", category_icon='fa-envelope')
-appbuilder.add_view(InventoryModelView, "List Inventory", icon="fa-envelope", category="Datacenters")
+appbuilder.add_view(
+    DatacenterModelView,
+    "List Datacenters",
+    icon="fa-folder-open-o",
+    category="Datacenters",
+    category_icon="fa-envelope",
+)
+appbuilder.add_view(
+    RackModelView, "List Racks", icon="fa-envelope", category="Datacenters"
+)
+appbuilder.add_view(
+    ItemModelView,
+    "List Items",
+    icon="fa-folder-open-o",
+    category="Datacenters",
+    category_icon="fa-envelope",
+)
+appbuilder.add_view(
+    InventoryModelView, "List Inventory", icon="fa-envelope", category="Datacenters"
+)

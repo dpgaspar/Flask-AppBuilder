@@ -1,7 +1,14 @@
 import datetime
 from flask import url_for, Markup
 from mongoengine import Document
-from mongoengine import DateTimeField, StringField, ReferenceField, ListField, FileField, ImageField
+from mongoengine import (
+    DateTimeField,
+    StringField,
+    ReferenceField,
+    ListField,
+    FileField,
+    ImageField,
+)
 from flask_appbuilder.security.mongoengine.models import User
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
@@ -31,7 +38,7 @@ class Gender(Document):
 
 
 class Tags(Document):
-    meta = {'allow_inheritance': True,}
+    meta = {"allow_inheritance": True}
 
     name = StringField(max_length=60, required=True, unique=True)
 
@@ -40,7 +47,7 @@ class Tags(Document):
 
 
 class MyTags(Tags):
-    mytagname = StringField(max_length=60, unique=True, default='mytag')
+    mytagname = StringField(max_length=60, unique=True, default="mytag")
 
 
 class Contact(Document):

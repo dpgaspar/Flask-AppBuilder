@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
     Some py2/py3 compatibility support based on a stripped down
@@ -16,30 +15,31 @@ VER = sys.version_info
 if not PY2:
     text_type = str
     string_types = (str,)
-    integer_types = (int, )
+    integer_types = (int,)
 
-    iterkeys = lambda d: iter(d.keys())
-    itervalues = lambda d: iter(d.values())
-    iteritems = lambda d: iter(d.items())
+    iterkeys = lambda d: iter(d.keys())  # noqa
+    itervalues = lambda d: iter(d.values())  # noqa
+    iteritems = lambda d: iter(d.items())  # noqa
 
     def as_unicode(s):
         if isinstance(s, bytes):
-            return s.decode('utf-8')
+            return s.decode("utf-8")
         return str(s)
 
-else:
-    text_type = unicode
-    string_types = (str, unicode)
-    integer_types = (int, long)
 
-    iterkeys = lambda d: d.iterkeys()
-    itervalues = lambda d: d.itervalues()
-    iteritems = lambda d: d.iteritems()
+else:
+    text_type = unicode  # noqa
+    string_types = (str, unicode)  # noqa
+    integer_types = (int, long)  # noqa
+
+    iterkeys = lambda d: d.iterkeys()  # noqa
+    itervalues = lambda d: d.itervalues()  # noqa
+    iteritems = lambda d: d.iteritems()  # noqa
 
     def as_unicode(s):
         if isinstance(s, str):
-            return s.decode('utf-8')
-        return unicode(s)
+            return s.decode("utf-8")
+        return unicode(s)  # noqa
 
 
 def with_metaclass(meta, *bases):
@@ -60,5 +60,5 @@ def with_metaclass(meta, *bases):
             if this_bases is None:
                 return type.__new__(cls, name, (), d)
             return meta(name, bases, d)
-    return metaclass('temporary_class', None, {})
-    
+
+    return metaclass("temporary_class", None, {})

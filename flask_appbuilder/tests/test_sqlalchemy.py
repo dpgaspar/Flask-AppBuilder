@@ -1,14 +1,15 @@
-from nose.tools import eq_
 import unittest
-import sqlalchemy as sa
+
 from flask_appbuilder.models.sqla.interface import _is_sqla_type
+from nose.tools import eq_
+import sqlalchemy as sa
 
 
 class CustomSqlaType(sa.types.TypeDecorator):
     impl = sa.types.DateTime(timezone=True)
 
 
-class NotSqlaType():
+class NotSqlaType:
     def __init__(self):
         self.impl = sa.types.DateTime(timezone=True)
 
