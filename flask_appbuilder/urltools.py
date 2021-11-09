@@ -95,7 +95,8 @@ def get_filter_args(filters):
     filters.clear_filters()
     request_args = set(request.args)
     for arg in request_args:
-        re_match = re.findall(r'_flt_(\d)_(.*)', arg)
+        re_match = re.findall(r"_flt_(\d)_(.*)", arg)
         if re_match:
-            filters.add_filter_index(re_match[0][1], int(re_match[0][0]),
-                                     request.args.getlist(arg))
+            filters.add_filter_index(
+                re_match[0][1], int(re_match[0][0]), request.args.getlist(arg)
+            )
