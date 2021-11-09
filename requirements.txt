@@ -109,10 +109,6 @@ werkzeug==1.0.1
     # via
     #   flask
     #   flask-jwt-extended
-wtforms==2.3.3
-    # via
-    #   Flask-AppBuilder (setup.py)
-    #   flask-wtf
 zipp==3.5.0
     # via importlib-metadata
 

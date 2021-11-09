@@ -103,12 +103,12 @@ class BS3ImageUploadFieldWidget(object):
 
 
 # Fields
-class FileUploadField(fields.TextField):
+class FileUploadField(fields.StringField):
     """
         Customizable file-upload field.
 
         Saves file to configured path, handles updates and deletions.
-        Inherits from `TextField`, resulting filename will be stored as string.
+        Inherits from `StringField`, resulting filename will be stored as string.
     """
 
     widget = BS3FileUploadFieldWidget()
