@@ -1,6 +1,14 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.4.0
+-----------------------------------
+
+- chore: pin down WTForms (#1735) [Daniel Vaz Gaspar]
+- fix: ModuleNotFoundError from wtforms 3.0.0 (#1733) [Ke Zhu]
+- fix: add .env for docker-compose (#1728) [Daniel Vaz Gaspar]
+- fix: OAuth login flow (#1707) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 3.3.4
 -----------------------------------
 
