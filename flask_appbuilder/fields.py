@@ -3,24 +3,23 @@ from __future__ import unicode_literals
 import operator
 
 from wtforms import widgets
-from wtforms.compat import string_types, text_type
 from wtforms.fields import Field, SelectField, SelectFieldBase
 from wtforms.validators import ValidationError
 
 
 class AJAXSelectField(Field):
     """
-        Simple class to convert primary key to ORM objects
-        for SQLAlchemy and fab normal processing on add and update
-        This WTF field class is prepared to be used in related views or directly on forms.
+    Simple class to convert primary key to ORM objects
+    for SQLAlchemy and fab normal processing on add and update
+    This WTF field class is prepared to be used in related views or directly on forms.
 
-        :param label: The label to render on form
-        :param validators: A list of form validators
-        :param: datamodel: An initialized SQLAInterface with a model
-        :param: col_name: The column that maps to the model
-        :param: is_related:
-            If the model column is a relationship or direct on
-            this case use col_name with the pk
+    :param label: The label to render on form
+    :param validators: A list of form validators
+    :param: datamodel: An initialized SQLAInterface with a model
+    :param: col_name: The column that maps to the model
+    :param: is_related:
+        If the model column is a relationship or direct on
+        this case use col_name with the pk
     """
 
     def __init__(
@@ -78,7 +77,7 @@ class AJAXSelectField(Field):
 
 class QuerySelectField(SelectFieldBase):
     """
-        Based on WTForms QuerySelectField
+    Based on WTForms QuerySelectField
     """
 
     widget = widgets.Select()
@@ -100,7 +99,7 @@ class QuerySelectField(SelectFieldBase):
 
         if get_label is None:
             self.get_label = lambda x: x
-        elif isinstance(get_label, string_types):
+        elif isinstance(get_label, str):
             self.get_label = operator.attrgetter(get_label)
         else:
             self.get_label = get_label
@@ -126,9 +125,7 @@ class QuerySelectField(SelectFieldBase):
     def _get_object_list(self):
         if self._object_list is None:
             objs = self.query_func()
-            self._object_list = list(
-                (text_type(self.get_pk_func(obj)), obj) for obj in objs
-            )
+            self._object_list = list((str(self.get_pk_func(obj)), obj) for obj in objs)
         return self._object_list
 
     def iter_choices(self):
@@ -243,8 +240,7 @@ class EnumField(SelectField):
         # Column(Enum(enum.Enum)) case
         if enum_class is not None:
             labels = [
-                text_type(enum_class.__members__[enum_member].value)
-                for enum_member in enums
+                str(enum_class.__members__[enum_member].value) for enum_member in enums
             ]
 
             def coerce(value):
@@ -262,7 +258,7 @@ class EnumField(SelectField):
             def coerce(value):
                 if value is None:
                     return None
-                return text_type(value)
+                return str(value)
 
         choices = list(zip(enums, labels))
 
