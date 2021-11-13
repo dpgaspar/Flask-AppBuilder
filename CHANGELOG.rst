@@ -1,6 +1,41 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.4.0
+-----------------------------------
+
+- chore: pin down WTForms (#1735) [Daniel Vaz Gaspar]
+- fix: ModuleNotFoundError from wtforms 3.0.0 (#1733) [Ke Zhu]
+- fix: add .env for docker-compose (#1728) [Daniel Vaz Gaspar]
+- fix: OAuth login flow (#1707) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 3.3.4
+-----------------------------------
+
+- chore: improve tests more coverage (#1713) [Daniel Vaz Gaspar]
+- docs: fix requirements funcparserlib (#1703) [Daniel Vaz Gaspar]
+- chore: improve schema validation (#1712) [Daniel Vaz Gaspar]
+- chore: bump dependencies (#1697) [Daniel Vaz Gaspar]
+- docs: fix requirements (#1702) [Daniel Vaz Gaspar]
+- docs: fix issue 1700 (#1701) [Federico Padua]
+
+Improvements and Bug fixes on 3.3.3
+-----------------------------------
+
+- fix: related filters with bogus data (#1695) [Daniel Vaz Gaspar]
+- chore: Bump flask-openid to 1.3.0 (#1693) [Daniel Vaz Gaspar]
+- chore: bump JQuery to 3.6.0 (#1688) [Daniel Vaz Gaspar]
+- chore: bump prison version (#1689) [Beto Dealmeida]
+- feat: password complexity option on DB Auth (#1687) [Daniel Vaz Gaspar]
+- fix: check if there is an email field in userinfo (#1663) [Yoshitaka Sakurai]
+
+Improvements and Bug fixes on 3.3.2
+-----------------------------------
+
+- fix: improve next URL on OAuth (#1668) [Daniel Vaz Gaspar]
+- chore: Bump click to 8.0.1 (#1665) [Hugh A. Miles II]
+- feat(cli): Add import/export of roles with permissions (#1662) [krsnik93]
+
 Improvements and Bug fixes on 3.3.1
 -----------------------------------
 

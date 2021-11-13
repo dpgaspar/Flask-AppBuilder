@@ -31,12 +31,14 @@ jobs:
         run: black --check setup.py flask_appbuilder
       - name: flake8
         run: flake8 flask_appbuilder
+      - name: mypy
+        run: mypy flask_appbuilder
 
   test-postgres:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9.7]
     env:
       SQLALCHEMY_DATABASE_URI:
         postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app

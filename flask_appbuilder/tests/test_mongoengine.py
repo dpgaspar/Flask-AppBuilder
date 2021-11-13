@@ -1,16 +1,23 @@
 import datetime
+import json
 import logging
 import os
 import random
 import string
+import tempfile
+import unittest
 
+from flask import Flask
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.charts.views import (
     DirectByChartView,
     DirectChartView,
     GroupByChartView,
 )
+from flask_appbuilder.cli import export_roles, import_roles
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 from flask_appbuilder.models.mongoengine.filters import FilterEqual, FilterStartsWith
+from flask_appbuilder.security.mongoengine.manager import SecurityManager
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView
 from flask_mongoengine import MongoEngine
 import jinja2
@@ -43,7 +50,6 @@ class FlaskTestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
         from flask_appbuilder import ModelView
-        from flask_appbuilder.security.mongoengine.manager import SecurityManager
 
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
@@ -340,7 +346,7 @@ class FlaskTestCase(FABTestCase):
         eq_(rv.status_code, 200)
 
         model = Model1.objects[0]
-        eq_(model.field_string, u"test1")
+        eq_(model.field_string, "test1")
         eq_(model.field_integer, 1)
 
         model1 = Model1.objects(field_string="test1")[0]
@@ -352,7 +358,7 @@ class FlaskTestCase(FABTestCase):
         eq_(rv.status_code, 200)
 
         model = Model1.objects[0]
-        eq_(model.field_string, u"test2")
+        eq_(model.field_string, "test2")
         eq_(model.field_integer, 2)
 
         rv = client.get(
@@ -570,3 +576,112 @@ class FlaskTestCase(FABTestCase):
         rv = client.get("/model1compactview/list/")
         eq_(rv.status_code, 200)
         self.clean_data()
+
+
+class MongoImportExportTestCase(unittest.TestCase):
+    def setUp(self):
+        with open("flask_appbuilder/tests/data/roles.json", "r") as fd:
+            self.expected_roles = json.loads(fd.read())
+
+    def test_export_roles(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            app = Flask(__name__)
+            app.config.from_object("flask_appbuilder.tests.config_security")
+            app.config["MONGODB_SETTINGS"] = {
+                "db": "app",
+                "host": "localhost",
+                "port": 27017,
+            }
+            db_mongo = MongoEngine(app)  # noqa: F841
+            app_builder = AppBuilder(  # noqa: F841
+                app, security_manager_class=SecurityManager
+            )
+            cli_runner = app.test_cli_runner()
+
+            path = os.path.join(tmp_dir, "roles.json")
+            export_result = cli_runner.invoke(export_roles, [f"--path={path}"])
+
+            self.assertEqual(export_result.exit_code, 0)
+            self.assertTrue(os.path.exists(path))
+
+            with open(path, "r") as fd:
+                resulting_roles = json.loads(fd.read())
+
+            for expected_role in self.expected_roles:
+                match = [
+                    r for r in resulting_roles if r["name"] == expected_role["name"]
+                ]
+                self.assertTrue(match)
+                resulting_role = match[0]
+                resulting_role_permission_view_menus = {
+                    (pvm["permission"]["name"], pvm["view_menu"]["name"])
+                    for pvm in resulting_role["permissions"]
+                }
+                expected_role_permission_view_menus = {
+                    (pvm["permission"]["name"], pvm["view_menu"]["name"])
+                    for pvm in expected_role["permissions"]
+                }
+                self.assertTrue(
+                    all(
+                        [
+                            pvm in resulting_role_permission_view_menus
+                            for pvm in expected_role_permission_view_menus
+                        ]
+                    )
+                )
+
+    def test_import_roles(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            app = Flask(__name__)
+            app.config["MONGODB_SETTINGS"] = {
+                "db": "app",
+                "host": "localhost",
+                "port": 27017,
+            }
+            db_mongo = MongoEngine(app)  # noqa: F841
+            app_builder = AppBuilder(  # noqa: F841
+                app, security_manager_class=SecurityManager
+            )
+            cli_runner = app.test_cli_runner()
+
+            app_builder.sm.role_model.objects(
+                name__nin=[
+                    app_builder.sm.auth_role_public,
+                    app_builder.sm.auth_role_admin,
+                ]
+            ).delete()
+
+            path = os.path.join(tmp_dir, "roles.json")
+
+            with open(path, "w") as fd:
+                fd.write(json.dumps(self.expected_roles))
+
+            # before import roles on dst app include only Admin and Public
+            self.assertEqual(len(app_builder.sm.get_all_roles()), 2)
+
+            import_result = cli_runner.invoke(import_roles, [f"--path={path}"])
+            self.assertEqual(import_result.exit_code, 0)
+
+            resulting_roles = app_builder.sm.get_all_roles()
+
+            for expected_role in self.expected_roles:
+                match = [r for r in resulting_roles if r.name == expected_role["name"]]
+                self.assertTrue(match)
+                resulting_role = match[0]
+
+                expected_role_permission_view_menus = {
+                    (pvm["permission"]["name"], pvm["view_menu"]["name"])
+                    for pvm in expected_role["permissions"]
+                }
+                resulting_role_permission_view_menus = {
+                    (pvm.permission.name, pvm.view_menu.name)
+                    for pvm in resulting_role.permissions
+                }
+                self.assertTrue(
+                    all(
+                        [
+                            pvm in resulting_role_permission_view_menus
+                            for pvm in expected_role_permission_view_menus
+                        ]
+                    )
+                )

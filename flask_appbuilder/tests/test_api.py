@@ -23,6 +23,7 @@ from flask_appbuilder.const import (
     API_PERMISSIONS_RIS_KEY,
     API_RESULT_RES_KEY,
     API_SECURITY_ACCESS_TOKEN_KEY,
+    API_SECURITY_REFRESH_TOKEN_KEY,
     API_SELECT_COLUMNS_RIS_KEY,
     API_SELECT_KEYS_RIS_KEY,
     API_SHOW_COLUMNS_RIS_KEY,
@@ -429,7 +430,7 @@ class APITestCase(FABTestCase):
 
     def test_babel(self):
         """
-            REST Api: Test babel simple test
+        REST Api: Test babel simple test
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -439,7 +440,7 @@ class APITestCase(FABTestCase):
 
     def test_babel_wrong_language(self):
         """
-            REST Api: Test babel with a wrong language
+        REST Api: Test babel with a wrong language
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -449,27 +450,117 @@ class APITestCase(FABTestCase):
 
     def test_auth_login(self):
         """
-            REST Api: Test auth login
+        REST Api: Test auth login
         """
         client = self.app.test_client()
         rv = self._login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         self.assertEqual(rv.status_code, 200)
-        assert json.loads(rv.data.decode("utf-8")).get(
-            API_SECURITY_ACCESS_TOKEN_KEY, False
-        )
+        response = json.loads(rv.data.decode("utf-8"))
+        assert API_SECURITY_ACCESS_TOKEN_KEY in response
+        assert API_SECURITY_REFRESH_TOKEN_KEY not in response
+
+    def test_auth_login_refresh(self):
+        """
+        REST Api: Test auth login with refresh token
+        """
+        client = self.app.test_client()
+        rv = self._login(client, USERNAME_ADMIN, PASSWORD_ADMIN, refresh=True)
+        self.assertEqual(rv.status_code, 200)
+        assert API_SECURITY_REFRESH_TOKEN_KEY in json.loads(rv.data.decode("utf-8"))
 
     def test_auth_login_failed(self):
         """
-            REST Api: Test auth login failed
+        REST Api: Test auth login failed
         """
         client = self.app.test_client()
         rv = self._login(client, "fail", "fail")
         self.assertEqual(json.loads(rv.data), {"message": "Not authorized"})
         self.assertEqual(rv.status_code, 401)
 
+    def test_auth_login_no_username(self):
+        """
+        REST Api: Test auth login no username
+        """
+        client = self.app.test_client()
+        rv = client.post(
+            "api/v1/security/login", json={"password": "password", "provider": "db"}
+        )
+        self.assertEqual(rv.status_code, 400)
+        response = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(
+            response, {"message": {"username": ["Missing data for required field."]}}
+        )
+
+    def test_auth_login_empty_username(self):
+        """
+        REST Api: Test auth login empty username
+        """
+        client = self.app.test_client()
+        rv = client.post(
+            "api/v1/security/login",
+            json={"username": "", "password": "password", "provider": "db"},
+        )
+        self.assertEqual(rv.status_code, 400)
+        response = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(
+            response, {"message": {"username": ["Shorter than minimum length 1."]}}
+        )
+
+    def test_auth_login_no_password(self):
+        """
+        REST Api: Test auth login no password
+        """
+        client = self.app.test_client()
+        rv = client.post(
+            "api/v1/security/login", json={"username": "admin", "provider": "db"}
+        )
+        self.assertEqual(rv.status_code, 400)
+        response = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(
+            response, {"message": {"password": ["Missing data for required field."]}}
+        )
+
+    def test_auth_login_empty_password(self):
+        """
+        REST Api: Test auth login empty password
+        """
+        client = self.app.test_client()
+        rv = client.post(
+            "api/v1/security/login",
+            json={"username": "admin", "password": "", "provider": "db"},
+        )
+        self.assertEqual(rv.status_code, 400)
+        response = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(
+            response, {"message": {"password": ["Shorter than minimum length 1."]}}
+        )
+
+    def test_auth_login_invalid_provider(self):
+        """
+        REST Api: Test auth login invalid provider
+        """
+        client = self.app.test_client()
+        rv = client.post(
+            "api/v1/security/login",
+            json={"username": "admin", "password": "password", "provider": "xpto"},
+        )
+        self.assertEqual(rv.status_code, 400)
+        response = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(
+            response,
+            {
+                "message": {
+                    "provider": [
+                        "Must be one of: db, ldap.",
+                        "Alternative authentication provider is not allowed",
+                    ]
+                }
+            },
+        )
+
     def test_auth_login_bad(self):
         """
-            REST Api: Test auth login bad request
+        REST Api: Test auth login bad request
         """
         client = self.app.test_client()
         rv = client.post("api/v1/security/login", data="BADADATA")
@@ -477,7 +568,7 @@ class APITestCase(FABTestCase):
 
     def test_auth_authorization_browser(self):
         """
-            REST Api: Test auth with browser login
+        REST Api: Test auth with browser login
         """
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -503,7 +594,7 @@ class APITestCase(FABTestCase):
 
     def test_auth_authorization(self):
         """
-            REST Api: Test auth base limited authorization
+        REST Api: Test auth base limited authorization
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -529,7 +620,7 @@ class APITestCase(FABTestCase):
 
     def test_auth_builtin_roles(self):
         """
-            REST Api: Test auth readonly builtin role
+        REST Api: Test auth readonly builtin role
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_READONLY, PASSWORD_READONLY)
@@ -562,7 +653,7 @@ class APITestCase(FABTestCase):
 
     def test_base_rison_argument(self):
         """
-            REST Api: Test not a valid rison argument
+        REST Api: Test not a valid rison argument
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -581,7 +672,7 @@ class APITestCase(FABTestCase):
 
     def test_base_rison_schema(self):
         """
-            REST Api: Test rison schema validation
+        REST Api: Test rison schema validation
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -612,7 +703,7 @@ class APITestCase(FABTestCase):
 
     def test_base_safe(self):
         """
-            REST Api: Test safe decorator 500
+        REST Api: Test safe decorator 500
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -624,7 +715,7 @@ class APITestCase(FABTestCase):
 
     def test_exclude_route_methods(self):
         """
-            REST Api: Test exclude route methods
+        REST Api: Test exclude route methods
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -648,7 +739,7 @@ class APITestCase(FABTestCase):
 
     def test_include_route_methods(self):
         """
-            REST Api: Test include route methods
+        REST Api: Test include route methods
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -680,7 +771,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item(self):
         """
-            REST Api: Test get item
+        REST Api: Test get item
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -718,7 +809,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_select_cols(self):
         """
-            REST Api: Test get item with select columns
+        REST Api: Test get item with select columns
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -741,7 +832,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_dotted_mo_notation(self):
         """
-            REST Api: Test get item with dotted M-O related field
+        REST Api: Test get item with dotted M-O related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -762,7 +853,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_select_meta_data(self):
         """
-            REST Api: Test get item select meta data
+        REST Api: Test get item select meta data
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -786,7 +877,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_excluded_cols(self):
         """
-            REST Api: Test get item with excluded columns
+        REST Api: Test get item with excluded columns
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -801,7 +892,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_not_found(self):
         """
-            REST Api: Test get item not found
+        REST Api: Test get item not found
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -812,7 +903,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_base_filters(self):
         """
-            REST Api: Test get item with base filters
+        REST Api: Test get item with base filters
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -830,7 +921,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_mo_field(self):
         """
-            REST Api: Test get item with M-O related field
+        REST Api: Test get item with M-O related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -858,7 +949,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_mm_field(self):
         """
-            REST Api: Test get item with M-M related field
+        REST Api: Test get item with M-M related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -877,7 +968,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_dotted_mm_field(self):
         """
-            REST Api: Test get item with dotted M-M related field
+        REST Api: Test get item with dotted M-M related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -899,7 +990,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_om_field(self):
         """
-            REST Api: Test get item with O-M related field
+        REST Api: Test get item with O-M related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -919,7 +1010,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list(self):
         """
-            REST Api: Test get list
+        REST Api: Test get list
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -934,7 +1025,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_dotted_mo_field(self):
         """
-            REST Api: Test get list with dotted M-O related field
+        REST Api: Test get list with dotted M-O related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -957,7 +1048,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_om_field(self):
         """
-            REST Api: Test get list with O-M related field
+        REST Api: Test get list with O-M related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -975,7 +1066,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_dotted_om_field(self):
         """
-            REST Api: Test get list with dotted O-M related field
+        REST Api: Test get list with dotted O-M related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -992,7 +1083,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_dotted_mm_field(self):
         """
-            REST Api: Test get list with dotted M-M related field
+        REST Api: Test get list with dotted M-M related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1015,7 +1106,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_dotted_mo_order(self):
         """
-            REST Api: Test get list and order dotted M-O notation
+        REST Api: Test get list and order dotted M-O notation
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1038,7 +1129,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_multiple_dotted_order(self):
         """
-            REST Api: Test get list order multiple dotted notation
+        REST Api: Test get list order multiple dotted notation
         """
 
         class Model4Api(ModelRestApi):
@@ -1094,7 +1185,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_order(self):
         """
-            REST Api: Test get list order params
+        REST Api: Test get list order params
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1132,7 +1223,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_base_order(self):
         """
-            REST Api: Test get list with base order
+        REST Api: Test get list with base order
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1166,7 +1257,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_page(self):
         """
-            REST Api: Test get list page params
+        REST Api: Test get list page params
         """
         page_size = 5
         client = self.app.test_client()
@@ -1224,7 +1315,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_max_page_size(self):
         """
-            REST Api: Test get list max page size config setting
+        REST Api: Test get list max page size config setting
         """
         page_size = 200  # Max is globally set to MAX_PAGE_SIZE
         client = self.app.test_client()
@@ -1244,7 +1335,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_max_page_size_override(self):
         """
-            REST Api: Test get list max page size property override
+        REST Api: Test get list max page size property override
         """
 
         class Model1PageSizeOverride(ModelRestApi):
@@ -1284,7 +1375,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_filters(self):
         """
-            REST Api: Test get list filter params
+        REST Api: Test get list filter params
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1322,7 +1413,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_invalid_filters(self):
         """
-            REST Api: Test get list filter params
+        REST Api: Test get list filter params
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1335,7 +1426,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_filters_m_m(self):
         """
-            REST Api: Test get list filter params with many to many
+        REST Api: Test get list filter params with many to many
         """
         session = self.appbuilder.get_session
 
@@ -1393,7 +1484,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_filters_wrong_col(self):
         """
-            REST Api: Test get list with wrong columns
+        REST Api: Test get list with wrong columns
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1413,7 +1504,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_filters_wrong_opr(self):
         """
-            REST Api: Test get list with wrong operation
+        REST Api: Test get list with wrong operation
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1432,7 +1523,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_filters_wrong_order(self):
         """
-            REST Api: Test get list with wrong order column
+        REST Api: Test get list with wrong order column
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1446,7 +1537,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_multiple_search_filters(self):
         """
-            REST Api: Test get list multiple search filters
+        REST Api: Test get list multiple search filters
         """
         session = self.appbuilder.get_session
         model1_1 = Model1(field_string="abc", field_integer=6)
@@ -1490,7 +1581,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_custom_search_filters(self):
         """
-            REST Api: Test get list custom filters
+        REST Api: Test get list custom filters
         """
         session = self.appbuilder.get_session
         model1_1 = Model1(field_string="abc", field_integer=2)
@@ -1543,7 +1634,7 @@ class APITestCase(FABTestCase):
 
     def test_get_info_custom_search_filters(self):
         """
-            REST Api: Test get info custom filters
+        REST Api: Test get info custom filters
         """
         arguments = {"keys": ["filters"]}
         rison_args = prison.dumps(arguments)
@@ -1561,7 +1652,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_select_cols(self):
         """
-            REST Api: Test get list with select columns
+        REST Api: Test get list with select columns
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1587,7 +1678,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_select_meta_data(self):
         """
-            REST Api: Test get list select meta data
+        REST Api: Test get list select meta data
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1610,7 +1701,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_exclude_cols(self):
         """
-            REST Api: Test get list with excluded columns
+        REST Api: Test get list with excluded columns
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1622,7 +1713,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_base_filters(self):
         """
-            REST Api: Test get list with base filters
+        REST Api: Test get list with base filters
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1643,7 +1734,7 @@ class APITestCase(FABTestCase):
 
     def test_info_filters(self):
         """
-            REST Api: Test info filters
+        REST Api: Test info filters
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1684,7 +1775,7 @@ class APITestCase(FABTestCase):
 
     def test_info_fields(self):
         """
-            REST Api: Test info fields (add, edit)
+        REST Api: Test info fields (add, edit)
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1737,7 +1828,7 @@ class APITestCase(FABTestCase):
 
     def test_info_fields_rel_field(self):
         """
-            REST Api: Test info fields with related fields
+        REST Api: Test info fields with related fields
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1765,8 +1856,8 @@ class APITestCase(FABTestCase):
 
     def test_info_fields_rel_filtered_field(self):
         """
-            REST Api: Test info fields with filtered
-            related fields
+        REST Api: Test info fields with filtered
+        related fields
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1792,7 +1883,7 @@ class APITestCase(FABTestCase):
 
     def test_info_permissions(self):
         """
-            REST Api: Test info permissions
+        REST Api: Test info permissions
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1815,7 +1906,7 @@ class APITestCase(FABTestCase):
 
     def test_info_select_meta_data(self):
         """
-            REST Api: Test info select meta data
+        REST Api: Test info select meta data
         """
         # select meta for add fields
         client = self.app.test_client()
@@ -1840,7 +1931,7 @@ class APITestCase(FABTestCase):
 
     def test_delete_item(self):
         """
-            REST Api: Test delete item
+        REST Api: Test delete item
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1862,7 +1953,7 @@ class APITestCase(FABTestCase):
 
     def test_delete_item_integrity(self):
         """
-            REST Api: Test delete item integrity
+        REST Api: Test delete item integrity
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1881,7 +1972,7 @@ class APITestCase(FABTestCase):
 
     def test_delete_item_not_found(self):
         """
-            REST Api: Test delete item not found
+        REST Api: Test delete item not found
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1894,7 +1985,7 @@ class APITestCase(FABTestCase):
 
     def test_delete_item_base_filters(self):
         """
-            REST Api: Test delete item with base filters
+        REST Api: Test delete item with base filters
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1913,7 +2004,7 @@ class APITestCase(FABTestCase):
 
     def test_update_item(self):
         """
-            REST Api: Test update item
+        REST Api: Test update item
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1937,7 +2028,7 @@ class APITestCase(FABTestCase):
 
     def test_update_custom_validation(self):
         """
-            REST Api: Test update item custom validation
+        REST Api: Test update item custom validation
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1962,7 +2053,7 @@ class APITestCase(FABTestCase):
 
     def test_update_item_custom_schema(self):
         """
-            REST Api: Test update item custom schema
+        REST Api: Test update item custom schema
         """
         from .sqla.models import Model1CustomSchema
 
@@ -2013,7 +2104,7 @@ class APITestCase(FABTestCase):
 
     def test_update_item_base_filters(self):
         """
-            REST Api: Test update item with base filters
+        REST Api: Test update item with base filters
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2048,7 +2139,7 @@ class APITestCase(FABTestCase):
 
     def test_update_item_not_found(self):
         """
-            REST Api: Test update item not found
+        REST Api: Test update item not found
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2062,7 +2153,7 @@ class APITestCase(FABTestCase):
 
     def test_update_val_size(self):
         """
-            REST Api: Test update validate size
+        REST Api: Test update validate size
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2084,7 +2175,7 @@ class APITestCase(FABTestCase):
 
     def test_update_mm_field(self):
         """
-            REST Api: Test update m-m field
+        REST Api: Test update m-m field
         """
         session = self.appbuilder.get_session
         pk = 1
@@ -2125,7 +2216,7 @@ class APITestCase(FABTestCase):
 
     def test_update_item_val_type(self):
         """
-            REST Api: Test update validate type
+        REST Api: Test update validate type
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2155,7 +2246,7 @@ class APITestCase(FABTestCase):
 
     def test_update_item_excluded_cols(self):
         """
-            REST Api: Test update item with excluded cols
+        REST Api: Test update item with excluded cols
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2189,7 +2280,7 @@ class APITestCase(FABTestCase):
 
     def test_create_item(self):
         """
-            REST Api: Test create item
+        REST Api: Test create item
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2219,7 +2310,7 @@ class APITestCase(FABTestCase):
 
     def test_create_item_bad_request(self):
         """
-            REST Api: Test create item with bad request
+        REST Api: Test create item with bad request
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2239,7 +2330,7 @@ class APITestCase(FABTestCase):
 
     def test_create_item_custom_validation(self):
         """
-            REST Api: Test create item custom validation
+        REST Api: Test create item custom validation
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2274,7 +2365,7 @@ class APITestCase(FABTestCase):
 
     def test_create_item_custom_schema(self):
         """
-            REST Api: Test create item custom schema
+        REST Api: Test create item custom schema
         """
         from .sqla.models import Model1CustomSchema
 
@@ -2326,7 +2417,7 @@ class APITestCase(FABTestCase):
 
     def test_create_item_val_size(self):
         """
-            REST Api: Test create validate size
+        REST Api: Test create validate size
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2346,7 +2437,7 @@ class APITestCase(FABTestCase):
 
     def test_create_item_val_type(self):
         """
-            REST Api: Test create validate type
+        REST Api: Test create validate type
         """
         # Test integer as string
         client = self.app.test_client()
@@ -2374,7 +2465,7 @@ class APITestCase(FABTestCase):
 
     def test_create_item_excluded_cols(self):
         """
-            REST Api: Test create with excluded columns
+        REST Api: Test create with excluded columns
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2412,7 +2503,7 @@ class APITestCase(FABTestCase):
 
     def test_create_item_with_enum(self):
         """
-            REST Api: Test create item with enum
+        REST Api: Test create item with enum
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2435,7 +2526,7 @@ class APITestCase(FABTestCase):
 
     def test_create_item_mm_field(self):
         """
-            REST Api: Test create with M-M field
+        REST Api: Test create with M-M field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2483,7 +2574,7 @@ class APITestCase(FABTestCase):
 
     def test_create_item_om_field(self):
         """
-            REST Api: Test create with O-M field
+        REST Api: Test create with O-M field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2514,7 +2605,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_col_function(self):
         """
-            REST Api: Test get list of objects with columns as functions
+        REST Api: Test get list of objects with columns as functions
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2534,7 +2625,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_col_property(self):
         """
-            REST Api: Test get list of objects with columns as property
+        REST Api: Test get list of objects with columns as property
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2552,7 +2643,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_col_callable(self):
         """
-            REST Api: Test get list of objects with columns as callable
+        REST Api: Test get list of objects with columns as callable
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2572,7 +2663,7 @@ class APITestCase(FABTestCase):
 
     def test_openapi(self):
         """
-            REST Api: Test OpenAPI spec
+        REST Api: Test OpenAPI spec
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2582,7 +2673,7 @@ class APITestCase(FABTestCase):
 
     def test_swagger_ui(self):
         """
-            REST Api: Test Swagger UI
+        REST Api: Test Swagger UI
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2592,7 +2683,7 @@ class APITestCase(FABTestCase):
 
     def test_class_method_permission_override(self):
         """
-            REST Api: Test class method permission name override
+        REST Api: Test class method permission name override
         """
 
         class Model2PermOverride1(ModelRestApi):
@@ -2639,7 +2730,7 @@ class APITestCase(FABTestCase):
 
     def test_method_permission_override(self):
         """
-            REST Api: Test method permission name override
+        REST Api: Test method permission name override
         """
 
         class Model2PermOverride2(ModelRestApi):
@@ -2686,7 +2777,7 @@ class APITestCase(FABTestCase):
 
     def test_base_permission_override(self):
         """
-            REST Api: Test base perms with permission name override
+        REST Api: Test base perms with permission name override
         """
 
         class Model2PermOverride3(ModelRestApi):
@@ -2715,7 +2806,7 @@ class APITestCase(FABTestCase):
 
     def test_permission_converge_compress(self):
         """
-            REST Api: Test permission name converge compress
+        REST Api: Test permission name converge compress
         """
 
         class Model1PermConverge(ModelRestApi):
@@ -2782,7 +2873,7 @@ class APITestCase(FABTestCase):
 
     def test_permission_converge_expand(self):
         """
-            REST Api: Test permission name converge expand
+        REST Api: Test permission name converge expand
         """
 
         class Model1PermConverge(ModelRestApi):
@@ -2840,7 +2931,7 @@ class APITestCase(FABTestCase):
 
     def test_before_request(self):
         """
-            REST Api: Test simple before_request filter
+        REST Api: Test simple before_request filter
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)

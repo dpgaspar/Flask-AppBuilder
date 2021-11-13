@@ -5,6 +5,7 @@ from wtforms.validators import DataRequired, Email, EqualTo
 
 from ..fieldwidgets import BS3PasswordFieldWidget, BS3TextFieldWidget
 from ..forms import DynamicForm
+from ..validators import PasswordComplexityValidator
 
 
 class LoginForm_oid(DynamicForm):
@@ -40,7 +41,7 @@ class ResetPasswordForm(DynamicForm):
             "Please use a good password policy,"
             " this application does not check this for you"
         ),
-        validators=[DataRequired()],
+        validators=[DataRequired(), PasswordComplexityValidator()],
         widget=BS3PasswordFieldWidget(),
     )
     conf_password = PasswordField(
