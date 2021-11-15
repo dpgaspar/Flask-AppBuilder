@@ -1,7 +1,8 @@
 from flask_babel import gettext
+from markupsafe import Markup
 from werkzeug.datastructures import FileStorage
 from wtforms import fields, ValidationError
-from wtforms.widgets import html_params, HTMLString
+from wtforms.widgets import html_params
 
 from .filemanager import FileManager, ImageManager
 
@@ -45,7 +46,7 @@ class BS3FileUploadFieldWidget(object):
 
         template = self.data_template if field.data else self.empty_template
 
-        return HTMLString(
+        return Markup(
             template
             % {
                 "text": html_params(type="text", value=field.data),
@@ -94,7 +95,7 @@ class BS3ImageUploadFieldWidget(object):
         else:
             template = self.empty_template
 
-        return HTMLString(template % args)
+        return Markup(template % args)
 
     def get_url(self, field):
         im = ImageManager()
