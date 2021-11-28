@@ -202,6 +202,9 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | AUTH_ROLE_PUBLIC                       | Special Role that holds the public         |   No      |
 |                                        | permissions, no authentication needed.     |           |
 +----------------------------------------+--------------------------------------------+-----------+
+| AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS| Allow REST API login with alternative auth |   No      |
+| True|False                             | providers (default False)                  |           |           |
++----------------------------------------+--------------------------------------------+-----------+
 | APP_NAME                               | The name of your application.              |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
 | APP_THEME                              | Various themes for you to choose           |   No      |
@@ -240,6 +243,8 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | FAB_API_MAX_PAGE_SIZE                  | Sets a limit for FAB Model Api page size   |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
 | FAB_API_SWAGGER_UI                     | Enables a Swagger UI view (Boolean)        |   No      |
++----------------------------------------+--------------------------------------------+-----------+
+| FAB_API_SWAGGER_TEMPLATE               | Path of your custom Swagger Template       |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
 | FAB_API_ALLOW_JSON_QS                  | Allow query string parameters to be JSON   |           |
 |                                        | Default is True (Boolean)                  |   No      |
@@ -282,6 +287,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +----------------------------------------+--------------------------------------------+-----------+
 | FAB_STATIC_URL_PATH                    | Path to override default static folder     |           |
 |                                        |                                            |   No      |
++----------------------------------------+--------------------------------------------+-----------+
+| FAB_PASSWORD_COMPLEXITY_VALIDATOR      | Hook for your own custom password          |           |
+|                                        | validator function.                        |   No      |
++----------------------------------------+--------------------------------------------+-----------+
+| FAB_PASSWORD_COMPLEXITY_ENABLED        | Enables the password complexity            |           |
+|                                        | validation for AUTH database users.        |   No      |
+|                                        | Default is False.                          |           |
 +----------------------------------------+--------------------------------------------+-----------+
 
 

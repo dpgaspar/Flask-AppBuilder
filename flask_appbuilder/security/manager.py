@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Dict, List, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
@@ -219,6 +219,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Role Mapping
         app.config.setdefault("AUTH_ROLES_MAPPING", {})
         app.config.setdefault("AUTH_ROLES_SYNC_AT_LOGIN", False)
+        app.config.setdefault("AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS", False)
 
         # LDAP Config
         if self.auth_type == AUTH_LDAP:
@@ -303,7 +304,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def create_builtin_roles(self):
         return self.appbuilder.get_app.config.get("FAB_ROLES", {})
 
-    def get_roles_from_keys(self, role_keys: List[str]) -> List[role_model]:
+    def get_roles_from_keys(self, role_keys: List[str]) -> Set[role_model]:
         """
         Construct a list of FAB role objects, from a list of keys.
 
@@ -314,14 +315,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         :param role_keys: the list of FAB role keys
         :return: a list of RoleModelView
         """
-        _roles = []
+        _roles = set()
         _role_keys = set(role_keys)
         for role_key, fab_role_names in self.auth_roles_mapping.items():
             if role_key in _role_keys:
                 for fab_role_name in fab_role_names:
                     fab_role = self.find_role(fab_role_name)
                     if fab_role:
-                        _roles.append(fab_role)
+                        _roles.add(fab_role)
                     else:
                         log.warning(
                             "Can't find role specified in AUTH_ROLES_MAPPING: {0}".format(
@@ -329,6 +330,11 @@ class BaseSecurityManager(AbstractSecurityManager):
                             )
                         )
         return _roles
+
+    @property
+    def auth_type_provider_name(self) -> Optional[str]:
+        provider_to_auth_type = {AUTH_DB: "db", AUTH_LDAP: "ldap"}
+        return provider_to_auth_type.get(self.auth_type)
 
     @property
     def get_url_for_registeruser(self):
@@ -346,39 +352,43 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.registerusermodelview.datamodel
 
     @property
-    def builtin_roles(self):
+    def builtin_roles(self) -> Dict[str, Any]:
         return self._builtin_roles
 
     @property
-    def auth_type(self):
+    def api_login_allow_multiple_providers(self):
+        return self.appbuilder.get_app.config["AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS"]
+
+    @property
+    def auth_type(self) -> int:
         return self.appbuilder.get_app.config["AUTH_TYPE"]
 
     @property
-    def auth_username_ci(self):
+    def auth_username_ci(self) -> str:
         return self.appbuilder.get_app.config.get("AUTH_USERNAME_CI", True)
 
     @property
-    def auth_role_admin(self):
+    def auth_role_admin(self) -> str:
         return self.appbuilder.get_app.config["AUTH_ROLE_ADMIN"]
 
     @property
-    def auth_role_public(self):
+    def auth_role_public(self) -> str:
         return self.appbuilder.get_app.config["AUTH_ROLE_PUBLIC"]
 
     @property
-    def auth_ldap_server(self):
+    def auth_ldap_server(self) -> str:
         return self.appbuilder.get_app.config["AUTH_LDAP_SERVER"]
 
     @property
-    def auth_ldap_use_tls(self):
+    def auth_ldap_use_tls(self) -> bool:
         return self.appbuilder.get_app.config["AUTH_LDAP_USE_TLS"]
 
     @property
-    def auth_user_registration(self):
+    def auth_user_registration(self) -> bool:
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION"]
 
     @property
-    def auth_user_registration_role(self):
+    def auth_user_registration_role(self) -> str:
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE"]
 
     @property
@@ -775,8 +785,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         roles_mapping = self.appbuilder.get_app.config.get("FAB_ROLES_MAPPING", {})
         for pk, name in roles_mapping.items():
             self.update_role(pk, name)
-        for role_name in self.builtin_roles:
-            self.add_role(role_name)
+        for role_name, permission_view_menus in self.builtin_roles.items():
+            permission_view_menus = [
+                self.add_permission_view_menu(permission_name, view_menu_name)
+                for view_menu_name, permission_name in permission_view_menus
+            ]
+            self.add_role(name=role_name, permissions=permission_view_menus)
         if self.auth_role_admin not in self.builtin_roles:
             self.add_role(self.auth_role_admin)
         self.add_role(self.auth_role_public)
@@ -833,6 +847,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         if user is None:
             user = self.find_user(email=username)
         if user is None or (not user.is_active):
+            # Balance failure and success
+            check_password_hash(
+                "pbkdf2:sha256:150000$Z3t6fmj2$22da622d94a1f8118"
+                "c0976a03d2f18f680bfff877c9a965db9eedc51bc0be87c",
+                "password",
+            )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
         elif check_password_hash(user.password, password):
@@ -912,14 +932,14 @@ class BaseSecurityManager(AbstractSecurityManager):
     def _ldap_calculate_user_roles(
         self, user_attributes: Dict[str, bytes]
     ) -> List[str]:
-        user_role_objects = []
+        user_role_objects = set()
 
         # apply AUTH_ROLES_MAPPING
         if len(self.auth_roles_mapping) > 0:
             user_role_keys = self.ldap_extract_list(
                 user_attributes, self.auth_ldap_group_field
             )
-            user_role_objects += self.get_roles_from_keys(user_role_keys)
+            user_role_objects.update(self.get_roles_from_keys(user_role_keys))
 
         # apply AUTH_USER_REGISTRATION
         if self.auth_user_registration:
@@ -928,7 +948,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             # lookup registration role in flask db
             fab_role = self.find_role(registration_role_name)
             if fab_role:
-                user_role_objects.append(fab_role)
+                user_role_objects.add(fab_role)
             else:
                 log.warning(
                     "Can't find AUTH_USER_REGISTRATION role: {0}".format(
@@ -936,7 +956,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     )
                 )
 
-        return user_role_objects
+        return list(user_role_objects)
 
     def _ldap_bind_indirect(self, ldap, con) -> None:
         """
@@ -1237,12 +1257,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         return user
 
     def _oauth_calculate_user_roles(self, userinfo) -> List[str]:
-        user_role_objects = []
+        user_role_objects = set()
 
         # apply AUTH_ROLES_MAPPING
         if len(self.auth_roles_mapping) > 0:
             user_role_keys = userinfo.get("role_keys", [])
-            user_role_objects += self.get_roles_from_keys(user_role_keys)
+            user_role_objects.update(self.get_roles_from_keys(user_role_keys))
 
         # apply AUTH_USER_REGISTRATION_ROLE
         if self.auth_user_registration:
@@ -1260,7 +1280,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             # lookup registration role in flask db
             fab_role = self.find_role(registration_role_name)
             if fab_role:
-                user_role_objects.append(fab_role)
+                user_role_objects.add(fab_role)
             else:
                 log.warning(
                     "Can't find AUTH_USER_REGISTRATION role: {0}".format(
@@ -1268,7 +1288,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     )
                 )
 
-        return user_role_objects
+        return list(user_role_objects)
 
     def auth_user_oauth(self, userinfo):
         """
@@ -1826,7 +1846,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def find_role(self, name):
         raise NotImplementedError
 
-    def add_role(self, name):
+    def add_role(self, name, permissions=None):
         raise NotImplementedError
 
     def update_role(self, pk, name):
@@ -1983,6 +2003,14 @@ class BaseSecurityManager(AbstractSecurityManager):
             :param perm_view:
                 The PermissionViewMenu object
         """
+        raise NotImplementedError
+
+    def export_roles(self, path: Optional[str] = None) -> None:
+        """ Exports roles to JSON file. """
+        raise NotImplementedError
+
+    def import_roles(self, path: str) -> None:
+        """ Imports roles from JSON file. """
         raise NotImplementedError
 
     def load_user(self, pk):

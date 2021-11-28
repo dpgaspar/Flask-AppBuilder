@@ -1,6 +1,7 @@
 from flask_babel import lazy_gettext as _
+from markupsafe import Markup
 from wtforms import widgets
-from wtforms.widgets import html_params, HTMLString
+from wtforms.widgets import html_params
 
 
 class DatePickerWidget(object):
@@ -24,7 +25,7 @@ class DatePickerWidget(object):
             field.data = ""
         template = self.data_template
 
-        return HTMLString(
+        return Markup(
             template % {"text": html_params(type="text", value=field.data, **kwargs)}
         )
 
@@ -50,7 +51,7 @@ class DateTimePickerWidget(object):
             field.data = ""
         template = self.data_template
 
-        return HTMLString(
+        return Markup(
             template % {"text": html_params(type="text", value=field.data, **kwargs)}
         )
 
@@ -103,7 +104,7 @@ class Select2AJAXWidget(object):
             field.data = ""
         template = self.data_template
 
-        return HTMLString(
+        return Markup(
             template % {"text": html_params(type="text", value=field.data, **kwargs)}
         )
 
@@ -132,7 +133,7 @@ class Select2SlaveAJAXWidget(object):
             field.data = ""
         template = self.data_template
 
-        return HTMLString(
+        return Markup(
             template % {"text": html_params(type="text", value=field.data, **kwargs)}
         )
 

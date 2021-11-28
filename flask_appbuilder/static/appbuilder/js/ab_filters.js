@@ -30,7 +30,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	    addRemoveFilter($el, name, labels[name]);
         var i_option = addFilterOptionsValue($el, name, filter_name);
 	
-        var $field = $(form[name])
+        var $field = $(form[name]);
         // if form item complex like <div><input bla></div>, datetime
         if ( $("input", $($field)).html() != undefined ) {
             $field_inner = $("input", $field)
@@ -100,7 +100,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	    addRemoveFilter($el, name, labels[name]);
 
         addFilterOptionsValue($el, name);
-	    var $field = $(form[name])
+	    var $field = $(form[name]);
 	
 	    // if form item complex like <div><input bla></div>, datetime
 	    if ( $("input", $($field)).html() != undefined ) {
@@ -115,7 +115,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	    }
 	    $el.append(
         	$('<td/>').append($field)
-        );;
+        );
         if ($field.hasClass( "my_select2" )) {
         	$field.select2({placeholder: "Select a State", allowClear: true});
         }

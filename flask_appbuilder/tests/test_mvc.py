@@ -3,9 +3,10 @@ import json
 import logging
 from typing import Set
 
-from flask import Flask, redirect, request, session
+from flask import Flask, make_response, redirect, request, session
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.actions import action
+from flask_appbuilder.baseviews import expose
 from flask_appbuilder.charts.views import (
     ChartView,
     DirectByChartView,
@@ -13,6 +14,7 @@ from flask_appbuilder.charts.views import (
     GroupByChartView,
     TimeChartView,
 )
+from flask_appbuilder.hooks import before_request
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
@@ -21,9 +23,8 @@ from flask_appbuilder.models.sqla.filters import FilterEqual, FilterStartsWith
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView, ModelView
 from flask_wtf import CSRFProtect
-import jinja2
 
-from .base import FABTestCase
+from .base import BaseMVCTestCase, FABTestCase
 from .const import (
     MODEL1_DATA_SIZE,
     PASSWORD_ADMIN,
@@ -43,7 +44,6 @@ from .sqla.models import (
     TmpEnum,
 )
 
-
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
 
@@ -52,7 +52,6 @@ logging.getLogger().setLevel(logging.DEBUG)
     Constant english display string from framework
 """
 DEFAULT_INDEX_STRING = "Welcome"
-INVALID_LOGIN_STRING = "Invalid login"
 ACCESS_IS_DENIED = "Access is Denied"
 UNIQUE_VALIDATION_STRING = "Already exists"
 NOTNULL_VALIDATION_STRING = "This field is required"
@@ -104,30 +103,8 @@ class MVCBabelTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 302)
 
 
-class BaseMVCTestCase(FABTestCase):
-    def setUp(self):
-        self.app = Flask(__name__)
-        self.app.jinja_env.undefined = jinja2.StrictUndefined
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
-        logging.basicConfig(level=logging.ERROR)
-
-        self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-
-    @property
-    def registered_endpoints(self) -> Set:
-        return {item.endpoint for item in self.app.url_map.iter_rules()}
-
-    def get_registered_view_endpoints(self, view_name) -> Set:
-        return {
-            item.endpoint
-            for item in self.app.url_map.iter_rules()
-            if item.endpoint.split(".")[0] == view_name
-        }
-
-
 class ListFilterTestCase(BaseMVCTestCase):
-    def test_list_filter_in_valid_object(self):
+    def test_list_filter_invalid_object(self):
         """
         MVC: Test Filter with related object not found
         """
@@ -138,7 +115,49 @@ class ListFilterTestCase(BaseMVCTestCase):
             rv = c.get("/users/list/?_flt_0_roles=-1")
             self.assertEqual(rv.status_code, 200)
 
-    def test_list_filter_unknow_column(self):
+    def test_list_filter_m_m_invalid_object(self):
+        """
+        MVC: Test Filter many to many with related object with invalid type
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Roles doesn't exists
+            rv = c.get("/users/list/?_flt_0_roles=aaaa", follow_redirects=True)
+            self.assertEqual(rv.status_code, 200)
+            if self.db.session.bind.dialect.name != "mysql":
+                data = rv.data.decode("utf-8")
+                self.assertIn("An error occurred", data)
+
+    def test_list_filter_o_m_invalid_object_type(self):
+        """
+        MVC: Test Filter one to many with related object with invalid type
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Roles doesn't exists
+            rv = c.get("/users/list/?_flt_0_created_by=aaaa", follow_redirects=True)
+            self.assertEqual(rv.status_code, 200)
+            if self.db.session.bind.dialect.name != "mysql":
+                data = rv.data.decode("utf-8")
+                self.assertIn("An error occurred", data)
+
+    def test_list_filter_not_o_m_invalid_object_type(self):
+        """
+        MVC: Test Filter one to many with not equal related object with invalid type
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Roles doesn't exists
+            rv = c.get("/users/list/?_flt_1_created_by=aaaa", follow_redirects=True)
+            self.assertEqual(rv.status_code, 200)
+            if self.db.session.bind.dialect.name != "mysql":
+                data = rv.data.decode("utf-8")
+                self.assertIn("An error occurred", data)
+
+    def test_list_filter_unknown_column(self):
         """
         MVC: Test Filter with unknown field
         """
@@ -525,6 +544,36 @@ class MVCTestCase(BaseMVCTestCase):
         class ModelWithEnumsView(ModelView):
             datamodel = SQLAInterface(ModelWithEnums)
 
+        context = self
+        context._before_request_enabled = False
+        context._before_request_can_show = False
+        context._before_request_can_list = False
+
+        class ModelBeforeRequest(ModelView):
+            datamodel = SQLAInterface(Model1)
+
+            @before_request
+            def check_condition(self):
+                if not context._before_request_enabled:
+                    return make_response("Not found", 404)
+                return None
+
+            @before_request(only=["show"])
+            def enable_modification(self):
+                if not context._before_request_can_show:
+                    return make_response("Not found", 404)
+                return None
+
+            @before_request(only=["list"])
+            def list_enabled(self):
+                if not context._before_request_can_list:
+                    return make_response("Not found", 404)
+                return None
+
+            @expose("/enabled")
+            def enabled(self):
+                return make_response("Ok", 200)
+
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
         self.appbuilder.add_view(
             Model1ViewWithRedirects, "Model1ViewWithRedirects", category="Model1"
@@ -573,6 +622,8 @@ class MVCTestCase(BaseMVCTestCase):
             PASSWORD_READONLY,
         )
 
+        self.appbuilder.add_view(ModelBeforeRequest, "ModelBeforeRequest")
+
     def tearDown(self):
         self.appbuilder = None
         self.app = None
@@ -583,7 +634,7 @@ class MVCTestCase(BaseMVCTestCase):
         """
             Test views creation and registration
         """
-        self.assertEqual(len(self.appbuilder.baseviews), 36)
+        self.assertEqual(len(self.appbuilder.baseviews), 37)
 
     def test_back(self):
         """
@@ -621,101 +672,6 @@ class MVCTestCase(BaseMVCTestCase):
         rv = client.get("/")
         data = rv.data.decode("utf-8")
         self.assertIn(DEFAULT_INDEX_STRING, data)
-
-    def test_sec_login(self):
-        """
-            Test Security Login, Logout, invalid login, invalid access
-        """
-        client = self.app.test_client()
-
-        # Try to List and Redirect to Login
-        rv = client.get("/model1view/list/")
-        self.assertEqual(rv.status_code, 302)
-        rv = client.get("/model2view/list/")
-        self.assertEqual(rv.status_code, 302)
-
-        # Login and list with admin
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/model1view/list/")
-        self.assertEqual(rv.status_code, 200)
-        rv = client.get("/model2view/list/")
-        self.assertEqual(rv.status_code, 200)
-
-        # Logout and and try to list
-        self.browser_logout(client)
-        rv = client.get("/model1view/list/")
-        self.assertEqual(rv.status_code, 302)
-        rv = client.get("/model2view/list/")
-        self.assertEqual(rv.status_code, 302)
-
-        # Invalid Login
-        rv = self.browser_login(client, USERNAME_ADMIN, "wrong_password")
-        data = rv.data.decode("utf-8")
-        self.assertIn(INVALID_LOGIN_STRING, data)
-
-    def test_auth_builtin_roles(self):
-        """
-            Test Security builtin roles readonly
-        """
-        client = self.app.test_client()
-        self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
-        # Test authorized GET
-        rv = client.get("/model1view/list/")
-        self.assertEqual(rv.status_code, 200)
-        # Test authorized SHOW
-        rv = client.get("/model1view/show/1")
-        self.assertEqual(rv.status_code, 200)
-        # Test unauthorized EDIT
-        rv = client.get("/model1view/edit/1")
-        self.assertEqual(rv.status_code, 302)
-        # Test unauthorized DELETE
-        rv = client.get("/model1view/delete/1")
-        self.assertEqual(rv.status_code, 302)
-
-    def test_sec_reset_password(self):
-        """
-            Test Security reset password
-        """
-        client = self.app.test_client()
-
-        # Try Reset My password
-        rv = client.get("/users/action/resetmypassword/1", follow_redirects=True)
-        # Werkzeug update to 0.15.X sends this action to wrong redirect
-        # Old test was:
-        # data = rv.data.decode("utf-8")
-        # ok_(ACCESS_IS_DENIED in data)
-        self.assertEqual(rv.status_code, 404)
-
-        # Reset My password
-        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/users/action/resetmypassword/1", follow_redirects=True)
-        data = rv.data.decode("utf-8")
-        self.assertIn("Reset Password Form", data)
-        rv = client.post(
-            "/resetmypassword/form",
-            data=dict(password="password", conf_password="password"),
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 200)
-        self.browser_logout(client)
-        self.browser_login(client, USERNAME_ADMIN, "password")
-        rv = client.post(
-            "/resetmypassword/form",
-            data=dict(password=PASSWORD_ADMIN, conf_password=PASSWORD_ADMIN),
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 200)
-
-        # Reset Password Admin
-        rv = client.get("/users/action/resetpasswords/1", follow_redirects=True)
-        data = rv.data.decode("utf-8")
-        self.assertIn("Reset Password Form", data)
-        rv = client.post(
-            "/resetmypassword/form",
-            data=dict(password=PASSWORD_ADMIN, conf_password=PASSWORD_ADMIN),
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 200)
 
     def test_generic_interface(self):
         """
@@ -1708,3 +1664,63 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 1)
+
+    def test_before_request(self):
+        """
+            Test before_request hooks
+        """
+        # All flags are false, so all request should 404.
+        self._before_request_enabled = False
+        self._before_request_can_list = False
+        self._before_request_can_show = False
+
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/list/")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/show/1")
+        self.assertEqual(rv.status_code, 404)
+
+        # /enable is available, but not others
+        self._before_request_enabled = True
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/list/")
+        self.assertEqual(rv.status_code, 404)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 404)
+
+        # Now list is available, but not show
+        self._before_request_enabled = True
+        self._before_request_can_list = True
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 404)
+
+        # Everything is available
+        self._before_request_enabled = True
+        self._before_request_can_list = True
+        self._before_request_can_show = True
+
+        rv = client.get("/modelbeforerequest/enabled")
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)

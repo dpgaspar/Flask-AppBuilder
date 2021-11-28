@@ -47,10 +47,10 @@ setup(
     install_requires=[
         "apispec[yaml]>=3.3, <4",
         "colorama>=0.3.9, <1",
-        "click>=6.7, <8",
+        "click>=6.7, <9",
         "email_validator>=1.0.5, <2",
         "Flask>=0.12, <2",
-        "Flask-Babel>=1, <2",
+        "Flask-Babel>=1, <3",
         "Flask-Login>=0.3, <0.5",
         "Flask-OpenID>=1.2.5, <2",
         # SQLAlchemy 1.4.0 breaks flask-sqlalchemy and sqlalchemy-utils
@@ -61,13 +61,17 @@ setup(
         "jsonschema>=3.0.1, <4",
         "marshmallow>=3, <4",
         "marshmallow-enum>=1.5.1, <2",
-        "marshmallow-sqlalchemy>=0.22.0, <0.24.0",
+        "marshmallow-sqlalchemy>=0.22.0, <0.27.0",
         "python-dateutil>=2.3, <3",
-        "prison>=0.1.3, <1.0.0",
+        "prison>=0.2.1, <1.0.0",
         "PyJWT>=1.7.1, <2.0.0",
         "sqlalchemy-utils>=0.32.21, <1",
+        "WTForms<3.0.0",
     ],
-    extras_require={"jmespath": ["jmespath>=0.9.5"]},
+    extras_require={
+        "jmespath": ["jmespath>=0.9.5"],
+        "oauth": ["Authlib>=0.14, <1.0.0"],
+    },
     tests_require=["nose>=1.0", "mockldap>=0.3.0"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

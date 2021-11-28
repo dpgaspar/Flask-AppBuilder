@@ -78,3 +78,12 @@ Using Postgres
 
     If your using SQLite3, the location of the db is: ./flask_appbuilder/tests/app.db
     You can safely delete it, if you need to delete the fixtures for example.
+
+
+Responsible disclosure of Security Vulnerabilities
+--------------------------------------------------
+
+We want to keep Flask-AppBuilder safe for everyone. If you've discovered a security vulnerability
+please report to danielvazgaspar@gmail.com.
+Reporting security vulnerabilities through the usual GitHub Issues channel
+is not ideal as it will publicize the flaw before a fix can be applied.

@@ -43,7 +43,7 @@ So we can make a request to our method using::
 
     $ curl http://localhost:8080/api/v1/exampleapi/greeting
 
-To override the base route class blueprint, override the ``base_route`` property,
+To override the base route class blueprint, override the ``route_base`` property,
 so on our previous example::
 
     from flask_appbuilder.api import BaseApi, expose
@@ -52,7 +52,7 @@ so on our previous example::
 
     class ExampleApi(BaseApi):
 
-        base_route = '/newapi/v2/nice'
+        route_base = '/newapi/v2/nice'
 
         @expose('/greeting')
         def greeting(self):
