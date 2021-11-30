@@ -4,15 +4,24 @@ import re
 from typing import Any, List, Optional
 from urllib.parse import urlparse
 
+import jwt
 from flask import abort, current_app, flash, g, redirect, request, session, url_for
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
-import jwt
 from werkzeug.security import generate_password_hash
 from werkzeug.wrappers import Response as WerkzeugResponse
 from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
 
+from .._compat import as_unicode
+from ..actions import action
+from ..baseviews import BaseView
+from ..charts.views import DirectByChartView
+from ..fieldwidgets import BS3PasswordFieldWidget
+from ..utils.base import lazy_formatter_gettext
+from ..validators import PasswordComplexityValidator
+from ..views import ModelView, SimpleFormView, expose
+from ..widgets import ListWidget, ShowWidget
 from .decorators import has_access
 from .forms import (
     DynamicForm,
@@ -21,16 +30,6 @@ from .forms import (
     ResetPasswordForm,
     UserInfoEdit,
 )
-from .._compat import as_unicode
-from ..actions import action
-from ..baseviews import BaseView
-from ..charts.views import DirectByChartView
-from ..fieldwidgets import BS3PasswordFieldWidget
-from ..utils.base import lazy_formatter_gettext
-from ..validators import PasswordComplexityValidator
-from ..views import expose, ModelView, SimpleFormView
-from ..widgets import ListWidget, ShowWidget
-
 
 log = logging.getLogger(__name__)
 
@@ -514,7 +513,7 @@ class AuthDBView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            next_url = request.args.get('next', '')
+            next_url = request.args.get("next", "")
             if not next_url:
                 next_url = self.appbuilder.get_url_for_index
             return redirect(next_url)
@@ -539,7 +538,7 @@ class AuthLDAPView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            next_url = request.args.get('next', '')
+            next_url = request.args.get("next", "")
             if not next_url:
                 next_url = self.appbuilder.get_url_for_index
             return redirect(next_url)
