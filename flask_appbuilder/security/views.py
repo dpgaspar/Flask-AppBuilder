@@ -28,7 +28,7 @@ from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
 from ..utils.base import lazy_formatter_gettext
 from ..validators import PasswordComplexityValidator
-from ..views import ModelView, SimpleFormView, expose
+from ..views import expose, ModelView, SimpleFormView
 from ..widgets import ListWidget, ShowWidget
 
 log = logging.getLogger(__name__)
