@@ -4,15 +4,23 @@ import re
 from typing import Any, List, Optional
 from urllib.parse import urlparse
 
-import jwt
 from flask import abort, current_app, flash, g, redirect, request, session, url_for
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
+import jwt
 from werkzeug.security import generate_password_hash
 from werkzeug.wrappers import Response as WerkzeugResponse
 from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
 
+from .decorators import has_access
+from .forms import (
+    DynamicForm,
+    LoginForm_db,
+    LoginForm_oid,
+    ResetPasswordForm,
+    UserInfoEdit,
+)
 from .._compat import as_unicode
 from ..actions import action
 from ..baseviews import BaseView
@@ -22,14 +30,6 @@ from ..utils.base import lazy_formatter_gettext
 from ..validators import PasswordComplexityValidator
 from ..views import ModelView, SimpleFormView, expose
 from ..widgets import ListWidget, ShowWidget
-from .decorators import has_access
-from .forms import (
-    DynamicForm,
-    LoginForm_db,
-    LoginForm_oid,
-    ResetPasswordForm,
-    UserInfoEdit,
-)
 
 log = logging.getLogger(__name__)
 
@@ -589,7 +589,10 @@ class AuthOIDView(AuthView):
                 session.pop("remember_me", None)
 
             login_user(user, remember=remember_me)
-            return redirect(self.appbuilder.get_url_for_index)
+            next_url = request.args.get("next", "")
+            if not next_url:
+                next_url = self.appbuilder.get_url_for_index
+            return redirect(next_url)
 
         return login_handler(self)
 
