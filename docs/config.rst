@@ -202,7 +202,7 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | AUTH_ROLE_PUBLIC                       | Special Role that holds the public         |   No      |
 |                                        | permissions, no authentication needed.     |           |
 +----------------------------------------+--------------------------------------------+-----------+
-| AUTH_STRICT_RESPONSE_CODES             | When True, protected endpoint will return  |   No      |
+| AUTH_STRICT_RESPONSE_CODES             | When True, protected endpoints will return |   No      |
 |                                        | HTTP 403 instead of 401. This option will  |           |
 |                                        | be removed and default to True on the next |           |
 |                                        | major release. defaults to False           |           |

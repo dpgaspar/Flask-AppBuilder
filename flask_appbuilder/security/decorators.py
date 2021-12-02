@@ -189,38 +189,38 @@ def has_access_api(f):
 
 def permission_name(name):
     """
-        Use this decorator to override the name of the permission.
-        has_access will use the methods name has the permission name
-        if you want to override this add this decorator to your methods.
-        This is useful if you want to aggregate methods to permissions
+    Use this decorator to override the name of the permission.
+    has_access will use the methods name has the permission name
+    if you want to override this add this decorator to your methods.
+    This is useful if you want to aggregate methods to permissions
 
-        It will add '_permission_name' attribute to your method
-        that will be inspected by BaseView to collect your view's
-        permissions.
+    It will add '_permission_name' attribute to your method
+    that will be inspected by BaseView to collect your view's
+    permissions.
 
-        Note that you should use @has_access to execute after @permission_name
-        like on the following example.
+    Note that you should use @has_access to execute after @permission_name
+    like on the following example.
 
-        Use it like this to aggregate permissions for your methods::
+    Use it like this to aggregate permissions for your methods::
 
-            class MyModelView(ModelView):
-                datamodel = SQLAInterface(MyModel)
+        class MyModelView(ModelView):
+            datamodel = SQLAInterface(MyModel)
 
-                @has_access
-                @permission_name('GeneralXPTO_Permission')
-                @expose(url='/xpto')
-                def xpto(self):
-                    return "Your on xpto"
+            @has_access
+            @permission_name('GeneralXPTO_Permission')
+            @expose(url='/xpto')
+            def xpto(self):
+                return "Your on xpto"
 
-                @has_access
-                @permission_name('GeneralXPTO_Permission')
-                @expose(url='/xpto2')
-                def xpto2(self):
-                    return "Your on xpto2"
+            @has_access
+            @permission_name('GeneralXPTO_Permission')
+            @expose(url='/xpto2')
+            def xpto2(self):
+                return "Your on xpto2"
 
 
-        :param name:
-            The name of the permission to override
+    :param name:
+        The name of the permission to override
     """
 
     def wraps(f):
