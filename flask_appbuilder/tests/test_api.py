@@ -601,8 +601,15 @@ class APITestCase(FABTestCase):
         # Test unauthorized DELETE
         pk = 1
         uri = f"api/v1/model1apirestrictedpermissions/{pk}"
+
+        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 403)
+
+        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 401)
+
         # Test unauthorized POST
         item = dict(
             field_string="test{}".format(MODEL1_DATA_SIZE + 1),
@@ -611,8 +618,14 @@ class APITestCase(FABTestCase):
             field_date=None,
         )
         uri = "api/v1/model1apirestrictedpermissions/"
+
+        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
+        rv = self.auth_client_post(client, token, uri, item)
+        self.assertEqual(rv.status_code, 403)
+        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 401)
+
         # Test authorized GET
         uri = f"api/v1/model1apirestrictedpermissions/{pk}"
         rv = self.auth_client_get(client, token, uri)
