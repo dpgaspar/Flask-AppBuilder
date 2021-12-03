@@ -26,15 +26,11 @@ class FABTestCase(unittest.TestCase):
 
     @staticmethod
     def auth_client_put(client, token, uri, json):
-        return client.put(
-            uri, json=json, headers={"Authorization": f"Bearer {token}"}
-        )
+        return client.put(uri, json=json, headers={"Authorization": f"Bearer {token}"})
 
     @staticmethod
     def auth_client_post(client, token, uri, json):
-        return client.post(
-            uri, json=json, headers={"Authorization": f"Bearer {token}"}
-        )
+        return client.post(uri, json=json, headers={"Authorization": f"Bearer {token}"})
 
     @staticmethod
     def _login(client, username, password, refresh: bool = False):
