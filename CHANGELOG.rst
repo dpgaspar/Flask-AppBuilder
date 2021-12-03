@@ -1,6 +1,17 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.4.1
+-----------------------------------
+
+- fix: optional unauthorized status codes (#1753) [Daniel Vaz Gaspar]
+- docs: Fix indentation of function content (#1752) [akettmann-e24]
+- fix: optionally return HTTP 403 instead of 401 when unauthorized (#1748) [Daniel Vaz Gaspar]
+- chore: Redirect to prev url on login (#1747) [Geido]
+- docs: add aws cognito setup code examples (#1746) [Pin Jin]
+- fix: Added sr-only class to icon only links (#1727) [Thomas Stivers]
+- chore: [Deprecation] Use Markup instead of HTMLString (#1729) [Andrey Polegoshko]
+
 Improvements and Bug fixes on 3.4.0
 -----------------------------------
 
