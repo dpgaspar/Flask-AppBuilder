@@ -30,8 +30,23 @@ if TYPE_CHECKING:
 
 def response_unauthorized(base_class: "BaseApi") -> Response:
     if current_app.config.get("AUTH_STRICT_RESPONSE_CODES", False):
-        return base_class.response_403()
+        if current_app.sm.current_user:
+            return base_class.response_403()
     return base_class.response_401()
+
+
+def response_unauthorized_mvc() -> Response:
+    status_code = 401
+    if current_app.sm.current_user and current_app.config.get(
+        "AUTH_STRICT_RESPONSE_CODES", False
+    ):
+        status_code = 403
+    response = make_response(
+        jsonify({"message": str(FLAMSG_ERR_SEC_ACCESS_DENIED), "severity": "danger"}),
+        status_code,
+    )
+    response.headers["Content-Type"] = "application/json"
+    return response
 
 
 def protect(allow_browser_login=False):
@@ -174,14 +189,7 @@ def has_access_api(f):
                     permission_str, self.__class__.__name__
                 )
             )
-            response = make_response(
-                jsonify(
-                    {"message": str(FLAMSG_ERR_SEC_ACCESS_DENIED), "severity": "danger"}
-                ),
-                403,
-            )
-            response.headers["Content-Type"] = "application/json"
-            return response
+            return response_unauthorized_mvc()
 
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
