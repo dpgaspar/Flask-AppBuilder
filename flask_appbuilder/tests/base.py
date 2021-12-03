@@ -18,22 +18,22 @@ import jinja2
 class FABTestCase(unittest.TestCase):
     @staticmethod
     def auth_client_get(client, token, uri):
-        return client.get(uri, headers={"Authorization": "Bearer {}".format(token)})
+        return client.get(uri, headers={"Authorization": f"Bearer {token}"})
 
     @staticmethod
     def auth_client_delete(client, token, uri):
-        return client.delete(uri, headers={"Authorization": "Bearer {}".format(token)})
+        return client.delete(uri, headers={"Authorization": f"Bearer {token}"})
 
     @staticmethod
     def auth_client_put(client, token, uri, json):
         return client.put(
-            uri, json=json, headers={"Authorization": "Bearer {}".format(token)}
+            uri, json=json, headers={"Authorization": f"Bearer {token}"}
         )
 
     @staticmethod
     def auth_client_post(client, token, uri, json):
         return client.post(
-            uri, json=json, headers={"Authorization": "Bearer {}".format(token)}
+            uri, json=json, headers={"Authorization": f"Bearer {token}"}
         )
 
     @staticmethod
