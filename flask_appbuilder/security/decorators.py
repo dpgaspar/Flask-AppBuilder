@@ -34,6 +34,20 @@ def response_unauthorized(base_class: "BaseApi") -> Response:
     return base_class.response_401()
 
 
+def response_unauthorized_mvc() -> Response:
+    status_code = 401
+    if current_app.appbuilder.sm.current_user and current_app.config.get(
+        "AUTH_STRICT_RESPONSE_CODES", False
+    ):
+        status_code = 403
+    response = make_response(
+        jsonify({"message": str(FLAMSG_ERR_SEC_ACCESS_DENIED), "severity": "danger"}),
+        status_code,
+    )
+    response.headers["Content-Type"] = "application/json"
+    return response
+
+
 def protect(allow_browser_login=False):
     """
     Use this decorator to enable granular security permissions
@@ -72,19 +86,25 @@ def protect(allow_browser_login=False):
                 if _permission_name:
                     permission_str = f"{PERMISSION_PREFIX}{_permission_name}"
             class_permission_name = self.class_permission_name
+            # Check if permission is allowed on the class
             if permission_str not in self.base_permissions:
                 return response_unauthorized(self)
+            # Check if the resource is public
             if current_app.appbuilder.sm.is_item_public(
                 permission_str, class_permission_name
             ):
                 return f(self, *args, **kwargs)
+            # if no browser login then verify JWT
             if not (self.allow_browser_login or allow_browser_login):
                 verify_jwt_in_request()
+            # Verify resource access
             if current_app.appbuilder.sm.has_access(
                 permission_str, class_permission_name
             ):
                 return f(self, *args, **kwargs)
+            # If browser login?
             elif self.allow_browser_login or allow_browser_login:
+                # no session cookie (but we allow it), then try JWT
                 if not current_user.is_authenticated:
                     verify_jwt_in_request()
                 if current_app.appbuilder.sm.has_access(
@@ -174,14 +194,7 @@ def has_access_api(f):
                     permission_str, self.__class__.__name__
                 )
             )
-            response = make_response(
-                jsonify(
-                    {"message": str(FLAMSG_ERR_SEC_ACCESS_DENIED), "severity": "danger"}
-                ),
-                403,
-            )
-            response.headers["Content-Type"] = "application/json"
-            return response
+            return response_unauthorized_mvc()
 
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
