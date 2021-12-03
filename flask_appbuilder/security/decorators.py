@@ -30,14 +30,14 @@ if TYPE_CHECKING:
 
 def response_unauthorized(base_class: "BaseApi") -> Response:
     if current_app.config.get("AUTH_STRICT_RESPONSE_CODES", False):
-        if current_app.sm.current_user:
+        if current_app.appbuilder.sm.current_user:
             return base_class.response_403()
     return base_class.response_401()
 
 
 def response_unauthorized_mvc() -> Response:
     status_code = 401
-    if current_app.sm.current_user and current_app.config.get(
+    if current_app.appbuilder.sm.current_user and current_app.config.get(
         "AUTH_STRICT_RESPONSE_CODES", False
     ):
         status_code = 403
