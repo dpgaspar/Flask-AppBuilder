@@ -86,19 +86,25 @@ def protect(allow_browser_login=False):
                 if _permission_name:
                     permission_str = f"{PERMISSION_PREFIX}{_permission_name}"
             class_permission_name = self.class_permission_name
+            # Check if permission is allowed on the class
             if permission_str not in self.base_permissions:
                 return response_unauthorized(self)
+            # Check if the resource is public
             if current_app.appbuilder.sm.is_item_public(
                 permission_str, class_permission_name
             ):
                 return f(self, *args, **kwargs)
+            # if no browser login then verify JWT
             if not (self.allow_browser_login or allow_browser_login):
                 verify_jwt_in_request()
+            # Verify resource access
             if current_app.appbuilder.sm.has_access(
                 permission_str, class_permission_name
             ):
                 return f(self, *args, **kwargs)
+            # If browser login?
             elif self.allow_browser_login or allow_browser_login:
+                # no session cookie (but we allow it), then try JWT
                 if not current_user.is_authenticated:
                     verify_jwt_in_request()
                 if current_app.appbuilder.sm.has_access(
