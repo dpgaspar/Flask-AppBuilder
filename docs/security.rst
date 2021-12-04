@@ -661,11 +661,11 @@ Example on your config::
     ...
 
     def custom_password_validator(password: str) -> None:
-    """
-    A simplistic example for a password validator
-    """
-    if len(password) < 8:
-        raise PasswordComplexityValidationError("Must have at least 8 characters")
+        """
+        A simplistic example for a password validator
+        """
+        if len(password) < 8:
+            raise PasswordComplexityValidationError("Must have at least 8 characters")
 
     FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
     FAB_PASSWORD_COMPLEXITY_ENABLED = True

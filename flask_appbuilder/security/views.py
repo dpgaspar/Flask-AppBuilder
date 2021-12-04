@@ -31,7 +31,6 @@ from ..validators import PasswordComplexityValidator
 from ..views import expose, ModelView, SimpleFormView
 from ..widgets import ListWidget, ShowWidget
 
-
 log = logging.getLogger(__name__)
 
 
@@ -518,7 +517,10 @@ class AuthDBView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            return redirect(self.appbuilder.get_url_for_index)
+            next_url = request.args.get("next", "")
+            if not next_url:
+                next_url = self.appbuilder.get_url_for_index
+            return redirect(next_url)
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -540,7 +542,10 @@ class AuthLDAPView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            return redirect(self.appbuilder.get_url_for_index)
+            next_url = request.args.get("next", "")
+            if not next_url:
+                next_url = self.appbuilder.get_url_for_index
+            return redirect(next_url)
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -588,7 +593,10 @@ class AuthOIDView(AuthView):
                 session.pop("remember_me", None)
 
             login_user(user, remember=remember_me)
-            return redirect(self.appbuilder.get_url_for_index)
+            next_url = request.args.get("next", "")
+            if not next_url:
+                next_url = self.appbuilder.get_url_for_index
+            return redirect(next_url)
 
         return login_handler(self)
 
