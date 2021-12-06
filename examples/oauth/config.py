@@ -77,7 +77,7 @@ OAUTH_PROVIDERS = [
             "client_secret": os.environ.get("AZURE_SECRET"),
             "api_base_url": "https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2",
             "client_kwargs": {
-                "scope": "User.read name preferred_username email profile upn",
+                "scope": "User.read name preferred_username email profile upn groups openid",
                 "resource": os.environ.get("AZURE_APPLICATION_ID"),
             },
             "request_token_url": None,
