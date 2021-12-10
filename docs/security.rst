@@ -201,7 +201,8 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 'access_token_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/token',
                 'authorize_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/authorize',
                 'token_endpoint_auth_method':'client_secret_post'}
-        },{'name': 'okta', 'icon': 'fa-circle-o',
+        },
+        {'name': 'okta', 'icon': 'fa-circle-o',
             'token_key': 'access_token',
             'remote_app': {
                 'client_id': 'OKTA_KEY',
@@ -212,6 +213,18 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 },
                 'access_token_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/token',
                 'authorize_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize',
+        },
+        {'name': 'aws_cognito', 'icon': 'fa-amazon',
+            'token_key': 'access_token',
+            'remote_app': {
+                'client_id': 'COGNITO_CLIENT_ID',
+                'client_secret': 'COGNITO_CLIENT_SECRET',
+                'api_base_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/',
+                'client_kwargs': {
+                    'scope': 'openid email aws.cognito.signin.user.admin'
+                },
+                'access_token_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/token',
+                'authorize_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize',
         }
     ]
 
@@ -259,6 +272,16 @@ To customize the userinfo retrieval, you can create your own method like this::
                 "last_name": me.data.get("family_name", ""),
                 "email": me.data.get("email", ""),
                 "role_keys": me.data.get("groups", []),
+            }
+        if provider == "aws_cognito":
+            me = self.appbuilder.sm.oauth_remotes[provider].get("userInfo")
+            return {
+                "username": me.json().get("username"),
+                "email": me.json().get("email"),
+                "first_name": me.json().get("given_name", ""),
+                "last_name": me.json().get("family_name", ""),
+                "id": me.json().get("sub", ""),
+                "role_keys": ["User"], # set AUTH_ROLES_SYNC_AT_LOGIN = False
             }
         else:
             return {}
@@ -638,11 +661,11 @@ Example on your config::
     ...
 
     def custom_password_validator(password: str) -> None:
-    """
-    A simplistic example for a password validator
-    """
-    if len(password) < 8:
-        raise PasswordComplexityValidationError("Must have at least 8 characters")
+        """
+        A simplistic example for a password validator
+        """
+        if len(password) < 8:
+            raise PasswordComplexityValidationError("Must have at least 8 characters")
 
     FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
     FAB_PASSWORD_COMPLEXITY_ENABLED = True
