@@ -738,7 +738,7 @@ First extend the User Model (create a sec_models.py file)::
         extra = Column(String(256))
 
 
-Next define a new User view, just like the default User view but with the extra column (create a sec_view.py)
+Next define a new User view, just like the default User view but with the extra column (create a sec_views.py)
 If you're using:
 
 :AUTH_DB: Extend UserDBModelView
@@ -750,7 +750,7 @@ If you're using:
 So using AUTH_DB::
 
     from flask_appbuilder.security.views import UserDBModelView
-    from flask_babelpkg import lazy_gettext
+    from flask_babel import lazy_gettext
 
     class MyUserDBModelView(UserDBModelView):
         """

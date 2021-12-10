@@ -2,7 +2,7 @@ AddOn development
 =================
 
 Using AddOn's with the framework it is a great way to develop your application
-and make public openSource contributions to the community.
+and make public open source contributions to the community.
 
 With it you can use a more modular design on your application, you can add functionality,
 views and models that you can build independently and install or uninstall (using different versions).
@@ -48,7 +48,7 @@ A very simple manager would look something like this::
    import logging
 
    from flask_appbuilder.basemanager import BaseManager
-   from flask_babelpkg import lazy_gettext as _
+   from flask_babel import lazy_gettext as _
 
    from .model import MyModel
    from .views import FirstModelView1

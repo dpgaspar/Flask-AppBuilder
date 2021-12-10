@@ -30,7 +30,7 @@ class SendTweet(SimpleFormView):
 
 
 """
-Example of an decorator to override the OAuth provider information getter
+Example of a decorator to override the OAuth provider information getter
 
 @appbuilder.sm.oauth_user_info_getter
 def get_oauth_user_info(sm, provider, response=None):
