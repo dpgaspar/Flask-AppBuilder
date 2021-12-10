@@ -244,7 +244,7 @@ This needs a small explanation, you basically have five special keys:
 
 You can give FlaskAppBuilder roles based on Oauth groups::
 
-    # note, this is only natively supported in `okta` currently,
+    # note, this is only natively supported in `azure` and `okta` currently,
     # however, if you customize userinfo retrieval to include 'role_keys', this will work for other providers
 
     # a mapping from the values of `userinfo["role_keys"]` to a list of FAB roles
