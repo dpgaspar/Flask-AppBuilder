@@ -311,7 +311,7 @@ class UserDBModelView(UserModelView):
             description=lazy_gettext("Please rewrite the user's password to confirm"),
             validators=[
                 validators.DataRequired(),
-                EqualTo("password", message=lazy_gettext("Passwords must match"))
+                EqualTo("password", message=lazy_gettext("Passwords must match")),
             ],
             widget=BS3PasswordFieldWidget(),
         ),
@@ -328,7 +328,7 @@ class UserDBModelView(UserModelView):
         "conf_password",
     ]
 
-    validators_columns = {"roles" : [validators.DataRequired()]}
+    validators_columns = {"roles": [validators.DataRequired()]}
 
     @expose("/show/<pk>", methods=["GET"])
     @has_access
