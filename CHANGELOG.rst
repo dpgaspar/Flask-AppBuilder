@@ -1,6 +1,20 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.4.1
+-----------------------------------
+
+- feat: Adding role_keys into Azure OAuth (#1744) [Michael Yee]
+- docs: Fix small documentation issues (#1755) [Dosenpfand]
+- fix: 1154 Add LOGOUT_REDIRECT_URL setting (#1749) [blag]
+- fix: optional unauthorized status codes (#1753) [Daniel Vaz Gaspar]
+- docs: Fix indentation of function content (#1752) [akettmann-e24]
+- fix: optionally return HTTP 403 instead of 401 when unauthorized (#1748) [Daniel Vaz Gaspar]
+- chore: Redirect to prev url on login (#1747) [Geido]
+- docs: add aws cognito setup code examples (#1746) [Pin Jin]
+- fix: Added sr-only class to icon only links (#1727) [Thomas Stivers]
+- chore: [Deprecation] Use Markup instead of HTMLString (#1729) [Andrey Polegoshko]
+
 Improvements and Bug fixes on 3.4.0
 -----------------------------------
 
