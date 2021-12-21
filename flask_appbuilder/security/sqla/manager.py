@@ -4,7 +4,7 @@ import logging
 from typing import List, Optional
 import uuid
 
-from sqlalchemy import and_, func, literal
+from sqlalchemy import and_, func, literal, update
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
@@ -234,6 +234,18 @@ class SecurityManager(BaseSecurityManager):
 
     def get_user_by_id(self, pk):
         return self.get_session.query(self.user_model).get(pk)
+
+    def get_first_user(self) -> "User":
+        return self.get_session.query(self.user_model).first()
+
+    def noop_user_update(self, user: "User") -> None:
+        stmt = (
+            update(User)
+            .where(self.user_model.id == user.id)
+            .values(login_count=user.login_count)
+        )
+        self.get_session.execute(stmt)
+        self.get_session.commit()
 
     """
     -----------------------
