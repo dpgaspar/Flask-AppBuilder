@@ -265,9 +265,4 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertNotIn("Added Row", data)
         self.assertIn("This field is required", data)
-
-        # rv = client.post(
-        #     "/users/delete/2",
-        #     follow_redirects=True,
-        # )
         self.browser_logout(client)
