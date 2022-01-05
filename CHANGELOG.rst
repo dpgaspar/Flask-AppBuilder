@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.4.2
+-----------------------------------
+
+- chore: Use assertEqual instead of assertEquals for Python 3.11 compatibility (#1763) [Karthikeyan Singaravelan]
+- chore: improve code quality and balance (#1761) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 3.4.1
 -----------------------------------
 
