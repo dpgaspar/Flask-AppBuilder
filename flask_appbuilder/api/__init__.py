@@ -491,9 +491,7 @@ class BaseApi(object):
         self.resource_name = self.resource_name or self.__class__.__name__.lower()
 
         if self.route_base is None:
-            self.route_base = "/api/{}/{}".format(
-                self.version, self.resource_name.lower()
-            )
+            self.route_base = f"/api/{self.version}/{self.resource_name.lower()}"
         self.blueprint = Blueprint(self.endpoint, __name__, url_prefix=self.route_base)
         # Exempt API from CSRF protect
         if self.csrf_exempt:
@@ -591,7 +589,7 @@ class BaseApi(object):
         """
         RE_URL = re.compile(r"<(?:[^:<>]+:)?([^<>]+)>")
         path = RE_URL.sub(r"{\1}", path)
-        return f"/{self.resource_name}{path}"
+        return f"{self.route_base}{path}"
 
     def operation_helper(
         self, path=None, operations=None, methods=None, func=None, **kwargs
