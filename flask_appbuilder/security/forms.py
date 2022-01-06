@@ -8,6 +8,19 @@ from ..forms import DynamicForm
 from ..validators import PasswordComplexityValidator
 
 
+class SelectDataRequired(DataRequired):
+    """
+    Select required flag on the input field will not work well on Chrome
+    Console error:
+        An invalid form control with name='roles' is not focusable.
+
+    This makes a simple override to the DataRequired to be used specifically with
+    select fields
+    """
+
+    field_flags = ()
+
+
 class LoginForm_oid(DynamicForm):
     openid = StringField(lazy_gettext("OpenID"), validators=[DataRequired()])
     username = StringField(lazy_gettext("User Name"))
