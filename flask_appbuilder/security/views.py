@@ -656,7 +656,12 @@ class AuthOAuthView(AuthView):
             flash(u"Provider not supported.", "warning")
             log.warning("OAuth authorized got an unknown provider %s", provider)
             return redirect(self.appbuilder.get_url_for_login)
-        resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token()
+        try:
+            resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token()
+        except Exception as e:
+            log.error("Error authorizing OAuth access token: {0}".format(e))
+            flash(u"The request to sign in was denied.", "error")
+            return redirect(self.appbuilder.get_url_for_login)
         if resp is None:
             flash(u"You denied the request to sign in.", "warning")
             return redirect(self.appbuilder.get_url_for_login)

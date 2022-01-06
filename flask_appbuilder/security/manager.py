@@ -622,7 +622,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "last_name": me.get("family_name", ""),
                 "id": me["oid"],
                 "username": me["oid"],
-                "role_keys": data.get("roles", []),
+                "role_keys": me.get("roles", []),
             }
         # for OpenShift
         if provider == "openshift":
