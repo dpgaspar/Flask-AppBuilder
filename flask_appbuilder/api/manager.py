@@ -95,7 +95,7 @@ class SwaggerView(BaseView):
 
 class OpenApiManager(BaseManager):
     def register_views(self):
-        if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEWS", True):
+        if not self.appbuilder.app.config.get("FAB_ADD_OPENAPI_VIEWS", True):
             return
         if self.appbuilder.get_app.config.get("FAB_API_SWAGGER_UI", False):
             self.appbuilder.add_api(OpenApi)
