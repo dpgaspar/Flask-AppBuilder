@@ -3,7 +3,7 @@ import json
 import logging
 import re
 import traceback
-from typing import Callable, Dict, List, Optional, Set
+from typing import Callable, Dict, List, Optional, Set, Tuple, Type
 import urllib.parse
 
 from apispec import APISpec, yaml_utils
@@ -294,6 +294,22 @@ class BaseApi(object):
     """
     _apispec_parameter_schemas = None
 
+    openapi_spec_component_schemas: Tuple[Type[Schema], ...] = tuple()
+    """
+    A Tuple containing marshmallow schemas to be registered on the OpenAPI spec
+    has component schemas, these can be referenced by the endpoint's spec like:
+    `$ref: '#/components/schemas/MyCustomSchema'` Where MyCustomSchema is the
+    marshmallow schema class name.
+
+    To set your own OpenAPI schema component name, declare your schemas with:
+    __component_name__
+
+    class Schema1(Schema):
+        __component_name__ = "MyCustomSchema"
+        id = fields.Integer()
+        ...
+
+    """
     responses = {
         "400": {
             "description": "Bad request",
@@ -425,6 +441,8 @@ class BaseApi(object):
         self.apispec_parameter_schemas = self.apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas = self._apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas.update(self.apispec_parameter_schemas)
+        if self.openapi_spec_component_schemas is None:
+            self.openapi_spec_component_schemas = ()
 
         # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
@@ -521,6 +539,17 @@ class BaseApi(object):
                 api_spec.components.schema(k, v)
             except DuplicateComponentNameError:
                 pass
+        for schema in self.openapi_spec_component_schemas:
+            try:
+                if hasattr(schema, "__component_name__"):
+                    component_name = schema.__component_name__
+                elif isinstance(schema, type):
+                    component_name = schema.__name__
+                else:
+                    component_name = schema.__class__.__name__
+                api_spec.components.schema(component_name, schema=schema)
+            except DuplicateComponentNameError:
+                pass
 
     def _register_urls(self) -> None:
         before_request_hooks = get_before_request_hooks(self)
@@ -569,7 +598,7 @@ class BaseApi(object):
     ):
         """May mutate operations.
         :param str path: Path to the resource
-        :param dict operations: A `dict` mapping HTTP methods to operation object. See
+        :param dict operations: A `dict` mapping HTTP methods to operation object.
         :param list methods: A list of methods registered for this path
         """
         for method in methods:
