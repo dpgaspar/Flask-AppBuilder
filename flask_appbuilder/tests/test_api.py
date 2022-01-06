@@ -143,7 +143,7 @@ class APIDisableOpenApiViewTestCase(FABTestCase):
 
     def test_disabled_security_views(self):
         """
-        REST Api: Test disabled security views
+        REST Api: Test disabled OpenApi views
         """
         for rule in self.appbuilder.get_app.url_map.iter_rules():
             self.assertNotIn(rule.endpoint, self.openapi_fab_endpoint)
