@@ -103,7 +103,7 @@ class APIDisableSecViewTestCase(FABTestCase):
         "LocaleView.index",
         "UtilView.back",
         "MenuApi.get_menu_data",
-        "OpenApi.get"
+        "OpenApi.get",
     ]
 
     def setUp(self):
