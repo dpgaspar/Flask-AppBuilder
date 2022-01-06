@@ -103,6 +103,7 @@ class APIDisableSecViewTestCase(FABTestCase):
         "LocaleView.index",
         "UtilView.back",
         "MenuApi.get_menu_data",
+        "OpenApi.get"
     ]
 
     def setUp(self):
@@ -118,7 +119,7 @@ class APIDisableSecViewTestCase(FABTestCase):
 
     def test_disabled_security_views(self):
         """
-            REST Api: Test disabled security views
+        REST Api: Test disabled security views
         """
         for rule in self.appbuilder.get_app.url_map.iter_rules():
             self.assertIn(rule.endpoint, self.base_fab_endpoint)
