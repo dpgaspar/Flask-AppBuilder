@@ -19,6 +19,7 @@ from .forms import (
     LoginForm_db,
     LoginForm_oid,
     ResetPasswordForm,
+    SelectDataRequired,
     UserInfoEdit,
 )
 from .._compat import as_unicode
@@ -328,7 +329,7 @@ class UserDBModelView(UserModelView):
         "conf_password",
     ]
 
-    validators_columns = {"roles": [validators.DataRequired()]}
+    validators_columns = {"roles": [SelectDataRequired()]}
 
     @expose("/show/<pk>", methods=["GET"])
     @has_access
