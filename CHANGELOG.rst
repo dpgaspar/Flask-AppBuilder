@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.4.3
+-----------------------------------
+
+- fix: openapi on and off config flag (#1770) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 3.4.2
 -----------------------------------
 
