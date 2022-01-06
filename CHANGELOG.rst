@@ -8,6 +8,7 @@ Improvements and Bug fixes on 3.4.3
 - fix: data not defined in azure oauth (#1769) [Dalton Pearson]
 - fix: Handle authorize_access_token exception (#1766) [Michał Konarski]
 - fix: Set role and confirm password while adding user mandatory (#1758) [Mayur]
+- fix: required roles on user form not showing error msg (#1772) [Daniel Vaz Gaspar]
 
 Improvements and Bug fixes on 3.4.2
 -----------------------------------
