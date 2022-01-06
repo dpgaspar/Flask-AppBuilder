@@ -103,6 +103,8 @@ class APIDisableSecViewTestCase(FABTestCase):
         "LocaleView.index",
         "UtilView.back",
         "MenuApi.get_menu_data",
+        "OpenApi.get",
+        "SwaggerView.show",
     ]
 
     def setUp(self):
@@ -118,10 +120,33 @@ class APIDisableSecViewTestCase(FABTestCase):
 
     def test_disabled_security_views(self):
         """
-            REST Api: Test disabled security views
+        REST Api: Test disabled security views
         """
         for rule in self.appbuilder.get_app.url_map.iter_rules():
             self.assertIn(rule.endpoint, self.base_fab_endpoint)
+
+
+class APIDisableOpenApiViewTestCase(FABTestCase):
+
+    openapi_fab_endpoint = ["OpenApi.get", "SwaggerView.show"]
+
+    def setUp(self):
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+
+        self.app = Flask(__name__)
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config["FAB_ADD_OPENAPI_VIEWS"] = False
+
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+    def test_disabled_security_views(self):
+        """
+        REST Api: Test disabled OpenApi views
+        """
+        for rule in self.appbuilder.get_app.url_map.iter_rules():
+            self.assertNotIn(rule.endpoint, self.openapi_fab_endpoint)
 
 
 class APITestCase(FABTestCase):
