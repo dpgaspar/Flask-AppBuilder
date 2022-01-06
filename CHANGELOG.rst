@@ -7,6 +7,7 @@ Improvements and Bug fixes on 3.4.3
 - fix: openapi on and off config flag (#1770) [Daniel Vaz Gaspar]
 - fix: data not defined in azure oauth (#1769) [Dalton Pearson]
 - fix: Handle authorize_access_token exception (#1766) [Michał Konarski]
+- fix: Set role and confirm password while adding user mandatory (#1758) [Mayur]
 
 Improvements and Bug fixes on 3.4.2
 -----------------------------------
