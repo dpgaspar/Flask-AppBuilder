@@ -277,6 +277,10 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | FAB_ADD_OPENAPI_VIEWS                  | Enables or disables registering all        |           |
 |                                        | OPENAPI views (boolean default:True)       |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
+| FAB_OPENAPI_SERVERS                    | Used for setting OpenApi Swagger UI        |           |
+|                                        | servers if not set Swagger will use the    |           |
+|                                        | current request host URL                   |   No      |
++----------------------------------------+--------------------------------------------+-----------+
 | FAB_ROLES                              | Configure builtin roles see Security       |           |
 |                                        | chapter for further detail                 |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
