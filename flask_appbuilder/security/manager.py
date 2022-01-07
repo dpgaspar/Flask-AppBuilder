@@ -833,10 +833,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             user.fail_login_count = 0
         if success:
             user.login_count += 1
+            user.last_login = datetime.datetime.now()
             user.fail_login_count = 0
         else:
             user.fail_login_count += 1
-        user.last_login = datetime.datetime.now()
         self.update_user(user)
 
     def auth_user_db(self, username, password):
