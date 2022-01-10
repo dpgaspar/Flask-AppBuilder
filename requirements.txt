@@ -55,7 +55,7 @@ jinja2==2.11.3
     # via
     #   flask
     #   flask-babel
-jsonschema==4.0.0
+jsonschema==3.2.0
     # via Flask-AppBuilder (setup.py)
 markupsafe==2.0.1
     # via
@@ -63,7 +63,6 @@ markupsafe==2.0.1
     #   wtforms
 marshmallow==3.13.0
     # via
-    #   Flask-AppBuilder (setup.py)
     #   marshmallow-enum
     #   marshmallow-sqlalchemy
 marshmallow-enum==1.5.1
@@ -91,6 +90,7 @@ pyyaml==5.4.1
 six==1.16.0
     # via
     #   flask-jwt-extended
+    #   jsonschema
     #   prison
     #   python-dateutil
     #   sqlalchemy-utils
@@ -114,3 +114,6 @@ wtforms==2.3.3
     #   flask-wtf
 zipp==3.5.0
     # via importlib-metadata
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
