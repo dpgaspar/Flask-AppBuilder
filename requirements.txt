@@ -63,6 +63,7 @@ markupsafe==2.0.1
     #   wtforms
 marshmallow==3.13.0
     # via
+    #   Flask-AppBuilder (setup.py)
     #   marshmallow-enum
     #   marshmallow-sqlalchemy
 marshmallow-enum==1.5.1
