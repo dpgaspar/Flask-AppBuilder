@@ -88,7 +88,7 @@ class SecurityManager(BaseSecurityManager):
 
     def create_db(self):
         try:
-            engine = self.get_session.get_bind(mapper=None, clause=None)
+            engine = self.get_session.get_bind()
             inspector = Inspector.from_engine(engine)
             if "ab_user" not in inspector.get_table_names():
                 log.info(c.LOGMSG_INF_SEC_NO_DB)

@@ -654,7 +654,7 @@ class MVCTestCase(BaseMVCTestCase):
         """
         from sqlalchemy.engine.reflection import Inspector
 
-        engine = self.db.session.get_bind(mapper=None, clause=None)
+        engine = self.db.session.get_bind()
         inspector = Inspector.from_engine(engine)
         # Check if tables exist
         self.assertIn("model1", inspector.get_table_names())

@@ -450,7 +450,7 @@ class APITestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder.get_session.close()
-        engine = self.db.session.get_bind(mapper=None, clause=None)
+        engine = self.db.session.get_bind()
         engine.dispose()
 
     def test_babel(self):
