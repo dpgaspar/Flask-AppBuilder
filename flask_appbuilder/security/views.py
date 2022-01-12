@@ -510,8 +510,11 @@ class AuthDBView(AuthView):
 
     @expose("/login/", methods=["GET", "POST"])
     def login(self):
+        next_url = request.args.get("next", "")
+        if not next_url:
+            next_url = self.appbuilder.get_url_for_index
         if g.user is not None and g.user.is_authenticated:
-            return redirect(self.appbuilder.get_url_for_index)
+            return redirect(next_url)
         form = LoginForm_db()
         if form.validate_on_submit():
             user = self.appbuilder.sm.auth_user_db(
@@ -521,9 +524,6 @@ class AuthDBView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            next_url = request.args.get("next", "")
-            if not next_url:
-                next_url = self.appbuilder.get_url_for_index
             return redirect(next_url)
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
@@ -535,8 +535,11 @@ class AuthLDAPView(AuthView):
 
     @expose("/login/", methods=["GET", "POST"])
     def login(self):
+        next_url = request.args.get("next", "")
+        if not next_url:
+            next_url = self.appbuilder.get_url_for_index
         if g.user is not None and g.user.is_authenticated:
-            return redirect(self.appbuilder.get_url_for_index)
+            return redirect(next_url)
         form = LoginForm_db()
         if form.validate_on_submit():
             user = self.appbuilder.sm.auth_user_ldap(
@@ -546,9 +549,6 @@ class AuthLDAPView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            next_url = request.args.get("next", "")
-            if not next_url:
-                next_url = self.appbuilder.get_url_for_index
             return redirect(next_url)
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
@@ -565,7 +565,10 @@ class AuthOIDView(AuthView):
         @self.appbuilder.sm.oid.loginhandler
         def login_handler(self):
             if g.user is not None and g.user.is_authenticated:
-                return redirect(self.appbuilder.get_url_for_index)
+                next_url = request.args.get("next", "")
+                if not next_url:
+                    next_url = self.appbuilder.get_url_for_index
+                return redirect(next_url)
             form = LoginForm_oid()
             if form.validate_on_submit():
                 session["remember_me"] = form.remember_me.data
