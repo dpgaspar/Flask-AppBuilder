@@ -57,7 +57,7 @@ jinja2==2.11.3
     # via
     #   flask
     #   flask-babel
-jsonschema==4.4.0
+jsonschema==4.0.0
     # via Flask-AppBuilder (setup.py)
 markupsafe==2.0.1
     # via
