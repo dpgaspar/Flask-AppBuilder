@@ -189,8 +189,9 @@ class ListFilterTestCase(BaseMVCTestCase):
         with self.app.test_client() as c:
             self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-            #  Two filters, with no matches
-            rv = c.get("/users/list/?_flt_5_email=a&_flt_5_email=g")
+            #  Two filters, with no matches (email ends with neither 'm' nor 'g')
+            #  Another email address added to the database could make this test fail.
+            rv = c.get("/users/list/?_flt_5_email=m&_flt_5_email=g")
             self.assertEqual(rv.status_code, 200)
             data = rv.data.decode("utf-8")
             self.assertIn("No records found", data)
