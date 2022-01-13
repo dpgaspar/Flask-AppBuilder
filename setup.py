@@ -58,7 +58,7 @@ setup(
         "Flask-SQLAlchemy>=2.4, <3",
         "Flask-WTF>=0.14.2, <0.15.0",
         "Flask-JWT-Extended>=3.18, <4",
-        "jsonschema>=3.0.1, <4",
+        "jsonschema>=3, <5",
         "marshmallow>=3, <4",
         "marshmallow-enum>=1.5.1, <2",
         "marshmallow-sqlalchemy>=0.22.0, <0.27.0",

@@ -1,6 +1,23 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.4.3
+-----------------------------------
+
+- fix: openapi on and off config flag (#1770) [Daniel Vaz Gaspar]
+- fix: data not defined in azure oauth (#1769) [Dalton Pearson]
+- fix: Handle authorize_access_token exception (#1766) [Michał Konarski]
+- fix: Set role and confirm password while adding user mandatory (#1758) [Mayur]
+- fix: required roles on user form not showing error msg (#1772) [Daniel Vaz Gaspar]
+- fix: make servers be actual servers on swagger, full endpoint paths (#1773) [Daniel Vaz Gaspar]
+- docs: adds missing config key FAB_OPENAPI_SERVERS (#1776)
+
+Improvements and Bug fixes on 3.4.2
+-----------------------------------
+
+- chore: Use assertEqual instead of assertEquals for Python 3.11 compatibility (#1763) [Karthikeyan Singaravelan]
+- chore: improve code quality and balance (#1761) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 3.4.1
 -----------------------------------
 
