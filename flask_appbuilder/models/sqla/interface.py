@@ -1,28 +1,11 @@
 # -*- coding: utf-8 -*-
+from contextlib import suppress
 import logging
 import sys
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
-import sqlalchemy as sa
-from sqlalchemy import asc, desc
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import aliased, ColumnProperty, contains_eager, Load
-from sqlalchemy.orm.descriptor_props import SynonymProperty
-from sqlalchemy.orm.query import Query
-from sqlalchemy.orm.session import Session as SessionBase
-from sqlalchemy.orm.util import AliasedClass
-from sqlalchemy.sql.elements import BinaryExpression
-from sqlalchemy.sql.sqltypes import TypeEngine
-from sqlalchemy_utils.types.uuid import UUIDType
-
-
-from . import filters, Model
-from ..base import BaseInterface
-from ..filters import Filters
-from ..group import GroupByCol, GroupByDateMonth, GroupByDateYear
-from ..mixins import FileColumn, ImageColumn
-from ..._compat import as_unicode
-from ...const import (
+from flask_appbuilder._compat import as_unicode
+from flask_appbuilder.const import (
     LOGMSG_ERR_DBI_ADD_GENERIC,
     LOGMSG_ERR_DBI_DEL_GENERIC,
     LOGMSG_ERR_DBI_EDIT_GENERIC,
@@ -30,9 +13,32 @@ from ...const import (
     LOGMSG_WAR_DBI_DEL_INTEGRITY,
     LOGMSG_WAR_DBI_EDIT_INTEGRITY,
 )
-from ...exceptions import InterfaceQueryWithoutSession
-from ...filemanager import FileManager, ImageManager
-from ...utils.base import get_column_leaf, get_column_root_relation, is_column_dotted
+from flask_appbuilder.exceptions import InterfaceQueryWithoutSession
+from flask_appbuilder.filemanager import FileManager, ImageManager
+from flask_appbuilder.models.base import BaseInterface
+from flask_appbuilder.models.filters import Filters
+from flask_appbuilder.models.group import GroupByCol, GroupByDateMonth, GroupByDateYear
+from flask_appbuilder.models.mixins import FileColumn, ImageColumn
+from flask_appbuilder.models.sqla import filters, Model
+from flask_appbuilder.utils.base import (
+    get_column_leaf,
+    get_column_root_relation,
+    is_column_dotted,
+)
+from sqlalchemy import asc, desc
+from sqlalchemy import types as sa_types
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import aliased, class_mapper, ColumnProperty, contains_eager, Load
+from sqlalchemy.orm.descriptor_props import SynonymProperty
+from sqlalchemy.orm.properties import RelationshipProperty
+from sqlalchemy.orm.query import Query
+from sqlalchemy.orm.session import Session as SessionBase
+from sqlalchemy.orm.util import AliasedClass
+from sqlalchemy.sql import visitors
+from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.sqltypes import TypeEngine
+from sqlalchemy_utils.types.uuid import UUIDType
+
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +46,7 @@ log = logging.getLogger(__name__)
 def _is_sqla_type(model: Model, sa_type: Type[TypeEngine]) -> bool:
     return (
         isinstance(model, sa_type)
-        or isinstance(model, sa.types.TypeDecorator)
+        or isinstance(model, sa_types.TypeDecorator)
         and isinstance(model.impl, sa_type)
     )
 
@@ -59,7 +65,7 @@ class SQLAInterface(BaseInterface):
         self.list_properties = dict()
         self.session = session
         # Collect all SQLA columns and properties
-        for prop in sa.orm.class_mapper(obj).iterate_properties:
+        for prop in class_mapper(obj).iterate_properties:
             if type(prop) != SynonymProperty:
                 self.list_properties[prop.key] = prop
         for col_name in obj.__mapper__.columns.keys():
@@ -77,7 +83,37 @@ class SQLAInterface(BaseInterface):
 
     @staticmethod
     def is_model_already_joined(query: Query, model: Type[Model]) -> bool:
-        return model in [mapper.class_ for mapper in query._join_entities]
+        if hasattr(query, "_join_entities"):  # For SQLAlchemy < 1.3
+            return model in [mapper.class_ for mapper in query._join_entities]
+        # Solution for SQLAlchemy >= 1.4
+        model_table_name = model.__table__.fullname
+        for visitor in visitors.iterate(query.statement):
+            # Checking for `.join(Parent.child)` clauses
+            if visitor.__visit_name__ == "alias":
+                _visitor = visitor.element
+            else:
+                _visitor = visitor
+            if _visitor.__visit_name__ == "select":
+                continue
+            if _visitor.__visit_name__ == "binary":
+                for vis in visitors.iterate(_visitor):
+                    # Visitor might not have table attribute
+                    with suppress(AttributeError):
+                        # Verify if already present based on table name
+                        if model_table_name == vis.table.fullname:
+                            return True
+            # Checking for `.join(Child)` clauses
+            if _visitor.__visit_name__ == "table":
+                # Visitor might be of ColumnCollection or so,
+                # which cannot be compared to model
+                if model_table_name == _visitor.fullname:
+                    return True
+            # Checking for `Model.column` clauses
+            if _visitor.__visit_name__ == "column":
+                with suppress(AttributeError):
+                    if model_table_name == _visitor.table.fullname:
+                        return True
+        return False
 
     def _get_base_query(
         self, query=None, filters=None, order_column="", order_direction=""
@@ -486,7 +522,7 @@ class SQLAInterface(BaseInterface):
     def is_string(self, col_name: str) -> bool:
         try:
             return (
-                _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
+                _is_sqla_type(self.list_columns[col_name].type, sa_types.String)
                 or self.list_columns[col_name].type.__class__ == UUIDType
             )
         except KeyError:
@@ -494,63 +530,61 @@ class SQLAInterface(BaseInterface):
 
     def is_text(self, col_name: str) -> bool:
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Text)
+            return _is_sqla_type(self.list_columns[col_name].type, sa_types.Text)
         except KeyError:
             return False
 
     def is_binary(self, col_name: str) -> bool:
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.LargeBinary)
+            return _is_sqla_type(self.list_columns[col_name].type, sa_types.LargeBinary)
         except KeyError:
             return False
 
     def is_integer(self, col_name: str) -> bool:
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Integer)
+            return _is_sqla_type(self.list_columns[col_name].type, sa_types.Integer)
         except KeyError:
             return False
 
     def is_numeric(self, col_name: str) -> bool:
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Numeric)
+            return _is_sqla_type(self.list_columns[col_name].type, sa_types.Numeric)
         except KeyError:
             return False
 
     def is_float(self, col_name: str) -> bool:
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Float)
+            return _is_sqla_type(self.list_columns[col_name].type, sa_types.Float)
         except KeyError:
             return False
 
     def is_boolean(self, col_name: str) -> bool:
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Boolean)
+            return _is_sqla_type(self.list_columns[col_name].type, sa_types.Boolean)
         except KeyError:
             return False
 
     def is_date(self, col_name: str) -> bool:
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Date)
+            return _is_sqla_type(self.list_columns[col_name].type, sa_types.Date)
         except KeyError:
             return False
 
     def is_datetime(self, col_name: str) -> bool:
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.DateTime)
+            return _is_sqla_type(self.list_columns[col_name].type, sa_types.DateTime)
         except KeyError:
             return False
 
     def is_enum(self, col_name: str) -> bool:
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Enum)
+            return _is_sqla_type(self.list_columns[col_name].type, sa_types.Enum)
         except KeyError:
             return False
 
     def is_relation(self, col_name: str) -> bool:
         try:
-            return isinstance(
-                self.list_properties[col_name], sa.orm.properties.RelationshipProperty
-            )
+            return isinstance(self.list_properties[col_name], RelationshipProperty)
         except KeyError:
             return False
 
