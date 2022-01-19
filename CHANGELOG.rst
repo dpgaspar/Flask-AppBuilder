@@ -1,6 +1,14 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.4.4
+-----------------------------------
+
+- fix: Support SQLAlchemy 1.4.X (#1786) [Daniel Vaz Gaspar]
+- feat: allow multiple values for the same filter (#1737) [Will Rogers]
+- fix: Only update user.last_login on successful authentication (#1775) [blag]
+- chore: update jsonschema pip package (#1782) [Hugh A. Miles II]
+
 Improvements and Bug fixes on 3.4.3
 -----------------------------------
 
