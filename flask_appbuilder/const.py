@@ -63,6 +63,10 @@ LOGMSG_ERR_SEC_UPD_USER = "Error updating user to database. {0} "
 """ Error updating user, format with err message """
 LOGMSG_ERR_SEC_ADD_RESET_PW_HASH = "Error adding new password reset hash to db. {0} "
 """ Error adding password reset hash, format with err message """
+LOGMSG_ERR_SEC_REMOVE_RESET_PW_HASH = "Error removing password reset hash from db. {0} "
+""" Error removing password reset hash, format with err message """
+LOGMSG_ERR_SEC_SAVE_ACK_RESET_PW_HASH = "Error saving password reset hash confirmation to db. {0} "
+""" Error saving password reset hash confirmation to db, format with err message """
 LOGMSG_ERR_SEC_DEL_RESET_PW_HASH = (
     "Error deleting the expired password reset hash from db. {0} "
 )

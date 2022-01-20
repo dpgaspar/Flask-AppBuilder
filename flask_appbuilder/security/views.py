@@ -128,8 +128,14 @@ class ResetMyPasswordView(SimpleFormView):
         if current_app.config["EMAIL_PROT"]:
             # remove resetpw from db
             resetpw = self.appbuilder.sm.get_reset_password_hash(g.user.id)
-            self.appbuilder.get_session.delete(resetpw)
-            self.appbuilder.get_session.commit()
+            
+            try:
+                self.appbuilder.get_session.delete(resetpw)
+                self.appbuilder.get_session.commit()
+            except Exception:
+                log.error(c.LOGMSG_ERR_SEC_REMOVE_RESET_PW_HASH.format(str(e)))
+                self.appbuilder.get_session.rollback()
+
         flash(as_unicode(self.message), "info")
 
 
@@ -189,7 +195,13 @@ class PublicResetMyPasswordView(PublicFormView):
                 # remove resetpw from db!
                 resetpw = self.appbuilder.sm.get_reset_password_hash(user_id)
                 self.appbuilder.get_session.delete(resetpw)
-                self.appbuilder.get_session.commit()
+                
+                try:
+                    self.appbuilder.get_session.commit()
+                except Exception:
+                    log.error(c.LOGMSG_ERR_SEC_REMOVE_RESET_PW_HASH.format(str(e)))
+                    self.appbuilder.get_session.rollback()
+
 
                 response = self.form_post(form)
                 if not response:
@@ -556,8 +568,14 @@ class UserDBModelView(UserModelView):
             if not_expired:
                 # confirm user is validated by email
                 resetpw.ack = True
-                self.appbuilder.get_session.merge(resetpw)
-                self.appbuilder.get_session.commit()
+                
+                try:
+                    self.appbuilder.get_session.merge(resetpw)
+                    self.appbuilder.get_session.commit()
+                except Exception:
+                    log.error(c.LOGMSG_ERR_SEC_SAVE_ACK_RESET_PW_HASH.format(str(e)))
+                    self.appbuilder.get_session.rollback()
+
 
                 if g.user is not None and g.user.is_authenticated:
                     return redirect(
