@@ -217,3 +217,52 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             follow_redirects=True,
         )
         self.browser_logout(client)
+
+    def test_register_user(self):
+        """
+        Test register user
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # use all required params
+        rv = client.get("/users/add", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Add User", data)
+        rv = client.post(
+            "/users/add",
+            data=dict(
+                first_name="first",
+                last_name="last",
+                username="from test 1-1",
+                email="test1@fromtest1.com",
+                roles=[1],
+                password="password",
+                conf_password="password",
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Added Row", data)
+
+        # don't set roles
+        rv = client.get("/users/add", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Add User", data)
+        rv = client.post(
+            "/users/add",
+            data=dict(
+                first_name="first",
+                last_name="last",
+                username="from test 2-1",
+                email="test2@fromtest2.com",
+                roles=[],
+                password="password",
+                conf_password="password",
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertNotIn("Added Row", data)
+        self.assertIn("This field is required", data)
+        self.browser_logout(client)

@@ -20,6 +20,7 @@ from .forms import (
     LoginForm_db,
     LoginForm_oid,
     ResetPasswordForm,
+    SelectDataRequired,
     UserInfoEdit,
 )
 from .._compat import as_unicode
@@ -36,7 +37,6 @@ from ..validators import PasswordComplexityValidator
 from ..views import expose, ModelView, PublicFormView, SimpleFormView
 
 from ..widgets import ListWidget, ShowWidget
-
 
 log = logging.getLogger(__name__)
 
@@ -438,7 +438,8 @@ class UserDBModelView(UserModelView):
             lazy_gettext("Confirm Password"),
             description=lazy_gettext("Please rewrite the user's password to confirm"),
             validators=[
-                EqualTo("password", message=lazy_gettext("Passwords must match"))
+                validators.DataRequired(),
+                EqualTo("password", message=lazy_gettext("Passwords must match")),
             ],
             widget=BS3PasswordFieldWidget(),
         ),
@@ -454,6 +455,8 @@ class UserDBModelView(UserModelView):
         "password",
         "conf_password",
     ]
+
+    validators_columns = {"roles": [SelectDataRequired()]}
 
     @expose("/show/<pk>", methods=["GET"])
     @has_access
@@ -697,7 +700,11 @@ class AuthView(BaseView):
     @expose("/logout/")
     def logout(self):
         logout_user()
-        return redirect(self.appbuilder.get_url_for_index)
+        return redirect(
+            self.appbuilder.app.config.get(
+                "LOGOUT_REDIRECT_URL", self.appbuilder.get_url_for_index
+            )
+        )
 
 
 class AuthDBView(AuthView):
@@ -716,7 +723,10 @@ class AuthDBView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            return redirect(self.appbuilder.get_url_for_index)
+            next_url = request.args.get("next", "")
+            if not next_url:
+                next_url = self.appbuilder.get_url_for_index
+            return redirect(next_url)
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -738,7 +748,10 @@ class AuthLDAPView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            return redirect(self.appbuilder.get_url_for_index)
+            next_url = request.args.get("next", "")
+            if not next_url:
+                next_url = self.appbuilder.get_url_for_index
+            return redirect(next_url)
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -786,7 +799,10 @@ class AuthOIDView(AuthView):
                 session.pop("remember_me", None)
 
             login_user(user, remember=remember_me)
-            return redirect(self.appbuilder.get_url_for_index)
+            next_url = request.args.get("next", "")
+            if not next_url:
+                next_url = self.appbuilder.get_url_for_index
+            return redirect(next_url)
 
         return login_handler(self)
 
@@ -846,7 +862,12 @@ class AuthOAuthView(AuthView):
             flash(u"Provider not supported.", "warning")
             log.warning("OAuth authorized got an unknown provider %s", provider)
             return redirect(self.appbuilder.get_url_for_login)
-        resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token()
+        try:
+            resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token()
+        except Exception as e:
+            log.error("Error authorizing OAuth access token: {0}".format(e))
+            flash(u"The request to sign in was denied.", "error")
+            return redirect(self.appbuilder.get_url_for_login)
         if resp is None:
             flash(u"You denied the request to sign in.", "warning")
             return redirect(self.appbuilder.get_url_for_login)

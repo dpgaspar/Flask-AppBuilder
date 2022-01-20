@@ -168,9 +168,9 @@ class Filters(object):
         self.filters = []
         self.values = []
 
-    def _add_filter(self, filter_instance, value):
+    def _add_filter(self, filter_instance, values):
         self.filters.append(filter_instance)
-        self.values.append(value)
+        self.values.append(values)
 
     def add_filter_index(
         self, column_name: str, filter_instance_index: int, value: Any
@@ -294,8 +294,12 @@ class Filters(object):
         ]
 
     def apply_all(self, query):
-        for flt, value in zip(self.filters, self.values):
-            query = flt.apply(query, value)
+        for flt, values in zip(self.filters, self.values):
+            if isinstance(values, list):
+                for value in values:
+                    query = flt.apply(query, value)
+            else:
+                query = flt.apply(query, values)
         return query
 
     def __repr__(self):

@@ -13,7 +13,7 @@ from flask import flash, render_template, url_for
 from flask_babel import lazy_gettext
 
 
-from sqlalchemy import and_, func, literal
+from sqlalchemy import and_, func, literal, update
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
@@ -255,6 +255,18 @@ class SecurityManager(BaseSecurityManager):
     def get_user_by_id(self, pk):
         return self.get_session.query(self.user_model).get(pk)
 
+    def get_first_user(self) -> "User":
+        return self.get_session.query(self.user_model).first()
+
+    def noop_user_update(self, user: "User") -> None:
+        stmt = (
+            update(User)
+            .where(self.user_model.id == user.id)
+            .values(login_count=user.login_count)
+        )
+        self.get_session.execute(stmt)
+        self.get_session.commit()
+        
     def get_reset_password_hash(self, user_id: int) -> UserResetPassword:
         return (
             self.get_session.query(UserResetPassword)
@@ -380,6 +392,7 @@ class SecurityManager(BaseSecurityManager):
         except SMTPException as e:
             log.error("Send email password_reset exception: {0}".format(str(e)))
         return False
+
 
     """
     -----------------------

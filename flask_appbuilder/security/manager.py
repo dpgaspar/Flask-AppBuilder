@@ -113,6 +113,12 @@ class AbstractSecurityManager(BaseManager):
     def security_cleanup(self, baseviews, menus):
         raise NotImplementedError
 
+    def get_first_user(self):
+        raise NotImplementedError
+
+    def noop_user_update(self, user) -> None:
+        raise NotImplementedError
+
 
 def _oauth_tokengetter(token=None):
     """
@@ -632,6 +638,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "last_name": me.get("family_name", ""),
                 "id": me["oid"],
                 "username": me["oid"],
+                "role_keys": me.get("roles", []),
             }
         # for OpenShift
         if provider == "openshift":
@@ -841,12 +848,17 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def update_user_auth_stat(self, user, success=True):
         """
-        Update authentication successful to user.
+        Update user authentication stats upon successful/unsuccessful
+        authentication attempts.
 
         :param user:
-            The authenticated user model
+            The identified (but possibly not successfully authenticated) user
+            model
         :param success:
-            Default to true, if false increments fail_login_count on user model
+        :type success: bool or None
+            Defaults to true, if true increments login_count, updates
+            last_login, and resets fail_login_count to 0, if false increments
+            fail_login_count on user model.
         """
         if not user.login_count:
             user.login_count = 0
@@ -854,10 +866,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             user.fail_login_count = 0
         if success:
             user.login_count += 1
+            user.last_login = datetime.datetime.now()
             user.fail_login_count = 0
         else:
             user.fail_login_count += 1
-        user.last_login = datetime.datetime.now()
         self.update_user(user)
 
     def auth_user_db(self, username, password):
@@ -871,9 +883,13 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         if username is None or username == "":
             return None
+        first_user = self.get_first_user()
         user = self.find_user(username=username)
         if user is None:
             user = self.find_user(email=username)
+        else:
+            # Balance failure and success
+            _ = self.find_user(email=username)
         if user is None or (not user.is_active):
             # Balance failure and success
             check_password_hash(
@@ -882,6 +898,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "password",
             )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
+            # Balance failure and success
+            self.noop_user_update(first_user)
             return None
         elif check_password_hash(user.password, password):
             self.update_user_auth_stat(user, True)

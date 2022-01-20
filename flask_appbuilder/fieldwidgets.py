@@ -1,6 +1,7 @@
 from flask_babel import lazy_gettext as _
+from markupsafe import Markup
 from wtforms import widgets
-from wtforms.widgets import html_params, HTMLString
+from wtforms.widgets import html_params
 
 
 class DatePickerWidget(object):
@@ -24,7 +25,7 @@ class DatePickerWidget(object):
             field.data = ""
         template = self.data_template
 
-        return HTMLString(
+        return Markup(
             template % {"text": html_params(type="text", value=field.data, **kwargs)}
         )
 
@@ -50,7 +51,7 @@ class DateTimePickerWidget(object):
             field.data = ""
         template = self.data_template
 
-        return HTMLString(
+        return Markup(
             template % {"text": html_params(type="text", value=field.data, **kwargs)}
         )
 
@@ -103,7 +104,7 @@ class Select2AJAXWidget(object):
             field.data = ""
         template = self.data_template
 
-        return HTMLString(
+        return Markup(
             template % {"text": html_params(type="text", value=field.data, **kwargs)}
         )
 
@@ -132,7 +133,7 @@ class Select2SlaveAJAXWidget(object):
             field.data = ""
         template = self.data_template
 
-        return HTMLString(
+        return Markup(
             template % {"text": html_params(type="text", value=field.data, **kwargs)}
         )
 
@@ -143,7 +144,7 @@ class Select2Widget(widgets.Select):
     def __init__(self, extra_classes=None, style=None):
         self.extra_classes = extra_classes
         self.style = style or u"width:250px"
-        return super(Select2Widget, self).__init__()
+        super(Select2Widget, self).__init__()
 
     def __call__(self, field, **kwargs):
         kwargs["class"] = u"my_select2 form-control"
@@ -162,7 +163,7 @@ class Select2ManyWidget(widgets.Select):
     def __init__(self, extra_classes=None, style=None):
         self.extra_classes = extra_classes
         self.style = style or u"width:250px"
-        return super(Select2ManyWidget, self).__init__()
+        super(Select2ManyWidget, self).__init__()
 
     def __call__(self, field, **kwargs):
         kwargs["class"] = u"my_select2 form-control"
