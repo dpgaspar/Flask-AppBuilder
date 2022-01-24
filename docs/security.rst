@@ -201,7 +201,8 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 'access_token_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/token',
                 'authorize_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/authorize',
                 'token_endpoint_auth_method':'client_secret_post'}
-        },{'name': 'okta', 'icon': 'fa-circle-o',
+        },
+        {'name': 'okta', 'icon': 'fa-circle-o',
             'token_key': 'access_token',
             'remote_app': {
                 'client_id': 'OKTA_KEY',
@@ -212,6 +213,18 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 },
                 'access_token_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/token',
                 'authorize_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize',
+        },
+        {'name': 'aws_cognito', 'icon': 'fa-amazon',
+            'token_key': 'access_token',
+            'remote_app': {
+                'client_id': 'COGNITO_CLIENT_ID',
+                'client_secret': 'COGNITO_CLIENT_SECRET',
+                'api_base_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/',
+                'client_kwargs': {
+                    'scope': 'openid email aws.cognito.signin.user.admin'
+                },
+                'access_token_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/token',
+                'authorize_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize',
         }
     ]
 
@@ -231,7 +244,7 @@ This needs a small explanation, you basically have five special keys:
 
 You can give FlaskAppBuilder roles based on Oauth groups::
 
-    # note, this is only natively supported in `okta` currently,
+    # note, this is only natively supported in `azure` and `okta` currently,
     # however, if you customize userinfo retrieval to include 'role_keys', this will work for other providers
 
     # a mapping from the values of `userinfo["role_keys"]` to a list of FAB roles
@@ -259,6 +272,16 @@ To customize the userinfo retrieval, you can create your own method like this::
                 "last_name": me.data.get("family_name", ""),
                 "email": me.data.get("email", ""),
                 "role_keys": me.data.get("groups", []),
+            }
+        if provider == "aws_cognito":
+            me = self.appbuilder.sm.oauth_remotes[provider].get("userInfo")
+            return {
+                "username": me.json().get("username"),
+                "email": me.json().get("email"),
+                "first_name": me.json().get("given_name", ""),
+                "last_name": me.json().get("family_name", ""),
+                "id": me.json().get("sub", ""),
+                "role_keys": ["User"], # set AUTH_ROLES_SYNC_AT_LOGIN = False
             }
         else:
             return {}
@@ -396,7 +419,7 @@ use the ``@has_access`` decorator::
 
     class MyModelView(ModelView):
         datamodel = SQLAInterface(Group)
-    	
+
         @has_access
         @expose('/mymethod/')
         def mymethod(self):
@@ -406,7 +429,7 @@ use the ``@has_access`` decorator::
 The framework will create the following access, based on your method's name:
 
 - can mymethod on MyModelView
-	
+
 You can aggregate some of your method's on a single permission, this can simplify the security configuration
 if there is no need for granular permissions on a group of methods, for this use ``@permission_name`` decorator.
 
@@ -638,11 +661,11 @@ Example on your config::
     ...
 
     def custom_password_validator(password: str) -> None:
-    """
-    A simplistic example for a password validator
-    """
-    if len(password) < 8:
-        raise PasswordComplexityValidationError("Must have at least 8 characters")
+        """
+        A simplistic example for a password validator
+        """
+        if len(password) < 8:
+            raise PasswordComplexityValidationError("Must have at least 8 characters")
 
     FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
     FAB_PASSWORD_COMPLEXITY_ENABLED = True
@@ -715,7 +738,7 @@ First extend the User Model (create a sec_models.py file)::
         extra = Column(String(256))
 
 
-Next define a new User view, just like the default User view but with the extra column (create a sec_view.py)
+Next define a new User view, just like the default User view but with the extra column (create a sec_views.py)
 If you're using:
 
 :AUTH_DB: Extend UserDBModelView
@@ -727,7 +750,7 @@ If you're using:
 So using AUTH_DB::
 
     from flask_appbuilder.security.views import UserDBModelView
-    from flask_babelpkg import lazy_gettext
+    from flask_babel import lazy_gettext
 
     class MyUserDBModelView(UserDBModelView):
         """
