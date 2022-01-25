@@ -12,6 +12,8 @@ from mongoengine.fields import (
     ObjectIdField,
     ReferenceField,
     StringField,
+    EnumField,
+    BaseField
 )
 
 from . import filters
@@ -38,6 +40,11 @@ class MongoEngineInterface(BaseInterface):
 
     def __init__(self, obj, session=None):
         self.session = session
+        self.list_columns = {}
+        for k in obj.__dict__:
+            v = obj.__dict__[k]
+            if issubclass(v.__class__, BaseField):
+                self.list_columns[k] = v
         _include_filters(self)
         super(MongoEngineInterface, self).__init__(obj)
 
@@ -87,6 +94,12 @@ class MongoEngineInterface(BaseInterface):
             objs = objs[offset : offset + page_size]
 
         return count, objs
+
+    def is_enum(self, col_name: str) -> bool:
+        try:
+            return isinstance(self.obj._fields[col_name], EnumField)
+        except KeyError:
+            return False
 
     def is_object_id(self, col_name):
         try:
@@ -179,6 +192,8 @@ class MongoEngineInterface(BaseInterface):
 
     def get_max_length(self, col_name):
         try:
+            if self.is_enum(col_name):
+                return -1
             col = self.obj._fields[col_name]
             if col.max_length:
                 return col.max_length
