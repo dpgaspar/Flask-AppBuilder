@@ -202,8 +202,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | AUTH_ROLE_PUBLIC                       | Special Role that holds the public         |   No      |
 |                                        | permissions, no authentication needed.     |           |
 +----------------------------------------+--------------------------------------------+-----------+
+| AUTH_STRICT_RESPONSE_CODES             | When True, protected endpoints will return |   No      |
+|                                        | HTTP 403 instead of 401. This option will  |           |
+|                                        | be removed and default to True on the next |           |
+|                                        | major release. defaults to False           |           |
++----------------------------------------+--------------------------------------------+-----------+
 | AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS| Allow REST API login with alternative auth |   No      |
-| True|False                             | providers (default False)                  |           |           |
+| True|False                             | providers (default False)                  |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | APP_NAME                               | The name of your application.              |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
@@ -237,6 +242,8 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | the existing languages with the countries  |           |
 |                                        | name and flag                              |           |
 +----------------------------------------+--------------------------------------------+-----------+
+| LOGOUT_REDIRECT_URL                    | The location to redirect to after logout   |   No      |
++----------------------------------------+--------------------------------------------+-----------+
 | FAB_API_SHOW_STACKTRACE                | Sends api stack trace on uncaught          |   No      |
 |                                        | exceptions. (Boolean)                      |           |
 +----------------------------------------+--------------------------------------------+-----------+
@@ -269,6 +276,10 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +----------------------------------------+--------------------------------------------+-----------+
 | FAB_ADD_OPENAPI_VIEWS                  | Enables or disables registering all        |           |
 |                                        | OPENAPI views (boolean default:True)       |   No      |
++----------------------------------------+--------------------------------------------+-----------+
+| FAB_OPENAPI_SERVERS                    | Used for setting OpenApi Swagger UI        |           |
+|                                        | servers if not set Swagger will use the    |           |
+|                                        | current request host URL                   |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
 | FAB_ROLES                              | Configure builtin roles see Security       |           |
 |                                        | chapter for further detail                 |   No      |

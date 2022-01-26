@@ -103,6 +103,8 @@ class APIDisableSecViewTestCase(FABTestCase):
         "LocaleView.index",
         "UtilView.back",
         "MenuApi.get_menu_data",
+        "OpenApi.get",
+        "SwaggerView.show",
     ]
 
     def setUp(self):
@@ -118,10 +120,33 @@ class APIDisableSecViewTestCase(FABTestCase):
 
     def test_disabled_security_views(self):
         """
-            REST Api: Test disabled security views
+        REST Api: Test disabled security views
         """
         for rule in self.appbuilder.get_app.url_map.iter_rules():
             self.assertIn(rule.endpoint, self.base_fab_endpoint)
+
+
+class APIDisableOpenApiViewTestCase(FABTestCase):
+
+    openapi_fab_endpoint = ["OpenApi.get", "SwaggerView.show"]
+
+    def setUp(self):
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+
+        self.app = Flask(__name__)
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config["FAB_ADD_OPENAPI_VIEWS"] = False
+
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+    def test_disabled_security_views(self):
+        """
+        REST Api: Test disabled OpenApi views
+        """
+        for rule in self.appbuilder.get_app.url_map.iter_rules():
+            self.assertNotIn(rule.endpoint, self.openapi_fab_endpoint)
 
 
 class APITestCase(FABTestCase):
@@ -601,8 +626,15 @@ class APITestCase(FABTestCase):
         # Test unauthorized DELETE
         pk = 1
         uri = f"api/v1/model1apirestrictedpermissions/{pk}"
+
+        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 403)
+
+        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 401)
+
         # Test unauthorized POST
         item = dict(
             field_string="test{}".format(MODEL1_DATA_SIZE + 1),
@@ -611,8 +643,14 @@ class APITestCase(FABTestCase):
             field_date=None,
         )
         uri = "api/v1/model1apirestrictedpermissions/"
+
+        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
+        rv = self.auth_client_post(client, token, uri, item)
+        self.assertEqual(rv.status_code, 403)
+        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 401)
+
         # Test authorized GET
         uri = f"api/v1/model1apirestrictedpermissions/{pk}"
         rv = self.auth_client_get(client, token, uri)
@@ -1311,7 +1349,7 @@ class APITestCase(FABTestCase):
         arguments = {"page_size": page_size, "page": 1}
         uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         rv = self.auth_client_get(client, token, uri)
-        self.assertEquals(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
     def test_get_list_max_page_size(self):
         """

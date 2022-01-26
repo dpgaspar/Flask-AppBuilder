@@ -450,3 +450,9 @@ class SecurityManager(BaseSecurityManager):
             role.permissions = permission_view_menus
 
             role.save()
+
+    def get_first_user(self) -> "User":
+        return self.user_model.objects.first()
+
+    def noop_user_update(self, user: "User") -> None:
+        pass
