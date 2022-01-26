@@ -240,7 +240,7 @@ class EnumField(SelectField):
         # Column(Enum(enum.Enum)) case
         if enum_class is not None:
             labels = [
-                str(enum_class.__members__[enum_member].value) for enum_member in enums
+                str(enum_class.__members__[enum_member].name) for enum_member in enums
             ]
 
             def coerce(value):
