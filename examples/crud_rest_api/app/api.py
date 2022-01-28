@@ -6,6 +6,7 @@ from sqlalchemy import or_
 
 from . import appbuilder, db
 from .models import Contact, ContactGroup, Gender, ModelOMParent
+from marshmallow import fields, Schema
 
 
 def fill_gender():
@@ -22,8 +23,14 @@ db.create_all()
 fill_gender()
 
 
+class GreetingsResponseSchema(Schema):
+    message = fields.String()
+
+
 class GreetingApi(BaseApi):
     resource_name = "greeting"
+    openapi_spec_component_schemas = (GreetingsResponseSchema,)
+
     openapi_spec_methods = {
         "greeting": {
             "get": {
@@ -44,9 +51,7 @@ class GreetingApi(BaseApi):
                 application/json:
                   schema:
                     type: object
-                    properties:
-                      message:
-                        type: string
+                    $ref: '#/components/schemas/GreetingsResponseSchema'
         """
         return self.response(200, message="Hello")
 

@@ -173,3 +173,25 @@ class FlaskTestCase(FABTestCase):
         role = self.appbuilder.sm.find_role("Public")
         role.permissions = []
         self.appbuilder.get_session.commit()
+
+    def test_redirect_after_logout(self):
+        """
+            REST Api: Test redirect after logout
+        """
+        limited_user = "user1"
+        limited_password = "user1"
+
+        client = self.app.test_client()
+
+        self.login(client, limited_user, limited_password)
+        rv = self.browser_logout(client)
+
+        # make sure that browser is redirected to /
+        self.assertEqual(rv.headers["Location"].split("/")[-1], "")
+
+        self.login(client, limited_user, limited_password)
+        self.app.config["LOGOUT_REDIRECT_URL"] = "/logged_out"
+        rv = self.browser_logout(client)
+
+        # make sure that browser is redirected to LOGOUT_REDIRECT_URL
+        self.assertEqual(rv.headers["Location"].split("/")[-1], "logged_out")
