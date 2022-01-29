@@ -34,7 +34,8 @@ class MongoFileField(fields.FileField):
             if marker in formdata:
                 self._should_delete = True
 
-        return super(MongoFileField, self).process(formdata, data)
+        # return super(MongoFileField, self).process(formdata, data)
+        return super().process(formdata, data)
 
     def populate_obj(self, obj, name):
         field = getattr(obj, name, None)
