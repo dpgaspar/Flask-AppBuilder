@@ -224,7 +224,7 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                     'scope': 'openid email aws.cognito.signin.user.admin'
                 },
                 'access_token_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/token',
-                'authorize_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize',
+                'authorize_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize'}
         }
     ]
 
