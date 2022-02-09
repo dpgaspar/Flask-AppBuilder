@@ -23,6 +23,7 @@ from ..manager import BaseSecurityManager
 from ... import const as c
 from ...models.sqla import Base
 from ...models.sqla.interface import SQLAInterface
+from .apis import PermissionApi , RoleApi, UserApi
 
 log = logging.getLogger(__name__)
 
@@ -44,6 +45,11 @@ class SecurityManager(BaseSecurityManager):
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
     registeruser_model = RegisterUser
+
+    #APIs
+    permission_api = PermissionApi
+    role_api = RoleApi
+    user_api = UserApi
 
     def __init__(self, appbuilder):
         """
@@ -84,6 +90,10 @@ class SecurityManager(BaseSecurityManager):
         return self.appbuilder.get_session
 
     def register_views(self):
+        self.appbuilder.add_api(self.permission_api)
+        self.appbuilder.add_api(self.role_api)
+        self.appbuilder.add_api(self.user_api)
+        
         super(SecurityManager, self).register_views()
 
     def create_db(self):
