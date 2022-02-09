@@ -5,7 +5,8 @@ from typing import List, Optional
 import uuid
 
 from werkzeug.security import generate_password_hash
-from .apis import PermissionApi , RoleApi, UserApi
+
+from .apis import PermissionApi, RoleApi, UserApi
 from .models import Permission, PermissionView, RegisterUser, Role, User, ViewMenu
 from ..manager import BaseSecurityManager
 from ... import const as c
@@ -32,7 +33,7 @@ class SecurityManager(BaseSecurityManager):
     permissionview_model = PermissionView
     registeruser_model = RegisterUser
 
-    #APIs
+    # APIs
     permission_api = PermissionApi
     role_api = RoleApi
     user_api = UserApi

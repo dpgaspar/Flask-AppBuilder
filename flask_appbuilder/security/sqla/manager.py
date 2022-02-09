@@ -10,6 +10,7 @@ from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import generate_password_hash
 
+from .apis import PermissionApi, RoleApi, UserApi
 from .models import (
     assoc_permissionview_role,
     Permission,
@@ -23,7 +24,6 @@ from ..manager import BaseSecurityManager
 from ... import const as c
 from ...models.sqla import Base
 from ...models.sqla.interface import SQLAInterface
-from .apis import PermissionApi , RoleApi, UserApi
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class SecurityManager(BaseSecurityManager):
     permissionview_model = PermissionView
     registeruser_model = RegisterUser
 
-    #APIs
+    # APIs
     permission_api = PermissionApi
     role_api = RoleApi
     user_api = UserApi
@@ -93,7 +93,7 @@ class SecurityManager(BaseSecurityManager):
         self.appbuilder.add_api(self.permission_api)
         self.appbuilder.add_api(self.role_api)
         self.appbuilder.add_api(self.user_api)
-        
+
         super(SecurityManager, self).register_views()
 
     def create_db(self):

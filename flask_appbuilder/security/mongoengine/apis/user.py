@@ -2,6 +2,7 @@ from flask_appbuilder import ModelRestApi
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.sqla.models import User
 
+
 class UserApi(ModelRestApi):
     resource_name = "user"
     class_permission_name = "User"
@@ -23,16 +24,9 @@ class UserApi(ModelRestApi):
         "created_by.id",
         "changed_by.id",
         "created.id",
-        "changed.id"
+        "changed.id",
     ]
     show_columns = list_columns
-    add_columns = [
-        "roles",
-        "first_name",
-        "last_name",
-        "username",
-        "active",
-        "email",
-    ]
+    add_columns = ["roles", "first_name", "last_name", "username", "active", "email"]
     edit_columns = add_columns
     search_columns = list_columns
