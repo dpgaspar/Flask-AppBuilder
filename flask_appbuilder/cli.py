@@ -152,7 +152,7 @@ def create_db():
 @click.option("--path", "-path", help="Specify filepath to export roles to")
 @click.option("--indent", help="Specify indent of generated JSON file")
 def export_roles(
-    path: Optional[str] = None, indent: Optional[Union[None, int, str]] = None
+    path: Optional[str] = None, indent: Optional[Union[int, str]] = None
 ) -> None:
     """Exports roles with permissions and view menus to JSON file"""
     # Cast negative numbers to int (as they're passed as str from CLI)

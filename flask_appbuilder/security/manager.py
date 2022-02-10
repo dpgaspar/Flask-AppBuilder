@@ -2024,7 +2024,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def export_roles(
-        self, path: Optional[str] = None, indent: Optional[Union[None, int, str]] = None
+        self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
     ) -> None:
         """ Exports roles to JSON file. """
         raise NotImplementedError

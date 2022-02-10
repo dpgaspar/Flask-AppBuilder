@@ -409,7 +409,7 @@ class SecurityManager(BaseSecurityManager):
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))
 
     def export_roles(
-        self, path: Optional[str] = None, indent: Optional[Union[None, int, str]] = None
+        self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
     ) -> None:
         """Exports roles to JSON file."""
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
