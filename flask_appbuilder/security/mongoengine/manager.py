@@ -5,8 +5,6 @@ from typing import List, Optional
 import uuid
 
 from werkzeug.security import generate_password_hash
-
-from .apis import PermissionApi, RoleApi, UserApi
 from .models import Permission, PermissionView, RegisterUser, Role, User, ViewMenu
 from ..manager import BaseSecurityManager
 from ... import const as c
@@ -32,11 +30,6 @@ class SecurityManager(BaseSecurityManager):
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
     registeruser_model = RegisterUser
-
-    # APIs
-    permission_api = PermissionApi
-    role_api = RoleApi
-    user_api = UserApi
 
     def __init__(self, appbuilder):
         """
@@ -70,13 +63,6 @@ class SecurityManager(BaseSecurityManager):
             self.permissionview_model
         )
         self.create_db()
-
-    def register_views(self):
-        self.appbuilder.add_api(self.permission_api)
-        self.appbuilder.add_api(self.role_api)
-        self.appbuilder.add_api(self.user_api)
-
-        super(SecurityManager, self).register_views()
 
     def find_register_user(self, registration_hash):
         return self.registeruser_model.objects(
