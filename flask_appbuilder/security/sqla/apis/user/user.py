@@ -38,6 +38,7 @@ class UserApi(ModelRestApi):
     search_columns = list_columns
 
     add_model_schema = UserPostSchema()
+    edit_model_schema = UserPutSchema()
  
     def pre_update(self, item):
         """
@@ -45,7 +46,8 @@ class UserApi(ModelRestApi):
         """
         item.changed_on = datetime.now()
         item.changed_by_fk = g.user.id
-        item.password = generate_password_hash(item.password)
+        if (item.password):
+            item.password = generate_password_hash(item.password)
 
     def pre_add(self, item):
         """
