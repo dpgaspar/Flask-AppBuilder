@@ -1627,7 +1627,6 @@ class ModelRestApi(BaseModelApi):
             return self.response_400(message="Request is not JSON")
         try:
             item = self.add_model_schema.load(request.json)
-            print("default post item ", type(item), item)
         except ValidationError as err:
             return self.response_422(message=err.messages)
         # This validates custom Schema with custom validations
