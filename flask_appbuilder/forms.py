@@ -188,13 +188,11 @@ class GeneralModelConverter(object):
     ):
         query_func = self._get_related_query_func(col_name, filter_rel_fields)
         get_pk_func = self._get_related_pk_func(col_name)
-        allow_blank = True
         form_props[col_name] = QuerySelectMultipleField(
             label,
             description=description,
             query_func=query_func,
             get_pk_func=get_pk_func,
-            allow_blank=allow_blank,
             validators=lst_validators,
             widget=Select2ManyWidget(),
         )
