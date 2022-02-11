@@ -11,7 +11,7 @@ One:
 
 There was a security issue when using the default builtin information getter for the providers
 (see github: Prevent masquerade attacks through oauth providers #472)
-This fix will prepend the provider to the user id. So you're usernames will look like 'google_<USER_ID>'
+This fix will prepend the provider to the user id. So your usernames will look like 'google_<USER_ID>'
 
 Two:
 
@@ -58,7 +58,7 @@ Migrating to 1.8.0
 ------------------
 
 On this release flask-appbuilder supports python 3.5, and returned to flask-babel original package
-(stopped using the fork flask-babelpkg for multiple tranlation directories).
+(stopped using the fork flask-babelpkg for multiple translation directories).
 
 You can and should, uninstall flask-babelpkg from your package list and change all your imports from::
 
@@ -147,7 +147,7 @@ to::
 Migrating from 1.1.X to 1.2.X
 ------------------------------
 
-There is a breaking feature, change your filters import like this:
+There is a breaking feature, change your filters imports like this:
 
 from::
 
@@ -307,7 +307,7 @@ This new version has some breaking features. You don't have to change any code, 
 Migrating from 0.5.X to 0.6.X
 -----------------------------
 
-This new version has some breaking features, that i hope will be easily changeable on your code.
+This new version has some breaking features, that I hope will be easily changeable on your code.
 
 If you feel lost please post an issue on github: https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
 
@@ -390,6 +390,6 @@ To this::
 	baseapp.add_view(PersonGeneralView(), "List Contacts","/persons/list","earphone","Contacts")
 	baseapp.add_view(PersonChartView(), "Contacts Chart","/persons/chart","earphone","Contacts")
 
-Small change you just have to instantiate your classes.
+Small change, you just have to instantiate your classes.
 
 
