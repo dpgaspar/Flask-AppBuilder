@@ -225,7 +225,7 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 },
                 'access_token_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/token',
                 'authorize_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize'}
-        }
+            }
     ]
 
 This needs a small explanation, you basically have five special keys:
