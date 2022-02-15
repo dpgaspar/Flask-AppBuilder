@@ -1,9 +1,10 @@
 import json
 import logging
-from typing import Set
+from typing import Optional, Set
 import unittest
 
-from flask import Flask
+from flask import Flask, Response
+from flask.testing import FlaskClient
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.const import (
     API_SECURITY_PASSWORD_KEY,
@@ -52,19 +53,27 @@ class FABTestCase(unittest.TestCase):
         )
 
     def login(self, client, username, password):
-        # Login with default admin
         rv = self._login(client, username, password)
         try:
             return json.loads(rv.data.decode("utf-8")).get("access_token")
         except Exception:
             return rv
 
-    def browser_login(self, client, username, password):
-        # Login with default admin
+    def browser_login(
+        self,
+        client: FlaskClient,
+        username: str,
+        password: str,
+        next_url: Optional[str] = None,
+        follow_redirects: bool = True,
+    ) -> Response:
+        login_url = "/login/"
+        if next_url:
+            login_url = f"{login_url}?next={next_url}"
         return client.post(
-            "/login/",
+            login_url,
             data=dict(username=username, password=password),
-            follow_redirects=True,
+            follow_redirects=follow_redirects,
         )
 
     @staticmethod
