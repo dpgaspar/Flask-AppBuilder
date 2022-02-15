@@ -1,7 +1,29 @@
+import logging
 from typing import Any, Callable
+from urllib.parse import urljoin, urlparse
 
+from flask import current_app, request
 from flask_babel import gettext
 from flask_babel.speaklater import LazyString
+
+
+log = logging.getLogger(__name__)
+
+
+def is_safe_redirect_url(url: str) -> bool:
+    host_url = urlparse(request.host_url)
+    redirect_url = urlparse(urljoin(request.host_url, url))
+    return (
+        redirect_url.scheme in ("http", "https")
+        and host_url.netloc == redirect_url.netloc
+    )
+
+
+def get_safe_redirect(url):
+    if url and is_safe_redirect_url(url):
+        return url
+    log.warning("Invalid redirect detected, falling back to index")
+    return current_app.appbuilder.get_url_for_index
 
 
 def get_column_root_relation(column: str) -> str:
