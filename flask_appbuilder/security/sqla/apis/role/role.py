@@ -9,8 +9,8 @@ class RoleApi(ModelRestApi):
     datamodel = SQLAInterface(Role)
     allow_browser_login = True
 
-    list_columns = ["permissions", "name", "user.id"]
+    list_columns = ["id", "permissions", "name"]
     show_columns = list_columns
-    add_columns = list_columns
-    edit_columns = list_columns
+    add_columns = ["name", "permissions"]
+    edit_columns = ["name", "permissions"]
     search_columns = list_columns

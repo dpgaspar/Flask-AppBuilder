@@ -168,6 +168,7 @@ class APITestCase(FABTestCase):
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("flask_appbuilder.tests.config_api")
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
+        self.app.config["ENABLE_USER_CRUD_API"] = True
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -3100,3 +3101,220 @@ class APITestCase(FABTestCase):
         uri = "api/v1/model1beforerequest/update"
         rv = self.auth_client_put(client, token, uri, {})
         self.assertEqual(rv.status_code, 404)
+
+    def test_user_api(self):
+        """REST Api: Test user apis
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/user/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/user/4"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/user/"
+        create_user_payload = {
+            "active": True,
+            "email": "fab@userapiposttest3.com",
+            "first_name": "fab",
+            "last_name": "admin",
+            "password": "pass",
+            "roles": [
+                1
+            ],
+            "username": "fabuseraddtest3"
+            }
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        add_user_response = json.loads(rv.data)
+
+        self.assertEqual(rv.status_code, 201)
+        assert "id" and "result" in add_user_response
+        self.assertEqual(create_user_payload, add_user_response["result"])
+
+        uri = f"api/v1/user/{add_user_response['id']}"
+        rv = self.auth_client_put(client, token, uri, {"email" : "newemail2@fab.com", "roles": [2]})
+        put_user_response = json.loads(rv.data)
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(put_user_response["result"].get("roles", []), [2])
+        self.assertEqual(put_user_response["result"].get("email", ""), "newemail2@fab.com")
+
+        uri = f"api/v1/user/{add_user_response['id']}"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+    def test_role_api(self):
+        """REST Api: Test role apis
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/role/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/role/1"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/role/"
+        create_user_payload = {
+                "name": "super duper role",
+                "permissions": [
+                    1
+                ]
+            }
+            
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        add_role_response = json.loads(rv.data)
+
+        self.assertEqual(rv.status_code, 201)
+        assert "id" and "result" in add_role_response
+        self.assertEqual(create_user_payload, add_role_response["result"])
+
+        uri = f"api/v1/role/{add_role_response['id']}"
+        rv = self.auth_client_put(client, token, uri, {"name" : "different name", "permissions": [1,2]})
+        put_role_response = json.loads(rv.data)
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(put_role_response["result"].get("permissions", []), [1,2])
+        self.assertEqual(put_role_response["result"].get("name", ""), "different name")
+
+        uri = f"api/v1/role/{add_role_response['id']}"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+    def test_permission_api(self):
+        """REST Api: Test permission apis
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/permission/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/permission/1"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/permission/"
+        create_permission_payload = {
+                "name": "super duper fab permission 1",
+            }
+            
+        rv = self.auth_client_post(client, token, uri, create_permission_payload)
+        add_permission_response = json.loads(rv.data)
+
+        self.assertEqual(rv.status_code, 201)
+        assert "id" and "result" in add_permission_response
+        self.assertEqual(create_permission_payload, add_permission_response["result"])
+
+        uri = f"api/v1/permission/{add_permission_response['id']}"
+        rv = self.auth_client_put(client, token, uri, {"name" : "different permission name"})
+        put_permission_response = json.loads(rv.data)
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(put_permission_response["result"].get("name", ""), "different permission name")
+
+        uri = f"api/v1/permission/{add_permission_response['id']}"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+
+class UserRolePermissionDisabledTestCase(FABTestCase):
+    def setUp(self):
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+
+        self.app = Flask(__name__)
+        self.basedir = os.path.abspath(os.path.dirname(__file__))
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+    def tearDown(self):
+        self.appbuilder.get_session.close()
+        engine = self.db.session.get_bind(mapper=None, clause=None)
+        engine.dispose()
+
+    def test_user_role_permission(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/user/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/role/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/permission/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 404)
+
+
+class UserPasswordComplexityTestCase(FABTestCase):
+    def setUp(self):
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+        from flask_appbuilder.exceptions import PasswordComplexityValidationError
+        from flask_appbuilder.security.sqla.models import User
+
+        def passwordValidator(password):
+            if len(password) < 5:
+                raise PasswordComplexityValidationError
+
+        self.app = Flask(__name__)
+        self.basedir = os.path.abspath(os.path.dirname(__file__))
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config["ENABLE_USER_CRUD_API"] = True
+        self.app.config["FAB_PASSWORD_COMPLEXITY_ENABLED"] = True
+        self.app.config["FAB_PASSWORD_COMPLEXITY_VALIDATOR"] = passwordValidator
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.user_model = User
+
+    def tearDown(self):
+        session = self.appbuilder.get_session
+        user = session.query(self.user_model).filter(self.user_model.username == "password complexity test user 10").one_or_none()
+        session.delete(user)
+        session.commit()
+
+        self.appbuilder.get_session.close()
+        engine = self.db.session.get_bind(mapper=None, clause=None)
+        engine.dispose()
+
+    def test_password_complexity(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/user/"
+        create_user_payload = {
+            "active": True,
+            "email": "fab@usertest1.com",
+            "first_name": "fab",
+            "last_name": "admin",
+            "password": "a",
+            "roles": [
+                1
+            ],
+            "username": "password complexity test user 10"
+            }
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        self.assertEqual(rv.status_code, 400)
+
+        create_user_payload["password"] = "bigger password"
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        self.assertEqual(rv.status_code, 201)
