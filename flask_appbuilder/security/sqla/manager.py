@@ -90,9 +90,10 @@ class SecurityManager(BaseSecurityManager):
         return self.appbuilder.get_session
 
     def register_views(self):
-        self.appbuilder.add_api(self.permission_api)
-        self.appbuilder.add_api(self.role_api)
-        self.appbuilder.add_api(self.user_api)
+        if self.appbuilder.app.config.get("ENABLE_USER_CRUD_API", False):
+            self.appbuilder.add_api(self.permission_api)
+            self.appbuilder.add_api(self.role_api)
+            self.appbuilder.add_api(self.user_api)
 
         super(SecurityManager, self).register_views()
 
