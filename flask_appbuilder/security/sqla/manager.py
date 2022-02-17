@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 import logging
-from typing import List, Optional
+from typing import List, Optional, Union
 import uuid
 
 from sqlalchemy import and_, func, literal, update
@@ -671,7 +671,9 @@ class SecurityManager(BaseSecurityManager):
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))
                 self.get_session.rollback()
 
-    def export_roles(self, path: Optional[str] = None) -> None:
+    def export_roles(
+        self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
+    ) -> None:
         """ Exports roles to JSON file. """
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         filename = path or f"roles_export_{timestamp}.json"
@@ -691,7 +693,7 @@ class SecurityManager(BaseSecurityManager):
             serialized_roles.append(serialized_role)
 
         with open(filename, "w") as fd:
-            fd.write(json.dumps(serialized_roles))
+            fd.write(json.dumps(serialized_roles, indent=indent))
 
     def import_roles(self, path: str) -> None:
         """ Imports roles from JSON file. """

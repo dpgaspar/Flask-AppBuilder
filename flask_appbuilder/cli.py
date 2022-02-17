@@ -1,7 +1,7 @@
 from io import BytesIO
 import os
 import shutil
-from typing import Optional
+from typing import Optional, Union
 from urllib.request import urlopen
 from zipfile import ZipFile
 
@@ -150,9 +150,22 @@ def create_db():
 @fab.command("export-roles")
 @with_appcontext
 @click.option("--path", "-path", help="Specify filepath to export roles to")
-def export_roles(path: Optional[str] = None) -> None:
-    """ Exports roles with permissions and view menus to JSON file """
-    current_app.appbuilder.sm.export_roles(path)
+@click.option("--indent", help="Specify indent of generated JSON file")
+def export_roles(
+    path: Optional[str] = None, indent: Optional[Union[int, str]] = None
+) -> None:
+    """Exports roles with permissions and view menus to JSON file"""
+    # Cast negative numbers to int (as they're passed as str from CLI)
+    try:
+        indent = int(indent)
+    except TypeError:
+        # Don't cast None
+        pass
+    except ValueError:
+        # Don't cast non-int-like strings
+        pass
+
+    current_app.appbuilder.sm.export_roles(path=path, indent=indent)
 
 
 @fab.command("import-roles")
