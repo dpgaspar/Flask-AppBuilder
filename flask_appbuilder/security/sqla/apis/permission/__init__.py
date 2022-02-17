@@ -1,1 +1,1 @@
-from .permission import PermissionApi
+from .permission import PermissionApi  # noqa: F401

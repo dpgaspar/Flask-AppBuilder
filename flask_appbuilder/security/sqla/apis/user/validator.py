@@ -4,7 +4,6 @@ from flask import current_app
 from flask_appbuilder.validators import default_password_complexity
 from flask_appbuilder.exceptions import PasswordComplexityValidationError
 
-import typing
 
 class PasswordComplexityValidator(Validator):
     """Validator for password.
@@ -25,6 +24,5 @@ class PasswordComplexityValidator(Validator):
                     default_password_complexity(value)
                 except PasswordComplexityValidationError as exc:
                     raise ValidationError(str(exc))
-        
 
         return value

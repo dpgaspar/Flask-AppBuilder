@@ -1,1 +1,1 @@
-from .role import RoleApi
+from .role import RoleApi  # noqa: F401

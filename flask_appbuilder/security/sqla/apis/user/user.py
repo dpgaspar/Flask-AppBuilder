@@ -12,6 +12,7 @@ from flask import current_app
 from flask_appbuilder.const import API_RESULT_RES_KEY
 from sqlalchemy.exc import IntegrityError
 
+
 class UserApi(ModelRestApi):
     resource_name = "user"
     class_permission_name = "User"
@@ -37,20 +38,28 @@ class UserApi(ModelRestApi):
         "changed.id",
     ]
     show_columns = list_columns
-    add_columns = ["roles", "first_name", "last_name", "username", "active", "email", "password"]
+    add_columns = [
+        "roles",
+        "first_name",
+        "last_name",
+        "username",
+        "active",
+        "email",
+        "password",
+    ]
     edit_columns = add_columns
     search_columns = list_columns
 
     add_model_schema = UserPostSchema()
     edit_model_schema = UserPutSchema()
- 
+
     def pre_update(self, item):
         """
             Override this, will be called after update
         """
         item.changed_on = datetime.now()
         item.changed_by_fk = g.user.id
-        if (item.password):
+        if item.password:
             item.password = generate_password_hash(item.password)
 
     def pre_add(self, item):
@@ -101,11 +110,15 @@ class UserApi(ModelRestApi):
                     setattr(model, key, value)
                 else:
                     for role_id in item[key]:
-                        role = current_app.appbuilder.session.query(Role).filter(Role.id == role_id).first()
+                        role = (
+                            current_app.appbuilder.session.query(Role)
+                            .filter(Role.id == role_id)
+                            .first()
+                        )
                         role.user_id = model.id
                         role.role_id = role_id
                         roles.append(role)
-            
+
             if "roles" in item.keys():
                 model.roles = roles
 
@@ -113,7 +126,7 @@ class UserApi(ModelRestApi):
             self.datamodel.add(model, raise_exception=True)
         except ValidationError as error:
             return self.response_400(message=error.messages)
-        return self.response(201, id = model.id, result=item)
+        return self.response(201, id=model.id, result=item)
 
     @expose("/<pk>", methods=["PUT"])
     @protect()
@@ -160,27 +173,31 @@ class UserApi(ModelRestApi):
             item = self.edit_model_schema.load(request.json)
             model = self.datamodel.get(pk, self._base_filters)
             roles = []
-            
+
             for key, value in item.items():
                 if key != "roles":
                     setattr(model, key, value)
                 else:
                     for role_id in item[key]:
-                        role = current_app.appbuilder.session.query(Role).filter(Role.id == role_id).first()
+                        role = (
+                            current_app.appbuilder.session.query(Role)
+                            .filter(Role.id == role_id)
+                            .first()
+                        )
                         role.user_id = model.id
                         role.role_id = role_id
                         roles.append(role)
-            
+
             if "roles" in item.keys():
                 model.roles = roles
-            
+
             self.pre_update(model)
             self.datamodel.edit(model, raise_exception=True)
             return self.response(
                 200,
                 **{API_RESULT_RES_KEY: self.edit_model_schema.dump(item, many=False)},
             )
-        
+
         except ValidationError as e:
             return self.response_400(message=e.messages)
         except IntegrityError as e:
