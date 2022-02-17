@@ -212,7 +212,7 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                     'scope': 'openid profile email groups'
                 },
                 'access_token_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/token',
-                'authorize_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize',
+                'authorize_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize'}
         },
         {'name': 'aws_cognito', 'icon': 'fa-amazon',
             'token_key': 'access_token',
@@ -224,7 +224,7 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                     'scope': 'openid email aws.cognito.signin.user.admin'
                 },
                 'access_token_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/token',
-                'authorize_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize',
+                'authorize_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize'}
         }
     ]
 
