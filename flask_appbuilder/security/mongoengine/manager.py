@@ -5,6 +5,7 @@ from typing import List, Optional, Union
 import uuid
 
 from werkzeug.security import generate_password_hash
+
 from .models import Permission, PermissionView, RegisterUser, Role, User, ViewMenu
 from ..manager import BaseSecurityManager
 from ... import const as c

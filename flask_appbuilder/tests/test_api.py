@@ -168,7 +168,6 @@ class APITestCase(FABTestCase):
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("flask_appbuilder.tests.config_api")
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
-        self.app.config["ENABLE_USER_CRUD_API"] = True
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -3102,6 +3101,180 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_put(client, token, uri, {})
         self.assertEqual(rv.status_code, 404)
 
+
+class UserRolePermissionTestCase(FABTestCase):
+    def setUp(self):
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+
+        self.app = Flask(__name__)
+        self.basedir = os.path.abspath(os.path.dirname(__file__))
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config["ENABLE_USER_CRUD_API"] = True
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+    def tearDown(self):
+        self.appbuilder.get_session.close()
+        engine = self.db.session.get_bind(mapper=None, clause=None)
+        engine.dispose()
+
+    def test_permission_api(self):
+        """REST Api: Test permission apis
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/permission/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/permission/1"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/permission/"
+        create_permission_payload = {"name": "super duper fab permission"}
+        rv = self.auth_client_post(client, token, uri, create_permission_payload)
+        add_permission_response = json.loads(rv.data)
+        self.assertEqual(rv.status_code, 201)
+        assert "id" and "result" in add_permission_response
+        self.assertEqual(create_permission_payload, add_permission_response["result"])
+
+        uri = f"api/v1/permission/{add_permission_response['id']}"
+        rv = self.auth_client_put(
+            client, token, uri, {"name": "different permission name"}
+        )
+        put_permission_response = json.loads(rv.data)
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(
+            put_permission_response["result"].get("name", ""),
+            "different permission name",
+        )
+
+        uri = f"api/v1/permission/{add_permission_response['id']}"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+    def test_view_api(self):
+        """REST Api: Test permission apis
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/viewmenu/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/viewmenu/1"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/viewmenu/"
+        create_permission_payload = {"name": "super duper fab view"}
+        rv = self.auth_client_post(client, token, uri, create_permission_payload)
+        add_permission_response = json.loads(rv.data)
+        self.assertEqual(rv.status_code, 201)
+        assert "id" and "result" in add_permission_response
+        self.assertEqual(create_permission_payload, add_permission_response["result"])
+
+        uri = f"api/v1/viewmenu/{add_permission_response['id']}"
+        rv = self.auth_client_put(
+            client, token, uri, {"name": "different permission name"}
+        )
+        put_permission_response = json.loads(rv.data)
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(
+            put_permission_response["result"].get("name", ""),
+            "different permission name",
+        )
+
+        uri = f"api/v1/viewmenu/{add_permission_response['id']}"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+    def test_permission_view_api(self):
+        """REST Api: Test permission apis
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/permissionviewmenu/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/permissionviewmenu/1"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        test_permission = self.appbuilder.sm.add_permission("test_permission")
+        test_view_menu = self.appbuilder.sm.add_view_menu("test_view_menu")
+
+        uri = "api/v1/permissionviewmenu/"
+        create_permission_payload = {
+            "permission_id": test_permission.id,
+            "view_menu_id": test_view_menu.id,
+        }
+        rv = self.auth_client_post(client, token, uri, create_permission_payload)
+        add_permission_response = json.loads(rv.data)
+        self.assertEqual(rv.status_code, 201)
+        assert "id" and "result" in add_permission_response
+        self.assertEqual(create_permission_payload, add_permission_response["result"])
+
+        uri = f"api/v1/permissionviewmenu/{add_permission_response['id']}"
+        rv = self.auth_client_put(client, token, uri, {"view_menu_id": "2"})
+        put_permission_response = json.loads(rv.data)
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(put_permission_response["result"].get("view_menu_id", None), 2)
+
+        uri = f"api/v1/permissionviewmenu/{add_permission_response['id']}"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        self.appbuilder.sm.del_permission("test_permission")
+        self.appbuilder.sm.del_view_menu("test_view_menu")
+
+    def test_role_api(self):
+        """REST Api: Test role apis
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/role/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/role/1"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/role/"
+        create_user_payload = {"name": "super duper role", "permissions": [1]}
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        add_role_response = json.loads(rv.data)
+
+        self.assertEqual(rv.status_code, 201)
+        assert "id" and "result" in add_role_response
+        self.assertEqual(create_user_payload, add_role_response["result"])
+
+        uri = f"api/v1/role/{add_role_response['id']}"
+        rv = self.auth_client_put(
+            client, token, uri, {"name": "different name", "permissions": [1, 2]}
+        )
+        put_role_response = json.loads(rv.data)
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(put_role_response["result"].get("permissions", []), [1, 2])
+        self.assertEqual(put_role_response["result"].get("name", ""), "different name")
+
+        uri = f"api/v1/role/{add_role_response['id']}"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
     def test_user_api(self):
         """REST Api: Test user apis
         """
@@ -3113,7 +3286,7 @@ class APITestCase(FABTestCase):
         print("rv ", rv.data)
         self.assertEqual(rv.status_code, 200)
 
-        uri = "api/v1/user/4"
+        uri = "api/v1/user/1"
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
 
@@ -3147,88 +3320,6 @@ class APITestCase(FABTestCase):
         )
 
         uri = f"api/v1/user/{add_user_response['id']}"
-        rv = self.auth_client_delete(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-
-    def test_role_api(self):
-        """REST Api: Test role apis
-        """
-        client = self.app.test_client()
-        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        uri = "api/v1/role/"
-        rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
-        self.assertEqual(rv.status_code, 200)
-
-        uri = "api/v1/role/1"
-        rv = self.auth_client_get(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-
-        uri = "api/v1/role/"
-        create_user_payload = {"name": "super duper role", "permissions": [1]}
-
-        rv = self.auth_client_post(client, token, uri, create_user_payload)
-        add_role_response = json.loads(rv.data)
-
-        self.assertEqual(rv.status_code, 201)
-        assert "id" and "result" in add_role_response
-        self.assertEqual(create_user_payload, add_role_response["result"])
-
-        uri = f"api/v1/role/{add_role_response['id']}"
-        rv = self.auth_client_put(
-            client, token, uri, {"name": "different name", "permissions": [1, 2]}
-        )
-        put_role_response = json.loads(rv.data)
-
-        self.assertEqual(rv.status_code, 200)
-        self.assertEqual(put_role_response["result"].get("permissions", []), [1, 2])
-        self.assertEqual(put_role_response["result"].get("name", ""), "different name")
-
-        uri = f"api/v1/role/{add_role_response['id']}"
-        rv = self.auth_client_delete(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-
-    def test_permission_api(self):
-        """REST Api: Test permission apis
-        """
-        client = self.app.test_client()
-        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        uri = "api/v1/permission/"
-        rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
-        self.assertEqual(rv.status_code, 200)
-
-        uri = "api/v1/permission/1"
-        rv = self.auth_client_get(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-
-        uri = "api/v1/permission/"
-        create_permission_payload = {
-            "name": "super duper fab permission 1",
-        }
-
-        rv = self.auth_client_post(client, token, uri, create_permission_payload)
-        add_permission_response = json.loads(rv.data)
-
-        self.assertEqual(rv.status_code, 201)
-        assert "id" and "result" in add_permission_response
-        self.assertEqual(create_permission_payload, add_permission_response["result"])
-
-        uri = f"api/v1/permission/{add_permission_response['id']}"
-        rv = self.auth_client_put(
-            client, token, uri, {"name": "different permission name"}
-        )
-        put_permission_response = json.loads(rv.data)
-
-        self.assertEqual(rv.status_code, 200)
-        self.assertEqual(
-            put_permission_response["result"].get("name", ""),
-            "different permission name",
-        )
-
-        uri = f"api/v1/permission/{add_permission_response['id']}"
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 200)
 
@@ -3268,6 +3359,16 @@ class UserRolePermissionDisabledTestCase(FABTestCase):
         print("rv ", rv.data)
         self.assertEqual(rv.status_code, 404)
 
+        uri = "api/v1/viewmenu/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/permissionviewmenu/"
+        rv = self.auth_client_get(client, token, uri)
+        print("rv ", rv.data)
+        self.assertEqual(rv.status_code, 404)
+
 
 class UserPasswordComplexityTestCase(FABTestCase):
     def setUp(self):
@@ -3291,15 +3392,6 @@ class UserPasswordComplexityTestCase(FABTestCase):
         self.user_model = User
 
     def tearDown(self):
-        session = self.appbuilder.get_session
-        user = (
-            session.query(self.user_model)
-            .filter(self.user_model.username == "password complexity test user 10")
-            .one_or_none()
-        )
-        session.delete(user)
-        session.commit()
-
         self.appbuilder.get_session.close()
         engine = self.db.session.get_bind(mapper=None, clause=None)
         engine.dispose()
@@ -3324,3 +3416,12 @@ class UserPasswordComplexityTestCase(FABTestCase):
         create_user_payload["password"] = "bigger password"
         rv = self.auth_client_post(client, token, uri, create_user_payload)
         self.assertEqual(rv.status_code, 201)
+
+        session = self.appbuilder.get_session
+        user = (
+            session.query(self.user_model)
+            .filter(self.user_model.username == "password complexity test user 10")
+            .one_or_none()
+        )
+        session.delete(user)
+        session.commit()

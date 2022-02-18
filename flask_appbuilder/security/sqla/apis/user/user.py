@@ -1,16 +1,18 @@
 from datetime import datetime
+
+from flask import current_app
 from flask import g, request
 from flask_appbuilder import ModelRestApi
-from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.security.decorators import protect, permission_name
-from flask_appbuilder.security.sqla.models import User, Role
-from werkzeug.security import generate_password_hash
-from .schema import UserPostSchema, UserPutSchema
-from marshmallow import ValidationError
 from flask_appbuilder.api import expose, safe
-from flask import current_app
 from flask_appbuilder.const import API_RESULT_RES_KEY
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.security.decorators import permission_name, protect
+from flask_appbuilder.security.sqla.models import Role, User
+from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
+from werkzeug.security import generate_password_hash
+
+from .schema import UserPostSchema, UserPutSchema
 
 
 class UserApi(ModelRestApi):

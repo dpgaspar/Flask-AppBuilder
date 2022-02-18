@@ -1,6 +1,7 @@
 from marshmallow import fields, Schema
-from .validator import PasswordComplexityValidator
 from marshmallow.validate import Length
+
+from .validator import PasswordComplexityValidator
 
 
 class UserPostSchema(Schema):

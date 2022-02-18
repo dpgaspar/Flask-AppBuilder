@@ -1,8 +1,8 @@
-from marshmallow.validate import Validator
-from marshmallow.exceptions import ValidationError
 from flask import current_app
-from flask_appbuilder.validators import default_password_complexity
 from flask_appbuilder.exceptions import PasswordComplexityValidationError
+from flask_appbuilder.validators import default_password_complexity
+from marshmallow.exceptions import ValidationError
+from marshmallow.validate import Validator
 
 
 class PasswordComplexityValidator(Validator):
