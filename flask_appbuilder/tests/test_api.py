@@ -3292,7 +3292,7 @@ class UserRolePermissionTestCase(FABTestCase):
             "last_name": "admin",
             "password": "password",
             "roles": [1],
-            "username": "fab_user_api_test"
+            "username": "fab_user_api_test",
         }
         rv = self.auth_client_post(client, token, uri, create_user_payload)
         add_user_response = json.loads(rv.data)
