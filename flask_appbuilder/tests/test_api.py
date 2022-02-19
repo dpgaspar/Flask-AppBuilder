@@ -3113,6 +3113,7 @@ class UserRolePermissionTestCase(FABTestCase):
         self.app.config["ENABLE_USER_CRUD_API"] = True
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+        print(" ===== === = = == test session ", self.db.session)
 
     def tearDown(self):
         self.appbuilder.get_session.close()
@@ -3127,7 +3128,6 @@ class UserRolePermissionTestCase(FABTestCase):
 
         uri = "api/v1/permission/"
         rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
         self.assertEqual(rv.status_code, 200)
 
         uri = "api/v1/permission/1"
@@ -3158,14 +3158,13 @@ class UserRolePermissionTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
 
     def test_view_api(self):
-        """REST Api: Test permission apis
+        """REST Api: Test view apis
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         uri = "api/v1/viewmenu/"
         rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
         self.assertEqual(rv.status_code, 200)
 
         uri = "api/v1/viewmenu/1"
@@ -3196,14 +3195,13 @@ class UserRolePermissionTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
 
     def test_permission_view_api(self):
-        """REST Api: Test permission apis
+        """REST Api: Test permission view apis
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         uri = "api/v1/permissionviewmenu/"
         rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
         self.assertEqual(rv.status_code, 200)
 
         uri = "api/v1/permissionviewmenu/1"
@@ -3245,7 +3243,6 @@ class UserRolePermissionTestCase(FABTestCase):
 
         uri = "api/v1/role/"
         rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
         self.assertEqual(rv.status_code, 200)
 
         uri = "api/v1/role/1"
@@ -3256,7 +3253,6 @@ class UserRolePermissionTestCase(FABTestCase):
         create_user_payload = {"name": "super duper role", "permissions": [1]}
         rv = self.auth_client_post(client, token, uri, create_user_payload)
         add_role_response = json.loads(rv.data)
-
         self.assertEqual(rv.status_code, 201)
         assert "id" and "result" in add_role_response
         self.assertEqual(create_user_payload, add_role_response["result"])
@@ -3266,7 +3262,6 @@ class UserRolePermissionTestCase(FABTestCase):
             client, token, uri, {"name": "different name", "permissions": [1, 2]}
         )
         put_role_response = json.loads(rv.data)
-
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(put_role_response["result"].get("permissions", []), [1, 2])
         self.assertEqual(put_role_response["result"].get("name", ""), "different name")
@@ -3283,7 +3278,6 @@ class UserRolePermissionTestCase(FABTestCase):
 
         uri = "api/v1/user/"
         rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
         self.assertEqual(rv.status_code, 200)
 
         uri = "api/v1/user/1"
@@ -3293,16 +3287,15 @@ class UserRolePermissionTestCase(FABTestCase):
         uri = "api/v1/user/"
         create_user_payload = {
             "active": True,
-            "email": "fab@userapiposttest3.com",
+            "email": "fab@usearapitest.com",
             "first_name": "fab",
             "last_name": "admin",
-            "password": "pass",
+            "password": "password",
             "roles": [1],
-            "username": "fabuseraddtest3",
+            "username": "fab_user_api_test"
         }
         rv = self.auth_client_post(client, token, uri, create_user_payload)
         add_user_response = json.loads(rv.data)
-
         self.assertEqual(rv.status_code, 201)
         assert "id" and "result" in add_user_response
         self.assertEqual(create_user_payload, add_user_response["result"])
@@ -3312,7 +3305,6 @@ class UserRolePermissionTestCase(FABTestCase):
             client, token, uri, {"email": "newemail2@fab.com", "roles": [2]}
         )
         put_user_response = json.loads(rv.data)
-
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(put_user_response["result"].get("roles", []), [2])
         self.assertEqual(
@@ -3346,27 +3338,22 @@ class UserRolePermissionDisabledTestCase(FABTestCase):
 
         uri = "api/v1/user/"
         rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
         self.assertEqual(rv.status_code, 404)
 
         uri = "api/v1/role/"
         rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
         self.assertEqual(rv.status_code, 404)
 
         uri = "api/v1/permission/"
         rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
         self.assertEqual(rv.status_code, 404)
 
         uri = "api/v1/viewmenu/"
         rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
         self.assertEqual(rv.status_code, 404)
 
         uri = "api/v1/permissionviewmenu/"
         rv = self.auth_client_get(client, token, uri)
-        print("rv ", rv.data)
         self.assertEqual(rv.status_code, 404)
 
 

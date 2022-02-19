@@ -56,18 +56,12 @@ class UserApi(ModelRestApi):
     edit_model_schema = UserPutSchema()
 
     def pre_update(self, item):
-        """
-            Override this, will be called after update
-        """
         item.changed_on = datetime.now()
         item.changed_by_fk = g.user.id
         if item.password:
             item.password = generate_password_hash(item.password)
 
     def pre_add(self, item):
-        """
-            Override this, will be called after update
-        """
         item.password = generate_password_hash(item.password)
 
     @expose("/", methods=["POST"])
@@ -113,7 +107,7 @@ class UserApi(ModelRestApi):
                 else:
                     for role_id in item[key]:
                         role = (
-                            current_app.appbuilder.session.query(Role)
+                            current_app.appbuilder.get_session.query(Role)
                             .filter(Role.id == role_id)
                             .first()
                         )
