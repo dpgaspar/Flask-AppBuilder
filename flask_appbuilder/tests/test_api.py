@@ -3102,7 +3102,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 404)
 
 
-class UserRolePermissionTestCase(FABTestCase):
+class UserAPITestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
@@ -3113,7 +3113,69 @@ class UserRolePermissionTestCase(FABTestCase):
         self.app.config["ENABLE_USER_CRUD_API"] = True
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
-        print(" ===== === = = == test session ", self.db.session)
+
+    def tearDown(self):
+        self.appbuilder.get_session.close()
+        engine = self.db.session.get_bind(mapper=None, clause=None)
+        engine.dispose()
+
+    def test_user_api(self):
+        """REST Api: Test user apis
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/user/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/user/1"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        uri = "api/v1/user/"
+        create_user_payload = {
+            "active": True,
+            "email": "fab@usearapiteaasdst.com",
+            "first_name": "fab",
+            "last_name": "admin",
+            "password": "password",
+            "roles": [1],
+            "username": "fasab_usear_api_test",
+        }
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        add_user_response = json.loads(rv.data)
+        self.assertEqual(rv.status_code, 201)
+        assert "id" and "result" in add_user_response
+        self.assertEqual(create_user_payload, add_user_response["result"])
+
+        uri = f"api/v1/user/{add_user_response['id']}"
+        rv = self.auth_client_put(
+            client, token, uri, {"email": "newemail2@fab.com", "roles": [2]}
+        )
+        put_user_response = json.loads(rv.data)
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(put_user_response["result"].get("roles", []), [2])
+        self.assertEqual(
+            put_user_response["result"].get("email", ""), "newemail2@fab.com"
+        )
+
+        uri = f"api/v1/user/{add_user_response['id']}"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+
+class RolePermissionAPITestCase(FABTestCase):
+    def setUp(self):
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+
+        self.app = Flask(__name__)
+        self.basedir = os.path.abspath(os.path.dirname(__file__))
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config["ENABLE_USER_CRUD_API"] = True
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def tearDown(self):
         self.appbuilder.get_session.close()
@@ -3267,51 +3329,6 @@ class UserRolePermissionTestCase(FABTestCase):
         self.assertEqual(put_role_response["result"].get("name", ""), "different name")
 
         uri = f"api/v1/role/{add_role_response['id']}"
-        rv = self.auth_client_delete(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-
-    def test_user_api(self):
-        """REST Api: Test user apis
-        """
-        client = self.app.test_client()
-        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        uri = "api/v1/user/"
-        rv = self.auth_client_get(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-
-        uri = "api/v1/user/1"
-        rv = self.auth_client_get(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-
-        uri = "api/v1/user/"
-        create_user_payload = {
-            "active": True,
-            "email": "fab@usearapitest.com",
-            "first_name": "fab",
-            "last_name": "admin",
-            "password": "password",
-            "roles": [1],
-            "username": "fab_user_api_test",
-        }
-        rv = self.auth_client_post(client, token, uri, create_user_payload)
-        add_user_response = json.loads(rv.data)
-        self.assertEqual(rv.status_code, 201)
-        assert "id" and "result" in add_user_response
-        self.assertEqual(create_user_payload, add_user_response["result"])
-
-        uri = f"api/v1/user/{add_user_response['id']}"
-        rv = self.auth_client_put(
-            client, token, uri, {"email": "newemail2@fab.com", "roles": [2]}
-        )
-        put_user_response = json.loads(rv.data)
-        self.assertEqual(rv.status_code, 200)
-        self.assertEqual(put_user_response["result"].get("roles", []), [2])
-        self.assertEqual(
-            put_user_response["result"].get("email", ""), "newemail2@fab.com"
-        )
-
-        uri = f"api/v1/user/{add_user_response['id']}"
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 200)
 
