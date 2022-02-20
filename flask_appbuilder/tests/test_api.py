@@ -3114,10 +3114,11 @@ class UserAPITestCase(FABTestCase):
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
-        # TODO: this heinous hack is to avoid using stale db session leaking from RolePermissionAPITestCase
+        # TODO: this heinous hack is to avoid using stale db session leaking from
+        # RolePermissionAPITestCase
         # don't know why all baseviews in Appbuilder are attached to stale session,
         # causing error when adding a new user which reads roles from this session and
-        # datamodel uses stale session to add it using stale session.
+        # datamodel uses stale session to add it.
         for b in self.appbuilder.baseviews:
             if hasattr(b, "datamodel") and b.datamodel.session is not None:
                 b.datamodel.session = self.db.session
@@ -3402,6 +3403,15 @@ class UserPasswordComplexityTestCase(FABTestCase):
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
         self.user_model = User
+
+        # TODO: this heinous hack is to avoid using stale db session leaking from
+        # RolePermissionAPITestCase
+        # don't know why all baseviews in Appbuilder are attached to stale session,
+        # causing error when adding a new user which reads roles from this session and
+        # datamodel uses stale session to add it.
+        for b in self.appbuilder.baseviews:
+            if hasattr(b, "datamodel") and b.datamodel.session is not None:
+                b.datamodel.session = self.db.session
 
     def tearDown(self):
         self.appbuilder.get_session.close()
