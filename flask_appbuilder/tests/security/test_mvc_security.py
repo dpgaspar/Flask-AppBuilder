@@ -26,6 +26,7 @@ def custom_password_validator(password: str) -> None:
 class MVCSecurityTestCase(BaseMVCTestCase):
     def setUp(self):
         super().setUp()
+        self.client = self.app.test_client()
 
         class Model2View(ModelView):
             datamodel = SQLAInterface(Model2)
@@ -58,32 +59,83 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         Test Security Login, Logout, invalid login, invalid access
         """
-        client = self.app.test_client()
 
         # Try to List and Redirect to Login
-        rv = client.get("/model1view/list/")
+        rv = self.client.get("/model1view/list/")
         self.assertEqual(rv.status_code, 302)
-        rv = client.get("/model2view/list/")
+        rv = self.client.get("/model2view/list/")
         self.assertEqual(rv.status_code, 302)
 
         # Login and list with admin
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/model1view/list/")
+        self.browser_login(self.client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = self.client.get("/model1view/list/")
         self.assertEqual(rv.status_code, 200)
-        rv = client.get("/model2view/list/")
+        rv = self.client.get("/model2view/list/")
         self.assertEqual(rv.status_code, 200)
 
         # Logout and and try to list
-        self.browser_logout(client)
-        rv = client.get("/model1view/list/")
+        self.browser_logout(self.client)
+        rv = self.client.get("/model1view/list/")
         self.assertEqual(rv.status_code, 302)
-        rv = client.get("/model2view/list/")
+        rv = self.client.get("/model2view/list/")
         self.assertEqual(rv.status_code, 302)
 
         # Invalid Login
-        rv = self.browser_login(client, USERNAME_ADMIN, "wrong_password")
+        rv = self.browser_login(self.client, USERNAME_ADMIN, "wrong_password")
         data = rv.data.decode("utf-8")
         self.assertIn(INVALID_LOGIN_STRING, data)
+
+    def test_db_login_no_next_url(self):
+        """
+        Test Security no next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client, USERNAME_ADMIN, PASSWORD_ADMIN, follow_redirects=False
+        )
+        assert response.location == "http://localhost/"
+
+    def test_db_login_valid_next_url(self):
+        """
+        Test Security valid partial next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="/users/list/",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/users/list/"
+
+    def test_db_login_valid_full_next_url(self):
+        """
+        Test Security valid full next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="http://localhost/users/add",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/users/add"
+
+    def test_db_login_invalid_next_url(self):
+        """
+        Test Security invalid next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://www.google.com",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/"
 
     def test_auth_builtin_roles(self):
         """
