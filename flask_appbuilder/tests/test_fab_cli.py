@@ -9,6 +9,7 @@ from click.testing import CliRunner
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.cli import (
+    cast_int_like_to_int,
     create_app,
     create_permissions,
     create_user,
@@ -17,7 +18,6 @@ from flask_appbuilder.cli import (
     list_users,
     list_views,
     reset_password,
-    cast_int_like_to_int,
 )
 
 from .base import FABTestCase
