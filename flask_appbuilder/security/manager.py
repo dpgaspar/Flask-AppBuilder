@@ -12,7 +12,7 @@ from flask_jwt_extended import JWTManager
 from flask_login import current_user, LoginManager
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from .api import SecurityApi, AuthApi
+from .api import AuthApi, SecurityApi
 from .registerviews import (
     RegisterUserDBView,
     RegisterUserOAuthView,
@@ -779,7 +779,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 category="Security",
             )
         if self.appbuilder.app.config.get(
-                "FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW", True
+            "FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW", True
         ):
             self.appbuilder.add_view(
                 self.permissionviewmodelview,
@@ -952,7 +952,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             return None, None
 
     def _ldap_calculate_user_roles(
-            self, user_attributes: Dict[str, bytes]
+        self, user_attributes: Dict[str, bytes]
     ) -> List[str]:
         user_role_objects = set()
 
@@ -1024,7 +1024,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     @staticmethod
     def ldap_extract(
-            ldap_dict: Dict[str, bytes], field_name: str, fallback: str
+        ldap_dict: Dict[str, bytes], field_name: str, fallback: str
     ) -> str:
         raw_value = ldap_dict.get(field_name, [bytes()])
         # decode - if empty string, default to fallback, otherwise take first element
@@ -1396,7 +1396,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if permissions:
             for i in permissions:
                 if (view_name == i.view_menu.name) and (
-                        permission_name == i.permission.name
+                    permission_name == i.permission.name
                 ):
                     return True
             return False
@@ -1404,7 +1404,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             return False
 
     def _has_access_builtin_roles(
-            self, role, permission_name: str, view_name: str
+        self, role, permission_name: str, view_name: str
     ) -> bool:
         """
             Checks permission on builtin role
@@ -1414,13 +1414,13 @@ class BaseSecurityManager(AbstractSecurityManager):
             _view_name = pvm[0]
             _permission_name = pvm[1]
             if re.match(_view_name, view_name) and re.match(
-                    _permission_name, permission_name
+                _permission_name, permission_name
             ):
                 return True
         return False
 
     def _has_view_access(
-            self, user: object, permission_name: str, view_name: str
+        self, user: object, permission_name: str, view_name: str
     ) -> bool:
         roles = user.roles
         db_role_ids = list()
@@ -1468,7 +1468,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         return result
 
     def _get_user_permission_view_menus(
-            self, user: object, permission_name: str, view_menus_name: List[str]
+        self, user: object, permission_name: str, view_menus_name: List[str]
     ) -> Set[str]:
         """
         Return a set of view menu names with a certain permission name
@@ -1488,7 +1488,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             if role.name in self.builtin_roles:
                 for view_menu_name in view_menus_name:
                     if self._has_access_builtin_roles(
-                            role, permission_name, view_menu_name
+                        role, permission_name, view_menu_name
                     ):
                         result.add(view_menu_name)
             else:
@@ -1570,8 +1570,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                         self.del_permission_role(role, perm)
                     self.del_permission_view_menu(perm_view.permission.name, view_menu)
                 elif (
-                        self.auth_role_admin not in self.builtin_roles
-                        and perm_view not in role_admin.permissions
+                    self.auth_role_admin not in self.builtin_roles
+                    and perm_view not in role_admin.permissions
                 ):
                     # Role Admin must have all permissions
                     self.add_permission_role(role_admin, perm_view)
@@ -1628,7 +1628,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             )
             # Actions do not get prefix when normally defined
             if hasattr(baseview, "actions") and baseview.actions.get(
-                    old_permission_name
+                old_permission_name
             ):
                 permission_prefix = ""
             else:
@@ -1646,11 +1646,11 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     @staticmethod
     def _add_state_transition(
-            state_transition: Dict,
-            old_view_name: str,
-            old_perm_name: str,
-            view_name: str,
-            perm_name: str,
+        state_transition: Dict,
+        old_view_name: str,
+        old_perm_name: str,
+        view_name: str,
+        perm_name: str,
     ) -> None:
         old_pvm = state_transition["add"].get((old_view_name, old_perm_name))
         if old_pvm:
@@ -1802,7 +1802,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def add_register_user(
-            self, username, first_name, last_name, email, password="", hashed_password=""
+        self, username, first_name, last_name, email, password="", hashed_password=""
     ):
         """
             Generic function to add user registration
@@ -1902,12 +1902,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def find_roles_permission_view_menus(
-            self, permission_name: str, role_ids: List[int]
+        self, permission_name: str, role_ids: List[int]
     ):
         raise NotImplementedError
 
     def exist_permission_on_roles(
-            self, view_name: str, permission_name: str, role_ids: List[int]
+        self, view_name: str, permission_name: str, role_ids: List[int]
     ) -> bool:
         """
             Finds and returns permission views for a group of roles
@@ -2028,7 +2028,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def export_roles(
-            self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
+        self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
     ) -> None:
         """ Exports roles to JSON file. """
         raise NotImplementedError

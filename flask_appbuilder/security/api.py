@@ -1,21 +1,24 @@
-import jwt
 import re
 
-from flask import g, request, Response, redirect
-from flask_login import login_user, logout_user
+from flask import g, redirect, request, Response
 from flask_appbuilder.api import BaseApi, safe
-from flask_appbuilder.security.decorators import has_access_api
 from flask_appbuilder.const import (
     API_SECURITY_ACCESS_TOKEN_KEY,
+    API_SECURITY_EMAIL_KEY,
+    API_SECURITY_FIRSTNAME_KEY,
+    API_SECURITY_LASTNAME_KEY,
+    API_SECURITY_METHOD_DB,
+    API_SECURITY_METHOD_LDAP,
+    API_SECURITY_METHOD_REMOTE,
+    API_SECURITY_PASSWORD_KEY,
     API_SECURITY_PROVIDER_DB,
     API_SECURITY_PROVIDER_LDAP,
     API_SECURITY_REFRESH_TOKEN_KEY,
-    API_SECURITY_VERSION, API_SECURITY_USERNAME_KEY, API_SECURITY_PASSWORD_KEY, API_SECURITY_METHOD_DB,
-    API_SECURITY_METHOD_LDAP, API_SECURITY_METHOD_REMOTE, API_SECURITY_FIRSTNAME_KEY, API_SECURITY_LASTNAME_KEY,
-    API_SECURITY_EMAIL_KEY,
+    API_SECURITY_USERNAME_KEY,
+    API_SECURITY_VERSION,
 )
+from flask_appbuilder.security.decorators import has_access_api
 from flask_appbuilder.security.schemas import login_post
-
 from flask_appbuilder.views import expose
 from flask_jwt_extended import (
     create_access_token,
@@ -23,8 +26,10 @@ from flask_jwt_extended import (
     get_jwt_identity,
     jwt_refresh_token_required,
 )
-from werkzeug.security import generate_password_hash
+from flask_login import login_user, logout_user
+import jwt
 from marshmallow import ValidationError
+from werkzeug.security import generate_password_hash
 
 
 class SecurityApi(BaseApi):
@@ -165,20 +170,21 @@ class AuthApi(BaseApi):
     For more information see flask_appbuilder.security.modelviews
 
     flask_appbuilder.security.api.SecurityApi was used as reference but reworked,
-    since it simply returns the jwt access and refresh token as json contrary to the functionality of
-    flask_appbuilder.security.modelviews where the tokens (with additional information) are stored in
-    a signed httpOnly cookie
+    since it simply returns the jwt access and refresh token as json contrary to
+    the functionality of    flask_appbuilder.security.modelviews where the tokens
+    (with additional information) are stored in a signed httpOnly cookie
 
-    Caveats: Doesn't support "Open ID" (since it refers to OpenID 2.0, which is deprecated).
+    Caveats: Doesn't support "Open ID" (since it is OpenID 2.0, which is deprecated).
              Doesn't support "REMOTE_USER"
 
     Fore more details see https://flask-appbuilder.readthedocs.io/en/latest/security.html
     """
+
     resource_name = "auth"
 
-    @expose('/login', methods=["POST"])
+    @expose("/login", methods=["POST"])
     @safe
-    def login(self):
+    def login(self, API_SECURITY_METHOD_KEY=None):
         """Login endpoint for the API, creates a session cookie
          ---
          post:
@@ -245,9 +251,7 @@ class AuthApi(BaseApi):
             if username:
                 user = self.appbuilder.sm.auth_user_remote_user(username)
         else:
-            return self.response_400(
-                message="Method {} not supported".format(method)
-            )
+            return self.response_400(message="Method {} not supported".format(method))
         if not user:
             return self.response_401()
 
@@ -255,7 +259,7 @@ class AuthApi(BaseApi):
         login_user(user, remember=False)
         return self.response(200, message="Login successful")
 
-    @expose('/login/<provider>', methods=["GET"])
+    @expose("/login/<provider>", methods=["GET"])
     @safe
     def init_oauth(self, provider):
         """OAuth initiation endpoint for the API
@@ -301,7 +305,7 @@ class AuthApi(BaseApi):
                     state=state.decode("ascii") if isinstance(state, bytes) else state,
                 )
 
-        except Exception as e:
+        except Exception:
             return self.response_500()
 
     @expose("/login/<provider>/callback")
@@ -338,7 +342,7 @@ class AuthApi(BaseApi):
         try:
             self.appbuilder.sm.set_oauth_session(provider, resp)
             userinfo = self.appbuilder.sm.oauth_user_info(provider, resp)
-        except Exception as e:
+        except Exception:
             user = None
         else:
             # User email is not whitelisted
@@ -356,38 +360,30 @@ class AuthApi(BaseApi):
             self.response_400(message="Invalid login. Please try again.")
         else:
             login_user(user)
-            try:
-                # redirect uri could be stored in state, I don't see the point though
-                state = jwt.decode(
-                    request.args["state"],
-                    self.appbuilder.app.config["SECRET_KEY"],
-                    algorithms=["HS256"],
-                )
-            except jwt.InvalidTokenError:
-                raise Exception("State signature is not valid!")
-
             return redirect(self.appbuilder.app.config["REDIRECT_URI"])
 
     @has_access_api
-    @expose('/logout', methods=["GET"])
+    @expose("/logout", methods=["GET"])
     @safe
     def logout(self):
         """Logs the user out and deletes session cookie"""
         logout_user()
         return self.response(200, message="Logout successful")
 
-    @expose('/signup', methods=["POST"])
+    @expose("/signup", methods=["POST"])
     @safe
     def signup(self):
         """
         This endpoint creates a new user
 
         More info:
-        - The base logic will register users for LDAP and OAuth automatically with a predefined model.
-          DB will expect user data by the client using a predefined model.
-        - To customize the registration flow for DB, LDAP or OAuth (for example to add custom data to registration)
-          create a custom SecurityManager class. As a starting point see `auth_user_db`, `auth_user_ldap` or
-          `auth_user_oauth` methods in flask_appbuilder.security.sqla/manager.manager.SecurityManager.
+        - The base logic will register users for LDAP and OAuth automatically
+          with a predefined model. DB will expect user data by the client
+          using a predefined model.
+        - To customize the registration flow for DB, LDAP or OAuth (for example
+          to add custom data to registration) create a custom SecurityManager class.
+          As a starting point see `auth_user_db`, `auth_user_ldap` or `auth_user_oauth`
+          methods in flask_appbuilder.security.sqla/manager.manager.SecurityManager.
           Adjust the front end accordingly.
        ---
        post:
@@ -460,7 +456,7 @@ class AuthApi(BaseApi):
             return self.response(200, message="Registration successful")
 
     @has_access_api
-    @expose('/authenticate', methods=["GET"])
+    @expose("/authenticate", methods=["GET"])
     @safe
     def authenticate(self):
         """
