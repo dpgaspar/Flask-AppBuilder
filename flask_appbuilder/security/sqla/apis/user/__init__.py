@@ -1,1 +1,1 @@
-from .user import UserApi  # noqa: F401
+from .api import UserApi  # noqa: F401

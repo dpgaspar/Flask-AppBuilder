@@ -23,7 +23,8 @@ class UserApi(ModelRestApi):
 
     list_columns = [
         "id",
-        "roles",
+        "roles.id",
+        "roles.name",
         "first_name",
         "last_name",
         "username",
@@ -109,11 +110,12 @@ class UserApi(ModelRestApi):
                         role = (
                             current_app.appbuilder.get_session.query(Role)
                             .filter(Role.id == role_id)
-                            .first()
+                            .one_or_none()
                         )
-                        role.user_id = model.id
-                        role.role_id = role_id
-                        roles.append(role)
+                        if role:
+                          role.user_id = model.id
+                          role.role_id = role_id
+                          roles.append(role)
 
             if "roles" in item.keys():
                 model.roles = roles
@@ -122,7 +124,7 @@ class UserApi(ModelRestApi):
             self.datamodel.add(model, raise_exception=True)
         except ValidationError as error:
             return self.response_400(message=error.messages)
-        return self.response(201, id=model.id, result=item)
+        return self.response(201, id=model.id)
 
     @expose("/<pk>", methods=["PUT"])
     @protect()
@@ -178,11 +180,12 @@ class UserApi(ModelRestApi):
                         role = (
                             current_app.appbuilder.session.query(Role)
                             .filter(Role.id == role_id)
-                            .first()
+                            .one_or_none()
                         )
-                        role.user_id = model.id
-                        role.role_id = role_id
-                        roles.append(role)
+                        if role:
+                          role.user_id = model.id
+                          role.role_id = role_id
+                          roles.append(role)
 
             if "roles" in item.keys():
                 model.roles = roles

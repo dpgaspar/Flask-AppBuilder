@@ -9,8 +9,8 @@ class PermissionViewMenuApi(ModelRestApi):
     datamodel = SQLAInterface(PermissionView)
     allow_browser_login = True
 
-    list_columns = ["id", "permission_id", "view_menu_id"]
+    list_columns = ["id", "permission.name", "view_menu.name"]
     show_columns = list_columns
     add_columns = ["permission_id", "view_menu_id"]
-    edit_columns = list_columns
+    edit_columns = add_columns
     search_columns = list_columns
