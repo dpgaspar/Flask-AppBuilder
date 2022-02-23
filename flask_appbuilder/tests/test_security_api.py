@@ -5,12 +5,10 @@ import os
 from flask_appbuilder import SQLA
 
 from .base import FABTestCase
-from .const import (
-    PASSWORD_ADMIN,
-    USERNAME_ADMIN
-)
+from .const import PASSWORD_ADMIN, USERNAME_ADMIN
 
 log = logging.getLogger(__name__)
+
 
 class UserAPITestCase(FABTestCase):
     def setUp(self):
@@ -67,11 +65,13 @@ class UserAPITestCase(FABTestCase):
         last_name = "last"
         email = "test_get_single_user@fab.com"
         password = "a"
-        role_name="get_single_user_role"
+        role_name = "get_single_user_role"
 
         role = self.appbuilder.sm.add_role(role_name)
-        user = self.appbuilder.sm.add_user(username, first_name, last_name, email, role, password)
-        
+        user = self.appbuilder.sm.add_user(
+            username, first_name, last_name, email, role, password
+        )
+
         uri = f"api/v1/user/{user.id}"
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
@@ -83,7 +83,7 @@ class UserAPITestCase(FABTestCase):
         self.assertEqual(result["first_name"], first_name)
         self.assertEqual(result["last_name"], last_name)
         self.assertEqual(result["email"], email)
-        self.assertEqual(result["roles"], [{"id" : role.id, "name": role_name}])
+        self.assertEqual(result["roles"], [{"id": role.id, "name": role_name}])
 
         user = (
             self.session.query(self.user_model)
@@ -91,7 +91,11 @@ class UserAPITestCase(FABTestCase):
             .first()
         )
         self.session.delete(user)
-        role = self.session.query(self.role_model).filter(self.role_model.id == role.id).first()
+        role = (
+            self.session.query(self.role_model)
+            .filter(self.role_model.id == role.id)
+            .first()
+        )
         self.session.delete(role)
 
         self.session.commit()
@@ -134,14 +138,14 @@ class UserAPITestCase(FABTestCase):
         assert "id" in add_user_response
 
         user = self.appbuilder.sm.get_user_by_id(add_user_response["id"])
-        
-        self.assertEqual(user.active,create_user_payload["active"])
-        self.assertEqual(user.email,create_user_payload["email"])
-        self.assertEqual(user.first_name,create_user_payload["first_name"])
-        self.assertEqual(user.last_name,create_user_payload["last_name"])
-        self.assertEqual(user.username,create_user_payload["username"])
-        self.assertEqual(len(user.roles),1)
-        self.assertEqual(user.roles[0].name,role_name)
+
+        self.assertEqual(user.active, create_user_payload["active"])
+        self.assertEqual(user.email, create_user_payload["email"])
+        self.assertEqual(user.first_name, create_user_payload["first_name"])
+        self.assertEqual(user.last_name, create_user_payload["last_name"])
+        self.assertEqual(user.username, create_user_payload["username"])
+        self.assertEqual(len(user.roles), 1)
+        self.assertEqual(user.roles[0].name, role_name)
 
         user = (
             self.session.query(self.user_model)
@@ -170,7 +174,9 @@ class UserAPITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 400)
 
         assert "message" in add_user_response
-        self.assertEqual(add_user_response["message"], {"roles": ["Shorter than minimum length 1."]})
+        self.assertEqual(
+            add_user_response["message"], {"roles": ["Shorter than minimum length 1."]}
+        )
 
     def test_create_user_with_invalid_role(self):
         client = self.app.test_client()
@@ -192,13 +198,13 @@ class UserAPITestCase(FABTestCase):
 
         user = self.appbuilder.sm.get_user_by_id(add_user_response["id"])
 
-        self.assertEqual(user.active,create_user_payload["active"])
-        self.assertEqual(user.email,create_user_payload["email"])
-        self.assertEqual(user.first_name,create_user_payload["first_name"])
-        self.assertEqual(user.last_name,create_user_payload["last_name"])
-        self.assertEqual(user.username,create_user_payload["username"])
-        self.assertEqual(len(user.roles),0)
-       
+        self.assertEqual(user.active, create_user_payload["active"])
+        self.assertEqual(user.email, create_user_payload["email"])
+        self.assertEqual(user.first_name, create_user_payload["first_name"])
+        self.assertEqual(user.last_name, create_user_payload["last_name"])
+        self.assertEqual(user.username, create_user_payload["username"])
+        self.assertEqual(len(user.roles), 0)
+
         user = (
             self.session.query(self.user_model)
             .filter(self.user_model.id == user.id)
@@ -206,7 +212,6 @@ class UserAPITestCase(FABTestCase):
         )
         self.session.delete(user)
         self.session.commit()
-
 
     def test_edit_user(self):
         client = self.app.test_client()
@@ -217,16 +222,18 @@ class UserAPITestCase(FABTestCase):
         last_name = "last"
         email = "test_edit_user13@fab.com"
         password = "a"
-        role_name_1="edit_user_role_1"
-        role_name_2="edit_user_role_2"
-        role_name_3="edit_user_role_3"
+        role_name_1 = "edit_user_role_1"
+        role_name_2 = "edit_user_role_2"
+        role_name_3 = "edit_user_role_3"
         updated_email = "test_edit_user_new7@fab.com"
 
         role_1 = self.appbuilder.sm.add_role(role_name_1)
         role_2 = self.appbuilder.sm.add_role(role_name_2)
         role_3 = self.appbuilder.sm.add_role(role_name_3)
-        user = self.appbuilder.sm.add_user(username, first_name, last_name, email, [role_1], password)
-        
+        user = self.appbuilder.sm.add_user(
+            username, first_name, last_name, email, [role_1], password
+        )
+
         user_id = user.id
         role_1_id = role_1.id
         role_2_id = role_2.id
@@ -234,7 +241,10 @@ class UserAPITestCase(FABTestCase):
 
         uri = f"api/v1/user/{user_id}"
         rv = self.auth_client_put(
-            client, token, uri, {"email": updated_email, "roles": [role_2_id, role_3_id]}
+            client,
+            token,
+            uri,
+            {"email": updated_email, "roles": [role_2_id, role_3_id]},
         )
         self.assertEqual(rv.status_code, 200)
         updated_user = self.appbuilder.sm.get_user_by_id(user_id)
@@ -243,7 +253,11 @@ class UserAPITestCase(FABTestCase):
         self.assertEqual(updated_user.roles[1].name, role_name_3)
         self.assertEqual(updated_user.email, updated_email)
 
-        roles = self.session.query(self.role_model).filter(self.role_model.id.in_([role_1_id, role_2_id, role_3_id])).all()
+        roles = (
+            self.session.query(self.role_model)
+            .filter(self.role_model.id.in_([role_1_id, role_2_id, role_3_id]))
+            .all()
+        )
         user = (
             self.session.query(self.user_model)
             .filter(self.user_model.id == user_id)
@@ -263,10 +277,12 @@ class UserAPITestCase(FABTestCase):
         last_name = "last"
         email = "test_delete_user_2@fab.com"
         password = "a"
-        role_name_1="delete_user_role_2"
+        role_name_1 = "delete_user_role_2"
 
         role = self.appbuilder.sm.add_role(role_name_1)
-        user = self.appbuilder.sm.add_user(username, first_name, last_name, email, [role], password)
+        user = self.appbuilder.sm.add_user(
+            username, first_name, last_name, email, [role], password
+        )
         role_id = role.id
         user_id = user.id
 
@@ -277,7 +293,11 @@ class UserAPITestCase(FABTestCase):
         updated_user = self.appbuilder.sm.get_user_by_id(user_id)
         assert not updated_user
 
-        role = self.session.query(self.role_model).filter(self.role_model.id == role_id).first()
+        role = (
+            self.session.query(self.role_model)
+            .filter(self.role_model.id == role_id)
+            .first()
+        )
         self.session.delete(role)
         self.session.commit()
 

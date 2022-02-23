@@ -113,9 +113,9 @@ class UserApi(ModelRestApi):
                             .one_or_none()
                         )
                         if role:
-                          role.user_id = model.id
-                          role.role_id = role_id
-                          roles.append(role)
+                            role.user_id = model.id
+                            role.role_id = role_id
+                            roles.append(role)
 
             if "roles" in item.keys():
                 model.roles = roles
@@ -183,9 +183,9 @@ class UserApi(ModelRestApi):
                             .one_or_none()
                         )
                         if role:
-                          role.user_id = model.id
-                          role.role_id = role_id
-                          roles.append(role)
+                            role.user_id = model.id
+                            role.role_id = role_id
+                            roles.append(role)
 
             if "roles" in item.keys():
                 model.roles = roles
