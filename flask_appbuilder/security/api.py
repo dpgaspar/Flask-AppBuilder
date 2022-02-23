@@ -442,14 +442,14 @@ class AuthApi(BaseApi):
 
         password = generate_password_hash(password)
         if not self.appbuilder.sm.add_user(
-                username=username,
-                email=email,
-                first_name=firstname,
-                last_name=lastname,
-                role=self.appbuilder.sm.find_role(
-                    self.appbuilder.sm.auth_user_registration_role
-                ),
-                hashed_password=password,
+            username=username,
+            email=email,
+            first_name=firstname,
+            last_name=lastname,
+            role=self.appbuilder.sm.find_role(
+                self.appbuilder.sm.auth_user_registration_role
+            ),
+            hashed_password=password,
         ):
             return self.response_500()
         else:
