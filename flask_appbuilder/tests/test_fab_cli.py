@@ -9,6 +9,7 @@ from click.testing import CliRunner
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.cli import (
+    cast_int_like_to_int,
     create_app,
     create_permissions,
     create_user,
@@ -78,6 +79,22 @@ class FlaskTestCase(FABTestCase):
             result = runner.invoke(list_views, [])
             self.assertIn("List of registered views", result.output)
             self.assertIn(" Route:/api/v1/security", result.output)
+
+    def test_cast_int_like_to_int(self):
+        scenarii = {
+            -1: -1,
+            0: 0,
+            1: 1,
+            "-1": -1,
+            "0": 0,
+            "1": 1,
+            "+1": 1,
+            "foo": "foo",
+            None: None,
+        }
+
+        for input, expected_output in scenarii.items():
+            self.assertEqual(cast_int_like_to_int(input), expected_output)
 
 
 class SQLAlchemyImportExportTestCase(FABTestCase):
