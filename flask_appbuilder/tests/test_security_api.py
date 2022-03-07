@@ -923,7 +923,7 @@ class UserRolePermissionDisabledTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 404)
 
 
-class UserPasswordComplexityTestCase(FABTestCase):
+class UserCustomPasswordComplexityValidatorTestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
@@ -979,6 +979,67 @@ class UserPasswordComplexityTestCase(FABTestCase):
         user = (
             session.query(self.user_model)
             .filter(self.user_model.username == "password complexity test user 10")
+            .one_or_none()
+        )
+        session.delete(user)
+        session.commit()
+
+
+class UserDefaultPasswordComplexityValidatorTestCase(FABTestCase):
+    def setUp(self):
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+        from flask_appbuilder.exceptions import PasswordComplexityValidationError
+        from flask_appbuilder.security.sqla.models import User
+
+        def passwordValidator(password):
+            if len(password) < 5:
+                raise PasswordComplexityValidationError
+
+        self.app = Flask(__name__)
+        self.basedir = os.path.abspath(os.path.dirname(__file__))
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config["ENABLE_USER_CRUD_API"] = True
+        self.app.config["FAB_PASSWORD_COMPLEXITY_ENABLED"] = True
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.user_model = User
+
+        # TODO:remove this hack
+        for b in self.appbuilder.baseviews:
+            if hasattr(b, "datamodel") and b.datamodel.session is not None:
+                b.datamodel.session = self.db.session
+
+    def tearDown(self):
+        self.appbuilder.get_session.close()
+        engine = self.db.session.get_bind(mapper=None, clause=None)
+        engine.dispose()
+
+    def test_password_complexity(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/users/"
+        create_user_payload = {
+            "active": True,
+            "email": "fab@defalultpasswordtest.com",
+            "first_name": "fab",
+            "last_name": "admin",
+            "password": "this is very big pasword",
+            "roles": [1],
+            "username": "password complexity test user",
+        }
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        self.assertEqual(rv.status_code, 400)
+
+        create_user_payload["password"] = "AB@12abcef"
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        self.assertEqual(rv.status_code, 201)
+
+        session = self.appbuilder.get_session
+        user = (
+            session.query(self.user_model)
+            .filter(self.user_model.username == "password complexity test user")
             .one_or_none()
         )
         session.delete(user)
