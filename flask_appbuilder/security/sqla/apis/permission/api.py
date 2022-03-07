@@ -4,7 +4,9 @@ from flask_appbuilder.security.sqla.models import Permission
 
 
 class PermissionApi(ModelRestApi):
-    resource_name = "permission"
+    resource_name = "permissions"
+    openapi_spec_tag = "Security Permissions"
+
     class_permission_name = "Permission"
     datamodel = SQLAInterface(Permission)
     allow_browser_login = True

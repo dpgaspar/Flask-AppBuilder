@@ -7,16 +7,19 @@ from flask_appbuilder.api import expose, safe
 from flask_appbuilder.const import API_RESULT_RES_KEY
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.decorators import permission_name, protect
+from flask_appbuilder.security.sqla.apis.user.schema import (
+    UserPostSchema,
+    UserPutSchema,
+)
 from flask_appbuilder.security.sqla.models import Role, User
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash
 
-from .schema import UserPostSchema, UserPutSchema
-
 
 class UserApi(ModelRestApi):
-    resource_name = "user"
+    resource_name = "users"
+    openapi_spec_tag = "Security Users"
     class_permission_name = "User"
     datamodel = SQLAInterface(User)
     allow_browser_login = True
@@ -37,8 +40,6 @@ class UserApi(ModelRestApi):
         "changed_on",
         "created_by.id",
         "changed_by.id",
-        "created.id",
-        "changed.id",
     ]
     show_columns = list_columns
     add_columns = [
@@ -66,6 +67,9 @@ class UserApi(ModelRestApi):
         item.password = generate_password_hash(item.password)
 
     @expose("/", methods=["POST"])
+    @protect()
+    @safe
+    @permission_name("post")
     def post(self):
         """Create new user
         ---
@@ -122,9 +126,12 @@ class UserApi(ModelRestApi):
 
             self.pre_add(model)
             self.datamodel.add(model, raise_exception=True)
+            # return self.response(201, id=model.id)
+            return self.response(201, id=model.id)
         except ValidationError as error:
             return self.response_400(message=error.messages)
-        return self.response(201, id=model.id)
+        except IntegrityError as e:
+            return self.response_422(message=str(e.orig))
 
     @expose("/<pk>", methods=["PUT"])
     @protect()

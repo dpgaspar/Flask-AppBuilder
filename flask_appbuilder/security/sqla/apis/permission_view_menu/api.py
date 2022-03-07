@@ -4,7 +4,8 @@ from flask_appbuilder.security.sqla.models import PermissionView
 
 
 class PermissionViewMenuApi(ModelRestApi):
-    resource_name = "permissionviewmenu"
+    resource_name = "permissionsviewmenus"
+    openapi_spec_tag = "Security Permissions View Menus"
     class_permission_name = "PermissionViewMenu"
     datamodel = SQLAInterface(PermissionView)
     allow_browser_login = True
