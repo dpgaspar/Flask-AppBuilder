@@ -317,6 +317,10 @@ class RolePermissionAPITestCase(FABTestCase):
         self.viewmenu_model = ViewMenu
         self.role_model = Role
 
+        for b in self.appbuilder.baseviews:
+            if hasattr(b, "datamodel") and b.datamodel.session is not None:
+                b.datamodel.session = self.db.session
+
     def tearDown(self):
         self.appbuilder.get_session.close()
         engine = self.db.session.get_bind(mapper=None, clause=None)
@@ -770,11 +774,6 @@ class RolePermissionAPITestCase(FABTestCase):
         role_id = role.id
         permission_1_view_menu_id = permission_1_view_menu.id
         permission_2_view_menu_id = permission_2_view_menu.id
-
-        # TODO: remove this
-        for b in self.appbuilder.baseviews:
-            if hasattr(b, "datamodel") and b.datamodel.session is not None:
-                b.datamodel.session = self.db.session
 
         uri = f"api/v1/roles/{role_id}/permissions"
         rv = self.auth_client_post(
