@@ -68,17 +68,18 @@ class RoleApi(ModelRestApi):
               $ref: '#/components/responses/500'
         """
         role = self.datamodel.get(pk, select_columns=["permissions"])
-        if role:
-            permissions = [
-                {
-                    "id": p.id,
-                    "permission_name": p.permission.name,
-                    "view_menu_name": p.view_menu.name,
-                }
-                for p in role.permissions
-            ]
-            return self.response(200, **{API_RESULT_RES_KEY: permissions})
-        return self.response_404()
+        if not role:
+            return self.response_404()
+
+        permissions = [
+            {
+                "id": p.id,
+                "permission_name": p.permission.name,
+                "view_menu_name": p.view_menu.name,
+            }
+            for p in role.permissions
+        ]
+        return self.response(200, **{API_RESULT_RES_KEY: permissions})
 
     @expose("/<int:role_id>/permissions", methods=["POST"])
     @protect()
@@ -124,6 +125,8 @@ class RoleApi(ModelRestApi):
         try:
             item = self.add_role_permission_schema.load(request.json)
             role = self.datamodel.get(role_id)
+            if not role:
+                return self.response_404()
             permissions = []
             for id in item["permission_view_menu_ids"]:
                 permission = (

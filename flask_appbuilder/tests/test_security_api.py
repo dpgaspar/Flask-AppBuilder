@@ -808,7 +808,50 @@ class RolePermissionAPITestCase(FABTestCase):
         role = self.appbuilder.sm.find_role(role_name)
         self.session.delete(role)
 
-    def test_list_view_menu_permissions_to_role(self):
+        self.appbuilder.sm.del_permission_view_menu(
+            permission_1_name, view_menu_name, cascade=True
+        )
+        self.appbuilder.sm.del_permission_view_menu(
+            permission_2_name, view_menu_name, cascade=True
+        )
+
+    def test_add_view_menu_permissions_to_invalid_role(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        num = 1
+        permission_1_name = f"test_edit_role_permission_{num}"
+        permission_2_name = f"test_edit_role_permission_{num+1}"
+        view_menu_name = f"test_edit_role_view_menu_{num}"
+
+        permission_1_view_menu = self.appbuilder.sm.add_permission_view_menu(
+            permission_1_name, view_menu_name
+        )
+        permission_2_view_menu = self.appbuilder.sm.add_permission_view_menu(
+            permission_2_name, view_menu_name
+        )
+
+        uri = f"api/v1/roles/{9999999}/permissions"
+        rv = self.auth_client_post(
+            client,
+            token,
+            uri,
+            {
+                "permission_view_menu_ids": [
+                    permission_1_view_menu.id,
+                    permission_2_view_menu.id,
+                ]
+            },
+        )
+        self.assertEqual(rv.status_code, 404)
+        self.appbuilder.sm.del_permission_view_menu(
+            permission_1_name, view_menu_name, cascade=True
+        )
+        self.appbuilder.sm.del_permission_view_menu(
+            permission_2_name, view_menu_name, cascade=True
+        )
+
+    def test_list_view_menu_permissions_of_role(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -859,6 +902,15 @@ class RolePermissionAPITestCase(FABTestCase):
 
         role = self.appbuilder.sm.find_role(role_name)
         self.session.delete(role)
+
+    def test_list_view_menu_permissions_of_invalid_role(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = f"api/v1/roles/{999999}/permissions"
+        rv = self.auth_client_get(client, token, uri)
+
+        self.assertEqual(rv.status_code, 404)
 
     def test_delete_role_api(self):
         client = self.app.test_client()
