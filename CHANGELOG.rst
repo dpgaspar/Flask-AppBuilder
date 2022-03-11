@@ -1,6 +1,14 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 3.4.5
+-----------------------------------
+
+- test: Add test for `export-roles --indent`'s argument “duck casting” to int (#1811) [Étienne Boisseau-Sierra]
+- fix: next url on login (OAuth, OID, DB) (#1804) [Daniel Vaz Gaspar]
+- docs: Update doc i18 to flask_babel (#1792) [Federico Padua]
+- feat(cli): allow `export-roles` to be beautified (#1724) [Étienne Boisseau-Sierra]
+
 Improvements and Bug fixes on 3.4.4
 -----------------------------------
 
