@@ -17,7 +17,9 @@ username_description = "The user's username"
 
 class UserPostSchema(Schema):
     model_cls = User
-    active = fields.Boolean(default=True, description=active_description)
+    active = fields.Boolean(
+        required=False, default=True, description=active_description
+    )
     email = fields.String(required=True, description=email_description)
     first_name = fields.String(required=True, description=first_name_description)
     last_name = fields.String(required=True, description=last_name_description)

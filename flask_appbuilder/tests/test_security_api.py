@@ -20,7 +20,7 @@ class UserAPITestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("flask_appbuilder.tests.config_api")
-        self.app.config["ENABLE_USER_CRUD_API"] = True
+        self.app.config["FAB_ADD_SECURITY_API"] = True
         self.db = SQLA(self.app)
         self.session = self.db.session
         self.appbuilder = AppBuilder(self.app, self.session)
@@ -309,7 +309,7 @@ class RolePermissionAPITestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("flask_appbuilder.tests.config_api")
-        self.app.config["ENABLE_USER_CRUD_API"] = True
+        self.app.config["FAB_ADD_SECURITY_API"] = True
         self.db = SQLA(self.app)
         self.session = self.db.session
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -720,16 +720,9 @@ class RolePermissionAPITestCase(FABTestCase):
         permission_2_name = f"test_edit_role_permission_{num+1}"
         view_menu_name = f"test_edit_role_view_menu_{num}"
 
-        # permission_1_view_menu = self.appbuilder.sm.add_permission_view_menu(
-        #     permission_1_name, view_menu_name
-        # )
-        # permission_2_view_menu = self.appbuilder.sm.add_permission_view_menu(
-        #     permission_2_name, view_menu_name
-        # )
         role = self.appbuilder.sm.add_role(role_name)
 
         role_id = role.id
-        # permission_2_view_menu_id = permission_2_view_menu.id
 
         uri = f"api/v1/roles/{role_id}"
         rv = self.auth_client_put(client, token, uri, {"name": role_2_name})
@@ -814,6 +807,23 @@ class RolePermissionAPITestCase(FABTestCase):
         self.appbuilder.sm.del_permission_view_menu(
             permission_2_name, view_menu_name, cascade=True
         )
+
+    def test_add_invalid_view_menu_permissions_to_role(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        num = 1
+        role_name = f"test_add_permissions_to_role_api_{num}"
+
+        role = self.appbuilder.sm.add_role(role_name)
+        role_id = role.id
+
+        uri = f"api/v1/roles/{role_id}/permissions"
+        rv = self.auth_client_post(client, token, uri, {})
+
+        self.assertEqual(rv.status_code, 400)
+        role = self.appbuilder.sm.find_role(role_name)
+        self.session.delete(role)
 
     def test_add_view_menu_permissions_to_invalid_role(self):
         client = self.app.test_client()
@@ -988,7 +998,7 @@ class UserCustomPasswordComplexityValidatorTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("flask_appbuilder.tests.config_api")
-        self.app.config["ENABLE_USER_CRUD_API"] = True
+        self.app.config["FAB_ADD_SECURITY_API"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_ENABLED"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_VALIDATOR"] = passwordValidator
         self.db = SQLA(self.app)
@@ -1050,7 +1060,7 @@ class UserDefaultPasswordComplexityValidatorTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("flask_appbuilder.tests.config_api")
-        self.app.config["ENABLE_USER_CRUD_API"] = True
+        self.app.config["FAB_ADD_SECURITY_API"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_ENABLED"] = True
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)

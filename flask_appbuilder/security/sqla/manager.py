@@ -92,7 +92,7 @@ class SecurityManager(BaseSecurityManager):
         return self.appbuilder.get_session
 
     def register_views(self):
-        if self.appbuilder.app.config.get("ENABLE_USER_CRUD_API", False):
+        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_API", False):
             self.appbuilder.add_api(self.permission_api)
             self.appbuilder.add_api(self.role_api)
             self.appbuilder.add_api(self.user_api)
