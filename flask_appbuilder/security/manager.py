@@ -304,7 +304,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         jwt_manager = JWTManager()
         jwt_manager.init_app(app)
-        jwt_manager.user_loader_callback_loader(self.load_user_jwt)
+        jwt_manager.user_lookup_loader(self.load_user_jwt)
         return jwt_manager
 
     def create_builtin_roles(self):
