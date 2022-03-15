@@ -126,7 +126,6 @@ class UserApi(ModelRestApi):
 
             self.pre_add(model)
             self.datamodel.add(model, raise_exception=True)
-            # return self.response(201, id=model.id)
             return self.response(201, id=model.id)
         except ValidationError as error:
             return self.response_400(message=error.messages)

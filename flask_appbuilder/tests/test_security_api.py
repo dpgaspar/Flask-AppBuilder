@@ -42,8 +42,6 @@ class UserAPITestCase(FABTestCase):
         engine.dispose()
 
     def test_user_list(self):
-        """REST Api: Test user apis
-        """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -327,8 +325,6 @@ class RolePermissionAPITestCase(FABTestCase):
         engine.dispose()
 
     def test_list_permission_api(self):
-        """REST Api: Test permission apis
-        """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -336,9 +332,10 @@ class RolePermissionAPITestCase(FABTestCase):
 
         uri = "api/v1/permissions/"
         rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
         response = json.loads(rv.data)
 
-        self.assertEqual(rv.status_code, 200)
         assert "count" and "result" in response
         self.assertEqual(response["count"], count)
 
@@ -352,9 +349,10 @@ class RolePermissionAPITestCase(FABTestCase):
 
         uri = f"api/v1/permissions/{permission_id}"
         rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
         response = json.loads(rv.data)
 
-        self.assertEqual(rv.status_code, 200)
         assert "id" and "result" in response
         self.assertEqual(response["id"], permission_id)
         self.assertEqual(response["result"]["name"], permission_name)
@@ -381,29 +379,9 @@ class RolePermissionAPITestCase(FABTestCase):
 
         create_permission_payload = {"name": permission_name}
         rv = self.auth_client_post(client, token, uri, create_permission_payload)
-        add_permission_response = json.loads(rv.data)
-        self.assertEqual(rv.status_code, 201)
-        assert "id" and "result" in add_permission_response
-        self.assertEqual(create_permission_payload, add_permission_response["result"])
-
+        self.assertEqual(rv.status_code, 405)
         permission = self.appbuilder.sm.find_permission(permission_name)
-        assert permission
-        self.appbuilder.sm.del_permission(permission_name)
-
-    def test_add_permission_without_name_api(self):
-        client = self.app.test_client()
-        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        uri = "api/v1/permissions/"
-        create_permission_payload = {}
-        rv = self.auth_client_post(client, token, uri, create_permission_payload)
-        add_permission_response = json.loads(rv.data)
-        self.assertEqual(rv.status_code, 422)
-        assert "message" in add_permission_response
-        self.assertEqual(
-            {"message": {"name": ["Missing data for required field."]}},
-            add_permission_response,
-        )
+        assert permission is None
 
     def test_edit_permission_api(self):
         client = self.app.test_client()
@@ -416,17 +394,13 @@ class RolePermissionAPITestCase(FABTestCase):
 
         uri = f"api/v1/permissions/{permission_id}"
         rv = self.auth_client_put(client, token, uri, {"name": new_permission_name})
-        put_permission_response = json.loads(rv.data)
-        self.assertEqual(rv.status_code, 200)
-        self.assertEqual(
-            put_permission_response["result"].get("name", ""), new_permission_name
-        )
+
+        self.assertEqual(rv.status_code, 405)
 
         new_permission = self.appbuilder.sm.find_permission(new_permission_name)
-        assert new_permission
-        self.assertEqual(new_permission.name, new_permission_name)
+        assert new_permission is None
 
-        self.appbuilder.sm.del_permission(new_permission_name)
+        self.appbuilder.sm.del_permission(permission_name)
 
     def test_delete_permission_api(self):
         client = self.app.test_client()
@@ -437,10 +411,11 @@ class RolePermissionAPITestCase(FABTestCase):
 
         uri = f"api/v1/permissions/{permission.id}"
         rv = self.auth_client_delete(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 405)
 
         new_permission = self.appbuilder.sm.find_permission(permission_name)
-        assert new_permission is None
+        assert new_permission is not None
+        self.appbuilder.sm.del_permission(permission_name)
 
     def test_list_view_api(self):
         """REST Api: Test view apis
