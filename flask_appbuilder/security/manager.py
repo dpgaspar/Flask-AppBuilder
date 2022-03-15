@@ -2036,8 +2036,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     def load_user(self, pk):
         return self.get_user_by_id(int(pk))
 
-    def load_user_jwt(self, pk):
-        user = self.load_user(pk)
+    def load_user_jwt(self, _jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        user = self.load_user(identity)
         # Set flask g.user to JWT user, we can't do it on before request
         g.user = user
         return user
