@@ -47,12 +47,11 @@ setup(
     install_requires=[
         "apispec[yaml]>=3.3, <4",
         "colorama>=0.3.9, <1",
-        "click>=6.7, <9",
+        "click>=8, <9",
         "email_validator>=1.0.5, <2",
-        "Flask>=1, <3",
+        "Flask>=2, <3",
         "Flask-Babel>=1, <3",
         "Flask-Login>=0.3, <0.5",
-        "Flask-OpenID>=1.2.5, <2",
         "Flask-SQLAlchemy>=2.4, <3",
         "Flask-WTF>=0.14.2, <0.15.0",
         "Flask-JWT-Extended>=4.0.0, <5.0.0",
@@ -62,7 +61,7 @@ setup(
         "marshmallow-sqlalchemy>=0.22.0, <0.27.0",
         "python-dateutil>=2.3, <3",
         "prison>=0.2.1, <1.0.0",
-        "PyJWT>=2.0.0, <2.3.0",
+        "PyJWT>=2.0.0, <3.0.0",
         # Cautious cap
         "SQLAlchemy<1.5",
         "sqlalchemy-utils>=0.32.21, <1",
@@ -71,6 +70,7 @@ setup(
     extras_require={
         "jmespath": ["jmespath>=0.9.5"],
         "oauth": ["Authlib>=0.14, <1.0.0"],
+        "openid": ["Flask-OpenID>=1.2.5, <2"]
     },
     tests_require=["nose>=1.0", "mockldap>=0.3.0"],
     classifiers=[

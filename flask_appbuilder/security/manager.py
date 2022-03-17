@@ -871,7 +871,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             # Balance failure and success
-            self.noop_user_update(first_user)
+            if first_user:
+                self.noop_user_update(first_user)
             return None
         elif check_password_hash(user.password, password):
             self.update_user_auth_stat(user, True)
