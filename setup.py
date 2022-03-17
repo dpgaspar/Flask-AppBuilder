@@ -70,7 +70,7 @@ setup(
     extras_require={
         "jmespath": ["jmespath>=0.9.5"],
         "oauth": ["Authlib>=0.14, <1.0.0"],
-        "openid": ["Flask-OpenID>=1.2.5, <2"]
+        "openid": ["Flask-OpenID>=1.2.5, <2"],
     },
     tests_require=["nose>=1.0", "mockldap>=0.3.0"],
     classifiers=[
@@ -80,8 +80,10 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     python_requires="~=3.6",
