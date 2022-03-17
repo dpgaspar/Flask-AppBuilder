@@ -1342,10 +1342,7 @@ class MVCTestCase(BaseMVCTestCase):
         Testing unauthenticated access to MVC API
         """
         client = self.app.test_client()
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
-        rv = client.get("/model1formattedview/api/read")
-        self.assertEqual(rv.status_code, 401)
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
+        self.browser_logout(client)
         rv = client.get("/model1formattedview/api/read")
         self.assertEqual(rv.status_code, 401)
 
@@ -1355,7 +1352,6 @@ class MVCTestCase(BaseMVCTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
 
         rv = client.post(
             "/model1view/api/create",
@@ -1363,13 +1359,6 @@ class MVCTestCase(BaseMVCTestCase):
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 403)
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
-        rv = client.post(
-            "/model1view/api/create",
-            data=dict(field_string="zzz"),
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 401)
 
     def test_api_create(self):
         """

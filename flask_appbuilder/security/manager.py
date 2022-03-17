@@ -1499,7 +1499,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         result.update(pvms_names)
         return result
 
-    def has_access(self, permission_name, view_name):
+    def has_access(self, permission_name: str, view_name: str) -> bool:
         """
         Check if current user or public has access to view or menu
         """
