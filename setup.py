@@ -86,6 +86,6 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    python_requires="~=3.6",
+    python_requires="~=3.7",
     test_suite="nose.collector",
 )
