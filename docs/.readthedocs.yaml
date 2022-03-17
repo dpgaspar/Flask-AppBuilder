@@ -3,16 +3,16 @@ version: 2
 build:
   os: "ubuntu-20.04"
   tools:
-    python: "3.8"
-
-sphinx:
-  fail_on_warning: true
+    python: "3.9"
 
 python:
   # Install our python package before building the docs
   install:
     - method: pip
       path: .
+
+sphinx:
+  fail_on_warning: true
 
 formats:
   - pdf
