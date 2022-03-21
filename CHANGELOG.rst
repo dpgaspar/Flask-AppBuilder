@@ -1,11 +1,6 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
-Improvements and Bug fixes on 4.0.0
------------------------------------
-
-- chore: major bumps Flask, Click, PyJWT and flask-jwt-extended (#1817) [Daniel Vaz Gaspar]
-
 Improvements and Bug fixes on 3.4.5
 -----------------------------------
 
