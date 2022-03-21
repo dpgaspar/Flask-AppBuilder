@@ -304,7 +304,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         jwt_manager = JWTManager()
         jwt_manager.init_app(app)
-        jwt_manager.user_loader_callback_loader(self.load_user_jwt)
+        jwt_manager.user_lookup_loader(self.load_user_jwt)
         return jwt_manager
 
     def create_builtin_roles(self):
@@ -871,7 +871,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             # Balance failure and success
-            self.noop_user_update(first_user)
+            if first_user:
+                self.noop_user_update(first_user)
             return None
         elif check_password_hash(user.password, password):
             self.update_user_auth_stat(user, True)
@@ -1499,7 +1500,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         result.update(pvms_names)
         return result
 
-    def has_access(self, permission_name, view_name):
+    def has_access(self, permission_name: str, view_name: str) -> bool:
         """
         Check if current user or public has access to view or menu
         """
@@ -2036,8 +2037,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     def load_user(self, pk):
         return self.get_user_by_id(int(pk))
 
-    def load_user_jwt(self, pk):
-        user = self.load_user(pk)
+    def load_user_jwt(self, _jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        user = self.load_user(identity)
         # Set flask g.user to JWT user, we can't do it on before request
         g.user = user
         return user

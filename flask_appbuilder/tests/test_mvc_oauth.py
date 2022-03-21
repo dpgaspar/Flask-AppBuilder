@@ -47,7 +47,7 @@ class APICSRFTestCase(FABTestCase):
         raw_state = {}
         state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
 
-        response = client.get(f"/oauth-authorized/google?state={state.decode('utf-8')}")
+        response = client.get(f"/oauth-authorized/google?state={state}")
         self.assertEqual(response.location, "http://localhost/")
 
     def test_oauth_login_unknown_provider(self):
@@ -61,9 +61,7 @@ class APICSRFTestCase(FABTestCase):
         raw_state = {}
         state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
 
-        response = client.get(
-            f"/oauth-authorized/unknown_provider?state={state.decode('utf-8')}"
-        )
+        response = client.get(f"/oauth-authorized/unknown_provider?state={state}")
         self.assertEqual(response.location, "http://localhost/login/")
 
     def test_oauth_login_next(self):
@@ -77,7 +75,7 @@ class APICSRFTestCase(FABTestCase):
         raw_state = {"next": ["http://localhost/users/list/"]}
         state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
 
-        response = client.get(f"/oauth-authorized/google?state={state.decode('utf-8')}")
+        response = client.get(f"/oauth-authorized/google?state={state}")
         self.assertEqual(response.location, "http://localhost/users/list/")
 
     def test_oauth_login_next_check(self):
@@ -91,5 +89,5 @@ class APICSRFTestCase(FABTestCase):
         raw_state = {"next": ["http://www.google.com"]}
         state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
 
-        response = client.get(f"/oauth-authorized/google?state={state.decode('utf-8')}")
+        response = client.get(f"/oauth-authorized/google?state={state}")
         self.assertEqual(response.location, "http://localhost/")
