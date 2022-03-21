@@ -2,7 +2,7 @@ BREAKING CHANGES
 ================
 
 Version 4.0.0
----------------------
+-------------
 
 - Drops python 3.6 support
 - Removed config key `AUTH_STRICT_RESPONSE_CODES`, it's always strict now.
@@ -84,6 +84,3 @@ Now:
     ]
 
 Also make sure you change your dependency for flask-oauth to `authlib <https://github.com/lepture/authlib>`_
-
-Improvements and Bug fixes on 4.0.0
------------------------------------
