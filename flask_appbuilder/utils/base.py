@@ -1,8 +1,10 @@
 import logging
-from typing import Any, Callable
-from urllib.parse import urljoin, urlparse
+import unicodedata
 
-from flask import current_app, request
+from typing import Any, Callable
+from urllib.parse import urlparse
+
+from flask import current_app
 from flask_babel import gettext
 from flask_babel.speaklater import LazyString
 
@@ -11,12 +13,22 @@ log = logging.getLogger(__name__)
 
 
 def is_safe_redirect_url(url: str) -> bool:
-    host_url = urlparse(request.host_url)
-    redirect_url = urlparse(urljoin(request.host_url, url))
-    return (
-        redirect_url.scheme in ("http", "https")
-        and host_url.netloc == redirect_url.netloc
-    )
+    if url.startswith("///"):
+        return False
+    try:
+        url_info = urlparse(url)
+    except ValueError:
+        return False
+    if not url_info.netloc and url_info.scheme:
+        return False
+    if unicodedata.category(url[0])[0] == "C":
+        return False
+    scheme = url_info.scheme
+    # Consider URLs without a scheme (e.g. //example.com/p) to be http.
+    if not url_info.scheme and url_info.netloc:
+        scheme = "http"
+    valid_schemes = ["http", "https"]
+    return not scheme or scheme in valid_schemes
 
 
 def get_safe_redirect(url):
