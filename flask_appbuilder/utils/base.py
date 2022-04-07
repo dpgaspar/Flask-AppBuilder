@@ -1,7 +1,6 @@
 import logging
-import unicodedata
-
 from typing import Any, Callable
+import unicodedata
 from urllib.parse import urlparse
 
 from flask import current_app
