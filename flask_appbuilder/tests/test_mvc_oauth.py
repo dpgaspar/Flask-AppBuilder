@@ -86,7 +86,7 @@ class APICSRFTestCase(FABTestCase):
 
         self.appbuilder.sm.oauth_remotes = {"google": OAuthRemoteMock()}
 
-        raw_state = {"next": ["http://www.google.com"]}
+        raw_state = {"next": ["ftp://sample"]}
         state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
 
         response = client.get(f"/oauth-authorized/google?state={state}")
