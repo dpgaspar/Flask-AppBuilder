@@ -202,7 +202,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             self.client,
             USERNAME_ADMIN,
             PASSWORD_ADMIN,
-            next_url="^@sample.com ",
+            next_url=" sample.com ",
             follow_redirects=False,
         )
         assert response.location == "http://localhost/"
