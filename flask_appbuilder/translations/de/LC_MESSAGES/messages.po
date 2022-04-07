@@ -265,7 +265,7 @@ msgstr "Benutzerstatistik"
 
 #: flask_appbuilder/security/manager.py:434
 msgid "User Registrations"
-msgstr "Ihre Benutzerinformationen"
+msgstr "Benutzerregistrierungen"
 
 #: flask_appbuilder/security/manager.py:440
 msgid "Base Permissions"
