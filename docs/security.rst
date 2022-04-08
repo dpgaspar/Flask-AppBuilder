@@ -165,67 +165,74 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
 
     # the list of providers which the user can choose from
     OAUTH_PROVIDERS = [
-        {'name':'twitter', 'icon':'fa-twitter',
-            'token_key':'oauth_token',
-            'remote_app': {
-                'client_id':'TWITTER_KEY',
-                'client_secret':'TWITTER_SECRET',
-                'api_base_url':'https://api.twitter.com/1.1/',
-                'request_token_url':'https://api.twitter.com/oauth/request_token',
-                'access_token_url':'https://api.twitter.com/oauth/access_token',
-                'authorize_url':'https://api.twitter.com/oauth/authenticate'}
+        {
+            "name": "twitter",
+            "icon": "fa-twitter",
+            "token_key": "oauth_token",
+            "remote_app": {
+                "client_id": "TWITTER_KEY",
+                "client_secret": "TWITTER_SECRET",
+                "api_base_url": "https://api.twitter.com/1.1/",
+                "request_token_url": "https://api.twitter.com/oauth/request_token",
+                "access_token_url": "https://api.twitter.com/oauth/access_token",
+                "authorize_url": "https://api.twitter.com/oauth/authenticate",
+            },
         },
-        {'name':'google', 'icon':'fa-google',
-            'token_key':'access_token',
-            'remote_app': {
-                'client_id':'GOOGLE_KEY',
-                'client_secret':'GOOGLE_SECRET',
-                'api_base_url':'https://www.googleapis.com/oauth2/v2/',
-                'client_kwargs':{
-                  'scope': 'email profile'
-                },
-                'request_token_url':None,
-                'access_token_url':'https://accounts.google.com/o/oauth2/token',
-                'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+        {
+            "name": "google",
+            "icon": "fa-google",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "GOOGLE_KEY",
+                "client_secret": "GOOGLE_SECRET",
+                "api_base_url": "https://www.googleapis.com/oauth2/v2/",
+                "client_kwargs": {"scope": "email profile"},
+                "request_token_url": None,
+                "access_token_url": "https://accounts.google.com/o/oauth2/token",
+                "authorize_url": "https://accounts.google.com/o/oauth2/auth",
+            },
         },
-        {'name':'openshift', 'icon':'fa-circle-o',
-            'token_key':'access_token',
-            'remote_app': {
-                'client_id':'system:serviceaccount:mynamespace:mysa',
-                'client_secret':'<mysa serviceaccount token here>',
-                'api_base_url':'https://openshift.default.svc.cluster.local:443',
-                'client_kwargs':{
-                  'scope': 'user:info'
-                },
-                'redirect_uri':'https://myapp-mynamespace.apps.<cluster_domain>',
-                'access_token_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/token',
-                'authorize_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/authorize',
-                'token_endpoint_auth_method':'client_secret_post'}
+        {
+            "name": "openshift",
+            "icon": "fa-circle-o",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "system:serviceaccount:mynamespace:mysa",
+                "client_secret": "<mysa serviceaccount token here>",
+                "api_base_url": "https://openshift.default.svc.cluster.local:443",
+                "client_kwargs": {"scope": "user:info"},
+                "redirect_uri": "https://myapp-mynamespace.apps.<cluster_domain>",
+                "access_token_url": "https://oauth-openshift.apps.<cluster_domain>/oauth/token",
+                "authorize_url": "https://oauth-openshift.apps.<cluster_domain>/oauth/authorize",
+                "token_endpoint_auth_method": "client_secret_post",
+            },
         },
-        {'name': 'okta', 'icon': 'fa-circle-o',
-            'token_key': 'access_token',
-            'remote_app': {
-                'client_id': 'OKTA_KEY',
-                'client_secret': 'OKTA_SECRET',
-                'api_base_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/',
-                'client_kwargs': {
-                    'scope': 'openid profile email groups'
-                },
-                'access_token_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/token',
-                'authorize_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize',
+        {
+            "name": "okta",
+            "icon": "fa-circle-o",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "OKTA_KEY",
+                "client_secret": "OKTA_SECRET",
+                "api_base_url": "https://OKTA_DOMAIN.okta.com/oauth2/v1/",
+                "client_kwargs": {"scope": "openid profile email groups"},
+                "access_token_url": "https://OKTA_DOMAIN.okta.com/oauth2/v1/token",
+                "authorize_url": "https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize",
+            },
         },
-        {'name': 'aws_cognito', 'icon': 'fa-amazon',
-            'token_key': 'access_token',
-            'remote_app': {
-                'client_id': 'COGNITO_CLIENT_ID',
-                'client_secret': 'COGNITO_CLIENT_SECRET',
-                'api_base_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/',
-                'client_kwargs': {
-                    'scope': 'openid email aws.cognito.signin.user.admin'
-                },
-                'access_token_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/token',
-                'authorize_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize',
-        }
+        {
+            "name": "aws_cognito",
+            "icon": "fa-amazon",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "COGNITO_CLIENT_ID",
+                "client_secret": "COGNITO_CLIENT_SECRET",
+                "api_base_url": "https://COGNITO_APP.auth.REGION.amazoncognito.com/",
+                "client_kwargs": {"scope": "openid email aws.cognito.signin.user.admin"},
+                "access_token_url": "https://COGNITO_APP.auth.REGION.amazoncognito.com/token",
+                "authorize_url": "https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize",
+            },
+        },
     ]
 
 This needs a small explanation, you basically have five special keys:
