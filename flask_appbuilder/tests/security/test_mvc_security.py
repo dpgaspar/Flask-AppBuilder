@@ -109,20 +109,6 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         assert response.location == "http://localhost/users/list/"
 
-    def test_db_login_valid_full_next_url(self):
-        """
-        Test Security valid full next URL
-        """
-        self.browser_logout(self.client)
-        response = self.browser_login(
-            self.client,
-            USERNAME_ADMIN,
-            PASSWORD_ADMIN,
-            next_url="http://sampleurl.com/path",
-            follow_redirects=False,
-        )
-        assert response.location == "http://sampleurl.com/path"
-
     def test_db_login_valid_http_scheme_url(self):
         """
         Test Security valid http scheme next URL
@@ -150,6 +136,20 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             follow_redirects=False,
         )
         assert response.location == "https://localhost/path"
+
+    def test_db_login_invalid_external_next_url(self):
+        """
+        Test Security invalid external next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://google.com",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/"
 
     def test_db_login_invalid_scheme_next_url(self):
         """

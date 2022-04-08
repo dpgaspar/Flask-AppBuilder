@@ -3,7 +3,7 @@ from typing import Any, Callable
 import unicodedata
 from urllib.parse import urlparse
 
-from flask import current_app
+from flask import current_app, request
 from flask_babel import gettext
 from flask_babel.speaklater import LazyString
 
@@ -27,7 +27,10 @@ def is_safe_redirect_url(url: str) -> bool:
     if not url_info.scheme and url_info.netloc:
         scheme = "http"
     valid_schemes = ["http", "https"]
-    return not scheme or scheme in valid_schemes
+    host_url = urlparse(request.host_url)
+    return (not url_info.netloc or url_info.netloc == host_url.netloc) and (
+        not scheme or scheme in valid_schemes
+    )
 
 
 def get_safe_redirect(url):
