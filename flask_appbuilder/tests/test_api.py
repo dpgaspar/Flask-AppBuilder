@@ -627,13 +627,8 @@ class APITestCase(FABTestCase):
         pk = 1
         uri = f"api/v1/model1apirestrictedpermissions/{pk}"
 
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 403)
-
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
-        rv = self.auth_client_delete(client, token, uri)
-        self.assertEqual(rv.status_code, 401)
 
         # Test unauthorized POST
         item = dict(
@@ -644,12 +639,8 @@ class APITestCase(FABTestCase):
         )
         uri = "api/v1/model1apirestrictedpermissions/"
 
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 403)
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
-        rv = self.auth_client_post(client, token, uri, item)
-        self.assertEqual(rv.status_code, 401)
 
         # Test authorized GET
         uri = f"api/v1/model1apirestrictedpermissions/{pk}"
@@ -666,7 +657,7 @@ class APITestCase(FABTestCase):
         pk = 1
         uri = "api/v1/model1api/{}".format(pk)
         rv = self.auth_client_delete(client, token, uri)
-        self.assertEqual(rv.status_code, 401)
+        self.assertEqual(rv.status_code, 403)
 
         # Test unauthorized POST
         item = dict(
@@ -677,7 +668,7 @@ class APITestCase(FABTestCase):
         )
         uri = "api/v1/model1api/"
         rv = self.auth_client_post(client, token, uri, item)
-        self.assertEqual(rv.status_code, 401)
+        self.assertEqual(rv.status_code, 403)
 
         # Test authorized GET
         uri = "api/v1/model1api/1"
@@ -2804,7 +2795,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
         uri = "api/v1/model2permoverride2/1"
         rv = self.auth_client_delete(client, token, uri)
-        self.assertEqual(rv.status_code, 401)
+        self.assertEqual(rv.status_code, 403)
 
         # Revert test data
         self.appbuilder.get_session.delete(
