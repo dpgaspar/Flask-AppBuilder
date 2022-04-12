@@ -69,7 +69,7 @@ Using Postgres
 
 .. code-block:: bash
 
-    $ nosetests -v flask_appbuilder.tests.test_A_fixture
+    $ nosetests -v flask_appbuilder.tests.A_fixture
 
 4 - Run a single test
 

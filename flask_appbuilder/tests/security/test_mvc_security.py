@@ -109,30 +109,100 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         assert response.location == "http://localhost/users/list/"
 
-    def test_db_login_valid_full_next_url(self):
+    def test_db_login_valid_http_scheme_url(self):
         """
-        Test Security valid full next URL
+        Test Security valid http scheme next URL
         """
         self.browser_logout(self.client)
         response = self.browser_login(
             self.client,
             USERNAME_ADMIN,
             PASSWORD_ADMIN,
-            next_url="http://localhost/users/add",
+            next_url="http://localhost/path",
             follow_redirects=False,
         )
-        assert response.location == "http://localhost/users/add"
+        assert response.location == "http://localhost/path"
 
-    def test_db_login_invalid_next_url(self):
+    def test_db_login_valid_https_scheme_url(self):
         """
-        Test Security invalid next URL
+        Test Security valid https scheme next URL
         """
         self.browser_logout(self.client)
         response = self.browser_login(
             self.client,
             USERNAME_ADMIN,
             PASSWORD_ADMIN,
-            next_url="https://www.google.com",
+            next_url="https://localhost/path",
+            follow_redirects=False,
+        )
+        assert response.location == "https://localhost/path"
+
+    def test_db_login_invalid_external_next_url(self):
+        """
+        Test Security invalid external next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://google.com",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/"
+
+    def test_db_login_invalid_scheme_next_url(self):
+        """
+        Test Security invalid scheme next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="ftp://sample",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/"
+
+    def test_db_login_invalid_localhost_file_next_url(self):
+        """
+        Test Security invalid path to localhost file next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="file:///path",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/"
+
+    def test_db_login_invalid_no_netloc_with_scheme_next_url(self):
+        """
+        Test Security invalid next URL with no netloc but with scheme
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="http:///sample.com ",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/"
+
+    def test_db_login_invalid_control_characters_next_url(self):
+        """
+        Test Security invalid next URL with control characters
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url=u"\u0001" + "sample.com",
             follow_redirects=False,
         )
         assert response.location == "http://localhost/"
