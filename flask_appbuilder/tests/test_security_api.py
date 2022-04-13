@@ -4,9 +4,10 @@ import os
 
 from flask_appbuilder import SQLA
 from flask_appbuilder.security.sqla.models import Permission, Role, ViewMenu
+from flask_appbuilder.tests.base import FABTestCase
+from flask_appbuilder.tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
+import prison
 
-from .base import FABTestCase
-from .const import PASSWORD_ADMIN, USERNAME_ADMIN
 
 log = logging.getLogger(__name__)
 
@@ -40,6 +41,14 @@ class UserAPITestCase(FABTestCase):
         engine = self.db.session.get_bind(mapper=None, clause=None)
         engine.dispose()
 
+    def test_user_info(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/security/users/_info"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
     def test_user_list(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -61,7 +70,6 @@ class UserAPITestCase(FABTestCase):
                 "created_by": None,
                 "created_on": "2020-01-01T00:00:00",
                 "email": "admin@fab.org",
-                "fail_login_count": 0,
                 "first_name": "admin",
                 "last_name": "user",
                 "roles": [{"id": 2, "name": "Admin"}],
@@ -74,7 +82,6 @@ class UserAPITestCase(FABTestCase):
                 "created_by": None,
                 "created_on": "2020-01-01T00:00:00",
                 "email": "readonly@fab.org",
-                "fail_login_count": None,
                 "first_name": "readonly",
                 "last_name": "readonly",
                 "roles": [{"id": 1, "name": "ReadOnly"}],
@@ -82,23 +89,83 @@ class UserAPITestCase(FABTestCase):
             },
         ]
         self.assert_response(response["result"], expected_results)
-        self.assertIn("id", response["result"][0])
-        self.assertIn("login_count", response["result"][0])
-        self.assertIn("last_login", response["result"][0])
+        self.assertEqual(
+            [
+                "active",
+                "changed_by",
+                "changed_on",
+                "created_by",
+                "created_on",
+                "email",
+                "fail_login_count",
+                "first_name",
+                "id",
+                "last_login",
+                "last_name",
+                "login_count",
+                "roles",
+                "username",
+            ],
+            list(response["result"][0].keys()),
+        )
 
-    def test_user_list_search(self):
+    def test_user_list_search_username(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        total_users = self.appbuilder.sm.count_users()
-        uri = "api/v1/security/users/"
+        query = {"filters": [{"col": "username", "opr": "eq", "value": "readonly"}]}
+        uri = f"api/v1/security/users/?q={prison.dumps(query)}"
         rv = self.auth_client_get(client, token, uri)
         response = json.loads(rv.data)
 
+        expected_results = [
+            {
+                "active": True,
+                "changed_by": None,
+                "changed_on": "2020-01-01T00:00:00",
+                "created_by": None,
+                "created_on": "2020-01-01T00:00:00",
+                "email": "readonly@fab.org",
+                "fail_login_count": None,
+                "first_name": "readonly",
+                "last_name": "readonly",
+                "roles": [{"id": 1, "name": "ReadOnly"}],
+                "username": "readonly",
+            }
+        ]
+        self.assert_response(response["result"], expected_results)
         self.assertEqual(rv.status_code, 200)
         assert "count" in response
-        self.assertEqual(response["count"], total_users)
-        self.assertEqual(len(response["result"]), total_users)
+        self.assertEqual(response["count"], 1)
+
+    def test_user_list_search_roles(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        query = {"filters": [{"col": "roles", "opr": "rel_m_m", "value": 2}]}
+        uri = f"api/v1/security/users/?q={prison.dumps(query)}"
+        rv = self.auth_client_get(client, token, uri)
+        response = json.loads(rv.data)
+
+        expected_results = [
+            {
+                "active": True,
+                "changed_by": None,
+                "changed_on": "2020-01-01T00:00:00",
+                "created_by": None,
+                "created_on": "2020-01-01T00:00:00",
+                "email": "admin@fab.org",
+                "fail_login_count": 0,
+                "first_name": "admin",
+                "last_name": "user",
+                "roles": [{"id": 2, "name": "Admin"}],
+                "username": "testadmin",
+            }
+        ]
+        self.assert_response(response["result"], expected_results)
+        self.assertEqual(rv.status_code, 200)
+        assert "count" in response
+        self.assertEqual(response["count"], 1)
 
     def test_get_single_user(self):
         client = self.app.test_client()
@@ -144,7 +211,7 @@ class UserAPITestCase(FABTestCase):
 
         self.session.commit()
 
-    def test_get_single_invalid_user(self):
+    def test_get_single_not_found(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -155,6 +222,47 @@ class UserAPITestCase(FABTestCase):
 
         assert "message" in response
         self.assertEqual(response["message"], "Not found")
+
+    def test_create_user(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        role_name = "test_create_user_api"
+        role = self.appbuilder.sm.add_role(role_name)
+
+        uri = "api/v1/security/users/"
+        create_user_payload = {
+            "active": True,
+            "email": "fab@test_create_user_3.com",
+            "first_name": "fab",
+            "last_name": "admin",
+            "password": "password",
+            "roles": [role.id],
+            "username": "fab_usear_api_test_4",
+        }
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        add_user_response = json.loads(rv.data)
+        self.assertEqual(rv.status_code, 201)
+
+        assert "id" in add_user_response
+
+        user = self.appbuilder.sm.get_user_by_id(add_user_response["id"])
+
+        self.assertEqual(user.active, create_user_payload["active"])
+        self.assertEqual(user.email, create_user_payload["email"])
+        self.assertEqual(user.first_name, create_user_payload["first_name"])
+        self.assertEqual(user.last_name, create_user_payload["last_name"])
+        self.assertEqual(user.username, create_user_payload["username"])
+        self.assertEqual(len(user.roles), 1)
+        self.assertEqual(user.roles[0].name, role_name)
+
+        user = (
+            self.session.query(self.user_model)
+            .filter(self.user_model.id == user.id)
+            .first()
+        )
+        self.session.delete(user)
+        self.session.commit()
 
     def test_create_user_without_role(self):
         client = self.app.test_client()
@@ -300,47 +408,6 @@ class UserAPITestCase(FABTestCase):
             .first()
         )
         self.session.delete(role)
-        self.session.commit()
-
-    def test_create_user(self):
-        client = self.app.test_client()
-        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        role_name = "test_create_user_api"
-        role = self.appbuilder.sm.add_role(role_name)
-
-        uri = "api/v1/security/users/"
-        create_user_payload = {
-            "active": True,
-            "email": "fab@test_create_user_3.com",
-            "first_name": "fab",
-            "last_name": "admin",
-            "password": "password",
-            "roles": [role.id],
-            "username": "fab_usear_api_test_4",
-        }
-        rv = self.auth_client_post(client, token, uri, create_user_payload)
-        add_user_response = json.loads(rv.data)
-        self.assertEqual(rv.status_code, 201)
-
-        assert "id" in add_user_response
-
-        user = self.appbuilder.sm.get_user_by_id(add_user_response["id"])
-
-        self.assertEqual(user.active, create_user_payload["active"])
-        self.assertEqual(user.email, create_user_payload["email"])
-        self.assertEqual(user.first_name, create_user_payload["first_name"])
-        self.assertEqual(user.last_name, create_user_payload["last_name"])
-        self.assertEqual(user.username, create_user_payload["username"])
-        self.assertEqual(len(user.roles), 1)
-        self.assertEqual(user.roles[0].name, role_name)
-
-        user = (
-            self.session.query(self.user_model)
-            .filter(self.user_model.id == user.id)
-            .first()
-        )
-        self.session.delete(user)
         self.session.commit()
 
 
