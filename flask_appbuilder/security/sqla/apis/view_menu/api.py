@@ -4,8 +4,8 @@ from flask_appbuilder.security.sqla.models import ViewMenu
 
 
 class ViewMenuApi(ModelRestApi):
-    resource_name = "viewmenus"
-    openapi_spec_tag = "Security View Menus"
+    resource_name = "security/resources"
+    openapi_spec_tag = "Security Resources (View Menus)"
 
     class_permission_name = "ViewMenu"
     datamodel = SQLAInterface(ViewMenu)

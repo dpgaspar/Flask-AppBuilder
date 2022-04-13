@@ -18,7 +18,7 @@ from werkzeug.security import generate_password_hash
 
 
 class UserApi(ModelRestApi):
-    resource_name = "users"
+    resource_name = "security/users"
     openapi_spec_tag = "Security Users"
     class_permission_name = "User"
     datamodel = SQLAInterface(User)
@@ -52,7 +52,16 @@ class UserApi(ModelRestApi):
         "password",
     ]
     edit_columns = add_columns
-    search_columns = list_columns
+    search_columns = [
+        "username",
+        "first_name",
+        "last_name",
+        "active",
+        "email",
+        "created_by",
+        "changed_by",
+        "roles",
+    ]
 
     add_model_schema = UserPostSchema()
     edit_model_schema = UserPutSchema()
