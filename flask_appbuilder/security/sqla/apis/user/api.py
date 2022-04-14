@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from flask import current_app
 from flask import g, request
 from flask_appbuilder import ModelRestApi
 from flask_appbuilder.api import expose, safe
@@ -121,7 +120,7 @@ class UserApi(ModelRestApi):
                 else:
                     for role_id in item[key]:
                         role = (
-                            current_app.appbuilder.get_session.query(Role)
+                            self.datamodel.session.query(Role)
                             .filter(Role.id == role_id)
                             .one_or_none()
                         )
@@ -193,7 +192,7 @@ class UserApi(ModelRestApi):
                 else:
                     for role_id in item[key]:
                         role = (
-                            current_app.appbuilder.session.query(Role)
+                            self.datamodel.session.query(Role)
                             .filter(Role.id == role_id)
                             .one_or_none()
                         )

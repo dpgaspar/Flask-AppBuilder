@@ -40,6 +40,8 @@ class UserPostSchema(Schema):
 
 
 class UserPutSchema(Schema):
+    model_cls = User
+
     active = fields.Boolean(required=False, description=active_description)
     email = fields.String(required=False, description=email_description)
     first_name = fields.String(required=False, description=first_name_description)
