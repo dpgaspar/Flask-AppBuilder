@@ -392,7 +392,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
 
         user = (
             self.db.session.query(User)
-            .filter_by(User.username == "from test 1-1")
+            .filter(User.username == "from test 1-1")
             .one_or_none()
         )
         self.db.session.delete(user)
