@@ -2,11 +2,11 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.security.sqla.models import User
 
 from ..base import BaseMVCTestCase
 from ..const import PASSWORD_ADMIN, PASSWORD_READONLY, USERNAME_ADMIN, USERNAME_READONLY
 from ..sqla.models import Model1, Model2
-from ...security.sqla.models import User
 
 INVALID_LOGIN_STRING = "Invalid login"
 PASSWORD_COMPLEXITY_ERROR = (
@@ -368,10 +368,6 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("Added Row", data)
 
-        user = self.db.session.query(User).filter(User.username == "from test 1-1")
-        self.db.session.delete(user)
-        self.db.session.commit()
-
         # don't set roles
         rv = client.get("/users/add", follow_redirects=True)
         data = rv.data.decode("utf-8")
@@ -393,3 +389,11 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         self.assertNotIn("Added Row", data)
         self.assertIn("This field is required", data)
         self.browser_logout(client)
+
+        user = (
+            self.db.session.query(User)
+            .filter_by(User.username == "from test 1-1")
+            .one_or_none()
+        )
+        self.db.session.delete(user)
+        self.db.session.commit()
