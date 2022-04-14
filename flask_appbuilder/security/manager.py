@@ -644,6 +644,18 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "email": data.get("email", ""),
                 "role_keys": data.get("groups", []),
             }
+        # for Keycloak
+        if provider == "keycloak":
+            me = self.appbuilder.sm.oauth_remotes[provider].get("openid-connect/userinfo")
+            me.raise_for_status()
+            data = me.json()
+            log.debug("User info from Keycloak: %s", data)
+            return {
+                "username": data.get("preferred_username", ""),
+                "first_name": data.get("given_name", ""),
+                "last_name": data.get("family_name", ""),
+                "email": data.get("email", ""),
+            }            
         else:
             return {}
 

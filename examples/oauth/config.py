@@ -51,7 +51,9 @@ OAUTH_PROVIDERS = [
             "request_token_url": "https://api.twitter.com/oauth/request_token",
             "access_token_url": "https://api.twitter.com/oauth/access_token",
             "authorize_url": "https://api.twitter.com/oauth/authenticate",
-            "fetch_token": lambda: session.get("oauth_token"), # DON'T DO THIS IN PRODUCTION
+            "fetch_token": lambda: session.get(
+                "oauth_token"
+            ),  # DON'T DO THIS IN PRODUCTION
         },
     },
     {
@@ -102,6 +104,25 @@ OAUTH_PROVIDERS = [
             "authorize_url": "https://{}.okta.com/oauth2/v1/authorize".format(
                 os.environ.get("OKTA_DOMAIN")
             ),
+        },
+    },
+    {
+        "name": "keycloak",
+        "icon": "fa-key",
+        "remote_app": {
+            "client_id": os.environ.get("KEYCLOAK_CLIENT_ID"),
+            "client_secret": os.environ.get("KEYCLOAK_CLIENT_SECRET"),
+            "api_base_url": "https://{}}/auth/realms/master/protocol/openid-connect".format(
+                os.environ.get("KEYCLOAK_DOMAIN")
+            ),
+            "client_kwargs": {"scope": "email profile"},
+            "access_token_url": "https://{}/auth/realms/master/protocol/openid-connect/token".format(
+                os.environ.get("KEYCLOAK_DOMAIN")
+            ),
+            "authorize_url": "https://{}/auth/realms/master/protocol/openid-connect/auth".format(
+                os.environ.get("KEYCLOAK_DOMAIN")
+            ),
+            "request_token_url": None,
         },
     },
 ]

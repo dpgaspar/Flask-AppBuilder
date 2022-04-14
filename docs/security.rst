@@ -233,13 +233,27 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 "authorize_url": "https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize",
             },
         },
+        {
+            "name": "keycloak",
+            "icon": "fa-key",
+            "remote_app": {
+                "client_id": "KEYCLOAK_CLIENT_ID",
+                "client_secret": "KEYCLOAK_CLIENT_SECRET",   
+                "api_base_url": "https://keycloak.default.sv.cluster.local:443/auth/realms/master/protocol/openid-connect",
+                "client_kwargs": {
+                    "scope": "email profile"
+                },
+                "access_token_url": "https://keycloak.default.sv.cluster.local:443/auth/realms/master/protocol/openid-connect/token",
+                "authorize_url": "https://keycloak.default.sv.cluster.local:443/auth/realms/master/protocol/openid-connect/auth",
+                "request_token_url": None,
+        },
     ]
 
 This needs a small explanation, you basically have five special keys:
 
 :name: the name of the provider:
     you can choose whatever you want, but FAB has builtin logic in `BaseSecurityManager.get_oauth_user_info()` for:
-    'azure', 'github', 'google', 'linkedin', 'okta', 'openshift', 'twitter'
+    'azure', 'github', 'google', 'keycloak', 'linkedin', 'okta', 'openshift', 'twitter'
 
 :icon: the font-awesome icon for this provider
 
