@@ -6,6 +6,7 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from ..base import BaseMVCTestCase
 from ..const import PASSWORD_ADMIN, PASSWORD_READONLY, USERNAME_ADMIN, USERNAME_READONLY
 from ..sqla.models import Model1, Model2
+from ...security.sqla.models import User
 
 INVALID_LOGIN_STRING = "Invalid login"
 PASSWORD_COMPLEXITY_ERROR = (
@@ -366,6 +367,10 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         data = rv.data.decode("utf-8")
         self.assertIn("Added Row", data)
+
+        user = self.db.session.query(User).filter(User.username == "from test 1-1")
+        self.db.session.delete(user)
+        self.db.session.commit()
 
         # don't set roles
         rv = client.get("/users/add", follow_redirects=True)
