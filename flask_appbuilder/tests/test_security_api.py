@@ -65,15 +65,15 @@ class UserAPITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        total_users = self.appbuilder.sm.count_users()
-        uri = "api/v1/security/users/"
+        query = {"order_column": "username", "order_direction": "desc"}
+        uri = f"api/v1/security/users/?q={prison.dumps(query)}"
         rv = self.auth_client_get(client, token, uri)
         response = json.loads(rv.data)
 
         self.assertEqual(rv.status_code, 200)
         assert "count" in response
-        self.assertEqual(response["count"], total_users)
-        self.assertEqual(len(response["result"]), total_users)
+        self.assertEqual(response["count"], 2)
+        self.assertEqual(len(response["result"]), 2)
         expected_results = [
             {
                 "active": True,
@@ -326,7 +326,7 @@ class UserAPITestCase(FABTestCase):
         self.session.delete(user)
         self.session.commit()
 
-    def test_1_edit_user(self):
+    def test_edit_user(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 

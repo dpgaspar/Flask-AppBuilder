@@ -1437,7 +1437,7 @@ class MVCTestCase(BaseMVCTestCase):
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu("can_access", "view")
         self.appbuilder.sm.add_permission_role(role, pvm)
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
 
@@ -1463,6 +1463,10 @@ class MVCTestCase(BaseMVCTestCase):
         )
         self.assertEqual(model.field_string, "test1")
         self.assertEqual(model.field_integer, 1)
+
+        # Cleanup
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_method_permission_override(self):
         """
@@ -1504,7 +1508,7 @@ class MVCTestCase(BaseMVCTestCase):
         self.appbuilder.sm.add_permission_role(role, pvm_read)
         self.appbuilder.sm.add_permission_role(role, pvm_write)
 
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
 
@@ -1571,8 +1575,9 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertIn("/model1permoverride/show/1", data)
 
         # Revert data changes
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
-        self.appbuilder.get_session.commit()
+        self.db.session.delete(self.appbuilder.sm.find_role("Test"))
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_action_permission_override(self):
         """
@@ -1611,7 +1616,7 @@ class MVCTestCase(BaseMVCTestCase):
 
         # Add a user and login before enabling CSRF
         role = self.appbuilder.sm.add_role("Test")
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
         pvm_read = self.appbuilder.sm.find_permission_view_menu(
@@ -1644,6 +1649,10 @@ class MVCTestCase(BaseMVCTestCase):
 
         rv = client.get("/model1permoverride/action/action1/1")
         self.assertEqual(rv.status_code, 302)
+
+        # cleanup
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_permission_converge_compress(self):
         """
@@ -1681,7 +1690,7 @@ class MVCTestCase(BaseMVCTestCase):
         pvm = self.appbuilder.sm.find_permission_view_menu("can_add", "Model1View")
         self.appbuilder.sm.add_permission_role(role, pvm)
         role = self.appbuilder.sm.find_role("Test")
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
         # Remove previous class, Hack to test code change
@@ -1714,6 +1723,9 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 1)
+        # cleanup
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_before_request(self):
         """
