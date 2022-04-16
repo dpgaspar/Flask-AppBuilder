@@ -3,6 +3,8 @@ import logging
 import os
 from typing import List
 
+from flask import Flask
+from flask_appbuilder import AppBuilder
 from flask_appbuilder import SQLA
 from flask_appbuilder.security.sqla.models import Permission, Role, User, ViewMenu
 from flask_appbuilder.tests.base import FABTestCase
@@ -15,23 +17,23 @@ log = logging.getLogger(__name__)
 
 
 class UserAPITestCase(FABTestCase):
-    def setUp(self):
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-        from flask_appbuilder.security.sqla.models import User, Role
-
+    def setUp(self) -> None:
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("flask_appbuilder.tests.config_security_api")
         self.db = SQLA(self.app)
+
         self.session = self.db.session
-        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.appbuilder = AppBuilder(self.app, self.session)
         self.user_model = User
         self.role_model = Role
 
     def tearDown(self):
-        self.appbuilder.get_session.close()
-        engine = self.db.session.get_bind(mapper=None, clause=None)
+        self.appbuilder.session.close()
+        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        for baseview in self.appbuilder.baseviews:
+            if hasattr(baseview, "datamodel"):
+                baseview.datamodel.session = None
         engine.dispose()
 
     def _create_test_user(
@@ -229,7 +231,6 @@ class UserAPITestCase(FABTestCase):
     def test_create_user(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
         role = Role(name="test-create-user-api")
         self.session.add(role)
         self.session.commit()
@@ -249,16 +250,18 @@ class UserAPITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 201)
 
         assert "id" in add_user_response
-
-        user = self.appbuilder.sm.get_user_by_id(add_user_response["id"])
-
+        user = (
+            self.session.query(User)
+            .filter(User.id == add_user_response["id"])
+            .one_or_none()
+        )
         self.assertEqual(user.active, create_user_payload["active"])
         self.assertEqual(user.email, create_user_payload["email"])
         self.assertEqual(user.first_name, create_user_payload["first_name"])
         self.assertEqual(user.last_name, create_user_payload["last_name"])
         self.assertEqual(user.username, create_user_payload["username"])
         self.assertEqual(len(user.roles), 1)
-        self.assertEqual(user.roles[0].name, role.name)
+        self.assertEqual(user.roles[0].name, "test-create-user-api")
 
         user = (
             self.session.query(self.user_model)
@@ -379,10 +382,12 @@ class UserAPITestCase(FABTestCase):
     def test_delete_user(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        session = self.appbuilder.session
 
         role = Role(name="delete-user-role")
-        self.session.add(role)
-        self.session.commit()
+
+        session.add(role)
+        session.commit()
         user = self._create_test_user(
             "delete-user", "password", [role], "delete-user@fab.com"
         )
@@ -397,12 +402,12 @@ class UserAPITestCase(FABTestCase):
         assert not updated_user
 
         role = (
-            self.session.query(self.role_model)
+            session.query(self.role_model)
             .filter(self.role_model.id == role_id)
             .one_or_none()
         )
-        self.session.delete(role)
-        self.session.commit()
+        session.delete(role)
+        session.commit()
 
     def test_delete_user_not_found(self):
         client = self.app.test_client()
@@ -434,8 +439,11 @@ class RolePermissionAPITestCase(FABTestCase):
                 b.datamodel.session = self.db.session
 
     def tearDown(self):
-        self.appbuilder.get_session.close()
-        engine = self.db.session.get_bind(mapper=None, clause=None)
+        self.appbuilder.session.close()
+        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        for baseview in self.appbuilder.baseviews:
+            if hasattr(baseview, "datamodel"):
+                baseview.datamodel.session = None
         engine.dispose()
 
     def test_list_permission_api(self):
@@ -1044,8 +1052,11 @@ class UserRolePermissionDisabledTestCase(FABTestCase):
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def tearDown(self):
-        self.appbuilder.get_session.close()
-        engine = self.db.session.get_bind(mapper=None, clause=None)
+        self.appbuilder.session.close()
+        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        for baseview in self.appbuilder.baseviews:
+            if hasattr(baseview, "datamodel"):
+                baseview.datamodel.session = None
         engine.dispose()
 
     def test_user_role_permission(self):
@@ -1094,14 +1105,12 @@ class UserCustomPasswordComplexityValidatorTestCase(FABTestCase):
         self.appbuilder = AppBuilder(self.app, self.db.session)
         self.user_model = User
 
-        # TODO:remove this hack
-        for b in self.appbuilder.baseviews:
-            if hasattr(b, "datamodel") and b.datamodel.session is not None:
-                b.datamodel.session = self.db.session
-
     def tearDown(self):
-        self.appbuilder.get_session.close()
-        engine = self.db.session.get_bind(mapper=None, clause=None)
+        self.appbuilder.session.close()
+        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        for baseview in self.appbuilder.baseviews:
+            if hasattr(baseview, "datamodel"):
+                baseview.datamodel.session = None
         engine.dispose()
 
     def test_password_complexity(self):
@@ -1155,14 +1164,12 @@ class UserDefaultPasswordComplexityValidatorTestCase(FABTestCase):
         self.appbuilder = AppBuilder(self.app, self.db.session)
         self.user_model = User
 
-        # TODO:remove this hack
-        for b in self.appbuilder.baseviews:
-            if hasattr(b, "datamodel") and b.datamodel.session is not None:
-                b.datamodel.session = self.db.session
-
     def tearDown(self):
-        self.appbuilder.get_session.close()
-        engine = self.db.session.get_bind(mapper=None, clause=None)
+        self.appbuilder.session.close()
+        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        for baseview in self.appbuilder.baseviews:
+            if hasattr(baseview, "datamodel"):
+                baseview.datamodel.session = None
         engine.dispose()
 
     def test_password_complexity(self):
