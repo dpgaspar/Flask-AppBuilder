@@ -30,7 +30,10 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-def dynamic_class_import(class_path: str) -> Optional["BaseManager"]:
+DynamicImportType = Union["BaseManager", "BaseView", "BaseSecurityManager", Menu]
+
+
+def dynamic_class_import(class_path: str) -> Optional[DynamicImportType]:
     """
     Will dynamically import a class from a string path
     :param class_path: string with class path
