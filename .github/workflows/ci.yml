@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -35,6 +35,7 @@ jobs:
         run: mypy flask_appbuilder
       - name: mypy strict
         run: mypy flask_appbuilder/validators.py flask_appbuilder/base.py
+
   test-postgres:
     runs-on: ubuntu-18.04
     strategy:
