@@ -1074,7 +1074,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_query_rel_fields(self):
         """
-            Test add and edit form related fields filter
+        Test add and edit form related fields filter
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)

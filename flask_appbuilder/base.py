@@ -341,11 +341,11 @@ class AppBuilder:
     ) -> Union["BaseView", "BaseApi"]:
         # If class if not instantiated, instantiate it
         # and add db session from security models.
-        if hasattr(baseview, "__call__"):
-            baseview = baseview()
         if hasattr(baseview, "datamodel"):
             if baseview.datamodel.session is None:
                 baseview.datamodel.session = self.session
+        if hasattr(baseview, "__call__"):
+            baseview = baseview()
         return baseview
 
     def add_view(
