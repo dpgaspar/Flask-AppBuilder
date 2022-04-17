@@ -65,7 +65,7 @@ def expose_api(name="", url="", methods=("GET",), description=""):
     return wrap
 
 
-class BaseView(object):
+class BaseView:
     """
         All views inherit from this class.
         it's constructor will register your exposed urls on flask as a Blueprint.

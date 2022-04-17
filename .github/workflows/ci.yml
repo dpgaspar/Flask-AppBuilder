@@ -33,7 +33,8 @@ jobs:
         run: flake8 flask_appbuilder
       - name: mypy
         run: mypy flask_appbuilder
-
+      - name: mypy strict
+        run: mypy flask_appbuilder/validators.py flask_appbuilder/base.py
   test-postgres:
     runs-on: ubuntu-18.04
     strategy:

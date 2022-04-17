@@ -213,8 +213,6 @@ class BaseApi(object):
         but provides a common base for all APIS.
     """
 
-    appbuilder = None
-    blueprint = None
     endpoint: Optional[str] = None
 
     version: Optional[str] = "v1"
@@ -436,6 +434,9 @@ class BaseApi(object):
 
             Initialization of extra args
         """
+        self.appbuilder = None
+        self.blueprint = None
+
         # Init OpenAPI
         self._response_key_func_mappings = dict()
         self.apispec_parameter_schemas = self.apispec_parameter_schemas or dict()
