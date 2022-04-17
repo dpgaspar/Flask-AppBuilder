@@ -1,6 +1,6 @@
 from functools import reduce
 import logging
-from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
+from typing import Any, Callable, cast, Dict, List, Optional, Type, TYPE_CHECKING, Union
 
 from flask import Blueprint, current_app, Flask, url_for
 from sqlalchemy.orm.session import Session as SessionBase
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-DynamicImportType = Union["BaseManager", "BaseView", "BaseSecurityManager", Menu]
+DynamicImportType = Union[Type["BaseManager"], "BaseView", "BaseSecurityManager", Menu]
 
 
 def dynamic_class_import(class_path: str) -> Optional[DynamicImportType]:
@@ -96,7 +96,7 @@ class AppBuilder:
         base_template: str = "appbuilder/baselayout.html",
         static_folder: str = "static/appbuilder",
         static_url_path: str = "/appbuilder",
-        security_manager_class: Optional["BaseSecurityManager"] = None,
+        security_manager_class: Optional[Type["BaseSecurityManager"]] = None,
         update_perms: bool = True,
     ) -> None:
         """
@@ -123,7 +123,7 @@ class AppBuilder:
         self.baseviews: List[Union["BaseView", "BaseApi"]] = []
 
         # temporary list that hold addon_managers config key
-        self._addon_managers: List["BaseManager"] = []
+        self._addon_managers: List[str] = []
         # dict with addon name has key and instantiated class has value
         self.addon_managers: Dict[str, Any] = {}
         self.menu = menu
@@ -138,7 +138,7 @@ class AppBuilder:
         # Security Manager Class
         self.sm: BaseSecurityManager = None  # type: ignore
         # Babel Manager Class
-        self.bm: BaseManager = None  # type: ignore
+        self.bm: BabelManager = None  # type: ignore
         self.openapi_manager: OpenApiManager = None  # type: ignore
         self.menuapi_manager: MenuApiManager = None  # type: ignore
 
@@ -172,14 +172,18 @@ class AppBuilder:
         )
         _index_view = app.config.get("FAB_INDEX_VIEW", None)
         if _index_view is not None:
-            self.indexview = dynamic_class_import(_index_view)
+            view = dynamic_class_import(_index_view)
+            if isinstance(view, BaseView):
+                self.indexview = view
         else:
-            self.indexview = self.indexview or IndexView
+            self.indexview = self.indexview or IndexView()
         _menu = app.config.get("FAB_MENU", None)
 
         # Setup Menu
         if _menu is not None:
-            self.menu = dynamic_class_import(_menu)
+            menu = dynamic_class_import(_menu)
+            if isinstance(menu, Menu):
+                self.menu = menu
         else:
             self.menu = self.menu or Menu()
 
@@ -189,8 +193,9 @@ class AppBuilder:
             "FAB_SECURITY_MANAGER_CLASS", None
         )
         if _security_manager_class_name is not None:
-            self.security_manager_class = dynamic_class_import(
-                _security_manager_class_name
+            security_manager_class = dynamic_class_import(_security_manager_class_name)
+            self.security_manager_class = cast(
+                Type[BaseSecurityManager], security_manager_class
             )
         if self.security_manager_class is None:
             from flask_appbuilder.security.sqla.manager import SecurityManager
@@ -309,8 +314,9 @@ class AppBuilder:
         """
             Registers indexview, utilview (back function), babel views and Security views.
         """
-        self.indexview = self._check_and_init(self.indexview)
-        self.add_view_no_menu(self.indexview)
+        if self.indexview:
+            self.indexview = self._check_and_init(self.indexview)
+            self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(UtilView())
         self.bm.register_views()
         self.sm.register_views()
@@ -323,7 +329,7 @@ class AppBuilder:
         """
         for addon in self._addon_managers:
             addon_class = dynamic_class_import(addon)
-            if addon_class:
+            if addon_class and isinstance(addon_class, BaseManager):
                 # Instantiate manager with appbuilder (self)
                 addon_class = addon_class(self)
                 try:
@@ -342,8 +348,8 @@ class AppBuilder:
         # If class if not instantiated, instantiate it
         # and add db session from security models.
         if hasattr(baseview, "datamodel"):
-            if baseview.datamodel.session is None:
-                baseview.datamodel.session = self.session
+            if getattr(baseview, "datamodel").session is None:
+                getattr(baseview, "datamodel").session = self.session
         if hasattr(baseview, "__call__"):
             baseview = baseview()
         return baseview
@@ -603,10 +609,14 @@ class AppBuilder:
 
     @property
     def get_url_for_login(self) -> str:
+        if self.sm.auth_view is None:
+            return ""
         return url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"))
 
     @property
     def get_url_for_logout(self) -> str:
+        if self.sm.auth_view is None:
+            return ""
         return url_for("%s.%s" % (self.sm.auth_view.endpoint, "logout"))
 
     @property
@@ -617,9 +627,13 @@ class AppBuilder:
 
     @property
     def get_url_for_userinfo(self) -> str:
+        if self.sm.user_view is None:
+            return ""
         return url_for("%s.%s" % (self.sm.user_view.endpoint, "userinfo"))
 
     def get_url_for_locale(self, lang: str) -> str:
+        if self.bm.locale_view is None:
+            return ""
         return url_for(
             "%s.%s" % (self.bm.locale_view.endpoint, self.bm.locale_view.default_view),
             locale=lang,

@@ -346,9 +346,9 @@ class BaseView:
         """
         return []
 
-    def get_init_inner_views(self, views):
+    def get_init_inner_views(self):
         """
-            Sets initialized inner views
+        Sets initialized inner views
         """
         pass
 
