@@ -645,7 +645,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "role_keys": data.get("groups", []),
             }
         # for Keycloak
-        if provider == "keycloak":
+        if provider in ["keycloak", "keycloak_before_17"]:
             me = self.appbuilder.sm.oauth_remotes[provider].get("openid-connect/userinfo")
             me.raise_for_status()
             data = me.json()

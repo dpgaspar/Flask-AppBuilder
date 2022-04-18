@@ -109,6 +109,27 @@ OAUTH_PROVIDERS = [
     {
         "name": "keycloak",
         "icon": "fa-key",
+        "token_key": "access_token",
+        "remote_app": {
+            "client_id": os.environ.get("KEYCLOAK_CLIENT_ID"),
+            "client_secret": os.environ.get("KEYCLOAK_CLIENT_SECRET"),
+            "api_base_url": "https://{}}/realms/master/protocol/openid-connect".format(
+                os.environ.get("KEYCLOAK_DOMAIN")
+            ),
+            "client_kwargs": {"scope": "email profile"},
+            "access_token_url": "https://{}/realms/master/protocol/openid-connect/token".format(
+                os.environ.get("KEYCLOAK_DOMAIN")
+            ),
+            "authorize_url": "https://{}/realms/master/protocol/openid-connect/auth".format(
+                os.environ.get("KEYCLOAK_DOMAIN")
+            ),
+            "request_token_url": None,
+        },
+    },
+    {
+        "name": "keycloak_before_17",
+        "icon": "fa-key",
+        "token_key": "access_token",
         "remote_app": {
             "client_id": os.environ.get("KEYCLOAK_CLIENT_ID"),
             "client_secret": os.environ.get("KEYCLOAK_CLIENT_SECRET"),
