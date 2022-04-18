@@ -23,14 +23,15 @@ from .views import IndexView, UtilView
 
 if TYPE_CHECKING:
     from flask_appbuilder.basemanager import BaseManager
-    from flask_appbuilder.api import BaseApi
-    from flask_appbuilder.baseviews import BaseView
+    from flask_appbuilder.baseviews import BaseView, AbstractViewApi
     from flask_appbuilder.security.manager import BaseSecurityManager
 
 log = logging.getLogger(__name__)
 
 
-DynamicImportType = Union[Type["BaseManager"], "BaseView", "BaseSecurityManager", Menu]
+DynamicImportType = Union[
+    Type["BaseManager"], Type["BaseView"], Type["BaseSecurityManager"], Type[Menu]
+]
 
 
 def dynamic_class_import(class_path: str) -> Optional[DynamicImportType]:
@@ -92,7 +93,7 @@ class AppBuilder:
         app: Optional[Flask] = None,
         session: Optional[SessionBase] = None,
         menu: Optional[Menu] = None,
-        indexview: Optional["BaseView"] = None,
+        indexview: Optional["AbstractViewApi"] = None,
         base_template: str = "appbuilder/baselayout.html",
         static_folder: str = "static/appbuilder",
         static_url_path: str = "/appbuilder",
@@ -120,7 +121,7 @@ class AppBuilder:
             optional, update permissions flag (Boolean) you can use
             FAB_UPDATE_PERMS config key also
         """
-        self.baseviews: List[Union["BaseView", "BaseApi"]] = []
+        self.baseviews: List["AbstractViewApi"] = []
 
         # temporary list that hold addon_managers config key
         self._addon_managers: List[str] = []
@@ -328,35 +329,34 @@ class AppBuilder:
         Registers declared addon's
         """
         for addon in self._addon_managers:
-            addon_class = dynamic_class_import(addon)
-            if addon_class and isinstance(addon_class, BaseManager):
+            addon_class_ = dynamic_class_import(addon)
+            addon_class = cast(Type[BaseManager], addon_class_)
+            if addon_class:
                 # Instantiate manager with appbuilder (self)
-                addon_class = addon_class(self)
+                inst_addon_class: BaseManager = addon_class(self)
                 try:
-                    addon_class.pre_process()
-                    addon_class.register_views()
-                    addon_class.post_process()
-                    self.addon_managers[addon] = addon_class
+                    inst_addon_class.pre_process()
+                    inst_addon_class.register_views()
+                    inst_addon_class.post_process()
+                    self.addon_managers[addon] = inst_addon_class
                     log.info(LOGMSG_INF_FAB_ADDON_ADDED.format(str(addon)))
                 except Exception as e:
                     log.exception(e)
                     log.error(LOGMSG_ERR_FAB_ADDON_PROCESS.format(addon, e))
 
-    def _check_and_init(
-        self, baseview: Union["BaseView", "BaseApi"]
-    ) -> Union["BaseView", "BaseApi"]:
+    def _check_and_init(self, baseview: "AbstractViewApi") -> "AbstractViewApi":
         # If class if not instantiated, instantiate it
         # and add db session from security models.
         if hasattr(baseview, "datamodel"):
             if getattr(baseview, "datamodel").session is None:
                 getattr(baseview, "datamodel").session = self.session
-        if hasattr(baseview, "__call__"):
+        if isinstance(baseview, type):
             baseview = baseview()
         return baseview
 
     def add_view(
         self,
-        baseview: Union["BaseView", "BaseApi"],
+        baseview: "AbstractViewApi",
         name: str,
         href: str = "",
         icon: str = "",
@@ -365,7 +365,7 @@ class AppBuilder:
         category_icon: str = "",
         category_label: str = "",
         menu_cond: Optional[Callable[..., bool]] = None,
-    ) -> Union["BaseView", "BaseApi"]:
+    ) -> "AbstractViewApi":
         """
         Add your views associated with menus using this method.
 
@@ -465,7 +465,7 @@ class AppBuilder:
         category: str = "",
         category_icon: str = "",
         category_label: str = "",
-        baseview: Optional[Union["BaseView", "BaseApi"]] = None,
+        baseview: Optional["AbstractViewApi"] = None,
         cond: Optional[Callable[..., bool]] = None,
     ) -> None:
         """
@@ -536,10 +536,10 @@ class AppBuilder:
 
     def add_view_no_menu(
         self,
-        baseview: Union["BaseView", "BaseApi"],
+        baseview: "AbstractViewApi",
         endpoint: Optional[str] = None,
         static_folder: Optional[str] = None,
-    ) -> Union["BaseView", "BaseApi"]:
+    ) -> "AbstractViewApi":
         """
         Add your views without creating a menu.
 
@@ -565,9 +565,7 @@ class AppBuilder:
             log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.__class__.__name__))
         return baseview
 
-    def add_api(
-        self, baseview: Union["BaseView", "BaseApi"]
-    ) -> Union["BaseView", "BaseApi"]:
+    def add_api(self, baseview: "AbstractViewApi") -> "AbstractViewApi":
         """
         Add a BaseApi class or child to AppBuilder
 
@@ -605,7 +603,9 @@ class AppBuilder:
         :param dry: If True will not change DB
         :return: Dict with all computed necessary operations
         """
-        return self.sm.security_converge(self.baseviews, self.menu, dry)
+        if self.menu is None:
+            return {}
+        return self.sm.security_converge(self.baseviews, self.menu.menu, dry)
 
     @property
     def get_url_for_login(self) -> str:
@@ -646,7 +646,7 @@ class AppBuilder:
             self._add_menu_permissions(update_perms=update_perms)
 
     def _add_permission(
-        self, baseview: Union["BaseView", "BaseApi"], update_perms: bool = False
+        self, baseview: "AbstractViewApi", update_perms: bool = False
     ) -> None:
         if self.update_perms or update_perms:
             try:
@@ -678,7 +678,7 @@ class AppBuilder:
 
     def register_blueprint(
         self,
-        baseview: Union["BaseView", "BaseApi"],
+        baseview: "AbstractViewApi",
         endpoint: Optional[str] = None,
         static_folder: Optional[str] = None,
     ) -> None:
@@ -688,7 +688,7 @@ class AppBuilder:
             )
         )
 
-    def _view_exists(self, view: Union["BaseView", "BaseApi"]) -> bool:
+    def _view_exists(self, view: "AbstractViewApi") -> bool:
         for baseview in self.baseviews:
             if baseview.__class__ == view.__class__:
                 return True
