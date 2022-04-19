@@ -60,51 +60,51 @@ log = logging.getLogger(__name__)
 
 class AbstractSecurityManager(BaseManager):
     """
-        Abstract SecurityManager class, declares all methods used by the
-        framework. There is no assumptions about security models or auth types.
+    Abstract SecurityManager class, declares all methods used by the
+    framework. There is no assumptions about security models or auth types.
     """
 
     def add_permissions_view(self, base_permissions, view_menu):
         """
-            Adds a permission on a view menu to the backend
+        Adds a permission on a view menu to the backend
 
-            :param base_permissions:
-                list of permissions from view (all exposed methods):
-                 'can_add','can_edit' etc...
-            :param view_menu:
-                name of the view or menu to add
+        :param base_permissions:
+            list of permissions from view (all exposed methods):
+             'can_add','can_edit' etc...
+        :param view_menu:
+            name of the view or menu to add
         """
         raise NotImplementedError
 
     def add_permissions_menu(self, view_menu_name):
         """
-            Adds menu_access to menu on permission_view_menu
+        Adds menu_access to menu on permission_view_menu
 
-            :param view_menu_name:
-                The menu name
+        :param view_menu_name:
+            The menu name
         """
         raise NotImplementedError
 
     def register_views(self):
         """
-            Generic function to create the security views
+        Generic function to create the security views
         """
         raise NotImplementedError
 
     def is_item_public(self, permission_name, view_name):
         """
-            Check if view has public permissions
+        Check if view has public permissions
 
-            :param permission_name:
-                the permission: can_show, can_edit...
-            :param view_name:
-                the name of the class view (child of BaseView)
+        :param permission_name:
+            the permission: can_show, can_edit...
+        :param view_name:
+            the name of the class view (child of BaseView)
         """
         raise NotImplementedError
 
     def has_access(self, permission_name, view_name):
         """
-            Check if current user or public has access to view or menu
+        Check if current user or public has access to view or menu
         """
         raise NotImplementedError
 
@@ -120,8 +120,8 @@ class AbstractSecurityManager(BaseManager):
 
 def _oauth_tokengetter(token=None):
     """
-        Default function to return the current user oauth token
-        from session cookie.
+    Default function to return the current user oauth token
+    from session cookie.
     """
     token = session.get("oauth")
     log.debug("Token Get: {0}".format(token))
@@ -287,9 +287,9 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def create_login_manager(self, app) -> LoginManager:
         """
-            Override to implement your custom login manager instance
+        Override to implement your custom login manager instance
 
-            :param app: Flask app
+        :param app: Flask app
         """
         lm = LoginManager(app)
         lm.login_view = "login"
@@ -298,9 +298,9 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def create_jwt_manager(self, app) -> JWTManager:
         """
-            Override to implement your custom JWT manager instance
+        Override to implement your custom JWT manager instance
 
-            :param app: Flask app
+        :param app: Flask app
         """
         jwt_manager = JWTManager()
         jwt_manager.init_app(app)
@@ -498,21 +498,21 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def oauth_user_info_getter(self, f):
         """
-            Decorator function to be the OAuth user info getter
-            for all the providers, receives provider and response
-            return a dict with the information returned from the provider.
-            The returned user info dict should have it's keys with the same
-            name as the User Model.
+        Decorator function to be the OAuth user info getter
+        for all the providers, receives provider and response
+        return a dict with the information returned from the provider.
+        The returned user info dict should have it's keys with the same
+        name as the User Model.
 
-            Use it like this an example for GitHub ::
+        Use it like this an example for GitHub ::
 
-                @appbuilder.sm.oauth_user_info_getter
-                def my_oauth_user_info(sm, provider, response=None):
-                    if provider == 'github':
-                        me = sm.oauth_remotes[provider].get('user')
-                        return {'username': me.data.get('login')}
-                    else:
-                        return {}
+            @appbuilder.sm.oauth_user_info_getter
+            def my_oauth_user_info(sm, provider, response=None):
+                if provider == 'github':
+                    me = sm.oauth_remotes[provider].get('user')
+                    return {'username': me.data.get('login')}
+                else:
+                    return {}
         """
 
         def wraps(provider, response=None):
@@ -531,9 +531,9 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def get_oauth_token_key_name(self, provider):
         """
-            Returns the token_key name for the oauth provider
-            if none is configured defaults to oauth_token
-            this is configured using OAUTH_PROVIDERS and token_key key.
+        Returns the token_key name for the oauth provider
+        if none is configured defaults to oauth_token
+        this is configured using OAUTH_PROVIDERS and token_key key.
         """
         for _provider in self.oauth_providers:
             if _provider["name"] == provider:
@@ -541,9 +541,9 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def get_oauth_token_secret_name(self, provider):
         """
-            Returns the token_secret name for the oauth provider
-            if none is configured defaults to oauth_secret
-            this is configured using OAUTH_PROVIDERS and token_secret
+        Returns the token_secret name for the oauth provider
+        if none is configured defaults to oauth_secret
+        this is configured using OAUTH_PROVIDERS and token_secret
         """
         for _provider in self.oauth_providers:
             if _provider["name"] == provider:
@@ -551,7 +551,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def set_oauth_session(self, provider, oauth_response):
         """
-            Set the current session with OAuth user secrets
+        Set the current session with OAuth user secrets
         """
         # Get this provider key names for token_key and token_secret
         token_key = self.appbuilder.sm.get_oauth_token_key_name(provider)
@@ -565,8 +565,8 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def get_oauth_user_info(self, provider, resp):
         """
-            Since there are different OAuth API's with different ways to
-            retrieve user info
+        Since there are different OAuth API's with different ways to
+        retrieve user info
         """
         # for GITHUB
         if provider == "github" or provider == "githublocal":
@@ -646,7 +646,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             }
         # for Keycloak
         if provider in ["keycloak", "keycloak_before_17"]:
-            me = self.appbuilder.sm.oauth_remotes[provider].get("openid-connect/userinfo")
+            me = self.appbuilder.sm.oauth_remotes[provider].get(
+                "openid-connect/userinfo"
+            )
             me.raise_for_status()
             data = me.json()
             log.debug("User info from Keycloak: %s", data)
@@ -655,7 +657,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "first_name": data.get("given_name", ""),
                 "last_name": data.get("family_name", ""),
                 "email": data.get("email", ""),
-            }            
+            }
         else:
             return {}
 
@@ -799,7 +801,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def create_db(self):
         """
-            Setups the DB, creates admin and public roles if they don't exist.
+        Setups the DB, creates admin and public roles if they don't exist.
         """
         roles_mapping = self.appbuilder.get_app.config.get("FAB_ROLES_MAPPING", {})
         for pk, name in roles_mapping.items():
@@ -818,13 +820,13 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def reset_password(self, userid, password):
         """
-            Change/Reset a user's password for authdb.
-            Password will be hashed and saved.
+        Change/Reset a user's password for authdb.
+        Password will be hashed and saved.
 
-            :param userid:
-                the user.id to reset the password
-            :param password:
-                The clear text password to reset and save hashed on the db
+        :param userid:
+            the user.id to reset the password
+        :param password:
+            The clear text password to reset and save hashed on the db
         """
         user = self.get_user_by_id(userid)
         user.password = generate_password_hash(password)
@@ -896,12 +898,12 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def _search_ldap(self, ldap, con, username):
         """
-            Searches LDAP for user.
+        Searches LDAP for user.
 
-            :param ldap: The ldap module reference
-            :param con: The ldap connection
-            :param username: username to match with AUTH_LDAP_UID_FIELD
-            :return: ldap object array
+        :param ldap: The ldap module reference
+        :param con: The ldap connection
+        :param username: username to match with AUTH_LDAP_UID_FIELD
+        :return: ldap object array
         """
         # always check AUTH_LDAP_SEARCH is set before calling this method
         assert self.auth_ldap_search, "AUTH_LDAP_SEARCH must be set"
@@ -991,10 +993,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def _ldap_bind_indirect(self, ldap, con) -> None:
         """
-            Attempt to bind to LDAP using the AUTH_LDAP_BIND_USER.
+        Attempt to bind to LDAP using the AUTH_LDAP_BIND_USER.
 
-            :param ldap: The ldap module reference
-            :param con: The ldap connection
+        :param ldap: The ldap module reference
+        :param con: The ldap connection
         """
         # always check AUTH_LDAP_BIND_USER is set before calling this method
         assert self.auth_ldap_bind_user, "AUTH_LDAP_BIND_USER must be set"
@@ -1021,7 +1023,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     @staticmethod
     def _ldap_bind(ldap, con, dn: str, password: str) -> bool:
         """
-            Validates/binds the provided dn/password with the LDAP sever.
+        Validates/binds the provided dn/password with the LDAP sever.
         """
         try:
             log.debug("LDAP bind TRY with username: '{0}'".format(dn))
@@ -1047,12 +1049,12 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def auth_user_ldap(self, username, password):
         """
-            Method for authenticating user with LDAP.
+        Method for authenticating user with LDAP.
 
-            NOTE: this depends on python-ldap module
+        NOTE: this depends on python-ldap module
 
-            :param username: the username
-            :param password: the password
+        :param username: the username
+        :param password: the password
         """
         # If no username is provided, go away
         if (username is None) or username == "":
@@ -1244,10 +1246,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def auth_user_oid(self, email):
         """
-            OpenID user Authentication
+        OpenID user Authentication
 
-            :param email: user's email to authenticate
-            :type self: User model
+        :param email: user's email to authenticate
+        :type self: User model
         """
         user = self.find_user(email=email)
         if user is None or (not user.is_active):
@@ -1259,10 +1261,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def auth_user_remote_user(self, username):
         """
-            REMOTE_USER user Authentication
+        REMOTE_USER user Authentication
 
-            :param username: user's username for remote auth
-            :type self: User model
+        :param username: user's username for remote auth
+        :type self: User model
         """
         user = self.find_user(username=username)
 
@@ -1323,10 +1325,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def auth_user_oauth(self, userinfo):
         """
-            Method for authenticating user with OAuth.
+        Method for authenticating user with OAuth.
 
-            :userinfo: dict with user information
-                       (keys are the same as User model columns)
+        :userinfo: dict with user information
+                   (keys are the same as User model columns)
         """
         # extract the username from `userinfo`
         if "username" in userinfo:
@@ -1394,12 +1396,12 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def is_item_public(self, permission_name, view_name):
         """
-            Check if view has public permissions
+        Check if view has public permissions
 
-            :param permission_name:
-                the permission: can_show, can_edit...
-            :param view_name:
-                the name of the class view (child of BaseView)
+        :param permission_name:
+            the permission: can_show, can_edit...
+        :param view_name:
+            the name of the class view (child of BaseView)
         """
         permissions = self.get_public_permissions()
         if permissions:
@@ -1416,7 +1418,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         self, role, permission_name: str, view_name: str
     ) -> bool:
         """
-            Checks permission on builtin role
+        Checks permission on builtin role
         """
         builtin_pvms = self.builtin_roles.get(role.name, [])
         for pvm in builtin_pvms:
@@ -1806,7 +1808,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def find_register_user(self, registration_hash):
         """
-            Generic function to return user registration
+        Generic function to return user registration
         """
         raise NotImplementedError
 
@@ -1814,31 +1816,31 @@ class BaseSecurityManager(AbstractSecurityManager):
         self, username, first_name, last_name, email, password="", hashed_password=""
     ):
         """
-            Generic function to add user registration
+        Generic function to add user registration
         """
         raise NotImplementedError
 
     def del_register_user(self, register_user):
         """
-            Generic function to delete user registration
+        Generic function to delete user registration
         """
         raise NotImplementedError
 
     def get_user_by_id(self, pk):
         """
-            Generic function to return user by it's id (pk)
+        Generic function to return user by it's id (pk)
         """
         raise NotImplementedError
 
     def find_user(self, username=None, email=None):
         """
-            Generic function find a user by it's username or email
+        Generic function find a user by it's username or email
         """
         raise NotImplementedError
 
     def get_all_users(self):
         """
-            Generic function that returns all existing users
+        Generic function that returns all existing users
         """
         raise NotImplementedError
 
@@ -1850,21 +1852,21 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def add_user(self, username, first_name, last_name, email, role, password=""):
         """
-            Generic function to create user
+        Generic function to create user
         """
         raise NotImplementedError
 
     def update_user(self, user):
         """
-            Generic function to update user
+        Generic function to update user
 
-            :param user: User model to update to database
+        :param user: User model to update to database
         """
         raise NotImplementedError
 
     def count_users(self):
         """
-            Generic function to count the existing users
+        Generic function to count the existing users
         """
         raise NotImplementedError
 
@@ -1894,19 +1896,19 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def get_public_role(self):
         """
-            returns all permissions from public role
+        returns all permissions from public role
         """
         raise NotImplementedError
 
     def get_public_permissions(self):
         """
-            returns all permissions from public role
+        returns all permissions from public role
         """
         raise NotImplementedError
 
     def find_permission(self, name):
         """
-            Finds and returns a Permission by name
+        Finds and returns a Permission by name
         """
         raise NotImplementedError
 
@@ -1919,25 +1921,25 @@ class BaseSecurityManager(AbstractSecurityManager):
         self, view_name: str, permission_name: str, role_ids: List[int]
     ) -> bool:
         """
-            Finds and returns permission views for a group of roles
+        Finds and returns permission views for a group of roles
         """
         raise NotImplementedError
 
     def add_permission(self, name):
         """
-            Adds a permission to the backend, model permission
+        Adds a permission to the backend, model permission
 
-            :param name:
-                name of the permission: 'can_add','can_edit' etc...
+        :param name:
+            name of the permission: 'can_add','can_edit' etc...
         """
         raise NotImplementedError
 
     def del_permission(self, name):
         """
-            Deletes a permission from the backend, model permission
+        Deletes a permission from the backend, model permission
 
-            :param name:
-                name of the permission: 'can_add','can_edit' etc...
+        :param name:
+            name of the permission: 'can_add','can_edit' etc...
         """
         raise NotImplementedError
 
@@ -1949,7 +1951,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def find_view_menu(self, name):
         """
-            Finds and returns a ViewMenu by name
+        Finds and returns a ViewMenu by name
         """
         raise NotImplementedError
 
@@ -1958,18 +1960,18 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def add_view_menu(self, name):
         """
-            Adds a view or menu to the backend, model view_menu
-            param name:
-                name of the view menu to add
+        Adds a view or menu to the backend, model view_menu
+        param name:
+            name of the view menu to add
         """
         raise NotImplementedError
 
     def del_view_menu(self, name):
         """
-            Deletes a ViewMenu from the backend
+        Deletes a ViewMenu from the backend
 
-            :param name:
-                name of the ViewMenu
+        :param name:
+            name of the ViewMenu
         """
         raise NotImplementedError
 
@@ -1981,27 +1983,27 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def find_permission_view_menu(self, permission_name, view_menu_name):
         """
-            Finds and returns a PermissionView by names
+        Finds and returns a PermissionView by names
         """
         raise NotImplementedError
 
     def find_permissions_view_menu(self, view_menu):
         """
-            Finds all permissions from ViewMenu, returns list of PermissionView
+        Finds all permissions from ViewMenu, returns list of PermissionView
 
-            :param view_menu: ViewMenu object
-            :return: list of PermissionView objects
+        :param view_menu: ViewMenu object
+        :return: list of PermissionView objects
         """
         raise NotImplementedError
 
     def add_permission_view_menu(self, permission_name, view_menu_name):
         """
-            Adds a permission on a view or menu to the backend
+        Adds a permission on a view or menu to the backend
 
-            :param permission_name:
-                name of the permission to add: 'can_add','can_edit' etc...
-            :param view_menu_name:
-                name of the view menu to add
+        :param permission_name:
+            name of the permission to add: 'can_add','can_edit' etc...
+        :param view_menu_name:
+            name of the view menu to add
         """
         raise NotImplementedError
 
@@ -2016,34 +2018,34 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def add_permission_role(self, role, perm_view):
         """
-            Add permission-ViewMenu object to Role
+        Add permission-ViewMenu object to Role
 
-            :param role:
-                The role object
-            :param perm_view:
-                The PermissionViewMenu object
+        :param role:
+            The role object
+        :param perm_view:
+            The PermissionViewMenu object
         """
         raise NotImplementedError
 
     def del_permission_role(self, role, perm_view):
         """
-            Remove permission-ViewMenu object to Role
+        Remove permission-ViewMenu object to Role
 
-            :param role:
-                The role object
-            :param perm_view:
-                The PermissionViewMenu object
+        :param role:
+            The role object
+        :param perm_view:
+            The PermissionViewMenu object
         """
         raise NotImplementedError
 
     def export_roles(
         self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
     ) -> None:
-        """ Exports roles to JSON file. """
+        """Exports roles to JSON file."""
         raise NotImplementedError
 
     def import_roles(self, path: str) -> None:
-        """ Imports roles from JSON file. """
+        """Imports roles from JSON file."""
         raise NotImplementedError
 
     def load_user(self, pk):
