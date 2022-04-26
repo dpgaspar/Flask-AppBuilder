@@ -247,8 +247,9 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 "access_token_url": "KEYCLOAK_DOMAIN/realms/master/protocol/openid-connect/token",
                 "authorize_url": "KEYCLOAK_DOMAIN/realms/master/protocol/openid-connect/auth",
                 "request_token_url": None,
+            },
         },
-            {
+        {
             "name": "keycloak_before_17",
             "icon": "fa-key",
             "token_key": "access_token",
@@ -262,6 +263,7 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 "access_token_url": "KEYCLOAK_DOMAIN/auth/realms/master/protocol/openid-connect/token",
                 "authorize_url": "KEYCLOAK_DOMAIN/auth/realms/master/protocol/openid-connect/auth",
                 "request_token_url": None,
+            },
         },
     ]
 
