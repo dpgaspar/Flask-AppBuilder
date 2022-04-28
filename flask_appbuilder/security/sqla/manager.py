@@ -255,7 +255,7 @@ class SecurityManager(BaseSecurityManager):
 
     def noop_user_update(self, user: "User") -> None:
         stmt = (
-            update(User)
+            update(self.user_model)
             .where(self.user_model.id == user.id)
             .values(login_count=user.login_count)
         )
