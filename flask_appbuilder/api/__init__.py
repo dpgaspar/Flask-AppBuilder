@@ -21,6 +21,7 @@ import yaml
 from .convert import Model2SchemaConverter
 from .schemas import get_info_schema, get_item_schema, get_list_schema
 from .._compat import as_unicode
+from ..baseviews import AbstractViewApi
 from ..const import (
     API_ADD_COLUMNS_RES_KEY,
     API_ADD_COLUMNS_RIS_KEY,
@@ -203,7 +204,7 @@ def merge_response_func(func, key):
     return wrap
 
 
-class BaseApi(object):
+class BaseApi(AbstractViewApi):
     """
         All apis inherit from this class.
         it's constructor will register your exposed urls on flask
@@ -213,8 +214,6 @@ class BaseApi(object):
         but provides a common base for all APIS.
     """
 
-    appbuilder = None
-    blueprint = None
     endpoint: Optional[str] = None
 
     version: Optional[str] = "v1"
@@ -436,6 +435,9 @@ class BaseApi(object):
 
             Initialization of extra args
         """
+        self.appbuilder = None
+        self.blueprint = None
+
         # Init OpenAPI
         self._response_key_func_mappings = dict()
         self.apispec_parameter_schemas = self.apispec_parameter_schemas or dict()
@@ -652,7 +654,7 @@ class BaseApi(object):
         """
         return []
 
-    def get_init_inner_views(self, views):
+    def get_init_inner_views(self):
         """
             Sets initialized inner views
         """

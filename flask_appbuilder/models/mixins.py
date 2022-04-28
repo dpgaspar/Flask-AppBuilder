@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import logging
 
 from flask import g
@@ -46,11 +46,11 @@ class AuditMixin(object):
         :changed by:
     """
 
-    created_on = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    created_on = Column(DateTime, default=lambda: datetime.now(), nullable=False)
     changed_on = Column(
         DateTime,
-        default=datetime.datetime.now,
-        onupdate=datetime.datetime.now,
+        default=lambda: datetime.now(),
+        onupdate=lambda: datetime.now(),
         nullable=False,
     )
 

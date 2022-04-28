@@ -2733,7 +2733,7 @@ class APITestCase(FABTestCase):
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu("can_access", "api")
         self.appbuilder.sm.add_permission_role(role, pvm)
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
 
@@ -2755,6 +2755,7 @@ class APITestCase(FABTestCase):
             self.appbuilder.sm.find_user(username="test")
         )
         self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
+        self.appbuilder.get_session.delete(user)
         self.appbuilder.get_session.commit()
 
     def test_method_permission_override(self):
@@ -2781,7 +2782,7 @@ class APITestCase(FABTestCase):
             "can_read", "Model2PermOverride2"
         )
         self.appbuilder.sm.add_permission_role(role, pvm)
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
 
@@ -2798,9 +2799,8 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 403)
 
         # Revert test data
-        self.appbuilder.get_session.delete(
-            self.appbuilder.sm.find_user(username="test")
-        )
+        self.db.session.delete(user)
+        self.db.session.commit()
         self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
         self.appbuilder.get_session.commit()
 
@@ -2855,7 +2855,7 @@ class APITestCase(FABTestCase):
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu("can_get", "Model1Api")
         self.appbuilder.sm.add_permission_role(role, pvm)
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
         # Remove previous class, Hack to test code change
@@ -2894,9 +2894,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(len(role.permissions), 1)
 
         # Revert test data
-        self.appbuilder.get_session.delete(
-            self.appbuilder.sm.find_user(username="test")
-        )
+        self.appbuilder.get_session.delete(user)
         self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
         self.appbuilder.get_session.commit()
 
@@ -2930,7 +2928,7 @@ class APITestCase(FABTestCase):
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu("can_access", "api")
         self.appbuilder.sm.add_permission_role(role, pvm)
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
         # Remove previous class, Hack to test code change
@@ -2957,6 +2955,9 @@ class APITestCase(FABTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 5)
+
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_before_request(self):
         """
