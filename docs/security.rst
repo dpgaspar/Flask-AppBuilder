@@ -265,6 +265,23 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 "request_token_url": None,
             },
         },
+        {
+            "name": "azure",
+            "icon": "fa-windows",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "AZURE_APPLICATION_ID",
+                "client_secret": "AZURE_SECRET",
+                "api_base_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2",
+                "client_kwargs": {
+                    "scope": "User.read name preferred_username email profile upn",
+                    "resource": "AZURE_APPLICATION_ID",
+                },
+                "request_token_url": None,
+                "access_token_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/token",
+                "authorize_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/authorize",
+            },
+        },
     ]
 
 This needs a small explanation, you basically have five special keys:
