@@ -4,7 +4,7 @@ from flask_appbuilder.security.sqla.models import Permission
 
 
 class PermissionApi(ModelRestApi):
-    resource_name = "permissions"
+    resource_name = "security/permissions"
     openapi_spec_tag = "Security Permissions"
 
     class_permission_name = "Permission"

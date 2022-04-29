@@ -2,6 +2,7 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.security.sqla.models import User
 
 from ..base import BaseMVCTestCase
 from ..const import PASSWORD_ADMIN, PASSWORD_READONLY, USERNAME_ADMIN, USERNAME_READONLY
@@ -388,3 +389,11 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         self.assertNotIn("Added Row", data)
         self.assertIn("This field is required", data)
         self.browser_logout(client)
+
+        user = (
+            self.db.session.query(User)
+            .filter(User.username == "from test 1-1")
+            .one_or_none()
+        )
+        self.db.session.delete(user)
+        self.db.session.commit()

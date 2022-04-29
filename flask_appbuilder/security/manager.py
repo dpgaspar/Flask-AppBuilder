@@ -1695,7 +1695,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                 )
                 state_transitions["del_perms"].discard(permission)
 
-    def create_state_transitions(self, baseviews: List, menus: List) -> Dict:
+    def create_state_transitions(
+        self, baseviews: List, menus: Optional[List[Any]]
+    ) -> Dict:
         """
         Creates a Dict with all the necessary vm/permission transitions
 
@@ -1751,7 +1753,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         self._update_del_transitions(state_transitions, baseviews)
         return state_transitions
 
-    def security_converge(self, baseviews: List, menus: List, dry=False) -> Dict:
+    def security_converge(
+        self, baseviews: List, menus: Optional[List[Any]], dry=False
+    ) -> Dict:
         """
         Converges overridden permissions on all registered views/api
         will compute all necessary operations from `class_permissions_name`,

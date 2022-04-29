@@ -14,7 +14,7 @@ from sqlalchemy.exc import IntegrityError
 
 
 class RoleApi(ModelRestApi):
-    resource_name = "roles"
+    resource_name = "security/roles"
     openapi_spec_tag = "Security Roles"
     class_permission_name = "Role"
     datamodel = SQLAInterface(Role)
@@ -33,7 +33,7 @@ class RoleApi(ModelRestApi):
         RolePermissionPostSchema,
     )
 
-    @expose("/<int:pk>/permissions", methods=["GET"])
+    @expose("/<int:pk>/permissions/", methods=["GET"])
     @protect()
     @safe
     @permission_name("list_role_permissions")

@@ -32,11 +32,11 @@ flask-babel==2.0.0
     # via Flask-AppBuilder (setup.py)
 flask-jwt-extended==4.3.1
     # via Flask-AppBuilder (setup.py)
-flask-login==0.4.1
+flask-login==0.6.0
     # via Flask-AppBuilder (setup.py)
 flask-sqlalchemy==2.5.1
     # via Flask-AppBuilder (setup.py)
-flask-wtf==0.14.3
+flask-wtf==0.15.1
     # via Flask-AppBuilder (setup.py)
 greenlet==1.1.2
     # via sqlalchemy
@@ -65,12 +65,16 @@ marshmallow-enum==1.5.1
     # via Flask-AppBuilder (setup.py)
 marshmallow-sqlalchemy==0.26.1
     # via Flask-AppBuilder (setup.py)
+packaging==21.3
+    # via marshmallow
 prison==0.2.1
     # via Flask-AppBuilder (setup.py)
 pyjwt==2.3.0
     # via
     #   Flask-AppBuilder (setup.py)
     #   flask-jwt-extended
+pyparsing==3.0.8
+    # via packaging
 pyrsistent==0.18.1
     # via jsonschema
 python-dateutil==2.8.2
@@ -99,6 +103,7 @@ werkzeug==2.0.3
     # via
     #   flask
     #   flask-jwt-extended
+    #   flask-login
 wtforms==2.3.3
     # via
     #   Flask-AppBuilder (setup.py)
