@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Optional, Set
+from typing import Any, Dict, List, Optional, Set
 import unittest
 
 from flask import Flask, Response
@@ -75,6 +75,20 @@ class FABTestCase(unittest.TestCase):
             data=dict(username=username, password=password),
             follow_redirects=follow_redirects,
         )
+
+    def assert_response(
+        self,
+        response: List[Dict[str, Any]],
+        expected_results: List[Dict[str, Any]],
+        exclude_cols: Optional[List[str]] = None,
+    ):
+        exclude_cols = exclude_cols or []
+        for idx, expected_result in enumerate(expected_results):
+            for field_name, field_value in expected_result.items():
+                if field_name not in exclude_cols:
+                    self.assertEqual(
+                        response[idx][field_name], expected_result[field_name]
+                    )
 
     @staticmethod
     def browser_logout(client):

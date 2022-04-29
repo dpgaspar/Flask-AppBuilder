@@ -3,6 +3,7 @@ from inspect import isclass
 import json
 import logging
 import re
+from typing import List, Optional, TYPE_CHECKING
 
 from flask import (
     abort,
@@ -28,6 +29,10 @@ from .urltools import (
     Stack,
 )
 from .widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
+
+if TYPE_CHECKING:
+    from flask_appbuilder.base import AppBuilder
+
 
 log = logging.getLogger(__name__)
 
@@ -65,7 +70,37 @@ def expose_api(name="", url="", methods=("GET",), description=""):
     return wrap
 
 
-class BaseView(object):
+class AbstractViewApi:
+
+    appbuilder: "AppBuilder"
+    base_permissions: Optional[List[str]]
+    class_permission_name: str
+    endpoint: str
+    default_view: str
+
+    def create_blueprint(
+        self,
+        appbuilder: "AppBuilder",
+        endpoint: Optional[str] = None,
+        static_folder: Optional[str] = None,
+    ):
+        ...
+
+    def get_uninit_inner_views(self):
+        """
+            Will return a list with views that need to be initialized.
+            Normally related_views from ModelView
+        """
+        ...
+
+    def get_init_inner_views(self):
+        """
+        Sets initialized inner views
+        """
+        ...
+
+
+class BaseView(AbstractViewApi):
     """
         All views inherit from this class.
         it's constructor will register your exposed urls on flask as a Blueprint.
@@ -346,9 +381,9 @@ class BaseView(object):
         """
         return []
 
-    def get_init_inner_views(self, views):
+    def get_init_inner_views(self):
         """
-            Sets initialized inner views
+        Sets initialized inner views
         """
         pass
 

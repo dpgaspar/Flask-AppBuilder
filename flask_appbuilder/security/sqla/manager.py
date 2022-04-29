@@ -92,14 +92,14 @@ class SecurityManager(BaseSecurityManager):
         return self.appbuilder.get_session
 
     def register_views(self):
+        super(SecurityManager, self).register_views()
+
         if self.appbuilder.app.config.get("FAB_ADD_SECURITY_API", False):
             self.appbuilder.add_api(self.permission_api)
             self.appbuilder.add_api(self.role_api)
             self.appbuilder.add_api(self.user_api)
             self.appbuilder.add_api(self.view_menu_api)
             self.appbuilder.add_api(self.permission_view_menu_api)
-
-        super(SecurityManager, self).register_views()
 
     def create_db(self):
         try:

@@ -1,4 +1,5 @@
 from flask_appbuilder import SQLA
+from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder.tests.base import FABTestCase
 import jwt
 
@@ -35,6 +36,16 @@ class APICSRFTestCase(FABTestCase):
         self.csrf = CSRFProtect(self.app)
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+
+    def tearDown(self):
+        self.cleanup()
+
+    def cleanup(self):
+        session = self.appbuilder.get_session
+        users = session.query(User).filter(User.username.ilike("google%")).all()
+        for user in users:
+            session.delete(user)
+        session.commit()
 
     def test_oauth_login(self):
         """
