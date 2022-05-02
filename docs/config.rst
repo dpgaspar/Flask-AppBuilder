@@ -257,6 +257,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | FAB_SECURITY_MANAGER_CLASS             | Declare a new custom SecurityManager       |           |
 |                                        | class                                      |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
+| FAB_ADD_SECURITY_API                   | [Beta] Adds a CRUD REST API for users,     |           |
+|                                        | roles, permissions, view_menus.            |   No      |
+|                                        | Further details on /swagger/v1             |           |
+|                                        | All endpoints are under /api/v1/sercurity/ |           |
+|                                        | [Note]: This feature is still in beta      |           |
+|                                        | breaking changes are likely to occur       |           |
++----------------------------------------+--------------------------------------------+-----------+
 | FAB_ADD_SECURITY_VIEWS                 | Enables or disables registering all        |           |
 |                                        | security views (boolean default:True)      |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
