@@ -153,9 +153,15 @@ class PublicFormView(BaseFormView):
             )
 
 
-class RestCRUDView(BaseCRUDView):
+class ModelView(BaseCRUDView):
     """
-        This class view exposes REST method for CRUD operations on you models
+    This is the CRUD generic view.
+    If you want to automatically implement create, edit,
+    delete, show, and list from your database tables,
+    inherit your views from this class.
+
+    Notice that this class inherits from BaseCRUDView and BaseModelView
+    so all properties from the parent class can be overridden.
     """
 
     disable_api_route_methods: bool = False
@@ -178,12 +184,9 @@ class RestCRUDView(BaseCRUDView):
             self.exclude_route_methods = self.exclude_route_methods | api_route_methods
         super().__init__(**kwargs)
 
-    def _search_form_json(self):
-        pass
-
     def _get_api_urls(self, api_urls=None):
         """
-            Completes a dict with the CRUD urls of the API.
+        Completes a dict with the CRUD urls of the API.
 
         :param api_urls: A dict with the urls {'<FUNCTION>':'<URL>',...}
         :return: A dict with the CRUD urls of the base API.
@@ -208,7 +211,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name("list")
     def api(self):
-        log.warning("This API is deprecated and will be removed on 1.15.X")
+        log.warning("This API is deprecated and will be removed on 5.0.0")
         view_name = self.__class__.__name__
         api_urls = self._get_api_urls()
         modelview_urls = self._get_modelview_urls()
@@ -251,9 +254,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name("list")
     def api_read(self):
-        """
-        """
-        log.warning("This API is deprecated and will be removed on 2.3.X")
+        log.warning("This API is deprecated and will be removed on 5.0.0")
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
             order_column, order_direction = get_order_args().get(
@@ -303,9 +304,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name("show")
     def api_get(self, pk):
-        """
-        """
-        log.warning("This API is deprecated and will be removed on 2.3.X")
+        log.warning("This API is deprecated and will be removed on 5.0.0")
         # Get arguments for ordering
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
@@ -325,7 +324,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name("add")
     def api_create(self):
-        log.warning("This API is deprecated and will be removed on 2.3.X")
+        log.warning("This API is deprecated and will be removed on 5.0.0")
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
         form = self.add_form.refresh()
@@ -353,7 +352,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name("edit")
     def api_update(self, pk):
-        log.warning("This API is deprecated and will be removed on 2.3.X")
+        log.warning("This API is deprecated and will be removed on 5.0.0")
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
 
@@ -400,7 +399,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name("delete")
     def api_delete(self, pk):
-        log.warning("This API is deprecated and will be removed on 2.3.X")
+        log.warning("This API is deprecated and will be removed on 5.0.0")
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
             abort(404)
@@ -443,14 +442,15 @@ class RestCRUDView(BaseCRUDView):
     @permission_name("add")
     def api_column_add(self, col_name):
         """
-            Returns list of (pk, object) nice to use on select2.
-            Use only for related columns.
-            Always filters with add_form_query_rel_fields, and accepts extra filters
-            on endpoint arguments.
+        Returns list of (pk, object) nice to use on select2.
+        Use only for related columns.
+        Always filters with add_form_query_rel_fields, and accepts extra filters
+        on endpoint arguments.
+
         :param col_name: The related column name
         :return: JSON response
         """
-        log.warning("This API is deprecated and will be removed on 2.3.X")
+        log.warning("This API is deprecated and will be removed on 5.0.0")
         filter_rel_fields = None
         if self.add_form_query_rel_fields:
             filter_rel_fields = self.add_form_query_rel_fields.get(col_name)
@@ -464,14 +464,15 @@ class RestCRUDView(BaseCRUDView):
     @permission_name("edit")
     def api_column_edit(self, col_name):
         """
-            Returns list of (pk, object) nice to use on select2.
-            Use only for related columns.
-            Always filters with edit_form_query_rel_fields, and accepts extra filters
-            on endpoint arguments.
+        Returns list of (pk, object) nice to use on select2.
+        Use only for related columns.
+        Always filters with edit_form_query_rel_fields, and accepts extra filters
+        on endpoint arguments.
+
         :param col_name: The related column name
         :return: JSON response
         """
-        log.warning("This API is deprecated and will be removed on 2.3.X")
+        log.warning("This API is deprecated and will be removed on 5.0.0")
         filter_rel_fields = None
         if self.edit_form_query_rel_fields:
             filter_rel_fields = self.edit_form_query_rel_fields
@@ -484,9 +485,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name("list")
     def api_readvalues(self):
-        """
-        """
-        log.warning("This API is deprecated and will be removed on 2.3.X")
+        log.warning("This API is deprecated and will be removed on 5.0.0")
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
             order_column, order_direction = get_order_args().get(
@@ -510,20 +509,7 @@ class RestCRUDView(BaseCRUDView):
         response.headers["Content-Type"] = "application/json"
         return response
 
-
-class ModelView(RestCRUDView):
-    """
-        This is the CRUD generic view.
-        If you want to automatically implement create, edit,
-        delete, show, and list from your database tables,
-        inherit your views from this class.
-
-        Notice that this class inherits from BaseCRUDView and BaseModelView
-        so all properties from the parent class can be overridden.
-    """
-
-    def __init__(self, **kwargs):
-        super(ModelView, self).__init__(**kwargs)
+    # -----------------------------------------------
 
     def post_add_redirect(self):
         """Override this function to control the
