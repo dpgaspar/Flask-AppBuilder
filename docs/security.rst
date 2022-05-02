@@ -234,6 +234,38 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
             },
         },
         {
+            "name": "keycloak",
+            "icon": "fa-key",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "KEYCLOAK_CLIENT_ID",
+                "client_secret": "KEYCLOAK_CLIENT_SECRET",   
+                "api_base_url": "https://KEYCLOAK_DOMAIN/realms/master/protocol/openid-connect",
+                "client_kwargs": {
+                    "scope": "email profile"
+                },
+                "access_token_url": "KEYCLOAK_DOMAIN/realms/master/protocol/openid-connect/token",
+                "authorize_url": "KEYCLOAK_DOMAIN/realms/master/protocol/openid-connect/auth",
+                "request_token_url": None,
+            },
+        },
+        {
+            "name": "keycloak_before_17",
+            "icon": "fa-key",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "KEYCLOAK_CLIENT_ID",
+                "client_secret": "KEYCLOAK_CLIENT_SECRET",   
+                "api_base_url": "https://KEYCLOAK_DOMAIN/auth/realms/master/protocol/openid-connect",
+                "client_kwargs": {
+                    "scope": "email profile"
+                },
+                "access_token_url": "KEYCLOAK_DOMAIN/auth/realms/master/protocol/openid-connect/token",
+                "authorize_url": "KEYCLOAK_DOMAIN/auth/realms/master/protocol/openid-connect/auth",
+                "request_token_url": None,
+            },
+        },
+        {
             "name": "azure",
             "icon": "fa-windows",
             "token_key": "access_token",
@@ -256,7 +288,7 @@ This needs a small explanation, you basically have five special keys:
 
 :name: the name of the provider:
     you can choose whatever you want, but FAB has builtin logic in `BaseSecurityManager.get_oauth_user_info()` for:
-    'azure', 'github', 'google', 'linkedin', 'okta', 'openshift', 'twitter'
+    'azure', 'github', 'google', 'keycloak', 'keycloak_before_17', 'linkedin', 'okta', 'openshift', 'twitter'
 
 :icon: the font-awesome icon for this provider
 
