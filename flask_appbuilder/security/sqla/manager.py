@@ -10,6 +10,7 @@ from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import generate_password_hash
 
+from .apis import PermissionApi, PermissionViewMenuApi, RoleApi, UserApi, ViewMenuApi
 from .models import (
     assoc_permissionview_role,
     Permission,
@@ -44,6 +45,13 @@ class SecurityManager(BaseSecurityManager):
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
     registeruser_model = RegisterUser
+
+    # APIs
+    permission_api = PermissionApi
+    role_api = RoleApi
+    user_api = UserApi
+    view_menu_api = ViewMenuApi
+    permission_view_menu_api = PermissionViewMenuApi
 
     def __init__(self, appbuilder):
         """
@@ -85,6 +93,13 @@ class SecurityManager(BaseSecurityManager):
 
     def register_views(self):
         super(SecurityManager, self).register_views()
+
+        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_API", False):
+            self.appbuilder.add_api(self.permission_api)
+            self.appbuilder.add_api(self.role_api)
+            self.appbuilder.add_api(self.user_api)
+            self.appbuilder.add_api(self.view_menu_api)
+            self.appbuilder.add_api(self.permission_view_menu_api)
 
     def create_db(self):
         try:
@@ -240,7 +255,7 @@ class SecurityManager(BaseSecurityManager):
 
     def noop_user_update(self, user: "User") -> None:
         stmt = (
-            update(User)
+            update(self.user_model)
             .where(self.user_model.id == user.id)
             .values(login_count=user.login_count)
         )

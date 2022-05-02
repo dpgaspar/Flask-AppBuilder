@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -44,7 +44,7 @@ jobs:
         postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
     services:
       postgres:
-        image: postgres:10-alpine
+        image: postgres:14-alpine
         env:
           POSTGRES_USER: pguser
           POSTGRES_PASSWORD: pguserpassword
