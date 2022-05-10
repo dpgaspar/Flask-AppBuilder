@@ -28,8 +28,13 @@ can run a subset of tests targeting only Postgres.
 
     $ docker-compose up -d
 
-
 2 - Run Postgres tests
+
+.. code-block:: bash
+
+    $ nosetests flask_appbuilder.tests
+
+You can also use tox
 
 .. code-block:: bash
 
@@ -64,15 +69,13 @@ Using Postgres
 
 .. code-block:: bash
 
-    $ nosetests -v flask_appbuilder.tests.test_0_fixture
-
+    $ nosetests -v flask_appbuilder.tests.A_fixture
 
 4 - Run a single test
 
 .. code-block:: bash
 
     $ nosetests -v flask_appbuilder.tests.test_api:APITestCase.test_get_item_dotted_mo_notation
-
 
 .. note::
 

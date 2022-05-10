@@ -3,11 +3,13 @@ import json
 import logging
 import os
 import tempfile
+from unittest.mock import ANY, patch
 
 from click.testing import CliRunner
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.cli import (
+    cast_int_like_to_int,
     create_app,
     create_permissions,
     create_user,
@@ -78,6 +80,22 @@ class FlaskTestCase(FABTestCase):
             self.assertIn("List of registered views", result.output)
             self.assertIn(" Route:/api/v1/security", result.output)
 
+    def test_cast_int_like_to_int(self):
+        scenarii = {
+            -1: -1,
+            0: 0,
+            1: 1,
+            "-1": -1,
+            "0": 0,
+            "1": 1,
+            "+1": 1,
+            "foo": "foo",
+            None: None,
+        }
+
+        for input, expected_output in scenarii.items():
+            self.assertEqual(cast_int_like_to_int(input), expected_output)
+
 
 class SQLAlchemyImportExportTestCase(FABTestCase):
     def setUp(self):
@@ -145,6 +163,29 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             self.assertGreater(
                 len(glob.glob(os.path.join(tmp_dir, "roles_export_*"))), 0
             )
+
+    @patch("json.dumps")
+    def test_export_roles_indent(self, mock_json_dumps):
+        """Test that json.dumps is called with the correct argument passed from CLI."""
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            app = Flask("src_app")
+            app.config.from_object("flask_appbuilder.tests.config_security")
+            app.config[
+                "SQLALCHEMY_DATABASE_URI"
+            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+            db = SQLA(app)
+            app_builder = AppBuilder(app, db.session)  # noqa: F841
+            cli_runner = app.test_cli_runner()
+
+            cli_runner.invoke(export_roles)
+            mock_json_dumps.assert_called_with(ANY, indent=None)
+            mock_json_dumps.reset_mock()
+
+            example_cli_args = ["", "foo", -1, 0, 1]
+            for arg in example_cli_args:
+                cli_runner.invoke(export_roles, [f"--indent={arg}"])
+                mock_json_dumps.assert_called_with(ANY, indent=arg)
+                mock_json_dumps.reset_mock()
 
     def test_import_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:

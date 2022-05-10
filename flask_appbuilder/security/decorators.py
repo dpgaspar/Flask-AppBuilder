@@ -1,6 +1,5 @@
 import functools
 import logging
-from typing import TYPE_CHECKING
 
 from flask import (
     current_app,
@@ -24,22 +23,8 @@ from flask_login import current_user
 
 log = logging.getLogger(__name__)
 
-if TYPE_CHECKING:
-    from flask_appbuilder.api import BaseApi
 
-
-def response_unauthorized(base_class: "BaseApi") -> Response:
-    if current_app.config.get("AUTH_STRICT_RESPONSE_CODES", False):
-        return base_class.response_403()
-    return base_class.response_401()
-
-
-def response_unauthorized_mvc() -> Response:
-    status_code = 401
-    if current_app.appbuilder.sm.current_user and current_app.config.get(
-        "AUTH_STRICT_RESPONSE_CODES", False
-    ):
-        status_code = 403
+def response_unauthorized_mvc(status_code: int) -> Response:
     response = make_response(
         jsonify({"message": str(FLAMSG_ERR_SEC_ACCESS_DENIED), "severity": "danger"}),
         status_code,
@@ -88,7 +73,7 @@ def protect(allow_browser_login=False):
             class_permission_name = self.class_permission_name
             # Check if permission is allowed on the class
             if permission_str not in self.base_permissions:
-                return response_unauthorized(self)
+                return self.response_403()
             # Check if the resource is public
             if current_app.appbuilder.sm.is_item_public(
                 permission_str, class_permission_name
@@ -116,7 +101,7 @@ def protect(allow_browser_login=False):
                     permission_str, class_permission_name
                 )
             )
-            return response_unauthorized(self)
+            return self.response_403()
 
         f._permission_name = permission_str
         return functools.update_wrapper(wraps, f)
@@ -194,7 +179,9 @@ def has_access_api(f):
                     permission_str, self.__class__.__name__
                 )
             )
-            return response_unauthorized_mvc()
+            if not current_user.is_authenticated:
+                return response_unauthorized_mvc(401)
+            return response_unauthorized_mvc(403)
 
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
