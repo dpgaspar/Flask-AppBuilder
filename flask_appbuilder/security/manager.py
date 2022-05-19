@@ -1080,12 +1080,6 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         try:
             # LDAP certificate settings
-            if self.auth_ldap_allow_self_signed:
-                ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
-                ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
-            elif self.auth_ldap_tls_demand:
-                ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
-                ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
             if self.auth_ldap_tls_cacertdir:
                 ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, self.auth_ldap_tls_cacertdir)
             if self.auth_ldap_tls_cacertfile:
@@ -1096,6 +1090,12 @@ class BaseSecurityManager(AbstractSecurityManager):
                 ldap.set_option(ldap.OPT_X_TLS_CERTFILE, self.auth_ldap_tls_certfile)
             if self.auth_ldap_tls_keyfile:
                 ldap.set_option(ldap.OPT_X_TLS_KEYFILE, self.auth_ldap_tls_keyfile)
+            if self.auth_ldap_allow_self_signed:
+                ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
+                ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+            elif self.auth_ldap_tls_demand:
+                ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
+                ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
 
             # Initialise LDAP connection
             con = ldap.initialize(self.auth_ldap_server)
