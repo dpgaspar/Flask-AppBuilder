@@ -196,7 +196,7 @@ class AppBuilder:
         if _security_manager_class_name is not None:
             security_manager_class = dynamic_class_import(_security_manager_class_name)
             self.security_manager_class = cast(
-                Type[BaseSecurityManager], security_manager_class
+                Type["BaseSecurityManager"], security_manager_class
             )
         if self.security_manager_class is None:
             from flask_appbuilder.security.sqla.manager import SecurityManager
