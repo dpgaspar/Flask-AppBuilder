@@ -132,6 +132,9 @@ class User(Model):
     def get_full_name(self):
         return u'{0} {1}'.format(self.first_name, self.last_name)
 
+    def get_email(self):
+        return as_unicode(self.email)
+
     # def __repr__(self):
     #     return self.get_full_name()
 
