@@ -1,6 +1,9 @@
+import logging
 import re
 
 from flask import request
+
+log = logging.getLogger(__name__)
 
 
 class Stack(object):
@@ -96,7 +99,16 @@ def get_filter_args(filters):
     request_args = set(request.args)
     for arg in request_args:
         re_match = re.findall(r"_flt_(\d)_(.*)", arg)
+        try:
+            filter_index = int(re_match[0][0])
+        except ValueError:
+            log.warning("Invalid filter index")
+            continue
+        filter_column = re_match[0][1]
+        if filter_column not in filters.get_search_filters().keys():
+            log.warning("Filter column not allowed")
+            continue
         if re_match:
             filters.add_filter_index(
-                re_match[0][1], int(re_match[0][0]), request.args.getlist(arg)
+                filter_column, filter_index, request.args.getlist(arg)
             )
