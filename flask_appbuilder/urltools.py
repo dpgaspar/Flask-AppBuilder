@@ -99,6 +99,8 @@ def get_filter_args(filters):
     request_args = set(request.args)
     for arg in request_args:
         re_match = re.findall(r"_flt_(\d)_(.*)", arg)
+        if not re_match:
+            continue
         try:
             filter_index = int(re_match[0][0])
         except ValueError:
