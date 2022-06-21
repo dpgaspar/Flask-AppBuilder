@@ -101,11 +101,7 @@ def get_filter_args(filters):
         re_match = re.findall(r"_flt_(\d)_(.*)", arg)
         if not re_match:
             continue
-        try:
-            filter_index = int(re_match[0][0])
-        except ValueError:
-            log.warning("Invalid filter index")
-            continue
+        filter_index = int(re_match[0][0])
         filter_column = re_match[0][1]
         if filter_column not in filters.get_search_filters().keys():
             log.warning("Filter column not allowed")
