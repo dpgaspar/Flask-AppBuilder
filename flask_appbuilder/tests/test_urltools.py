@@ -34,7 +34,7 @@ class FlaskTestCase(FABTestCase):
         ):
             filters = datamodel.get_filters(["field_string", "field_integer"])
             get_filter_args(filters)
-            assert filters.values == [["a"], ["2"]]
+            assert filters.values in ([["a"], ["2"]], [["2"], ["a"]])
 
     def test_get_filter_args_disallow(self):
         datamodel = SQLAInterface(Model1)
