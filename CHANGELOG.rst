@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.1.2
+-----------------------------------
+
+- fix: remove sqlite dbs from examples (#1853) [Daniel Vaz Gaspar]
+- fix(MVC): discard excluded filters from query (#1862) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.1.1
 -----------------------------------
 
