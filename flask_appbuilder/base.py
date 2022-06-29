@@ -20,6 +20,7 @@ from .const import (
 from .filters import TemplateFilters
 from .menu import Menu, MenuApiManager
 from .views import IndexView, UtilView
+from .baseviews import BaseView
 
 if TYPE_CHECKING:
     from flask_appbuilder.basemanager import BaseManager
@@ -27,7 +28,6 @@ if TYPE_CHECKING:
     from flask_appbuilder.security.manager import BaseSecurityManager
 
 log = logging.getLogger(__name__)
-
 
 DynamicImportType = Union[
     Type["BaseManager"], Type["BaseView"], Type["BaseSecurityManager"], Type[Menu]
@@ -174,7 +174,7 @@ class AppBuilder:
         _index_view = app.config.get("FAB_INDEX_VIEW", None)
         if _index_view is not None:
             view = dynamic_class_import(_index_view)
-            if isinstance(view, BaseView):
+            if issubclass(view, BaseView):
                 self.indexview = view
         else:
             self.indexview = self.indexview or IndexView()
@@ -183,7 +183,7 @@ class AppBuilder:
         # Setup Menu
         if _menu is not None:
             menu = dynamic_class_import(_menu)
-            if isinstance(menu, Menu):
+            if issubclass(menu, Menu):
                 self.menu = menu
         else:
             self.menu = self.menu or Menu()
@@ -291,9 +291,9 @@ class AppBuilder:
     @property
     def version(self) -> str:
         """
-            Get the current F.A.B. version
+        Get the current F.A.B. version
 
-            :return: String with the current F.A.B. version
+        :return: String with the current F.A.B. version
         """
         return __version__
 
@@ -313,7 +313,7 @@ class AppBuilder:
 
     def _add_admin_views(self) -> None:
         """
-            Registers indexview, utilview (back function), babel views and Security views.
+        Registers indexview, utilview (back function), babel views and Security views.
         """
         if self.indexview:
             self.indexview = self._check_and_init(self.indexview)
