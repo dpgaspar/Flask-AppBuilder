@@ -8,6 +8,7 @@ from sqlalchemy.orm.session import Session as SessionBase
 from . import __version__
 from .api.manager import OpenApiManager
 from .babel.manager import BabelManager
+from .baseviews import BaseView
 from .const import (
     LOGMSG_ERR_FAB_ADD_PERMISSION_MENU,
     LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW,
@@ -20,11 +21,10 @@ from .const import (
 from .filters import TemplateFilters
 from .menu import Menu, MenuApiManager
 from .views import IndexView, UtilView
-from .baseviews import BaseView
 
 if TYPE_CHECKING:
     from flask_appbuilder.basemanager import BaseManager
-    from flask_appbuilder.baseviews import BaseView, AbstractViewApi
+    from flask_appbuilder.baseviews import AbstractViewApi
     from flask_appbuilder.security.manager import BaseSecurityManager
 
 log = logging.getLogger(__name__)
