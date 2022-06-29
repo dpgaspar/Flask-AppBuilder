@@ -1,6 +1,35 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.1.2
+-----------------------------------
+
+- fix: remove sqlite dbs from examples (#1853) [Daniel Vaz Gaspar]
+- fix(MVC): discard excluded filters from query (#1862) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.1.1
+-----------------------------------
+
+- fix: custom security class import, bad cast (#1851) [Daniel Vaz Gaspar]
+- fix: Set certificates before reconnecting to LDAP (#1846) [Sebastian Bernauer]
+
+Improvements and Bug fixes on 4.1.0
+-----------------------------------
+
+- docs: add FAB_ADD_SECURITY_API config option (#1840) [Daniel Vaz Gaspar]
+- feat: add keycloak auth provider options (#1832) [nilivingston]
+- docs: add Azure OAUTH example (#1837) [Mathew Wicks]
+- fix: security api (#1831) [Daniel Vaz Gaspar]
+- fix: dependency constraints, bump flask-login, flask-wtf (#1838) [Daniel Vaz Gaspar]
+- fix: noop user update on Auth db, use set user model (#1834) [Daniel Vaz Gaspar]
+- chore: bump postgres to 14 (#1833) [Daniel Vaz Gaspar]
+- chore: Update and fix german translation (#1827) [Dosenpfand]
+- chore: Enhance is_safe_redirect_url (#1826) [Geido]
+- feat: Add CRUD apis for role, permission, user (#1801) [Mayur]
+- docs: updated brackets in OAuth Authentication (#1798) [David Berg]
+- chore: add Slovenian language (#1828) [dkrat7]
+- fix: doc requirements (#1820) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.0.0
 -----------------------------------
 
