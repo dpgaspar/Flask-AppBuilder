@@ -573,7 +573,7 @@ class SecurityManager(BaseSecurityManager):
         vm = self.add_view_menu(view_menu_name)
         perm = self.add_permission(permission_name)
         pv = self.permissionview_model()
-        pv.view_menu_id, pv.permission_id = vm.id, perm.id
+        pv.view_menu, pv.permission = vm, perm
         try:
             self.get_session.add(pv)
             self.get_session.commit()
