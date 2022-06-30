@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask_appbuilder import SQLA, IndexView
+from flask_appbuilder import IndexView, SQLA
 
 from .base import FABTestCase
 
