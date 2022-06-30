@@ -174,8 +174,8 @@ class AppBuilder:
         _index_view = app.config.get("FAB_INDEX_VIEW", None)
         if _index_view is not None:
             view = dynamic_class_import(_index_view)
-            if issubclass(view, BaseView):
-                self.indexview = view
+            if view is not None and issubclass(view, BaseView):
+                self.indexview = view()
         else:
             self.indexview = self.indexview or IndexView()
         _menu = app.config.get("FAB_MENU", None)
@@ -183,8 +183,8 @@ class AppBuilder:
         # Setup Menu
         if _menu is not None:
             menu = dynamic_class_import(_menu)
-            if issubclass(menu, Menu):
-                self.menu = menu
+            if menu is not None and issubclass(menu, Menu):
+                self.menu = menu()
         else:
             self.menu = self.menu or Menu()
 
