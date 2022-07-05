@@ -18,6 +18,8 @@ SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "app.db")
 # SQLALCHEMY_DATABASE_URI = 'postgresql://scott:tiger@localhost:5432/myapp'
 # SQLALCHEMY_ECHO = True
 
+FAB_INDEX_VIEW = "app.views.MyIndexView"
+
 BABEL_DEFAULT_LOCALE = "en"
 BABEL_DEFAULT_FOLDER = "translations"
 LANGUAGES = {

@@ -1,17 +1,17 @@
-from flask_appbuilder import ModelView
+from flask import current_app
+from flask_appbuilder import ModelView, IndexView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from . import appbuilder, db
 from .models import Contact, ContactGroup, Gender
 
 
 def fill_gender():
     try:
-        db.session.add(Gender(name="Male"))
-        db.session.add(Gender(name="Female"))
-        db.session.commit()
+        current_app.appbuilder.session.add(Gender(name="Male"))
+        current_app.appbuilder.session.add(Gender(name="Female"))
+        current_app.appbuilder.session.commit()
     except Exception:
-        db.session.rollback()
+        current_app.appbuilder.session.rollback()
 
 
 class ContactModelView(ModelView):
@@ -71,20 +71,10 @@ class ContactModelView(ModelView):
     ]
 
 
-appbuilder.add_view(
-    ContactModelView,
-    "List Contacts",
-    icon="fa-envelope",
-    category="Contacts",
-    category_icon="fa-envelope",
-)
-
-
 class GroupModelView(ModelView):
     datamodel = SQLAInterface(ContactGroup)
     related_views = [ContactModelView]
 
 
-appbuilder.add_view(
-    GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts"
-)
+class MyIndexView(IndexView):
+    index_template = "my_index.html"
