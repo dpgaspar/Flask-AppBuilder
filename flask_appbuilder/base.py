@@ -177,7 +177,7 @@ class AppBuilder:
         )
         _index_view = app.config.get("FAB_INDEX_VIEW", None)
         if _index_view:
-            self.indexview = dynamic_class_import(_index_view)
+            self.indexview = dynamic_class_import(_index_view)  # type: ignore
         else:
             self.indexview = self.indexview or IndexView
 
@@ -232,7 +232,7 @@ class AppBuilder:
     def post_init(self) -> None:
         for baseview in self.baseviews:
             # instantiate the views and add session
-            self._check_and_init(baseview)
+            baseview = self._check_and_init(baseview)
             # Register the views has blueprints
             if baseview.__class__.__name__ not in self.get_app.blueprints.keys():
                 self.register_blueprint(baseview)
@@ -319,7 +319,7 @@ class AppBuilder:
         Registers indexview, utilview (back function), babel views and Security views.
         """
         if self.indexview:
-            self.indexview = self.add_view_no_menu(self.indexview)
+            self._indexview = self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(UtilView)
         self.bm.register_views()
         self.sm.register_views()
@@ -360,7 +360,7 @@ class AppBuilder:
 
     def add_view(
         self,
-        baseview: Type["AbstractViewApi"],
+        baseview: Union[Type["AbstractViewApi"], "AbstractViewApi"],
         name: str,
         href: str = "",
         icon: str = "",
@@ -540,7 +540,7 @@ class AppBuilder:
 
     def add_view_no_menu(
         self,
-        baseview: Type["AbstractViewApi"],
+        baseview: Union[Type["AbstractViewApi"], "AbstractViewApi"],
         endpoint: Optional[str] = None,
         static_folder: Optional[str] = None,
     ) -> "AbstractViewApi":
@@ -625,9 +625,11 @@ class AppBuilder:
 
     @property
     def get_url_for_index(self) -> str:
-        if self.indexview is None:
+        if self._indexview is None:
             return ""
-        return url_for("%s.%s" % (self.indexview.endpoint, self.indexview.default_view))
+        return url_for(
+            "%s.%s" % (self._indexview.endpoint, self._indexview.default_view)
+        )
 
     @property
     def get_url_for_userinfo(self) -> str:
@@ -644,9 +646,12 @@ class AppBuilder:
         )
 
     def add_permissions(self, update_perms: bool = False) -> None:
+        from flask_appbuilder.baseviews import AbstractViewApi
+
         if self.update_perms or update_perms:
             for baseview in self.baseviews:
-                self._add_permission(baseview, update_perms=update_perms)
+                if isinstance(baseview, AbstractViewApi):
+                    self._add_permission(baseview, update_perms=update_perms)
             self._add_menu_permissions(update_perms=update_perms)
 
     def _add_permission(
@@ -699,7 +704,10 @@ class AppBuilder:
         return False
 
     def _process_inner_views(self) -> None:
+        from flask_appbuilder.baseviews import AbstractViewApi
+
         for view in self.baseviews:
+            view = cast(AbstractViewApi, view)
             for inner_class in view.get_uninit_inner_views():
                 for v in self.baseviews:
                     if (
