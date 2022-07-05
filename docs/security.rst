@@ -1,6 +1,12 @@
 Security
 ========
 
+Responsible disclosure
+----------------------
+
+We want to keep Flask-AppBuilder safe for everyone. If you've discovered a security vulnerability
+please report to danielvazgaspar@gmail.com.
+
 Supported Authentication Types
 ------------------------------
 
