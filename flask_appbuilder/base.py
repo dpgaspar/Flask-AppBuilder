@@ -650,7 +650,7 @@ class AppBuilder:
 
         if self.update_perms or update_perms:
             for baseview in self.baseviews:
-                cast(baseview, AbstractViewApi)
+                cast(AbstractViewApi, baseview)
                 self._add_permission(baseview, update_perms=update_perms)
             self._add_menu_permissions(update_perms=update_perms)
 
