@@ -186,8 +186,8 @@ class AppBuilder:
         # Setup Menu
         if _menu is not None:
             menu = dynamic_class_import(_menu)
-            if isinstance(menu, Menu):
-                self.menu = menu
+            if menu is not None and issubclass(menu, Menu):
+                self.menu = menu()
         else:
             self.menu = self.menu or Menu()
 
