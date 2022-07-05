@@ -1,6 +1,18 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.1.3
+-----------------------------------
+
+- fix: Do not render hidden form fields twice (#1848) [Dosenpfand]
+- chore: Bump requirements pillow version, remove PIL from doc (#1873) [Dosenpfand]
+- fix: custom menu option (#1884) [Daniel Vaz Gaspar]
+- fix: FAB_INDEX_VIEW type check (#1883) [Daniel Vaz Gaspar]
+- fix(api): register responses with apispec using components.response() (#1881) [jnahmias]
+- docs: add responsible disclosure text to security (#1882) [Daniel Vaz Gaspar]
+- chore: Improve german translation  (#1872) [Dosenpfand]
+- fix: populating permission and vm instead of just setting the id (#1874) [Zef Lin]
+
 Improvements and Bug fixes on 4.1.2
 -----------------------------------
 
