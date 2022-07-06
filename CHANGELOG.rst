@@ -4,6 +4,7 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 4.1.3
 -----------------------------------
 
+- fix: user stats view search (#1887) [Daniel Vaz Gaspar]
 - fix: Do not render hidden form fields twice (#1848) [Dosenpfand]
 - chore: Bump requirements pillow version, remove PIL from doc (#1873) [Dosenpfand]
 - fix: custom menu option (#1884) [Daniel Vaz Gaspar]
