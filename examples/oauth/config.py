@@ -113,7 +113,7 @@ OAUTH_PROVIDERS = [
         "remote_app": {
             "client_id": os.environ.get("KEYCLOAK_CLIENT_ID"),
             "client_secret": os.environ.get("KEYCLOAK_CLIENT_SECRET"),
-            "api_base_url": "https://{}}/realms/master/protocol/openid-connect".format(
+            "api_base_url": "https://{}/realms/master/protocol/openid-connect".format(
                 os.environ.get("KEYCLOAK_DOMAIN")
             ),
             "client_kwargs": {"scope": "email profile"},
@@ -133,7 +133,7 @@ OAUTH_PROVIDERS = [
         "remote_app": {
             "client_id": os.environ.get("KEYCLOAK_CLIENT_ID"),
             "client_secret": os.environ.get("KEYCLOAK_CLIENT_SECRET"),
-            "api_base_url": "https://{}}/auth/realms/master/protocol/openid-connect".format(
+            "api_base_url": "https://{}/auth/realms/master/protocol/openid-connect".format(
                 os.environ.get("KEYCLOAK_DOMAIN")
             ),
             "client_kwargs": {"scope": "email profile"},
