@@ -1,12 +1,6 @@
 import os
 from flask import session
-from flask_appbuilder.security.manager import (
-    AUTH_OID,
-    AUTH_REMOTE_USER,
-    AUTH_DB,
-    AUTH_LDAP,
-    AUTH_OAUTH,
-)
+from flask_appbuilder.security.manager import AUTH_OAUTH
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -161,7 +155,7 @@ AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = "Admin"
 
 # Self registration role based on user info
-AUTH_USER_REGISTRATION_ROLE_JMESPATH = "contains(['alice@example.com', 'celine@example.com'], email) && 'Admin' || 'Public'"
+# AUTH_USER_REGISTRATION_ROLE_JMESPATH = "contains(['alice@example.com', 'celine@example.com'], email) && 'Admin' || 'Public'"
 
 # Replace users database roles each login with those received from OAUTH/LDAP
 AUTH_ROLES_SYNC_AT_LOGIN = True
@@ -169,8 +163,8 @@ AUTH_ROLES_SYNC_AT_LOGIN = True
 # A mapping from LDAP/OAUTH group names to FAB roles
 AUTH_ROLES_MAPPING = {
     # For OAUTH
-    "USER_GROUP_NAME": ["User"],
-    "ADMIN_GROUP_NAME": ["Admin"],
+    # "USER_GROUP_NAME": ["User"],
+    # "ADMIN_GROUP_NAME": ["Admin"],
     # For LDAP
     # "cn=User,ou=groups,dc=example,dc=com": ["User"],
     # "cn=Admin,ou=groups,dc=example,dc=com": ["Admin"],
