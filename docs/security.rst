@@ -196,6 +196,7 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 "request_token_url": None,
                 "access_token_url": "https://accounts.google.com/o/oauth2/token",
                 "authorize_url": "https://accounts.google.com/o/oauth2/auth",
+                "jwks_uri": "https://www.googleapis.com/oauth2/v3/certs",
             },
         },
         {
@@ -224,6 +225,7 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 "client_kwargs": {"scope": "openid profile email groups"},
                 "access_token_url": "https://OKTA_DOMAIN.okta.com/oauth2/v1/token",
                 "authorize_url": "https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize",
+                "server_metadata_url": f"https://OKTA_DOMAIN.okta.com/.well-known/openid-configuration",
             },
         },
         {

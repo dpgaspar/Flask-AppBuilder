@@ -62,6 +62,7 @@ OAUTH_PROVIDERS = [
             "request_token_url": None,
             "access_token_url": "https://accounts.google.com/o/oauth2/token",
             "authorize_url": "https://accounts.google.com/o/oauth2/auth",
+            "jwks_uri": "https://www.googleapis.com/oauth2/v3/certs",
         },
     },
     {
@@ -77,8 +78,12 @@ OAUTH_PROVIDERS = [
                 "resource": os.environ.get("AZURE_APPLICATION_ID"),
             },
             "request_token_url": None,
-            "access_token_url": "https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/token",
-            "authorize_url": "https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/authorize",
+            "access_token_url": f"https://login.microsoftonline.com/"
+            f"{os.environ.get('AZURE_APPLICATION_ID')}/"
+            "oauth2/token",
+            "authorize_url": f"https://login.microsoftonline.com/"
+            f"{os.environ.get('AZURE_APPLICATION_ID')}/"
+            f"oauth2/authorize",
         },
     },
     {
@@ -88,16 +93,14 @@ OAUTH_PROVIDERS = [
         "remote_app": {
             "client_id": os.environ.get("OKTA_KEY"),
             "client_secret": os.environ.get("OKTA_SECRET"),
-            "api_base_url": "https://{}.okta.com/oauth2/v1/".format(
-                os.environ.get("OKTA_DOMAIN")
-            ),
+            "api_base_url": f"https://{os.environ.get('OKTA_DOMAIN')}.okta.com/oauth2/v1/",
             "client_kwargs": {"scope": "openid profile email groups"},
-            "access_token_url": "https://{}.okta.com/oauth2/v1/token".format(
-                os.environ.get("OKTA_DOMAIN")
-            ),
-            "authorize_url": "https://{}.okta.com/oauth2/v1/authorize".format(
-                os.environ.get("OKTA_DOMAIN")
-            ),
+            "access_token_url": f"https://{os.environ.get('OKTA_DOMAIN')}.okta.com/"
+            f"oauth2/v1/token",
+            "authorize_url": f"https://{os.environ.get('OKTA_DOMAIN')}.okta.com/"
+            f"oauth2/v1/authorize",
+            "server_metadata_url": f"https://{os.environ.get('OKTA_DOMAIN')}.okta.com/"
+            f".well-known/openid-configuration",
         },
     },
     {
@@ -107,16 +110,13 @@ OAUTH_PROVIDERS = [
         "remote_app": {
             "client_id": os.environ.get("KEYCLOAK_CLIENT_ID"),
             "client_secret": os.environ.get("KEYCLOAK_CLIENT_SECRET"),
-            "api_base_url": "https://{}/realms/master/protocol/openid-connect".format(
-                os.environ.get("KEYCLOAK_DOMAIN")
-            ),
+            "api_base_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"realms/master/protocol/openid-connect",
             "client_kwargs": {"scope": "email profile"},
-            "access_token_url": "https://{}/realms/master/protocol/openid-connect/token".format(
-                os.environ.get("KEYCLOAK_DOMAIN")
-            ),
-            "authorize_url": "https://{}/realms/master/protocol/openid-connect/auth".format(
-                os.environ.get("KEYCLOAK_DOMAIN")
-            ),
+            "access_token_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"realms/master/protocol/openid-connect/token",
+            "authorize_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"realms/master/protocol/openid-connect/auth",
             "request_token_url": None,
         },
     },
@@ -127,16 +127,13 @@ OAUTH_PROVIDERS = [
         "remote_app": {
             "client_id": os.environ.get("KEYCLOAK_CLIENT_ID"),
             "client_secret": os.environ.get("KEYCLOAK_CLIENT_SECRET"),
-            "api_base_url": "https://{}/auth/realms/master/protocol/openid-connect".format(
-                os.environ.get("KEYCLOAK_DOMAIN")
-            ),
+            "api_base_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"auth/realms/master/protocol/openid-connect",
             "client_kwargs": {"scope": "email profile"},
-            "access_token_url": "https://{}/auth/realms/master/protocol/openid-connect/token".format(
-                os.environ.get("KEYCLOAK_DOMAIN")
-            ),
-            "authorize_url": "https://{}/auth/realms/master/protocol/openid-connect/auth".format(
-                os.environ.get("KEYCLOAK_DOMAIN")
-            ),
+            "access_token_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"auth/realms/master/protocol/openid-connect/token",
+            "authorize_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"auth/realms/master/protocol/openid-connect/auth",
             "request_token_url": None,
         },
     },
