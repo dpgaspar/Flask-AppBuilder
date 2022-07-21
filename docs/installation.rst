@@ -123,14 +123,9 @@ Flask App Builder dependes on
     - flask-wtform : Web forms.
     - flask-Babel : For internationalization.
 
-If you plan to use Image processing or upload, you will need to install PIL::
+If you plan to use Image processing or upload, you will need to install Pillow::
 
-    pip install pillow
-
-or::
-
-    pip install PIL
-
+    pip install Pillow
 
 Python 2 and 3 Compatibility
 ----------------------------

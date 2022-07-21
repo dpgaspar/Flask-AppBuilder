@@ -69,7 +69,7 @@ setup(
     ],
     extras_require={
         "jmespath": ["jmespath>=0.9.5"],
-        "oauth": ["Authlib>=0.14, <1.0.0"],
+        "oauth": ["Authlib>=0.14, <2.0.0"],
         "openid": ["Flask-OpenID>=1.2.5, <2"],
     },
     tests_require=["nose>=1.0", "mockldap>=0.3.0"],
