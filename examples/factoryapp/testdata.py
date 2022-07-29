@@ -1,7 +1,8 @@
 from datetime import datetime
 import random
 
-from app import create_app, db
+from flask import current_app
+from app.app import create_app
 from app.models import Contact, ContactGroup, Gender
 
 app = create_app("config")
@@ -17,19 +18,19 @@ def get_random_name(names_list, size=1):
 
 
 try:
-    db.session.add(ContactGroup(name="Friends"))
-    db.session.add(ContactGroup(name="Family"))
-    db.session.add(ContactGroup(name="Work"))
-    db.session.commit()
+    current_app.appbuilder.session.add(ContactGroup(name="Friends"))
+    current_app.appbuilder.session.add(ContactGroup(name="Family"))
+    current_app.appbuilder.session.add(ContactGroup(name="Work"))
+    current_app.appbuilder.session.commit()
 except Exception:
-    db.session.rollback()
+    current_app.appbuilder.session.rollback()
 
 try:
-    db.session.add(Gender(name="Male"))
-    db.session.add(Gender(name="Female"))
-    db.session.commit()
+    current_app.appbuilder.session.add(Gender(name="Male"))
+    current_app.appbuilder.session.add(Gender(name="Female"))
+    current_app.appbuilder.session.commit()
 except Exception:
-    db.session.rollback()
+    current_app.appbuilder.session.rollback()
 
 f = open("NAMES.DIC", "rb")
 names_list = [x.strip() for x in f.readlines()]
@@ -50,9 +51,9 @@ for i in range(1, 50):
     month = random.choice(range(1, 12))
     day = random.choice(range(1, 28))
     c.birthday = datetime(year, month, day)
-    db.session.add(c)
+    current_app.appbuilder.session.add(c)
     try:
-        db.session.commit()
+        current_app.appbuilder.session.commit()
         print("inserted {0}".format(c))
     except Exception:
-        db.session.rollback()
+        current_app.appbuilder.session.rollback()

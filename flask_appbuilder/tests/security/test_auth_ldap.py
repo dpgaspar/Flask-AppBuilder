@@ -77,7 +77,7 @@ class LDAPSearchTestCase(unittest.TestCase):
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()
         user_names = [user.username for user in users]
-        self.assertEquals(user_names, [USERNAME_ADMIN, USERNAME_READONLY])
+        self.assertEqual(user_names, [USERNAME_ADMIN, USERNAME_READONLY])
 
     # ----------------
     # LDAP Directory
@@ -342,7 +342,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertOnlyDefaultUsers()
 
         # validate - expected LDAP methods were called
-        self.assertEquals(self.ldapobj.methods_called(with_args=True), [])
+        self.assertEqual(self.ldapobj.methods_called(with_args=True), [])
 
     def test__inactive_user(self):
         """
@@ -376,7 +376,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.assertIsNone(user)
 
         # validate - expected LDAP methods were called
-        self.assertEquals(self.ldapobj.methods_called(with_args=True), [])
+        self.assertEqual(self.ldapobj.methods_called(with_args=True), [])
 
     def test__multi_group_user_mapping_to_same_role(self):
         """

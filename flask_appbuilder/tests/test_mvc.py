@@ -182,6 +182,33 @@ class ListFilterTestCase(BaseMVCTestCase):
             rv = c.get("/users/list/?_flt_2_created_on=wrongvalue")
             self.assertEqual(rv.status_code, 200)
 
+    def test_list_filter_multiple_arguments_no_match(self):
+        """
+        MVC: Test Filter with multiple arguments for the same filter that do not match.
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            #  Two filters, with no matches (email ends with neither 'm' nor 'g')
+            #  Another email address added to the database could make this test fail.
+            rv = c.get("/users/list/?_flt_5_email=m&_flt_5_email=g")
+            self.assertEqual(rv.status_code, 200)
+            data = rv.data.decode("utf-8")
+            self.assertIn("No records found", data)
+
+    def test_list_filter_multiple_arguments_with_match(self):
+        """
+        MVC: Test Filter with multiple arguments for the same filter that do match.
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            #  Two filters, matching admin@fab.org
+            rv = c.get("/users/list/?_flt_2_email=a&_flt_2_email=b")
+            self.assertEqual(rv.status_code, 200)
+            data = rv.data.decode("utf-8")
+            self.assertIn("admin@fab.org", data)
+
 
 class MVCCSRFTestCase(BaseMVCTestCase):
     def setUp(self):
@@ -1047,7 +1074,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_query_rel_fields(self):
         """
-            Test add and edit form related fields filter
+        Test add and edit form related fields filter
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1315,10 +1342,7 @@ class MVCTestCase(BaseMVCTestCase):
         Testing unauthenticated access to MVC API
         """
         client = self.app.test_client()
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
-        rv = client.get("/model1formattedview/api/read")
-        self.assertEqual(rv.status_code, 401)
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
+        self.browser_logout(client)
         rv = client.get("/model1formattedview/api/read")
         self.assertEqual(rv.status_code, 401)
 
@@ -1328,7 +1352,6 @@ class MVCTestCase(BaseMVCTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
 
         rv = client.post(
             "/model1view/api/create",
@@ -1336,13 +1359,6 @@ class MVCTestCase(BaseMVCTestCase):
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 403)
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
-        rv = client.post(
-            "/model1view/api/create",
-            data=dict(field_string="zzz"),
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 401)
 
     def test_api_create(self):
         """
@@ -1421,7 +1437,7 @@ class MVCTestCase(BaseMVCTestCase):
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu("can_access", "view")
         self.appbuilder.sm.add_permission_role(role, pvm)
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
 
@@ -1447,6 +1463,10 @@ class MVCTestCase(BaseMVCTestCase):
         )
         self.assertEqual(model.field_string, "test1")
         self.assertEqual(model.field_integer, 1)
+
+        # Cleanup
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_method_permission_override(self):
         """
@@ -1488,7 +1508,7 @@ class MVCTestCase(BaseMVCTestCase):
         self.appbuilder.sm.add_permission_role(role, pvm_read)
         self.appbuilder.sm.add_permission_role(role, pvm_write)
 
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
 
@@ -1555,8 +1575,9 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertIn("/model1permoverride/show/1", data)
 
         # Revert data changes
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
-        self.appbuilder.get_session.commit()
+        self.db.session.delete(self.appbuilder.sm.find_role("Test"))
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_action_permission_override(self):
         """
@@ -1595,7 +1616,7 @@ class MVCTestCase(BaseMVCTestCase):
 
         # Add a user and login before enabling CSRF
         role = self.appbuilder.sm.add_role("Test")
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
         pvm_read = self.appbuilder.sm.find_permission_view_menu(
@@ -1628,6 +1649,10 @@ class MVCTestCase(BaseMVCTestCase):
 
         rv = client.get("/model1permoverride/action/action1/1")
         self.assertEqual(rv.status_code, 302)
+
+        # cleanup
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_permission_converge_compress(self):
         """
@@ -1665,7 +1690,7 @@ class MVCTestCase(BaseMVCTestCase):
         pvm = self.appbuilder.sm.find_permission_view_menu("can_add", "Model1View")
         self.appbuilder.sm.add_permission_role(role, pvm)
         role = self.appbuilder.sm.find_role("Test")
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
         # Remove previous class, Hack to test code change
@@ -1698,6 +1723,9 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 1)
+        # cleanup
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_before_request(self):
         """

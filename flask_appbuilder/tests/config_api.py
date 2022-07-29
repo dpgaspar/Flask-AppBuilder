@@ -6,7 +6,6 @@ SQLALCHEMY_DATABASE_URI = os.environ.get(
     "SQLALCHEMY_DATABASE_URI"
 ) or "sqlite:///" + os.path.join(basedir, "app.db")
 
-AUTH_STRICT_RESPONSE_CODES = False
 SECRET_KEY = "thisismyscretkey"
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 WTF_CSRF_ENABLED = False

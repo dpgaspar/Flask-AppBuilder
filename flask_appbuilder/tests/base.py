@@ -1,9 +1,10 @@
 import json
 import logging
-from typing import Set
+from typing import Any, Dict, List, Optional, Set
 import unittest
 
-from flask import Flask
+from flask import Flask, Response
+from flask.testing import FlaskClient
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.const import (
     API_SECURITY_PASSWORD_KEY,
@@ -52,20 +53,42 @@ class FABTestCase(unittest.TestCase):
         )
 
     def login(self, client, username, password):
-        # Login with default admin
         rv = self._login(client, username, password)
         try:
             return json.loads(rv.data.decode("utf-8")).get("access_token")
         except Exception:
             return rv
 
-    def browser_login(self, client, username, password):
-        # Login with default admin
+    def browser_login(
+        self,
+        client: FlaskClient,
+        username: str,
+        password: str,
+        next_url: Optional[str] = None,
+        follow_redirects: bool = True,
+    ) -> Response:
+        login_url = "/login/"
+        if next_url:
+            login_url = f"{login_url}?next={next_url}"
         return client.post(
-            "/login/",
+            login_url,
             data=dict(username=username, password=password),
-            follow_redirects=True,
+            follow_redirects=follow_redirects,
         )
+
+    def assert_response(
+        self,
+        response: List[Dict[str, Any]],
+        expected_results: List[Dict[str, Any]],
+        exclude_cols: Optional[List[str]] = None,
+    ):
+        exclude_cols = exclude_cols or []
+        for idx, expected_result in enumerate(expected_results):
+            for field_name, field_value in expected_result.items():
+                if field_name not in exclude_cols:
+                    self.assertEqual(
+                        response[idx][field_name], expected_result[field_name]
+                    )
 
     @staticmethod
     def browser_logout(client):

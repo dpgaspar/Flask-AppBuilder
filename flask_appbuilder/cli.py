@@ -1,7 +1,7 @@
 from io import BytesIO
 import os
 import shutil
-from typing import Optional
+from typing import Optional, Union
 from urllib.request import urlopen
 from zipfile import ZipFile
 
@@ -26,6 +26,21 @@ ADDON_REPO_URL = (
 def echo_header(title):
     click.echo(click.style(title, fg="green"))
     click.echo(click.style("-" * len(title), fg="green"))
+
+
+def cast_int_like_to_int(cli_arg: Union[None, str, int]) -> Union[None, str, int]:
+    """Cast int-like objects to int if possible
+
+    If the arg cannot be cast to an integer, return the unmodified object instead."""
+    try:
+        cli_arg_int = int(cli_arg)
+        return cli_arg_int
+    except TypeError:
+        # Don't cast if None
+        return cli_arg
+    except ValueError:
+        # Don't cast non-int-like strings
+        return cli_arg
 
 
 @click.group()
@@ -150,9 +165,14 @@ def create_db():
 @fab.command("export-roles")
 @with_appcontext
 @click.option("--path", "-path", help="Specify filepath to export roles to")
-def export_roles(path: Optional[str] = None) -> None:
-    """ Exports roles with permissions and view menus to JSON file """
-    current_app.appbuilder.sm.export_roles(path)
+@click.option("--indent", help="Specify indent of generated JSON file")
+def export_roles(
+    path: Optional[str] = None, indent: Optional[Union[int, str]] = None
+) -> None:
+    """Exports roles with permissions and view menus to JSON file"""
+    # Cast negative numbers to int (as they are passed as str from CLI)
+    cast_indent = cast_int_like_to_int(indent)
+    current_app.appbuilder.sm.export_roles(path=path, indent=cast_indent)
 
 
 @fab.command("import-roles")

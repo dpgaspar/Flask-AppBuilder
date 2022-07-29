@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 import logging
-from typing import List, Optional
+from typing import List, Optional, Union
 import uuid
 
 from sqlalchemy import and_, func, literal, update
@@ -10,6 +10,7 @@ from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import generate_password_hash
 
+from .apis import PermissionApi, PermissionViewMenuApi, RoleApi, UserApi, ViewMenuApi
 from .models import (
     assoc_permissionview_role,
     Permission,
@@ -44,6 +45,13 @@ class SecurityManager(BaseSecurityManager):
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
     registeruser_model = RegisterUser
+
+    # APIs
+    permission_api = PermissionApi
+    role_api = RoleApi
+    user_api = UserApi
+    view_menu_api = ViewMenuApi
+    permission_view_menu_api = PermissionViewMenuApi
 
     def __init__(self, appbuilder):
         """
@@ -85,6 +93,13 @@ class SecurityManager(BaseSecurityManager):
 
     def register_views(self):
         super(SecurityManager, self).register_views()
+
+        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_API", False):
+            self.appbuilder.add_api(self.permission_api)
+            self.appbuilder.add_api(self.role_api)
+            self.appbuilder.add_api(self.user_api)
+            self.appbuilder.add_api(self.view_menu_api)
+            self.appbuilder.add_api(self.permission_view_menu_api)
 
     def create_db(self):
         try:
@@ -240,7 +255,7 @@ class SecurityManager(BaseSecurityManager):
 
     def noop_user_update(self, user: "User") -> None:
         stmt = (
-            update(User)
+            update(self.user_model)
             .where(self.user_model.id == user.id)
             .values(login_count=user.login_count)
         )
@@ -558,7 +573,7 @@ class SecurityManager(BaseSecurityManager):
         vm = self.add_view_menu(view_menu_name)
         perm = self.add_permission(permission_name)
         pv = self.permissionview_model()
-        pv.view_menu_id, pv.permission_id = vm.id, perm.id
+        pv.view_menu, pv.permission = vm, perm
         try:
             self.get_session.add(pv)
             self.get_session.commit()
@@ -660,7 +675,9 @@ class SecurityManager(BaseSecurityManager):
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))
                 self.get_session.rollback()
 
-    def export_roles(self, path: Optional[str] = None) -> None:
+    def export_roles(
+        self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
+    ) -> None:
         """ Exports roles to JSON file. """
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         filename = path or f"roles_export_{timestamp}.json"
@@ -680,7 +697,7 @@ class SecurityManager(BaseSecurityManager):
             serialized_roles.append(serialized_role)
 
         with open(filename, "w") as fd:
-            fd.write(json.dumps(serialized_roles))
+            fd.write(json.dumps(serialized_roles, indent=indent))
 
     def import_roles(self, path: str) -> None:
         """ Imports roles from JSON file. """

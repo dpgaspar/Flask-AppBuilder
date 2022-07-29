@@ -1,4 +1,5 @@
 from flask_appbuilder import SQLA
+from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder.tests.base import FABTestCase
 import jwt
 
@@ -36,6 +37,16 @@ class APICSRFTestCase(FABTestCase):
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
+    def tearDown(self):
+        self.cleanup()
+
+    def cleanup(self):
+        session = self.appbuilder.get_session
+        users = session.query(User).filter(User.username.ilike("google%")).all()
+        for user in users:
+            session.delete(user)
+        session.commit()
+
     def test_oauth_login(self):
         """
         OAuth: Test login
@@ -47,7 +58,7 @@ class APICSRFTestCase(FABTestCase):
         raw_state = {}
         state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
 
-        response = client.get(f"/oauth-authorized/google?state={state.decode('utf-8')}")
+        response = client.get(f"/oauth-authorized/google?state={state}")
         self.assertEqual(response.location, "http://localhost/")
 
     def test_oauth_login_unknown_provider(self):
@@ -61,9 +72,7 @@ class APICSRFTestCase(FABTestCase):
         raw_state = {}
         state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
 
-        response = client.get(
-            f"/oauth-authorized/unknown_provider?state={state.decode('utf-8')}"
-        )
+        response = client.get(f"/oauth-authorized/unknown_provider?state={state}")
         self.assertEqual(response.location, "http://localhost/login/")
 
     def test_oauth_login_next(self):
@@ -77,7 +86,7 @@ class APICSRFTestCase(FABTestCase):
         raw_state = {"next": ["http://localhost/users/list/"]}
         state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
 
-        response = client.get(f"/oauth-authorized/google?state={state.decode('utf-8')}")
+        response = client.get(f"/oauth-authorized/google?state={state}")
         self.assertEqual(response.location, "http://localhost/users/list/")
 
     def test_oauth_login_next_check(self):
@@ -88,8 +97,8 @@ class APICSRFTestCase(FABTestCase):
 
         self.appbuilder.sm.oauth_remotes = {"google": OAuthRemoteMock()}
 
-        raw_state = {"next": ["http://www.google.com"]}
+        raw_state = {"next": ["ftp://sample"]}
         state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
 
-        response = client.get(f"/oauth-authorized/google?state={state.decode('utf-8')}")
+        response = client.get(f"/oauth-authorized/google?state={state}")
         self.assertEqual(response.location, "http://localhost/")

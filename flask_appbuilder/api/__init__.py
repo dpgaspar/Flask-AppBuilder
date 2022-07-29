@@ -3,7 +3,7 @@ import json
 import logging
 import re
 import traceback
-from typing import Callable, Dict, List, Optional, Set
+from typing import Callable, Dict, List, Optional, Set, Tuple, Type
 import urllib.parse
 
 from apispec import APISpec, yaml_utils
@@ -21,6 +21,7 @@ import yaml
 from .convert import Model2SchemaConverter
 from .schemas import get_info_schema, get_item_schema, get_list_schema
 from .._compat import as_unicode
+from ..baseviews import AbstractViewApi
 from ..const import (
     API_ADD_COLUMNS_RES_KEY,
     API_ADD_COLUMNS_RIS_KEY,
@@ -203,7 +204,7 @@ def merge_response_func(func, key):
     return wrap
 
 
-class BaseApi(object):
+class BaseApi(AbstractViewApi):
     """
         All apis inherit from this class.
         it's constructor will register your exposed urls on flask
@@ -213,8 +214,6 @@ class BaseApi(object):
         but provides a common base for all APIS.
     """
 
-    appbuilder = None
-    blueprint = None
     endpoint: Optional[str] = None
 
     version: Optional[str] = "v1"
@@ -294,6 +293,22 @@ class BaseApi(object):
     """
     _apispec_parameter_schemas = None
 
+    openapi_spec_component_schemas: Tuple[Type[Schema], ...] = tuple()
+    """
+    A Tuple containing marshmallow schemas to be registered on the OpenAPI spec
+    has component schemas, these can be referenced by the endpoint's spec like:
+    `$ref: '#/components/schemas/MyCustomSchema'` Where MyCustomSchema is the
+    marshmallow schema class name.
+
+    To set your own OpenAPI schema component name, declare your schemas with:
+    __component_name__
+
+    class Schema1(Schema):
+        __component_name__ = "MyCustomSchema"
+        id = fields.Integer()
+        ...
+
+    """
     responses = {
         "400": {
             "description": "Bad request",
@@ -420,11 +435,16 @@ class BaseApi(object):
 
             Initialization of extra args
         """
+        self.appbuilder = None
+        self.blueprint = None
+
         # Init OpenAPI
         self._response_key_func_mappings = dict()
         self.apispec_parameter_schemas = self.apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas = self._apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas.update(self.apispec_parameter_schemas)
+        if self.openapi_spec_component_schemas is None:
+            self.openapi_spec_component_schemas = ()
 
         # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
@@ -473,9 +493,7 @@ class BaseApi(object):
         self.resource_name = self.resource_name or self.__class__.__name__.lower()
 
         if self.route_base is None:
-            self.route_base = "/api/{}/{}".format(
-                self.version, self.resource_name.lower()
-            )
+            self.route_base = f"/api/{self.version}/{self.resource_name.lower()}"
         self.blueprint = Blueprint(self.endpoint, __name__, url_prefix=self.route_base)
         # Exempt API from CSRF protect
         if self.csrf_exempt:
@@ -515,10 +533,24 @@ class BaseApi(object):
 
     def add_apispec_components(self, api_spec: APISpec) -> None:
         for k, v in self.responses.items():
-            api_spec.components._responses[k] = v
+            try:
+                api_spec.components.response(k, v)
+            except DuplicateComponentNameError:
+                pass
         for k, v in self._apispec_parameter_schemas.items():
             try:
                 api_spec.components.schema(k, v)
+            except DuplicateComponentNameError:
+                pass
+        for schema in self.openapi_spec_component_schemas:
+            try:
+                if hasattr(schema, "__component_name__"):
+                    component_name = schema.__component_name__
+                elif isinstance(schema, type):
+                    component_name = schema.__name__
+                else:
+                    component_name = schema.__class__.__name__
+                api_spec.components.schema(component_name, schema=schema)
             except DuplicateComponentNameError:
                 pass
 
@@ -562,14 +594,14 @@ class BaseApi(object):
         """
         RE_URL = re.compile(r"<(?:[^:<>]+:)?([^<>]+)>")
         path = RE_URL.sub(r"{\1}", path)
-        return f"/{self.resource_name}{path}"
+        return f"{self.route_base}{path}"
 
     def operation_helper(
         self, path=None, operations=None, methods=None, func=None, **kwargs
     ):
         """May mutate operations.
         :param str path: Path to the resource
-        :param dict operations: A `dict` mapping HTTP methods to operation object. See
+        :param dict operations: A `dict` mapping HTTP methods to operation object.
         :param list methods: A list of methods registered for this path
         """
         for method in methods:
@@ -625,7 +657,7 @@ class BaseApi(object):
         """
         return []
 
-    def get_init_inner_views(self, views):
+    def get_init_inner_views(self):
         """
             Sets initialized inner views
         """

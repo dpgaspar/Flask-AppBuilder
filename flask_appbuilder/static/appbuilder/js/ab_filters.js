@@ -19,7 +19,14 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
     function addActiveFilters()
     {
         $(active_filters).each(function() {
-            addActiveFilter(this[0], this[1], this[2]);
+            if (Array.isArray(this[2])) {
+                // Multiple values applied for the same filter.
+                for (var i = 0; i < this[2].length; i++) {
+                    addActiveFilter(this[0], this[1], this[2][i]);
+                }
+            } else {
+                addActiveFilter(this[0], this[1], this[2]);
+            }
         });
     }
 

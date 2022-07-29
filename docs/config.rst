@@ -202,11 +202,6 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | AUTH_ROLE_PUBLIC                       | Special Role that holds the public         |   No      |
 |                                        | permissions, no authentication needed.     |           |
 +----------------------------------------+--------------------------------------------+-----------+
-| AUTH_STRICT_RESPONSE_CODES             | When True, protected endpoints will return |   No      |
-|                                        | HTTP 403 instead of 401. This option will  |           |
-|                                        | be removed and default to True on the next |           |
-|                                        | major release. defaults to False           |           |
-+----------------------------------------+--------------------------------------------+-----------+
 | AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS| Allow REST API login with alternative auth |   No      |
 | True|False                             | providers (default False)                  |           |
 +----------------------------------------+--------------------------------------------+-----------+
@@ -262,6 +257,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | FAB_SECURITY_MANAGER_CLASS             | Declare a new custom SecurityManager       |           |
 |                                        | class                                      |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
+| FAB_ADD_SECURITY_API                   | [Beta] Adds a CRUD REST API for users,     |           |
+|                                        | roles, permissions, view_menus.            |   No      |
+|                                        | Further details on /swagger/v1             |           |
+|                                        | All endpoints are under /api/v1/sercurity/ |           |
+|                                        | [Note]: This feature is still in beta      |           |
+|                                        | breaking changes are likely to occur       |           |
++----------------------------------------+--------------------------------------------+-----------+
 | FAB_ADD_SECURITY_VIEWS                 | Enables or disables registering all        |           |
 |                                        | security views (boolean default:True)      |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
@@ -276,6 +278,10 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +----------------------------------------+--------------------------------------------+-----------+
 | FAB_ADD_OPENAPI_VIEWS                  | Enables or disables registering all        |           |
 |                                        | OPENAPI views (boolean default:True)       |   No      |
++----------------------------------------+--------------------------------------------+-----------+
+| FAB_OPENAPI_SERVERS                    | Used for setting OpenApi Swagger UI        |           |
+|                                        | servers if not set Swagger will use the    |           |
+|                                        | current request host URL                   |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
 | FAB_ROLES                              | Configure builtin roles see Security       |           |
 |                                        | chapter for further detail                 |   No      |

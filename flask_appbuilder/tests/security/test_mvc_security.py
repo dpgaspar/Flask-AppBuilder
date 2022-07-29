@@ -2,6 +2,7 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.security.sqla.models import User
 
 from ..base import BaseMVCTestCase
 from ..const import PASSWORD_ADMIN, PASSWORD_READONLY, USERNAME_ADMIN, USERNAME_READONLY
@@ -26,6 +27,7 @@ def custom_password_validator(password: str) -> None:
 class MVCSecurityTestCase(BaseMVCTestCase):
     def setUp(self):
         super().setUp()
+        self.client = self.app.test_client()
 
         class Model2View(ModelView):
             datamodel = SQLAInterface(Model2)
@@ -58,32 +60,153 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         Test Security Login, Logout, invalid login, invalid access
         """
-        client = self.app.test_client()
 
         # Try to List and Redirect to Login
-        rv = client.get("/model1view/list/")
+        rv = self.client.get("/model1view/list/")
         self.assertEqual(rv.status_code, 302)
-        rv = client.get("/model2view/list/")
+        rv = self.client.get("/model2view/list/")
         self.assertEqual(rv.status_code, 302)
 
         # Login and list with admin
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/model1view/list/")
+        self.browser_login(self.client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = self.client.get("/model1view/list/")
         self.assertEqual(rv.status_code, 200)
-        rv = client.get("/model2view/list/")
+        rv = self.client.get("/model2view/list/")
         self.assertEqual(rv.status_code, 200)
 
         # Logout and and try to list
-        self.browser_logout(client)
-        rv = client.get("/model1view/list/")
+        self.browser_logout(self.client)
+        rv = self.client.get("/model1view/list/")
         self.assertEqual(rv.status_code, 302)
-        rv = client.get("/model2view/list/")
+        rv = self.client.get("/model2view/list/")
         self.assertEqual(rv.status_code, 302)
 
         # Invalid Login
-        rv = self.browser_login(client, USERNAME_ADMIN, "wrong_password")
+        rv = self.browser_login(self.client, USERNAME_ADMIN, "wrong_password")
         data = rv.data.decode("utf-8")
         self.assertIn(INVALID_LOGIN_STRING, data)
+
+    def test_db_login_no_next_url(self):
+        """
+        Test Security no next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client, USERNAME_ADMIN, PASSWORD_ADMIN, follow_redirects=False
+        )
+        assert response.location == "http://localhost/"
+
+    def test_db_login_valid_next_url(self):
+        """
+        Test Security valid partial next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="/users/list/",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/users/list/"
+
+    def test_db_login_valid_http_scheme_url(self):
+        """
+        Test Security valid http scheme next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="http://localhost/path",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/path"
+
+    def test_db_login_valid_https_scheme_url(self):
+        """
+        Test Security valid https scheme next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://localhost/path",
+            follow_redirects=False,
+        )
+        assert response.location == "https://localhost/path"
+
+    def test_db_login_invalid_external_next_url(self):
+        """
+        Test Security invalid external next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://google.com",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/"
+
+    def test_db_login_invalid_scheme_next_url(self):
+        """
+        Test Security invalid scheme next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="ftp://sample",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/"
+
+    def test_db_login_invalid_localhost_file_next_url(self):
+        """
+        Test Security invalid path to localhost file next URL
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="file:///path",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/"
+
+    def test_db_login_invalid_no_netloc_with_scheme_next_url(self):
+        """
+        Test Security invalid next URL with no netloc but with scheme
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="http:///sample.com ",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/"
+
+    def test_db_login_invalid_control_characters_next_url(self):
+        """
+        Test Security invalid next URL with control characters
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url=u"\u0001" + "sample.com",
+            follow_redirects=False,
+        )
+        assert response.location == "http://localhost/"
 
     def test_auth_builtin_roles(self):
         """
@@ -217,3 +340,60 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             follow_redirects=True,
         )
         self.browser_logout(client)
+
+    def test_register_user(self):
+        """
+        Test register user
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # use all required params
+        rv = client.get("/users/add", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Add User", data)
+        rv = client.post(
+            "/users/add",
+            data=dict(
+                first_name="first",
+                last_name="last",
+                username="from test 1-1",
+                email="test1@fromtest1.com",
+                roles=[1],
+                password="password",
+                conf_password="password",
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Added Row", data)
+
+        # don't set roles
+        rv = client.get("/users/add", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Add User", data)
+        rv = client.post(
+            "/users/add",
+            data=dict(
+                first_name="first",
+                last_name="last",
+                username="from test 2-1",
+                email="test2@fromtest2.com",
+                roles=[],
+                password="password",
+                conf_password="password",
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertNotIn("Added Row", data)
+        self.assertIn("This field is required", data)
+        self.browser_logout(client)
+
+        user = (
+            self.db.session.query(User)
+            .filter(User.username == "from test 1-1")
+            .one_or_none()
+        )
+        self.db.session.delete(user)
+        self.db.session.commit()
