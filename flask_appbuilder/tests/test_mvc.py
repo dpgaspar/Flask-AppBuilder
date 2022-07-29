@@ -703,9 +703,8 @@ class MVCTestCase(BaseMVCTestCase):
             self.assertNotIn('<label for="group"', data)
 
             # Test direct edit view includes related field
-            rv = client.get("/model2view/edit/1")
+            rv = client.get("/model2view/edit/2")
             data = rv.data.decode("utf-8")
-            raise Exception(data)
             self.assertIn('<label for="group"', data)
 
     def test_related_view_add_with_excluded_search(self):
