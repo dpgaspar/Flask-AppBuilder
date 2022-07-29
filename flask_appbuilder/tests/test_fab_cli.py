@@ -19,6 +19,7 @@ from flask_appbuilder.cli import (
     list_views,
     reset_password,
 )
+from nose.plugins.attrib import attr
 
 from .base import FABTestCase
 
@@ -36,6 +37,7 @@ class FlaskTestCase(FABTestCase):
     def tearDown(self):
         log.debug("TEAR DOWN")
 
+    @attr("needs_inet")
     def test_create_app(self):
         """
             Test create app, create-user
@@ -69,6 +71,7 @@ class FlaskTestCase(FABTestCase):
 
             runner.invoke(reset_password, ["--username=bob", "--password=bar"])
 
+    @attr("needs_inet")
     def test_list_views(self):
         """
             CLI: Test list views
