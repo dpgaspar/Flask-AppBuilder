@@ -407,7 +407,7 @@ class UserStatsChartView(DirectByChartView):
         "fail_login_count": lazy_gettext("Failed login count"),
     }
 
-    search_columns = UserModelView.search_columns
+    search_exclude_columns = UserModelView.search_exclude_columns
 
     definitions = [
         {"label": "Login Count", "group": "username", "series": ["login_count"]},

@@ -1,12 +1,6 @@
 import os
 from flask import session
-from flask_appbuilder.security.manager import (
-    AUTH_OID,
-    AUTH_REMOTE_USER,
-    AUTH_DB,
-    AUTH_LDAP,
-    AUTH_OAUTH,
-)
+from flask_appbuilder.security.manager import AUTH_OAUTH
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -51,7 +45,9 @@ OAUTH_PROVIDERS = [
             "request_token_url": "https://api.twitter.com/oauth/request_token",
             "access_token_url": "https://api.twitter.com/oauth/access_token",
             "authorize_url": "https://api.twitter.com/oauth/authenticate",
-            "fetch_token": lambda: session.get("oauth_token"), # DON'T DO THIS IN PRODUCTION
+            "fetch_token": lambda: session.get(
+                "oauth_token"
+            ),  # DON'T DO THIS IN PRODUCTION
         },
     },
     {
@@ -66,6 +62,7 @@ OAUTH_PROVIDERS = [
             "request_token_url": None,
             "access_token_url": "https://accounts.google.com/o/oauth2/token",
             "authorize_url": "https://accounts.google.com/o/oauth2/auth",
+            "jwks_uri": "https://www.googleapis.com/oauth2/v3/certs",
         },
     },
     {
@@ -81,8 +78,12 @@ OAUTH_PROVIDERS = [
                 "resource": os.environ.get("AZURE_APPLICATION_ID"),
             },
             "request_token_url": None,
-            "access_token_url": "https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/token",
-            "authorize_url": "https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/authorize",
+            "access_token_url": f"https://login.microsoftonline.com/"
+            f"{os.environ.get('AZURE_APPLICATION_ID')}/"
+            "oauth2/token",
+            "authorize_url": f"https://login.microsoftonline.com/"
+            f"{os.environ.get('AZURE_APPLICATION_ID')}/"
+            f"oauth2/authorize",
         },
     },
     {
@@ -92,16 +93,48 @@ OAUTH_PROVIDERS = [
         "remote_app": {
             "client_id": os.environ.get("OKTA_KEY"),
             "client_secret": os.environ.get("OKTA_SECRET"),
-            "api_base_url": "https://{}.okta.com/oauth2/v1/".format(
-                os.environ.get("OKTA_DOMAIN")
-            ),
+            "api_base_url": f"https://{os.environ.get('OKTA_DOMAIN')}.okta.com/oauth2/v1/",
             "client_kwargs": {"scope": "openid profile email groups"},
-            "access_token_url": "https://{}.okta.com/oauth2/v1/token".format(
-                os.environ.get("OKTA_DOMAIN")
-            ),
-            "authorize_url": "https://{}.okta.com/oauth2/v1/authorize".format(
-                os.environ.get("OKTA_DOMAIN")
-            ),
+            "access_token_url": f"https://{os.environ.get('OKTA_DOMAIN')}.okta.com/"
+            f"oauth2/v1/token",
+            "authorize_url": f"https://{os.environ.get('OKTA_DOMAIN')}.okta.com/"
+            f"oauth2/v1/authorize",
+            "server_metadata_url": f"https://{os.environ.get('OKTA_DOMAIN')}.okta.com/"
+            f".well-known/openid-configuration",
+        },
+    },
+    {
+        "name": "keycloak",
+        "icon": "fa-key",
+        "token_key": "access_token",
+        "remote_app": {
+            "client_id": os.environ.get("KEYCLOAK_CLIENT_ID"),
+            "client_secret": os.environ.get("KEYCLOAK_CLIENT_SECRET"),
+            "api_base_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"realms/master/protocol/openid-connect",
+            "client_kwargs": {"scope": "email profile"},
+            "access_token_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"realms/master/protocol/openid-connect/token",
+            "authorize_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"realms/master/protocol/openid-connect/auth",
+            "request_token_url": None,
+        },
+    },
+    {
+        "name": "keycloak_before_17",
+        "icon": "fa-key",
+        "token_key": "access_token",
+        "remote_app": {
+            "client_id": os.environ.get("KEYCLOAK_CLIENT_ID"),
+            "client_secret": os.environ.get("KEYCLOAK_CLIENT_SECRET"),
+            "api_base_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"auth/realms/master/protocol/openid-connect",
+            "client_kwargs": {"scope": "email profile"},
+            "access_token_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"auth/realms/master/protocol/openid-connect/token",
+            "authorize_url": f"https://{os.environ.get('KEYCLOAK_DOMAIN')}/"
+            f"auth/realms/master/protocol/openid-connect/auth",
+            "request_token_url": None,
         },
     },
 ]
@@ -119,7 +152,7 @@ AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = "Admin"
 
 # Self registration role based on user info
-AUTH_USER_REGISTRATION_ROLE_JMESPATH = "contains(['alice@example.com', 'celine@example.com'], email) && 'Admin' || 'Public'"
+# AUTH_USER_REGISTRATION_ROLE_JMESPATH = "contains(['alice@example.com', 'celine@example.com'], email) && 'Admin' || 'Public'"
 
 # Replace users database roles each login with those received from OAUTH/LDAP
 AUTH_ROLES_SYNC_AT_LOGIN = True
@@ -127,8 +160,8 @@ AUTH_ROLES_SYNC_AT_LOGIN = True
 # A mapping from LDAP/OAUTH group names to FAB roles
 AUTH_ROLES_MAPPING = {
     # For OAUTH
-    "USER_GROUP_NAME": ["User"],
-    "ADMIN_GROUP_NAME": ["Admin"],
+    # "USER_GROUP_NAME": ["User"],
+    # "ADMIN_GROUP_NAME": ["Admin"],
     # For LDAP
     # "cn=User,ou=groups,dc=example,dc=com": ["User"],
     # "cn=Admin,ou=groups,dc=example,dc=com": ["Admin"],
