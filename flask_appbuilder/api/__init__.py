@@ -533,7 +533,10 @@ class BaseApi(AbstractViewApi):
 
     def add_apispec_components(self, api_spec: APISpec) -> None:
         for k, v in self.responses.items():
-            api_spec.components._responses[k] = v
+            try:
+                api_spec.components.response(k, v)
+            except DuplicateComponentNameError:
+                pass
         for k, v in self._apispec_parameter_schemas.items():
             try:
                 api_spec.components.schema(k, v)

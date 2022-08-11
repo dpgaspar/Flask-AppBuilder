@@ -30,7 +30,11 @@ log = logging.getLogger(__name__)
 
 
 DynamicImportType = Union[
-    Type["BaseManager"], Type["BaseView"], Type["BaseSecurityManager"], Type[Menu]
+    Type["BaseManager"],
+    Type["BaseView"],
+    Type["BaseSecurityManager"],
+    Type[Menu],
+    Type["AbstractViewApi"],
 ]
 
 
@@ -93,7 +97,7 @@ class AppBuilder:
         app: Optional[Flask] = None,
         session: Optional[SessionBase] = None,
         menu: Optional[Menu] = None,
-        indexview: Optional["AbstractViewApi"] = None,
+        indexview: Optional[Type["AbstractViewApi"]] = None,
         base_template: str = "appbuilder/baselayout.html",
         static_folder: str = "static/appbuilder",
         static_url_path: str = "/appbuilder",
@@ -121,7 +125,7 @@ class AppBuilder:
             optional, update permissions flag (Boolean) you can use
             FAB_UPDATE_PERMS config key also
         """
-        self.baseviews: List["AbstractViewApi"] = []
+        self.baseviews: List[Union[Type["AbstractViewApi"], "AbstractViewApi"]] = []
 
         # temporary list that hold addon_managers config key
         self._addon_managers: List[str] = []
@@ -172,19 +176,18 @@ class AppBuilder:
             "FAB_STATIC_URL_PATH", self.static_url_path
         )
         _index_view = app.config.get("FAB_INDEX_VIEW", None)
-        if _index_view is not None:
-            view = dynamic_class_import(_index_view)
-            if isinstance(view, BaseView):
-                self.indexview = view
+        if _index_view:
+            self.indexview = dynamic_class_import(_index_view)  # type: ignore
         else:
-            self.indexview = self.indexview or IndexView()
+            self.indexview = self.indexview or IndexView
+
         _menu = app.config.get("FAB_MENU", None)
 
         # Setup Menu
         if _menu is not None:
             menu = dynamic_class_import(_menu)
-            if isinstance(menu, Menu):
-                self.menu = menu
+            if menu is not None and issubclass(menu, Menu):
+                self.menu = menu()
         else:
             self.menu = self.menu or Menu()
 
@@ -229,7 +232,7 @@ class AppBuilder:
     def post_init(self) -> None:
         for baseview in self.baseviews:
             # instantiate the views and add session
-            self._check_and_init(baseview)
+            baseview = self._check_and_init(baseview)
             # Register the views has blueprints
             if baseview.__class__.__name__ not in self.get_app.blueprints.keys():
                 self.register_blueprint(baseview)
@@ -313,12 +316,11 @@ class AppBuilder:
 
     def _add_admin_views(self) -> None:
         """
-            Registers indexview, utilview (back function), babel views and Security views.
+        Registers indexview, utilview (back function), babel views and Security views.
         """
         if self.indexview:
-            self.indexview = self._check_and_init(self.indexview)
-            self.add_view_no_menu(self.indexview)
-        self.add_view_no_menu(UtilView())
+            self._indexview = self.add_view_no_menu(self.indexview)
+        self.add_view_no_menu(UtilView)
         self.bm.register_views()
         self.sm.register_views()
         self.openapi_manager.register_views()
@@ -344,7 +346,9 @@ class AppBuilder:
                     log.exception(e)
                     log.error(LOGMSG_ERR_FAB_ADDON_PROCESS.format(addon, e))
 
-    def _check_and_init(self, baseview: "AbstractViewApi") -> "AbstractViewApi":
+    def _check_and_init(
+        self, baseview: Union[Type["AbstractViewApi"], "AbstractViewApi"]
+    ) -> "AbstractViewApi":
         # If class if not instantiated, instantiate it
         # and add db session from security models.
         if hasattr(baseview, "datamodel"):
@@ -356,7 +360,7 @@ class AppBuilder:
 
     def add_view(
         self,
-        baseview: "AbstractViewApi",
+        baseview: Union[Type["AbstractViewApi"], "AbstractViewApi"],
         name: str,
         href: str = "",
         icon: str = "",
@@ -536,7 +540,7 @@ class AppBuilder:
 
     def add_view_no_menu(
         self,
-        baseview: "AbstractViewApi",
+        baseview: Union[Type["AbstractViewApi"], "AbstractViewApi"],
         endpoint: Optional[str] = None,
         static_folder: Optional[str] = None,
     ) -> "AbstractViewApi":
@@ -565,7 +569,7 @@ class AppBuilder:
             log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.__class__.__name__))
         return baseview
 
-    def add_api(self, baseview: "AbstractViewApi") -> "AbstractViewApi":
+    def add_api(self, baseview: Type["AbstractViewApi"]) -> "AbstractViewApi":
         """
         Add a BaseApi class or child to AppBuilder
 
@@ -621,9 +625,11 @@ class AppBuilder:
 
     @property
     def get_url_for_index(self) -> str:
-        if self.indexview is None:
+        if self._indexview is None:
             return ""
-        return url_for("%s.%s" % (self.indexview.endpoint, self.indexview.default_view))
+        return url_for(
+            "%s.%s" % (self._indexview.endpoint, self._indexview.default_view)
+        )
 
     @property
     def get_url_for_userinfo(self) -> str:
@@ -640,8 +646,11 @@ class AppBuilder:
         )
 
     def add_permissions(self, update_perms: bool = False) -> None:
+        from flask_appbuilder.baseviews import AbstractViewApi
+
         if self.update_perms or update_perms:
             for baseview in self.baseviews:
+                baseview = cast(AbstractViewApi, baseview)
                 self._add_permission(baseview, update_perms=update_perms)
             self._add_menu_permissions(update_perms=update_perms)
 
@@ -695,7 +704,10 @@ class AppBuilder:
         return False
 
     def _process_inner_views(self) -> None:
+        from flask_appbuilder.baseviews import AbstractViewApi
+
         for view in self.baseviews:
+            view = cast(AbstractViewApi, view)
             for inner_class in view.get_uninit_inner_views():
                 for v in self.baseviews:
                     if (

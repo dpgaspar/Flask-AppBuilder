@@ -20,8 +20,9 @@ class SendTweet(SimpleFormView):
     def form_post(self, form):
         remote_app = self.appbuilder.sm.oauth_remotes["twitter"]
         resp = remote_app.post(
-            "statuses/update.json", data={"status": form.message.data},
-            token=remote_app.token
+            "statuses/update.json",
+            data={"status": form.message.data},
+            token=remote_app.token,
         )
         if resp.status_code != 200:
             flash("An error occurred", "danger")
