@@ -1,4 +1,5 @@
 from flask_appbuilder import SQLA
+from freezegun import freeze_time
 
 from ..base import FABTestCase
 from ..const import (
@@ -22,18 +23,21 @@ class TestData(FABTestCase):
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def test_data(self):
-        insert_data(self.db.session, MODEL1_DATA_SIZE)
+        with freeze_time("2020-01-01"):
+            insert_data(self.db.session, MODEL1_DATA_SIZE)
 
     def test_create_admin(self):
-        self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
+        with freeze_time("2020-01-01"):
+            self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
 
     def test_create_ro_user(self):
-        self.create_user(
-            self.appbuilder,
-            USERNAME_READONLY,
-            PASSWORD_READONLY,
-            "ReadOnly",
-            first_name="readonly",
-            last_name="readonly",
-            email="readonly@fab.org",
-        )
+        with freeze_time("2020-01-01"):
+            self.create_user(
+                self.appbuilder,
+                USERNAME_READONLY,
+                PASSWORD_READONLY,
+                "ReadOnly",
+                first_name="readonly",
+                last_name="readonly",
+                email="readonly@fab.org",
+            )

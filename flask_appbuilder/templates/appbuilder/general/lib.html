@@ -225,22 +225,18 @@
 
 
 {% macro render_field(field, begin_sep_label='', end_sep_label='', begin_sep_field='', end_sep_field='') %}
-      {% if field.id != 'csrf_token' %}
-          {% if field.type == 'HiddenField' %}
-            {{ field}}
-          {% else %}
-            {{begin_sep_label|safe}}
-                <label for="{{field.id}}" control-label>
-                    {{ field.label.text }}
-                    {% if field.flags.required %}
-                        <strong style="color: red">&#42;</strong>
-                    {% endif %}
-                </label>
-            {{end_sep_label|safe}}
-            {{begin_sep_field|safe}}
-                {{ field(**kwargs)|safe }}
-               <span class="help-block">{{ field.description }}</span>
-          {% endif %}
+      {% if (field.id != 'csrf_token') and (field.type != 'HiddenField') %}
+          {{begin_sep_label|safe}}
+              <label for="{{field.id}}" control-label>
+                  {{ field.label.text }}
+                  {% if field.flags.required %}
+                      <strong style="color: red">&#42;</strong>
+                  {% endif %}
+              </label>
+          {{end_sep_label|safe}}
+          {{begin_sep_field|safe}}
+              {{ field(**kwargs)|safe }}
+              <span class="help-block">{{ field.description }}</span>
           {% if field.errors %}
             <div class="alert alert-danger">
             {% for error in field.errors %}

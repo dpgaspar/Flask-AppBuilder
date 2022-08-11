@@ -13,7 +13,7 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     get_jwt_identity,
-    jwt_refresh_token_required,
+    jwt_required,
 )
 from marshmallow import ValidationError
 
@@ -115,7 +115,7 @@ class SecurityApi(BaseApi):
         return self.response(200, **resp)
 
     @expose("/refresh", methods=["POST"])
-    @jwt_refresh_token_required
+    @jwt_required(refresh=True)
     @safe
     def refresh(self) -> Response:
         """

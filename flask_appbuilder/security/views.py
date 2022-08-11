@@ -2,9 +2,17 @@ import datetime
 import logging
 import re
 from typing import Any, List, Optional
-from urllib.parse import urlparse
 
 from flask import abort, current_app, flash, g, redirect, request, session, url_for
+from flask_appbuilder._compat import as_unicode
+from flask_appbuilder.actions import action
+from flask_appbuilder.baseviews import BaseView
+from flask_appbuilder.charts.views import DirectByChartView
+from flask_appbuilder.fieldwidgets import BS3PasswordFieldWidget
+from flask_appbuilder.utils.base import get_safe_redirect, lazy_formatter_gettext
+from flask_appbuilder.validators import PasswordComplexityValidator
+from flask_appbuilder.views import expose, ModelView, SimpleFormView
+from flask_appbuilder.widgets import ListWidget, ShowWidget
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
 import jwt
@@ -22,15 +30,6 @@ from .forms import (
     SelectDataRequired,
     UserInfoEdit,
 )
-from .._compat import as_unicode
-from ..actions import action
-from ..baseviews import BaseView
-from ..charts.views import DirectByChartView
-from ..fieldwidgets import BS3PasswordFieldWidget
-from ..utils.base import lazy_formatter_gettext
-from ..validators import PasswordComplexityValidator
-from ..views import expose, ModelView, SimpleFormView
-from ..widgets import ListWidget, ShowWidget
 
 log = logging.getLogger(__name__)
 
@@ -408,7 +407,7 @@ class UserStatsChartView(DirectByChartView):
         "fail_login_count": lazy_gettext("Failed login count"),
     }
 
-    search_columns = UserModelView.search_columns
+    search_exclude_columns = UserModelView.search_exclude_columns
 
     definitions = [
         {"label": "Login Count", "group": "username", "series": ["login_count"]},
@@ -522,9 +521,7 @@ class AuthDBView(AuthView):
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
             next_url = request.args.get("next", "")
-            if not next_url:
-                next_url = self.appbuilder.get_url_for_index
-            return redirect(next_url)
+            return redirect(get_safe_redirect(next_url))
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -547,9 +544,7 @@ class AuthLDAPView(AuthView):
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
             next_url = request.args.get("next", "")
-            if not next_url:
-                next_url = self.appbuilder.get_url_for_index
-            return redirect(next_url)
+            return redirect(get_safe_redirect(next_url))
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -598,9 +593,7 @@ class AuthOIDView(AuthView):
 
             login_user(user, remember=remember_me)
             next_url = request.args.get("next", "")
-            if not next_url:
-                next_url = self.appbuilder.get_url_for_index
-            return redirect(next_url)
+            return redirect(get_safe_redirect(next_url))
 
         return login_handler(self)
 
@@ -664,10 +657,10 @@ class AuthOAuthView(AuthView):
             resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token()
         except Exception as e:
             log.error("Error authorizing OAuth access token: {0}".format(e))
-            flash(u"The request to sign in was denied.", "error")
+            flash("The request to sign in was denied.", "error")
             return redirect(self.appbuilder.get_url_for_login)
         if resp is None:
-            flash(u"You denied the request to sign in.", "warning")
+            flash("You denied the request to sign in.", "warning")
             return redirect(self.appbuilder.get_url_for_login)
         log.debug("OAUTH Authorized resp: {0}".format(resp))
         # Retrieves specific user info from the provider
@@ -711,11 +704,7 @@ class AuthOAuthView(AuthView):
             next_url = self.appbuilder.get_url_for_index
             # Check if there is a next url on state
             if "next" in state and len(state["next"]) > 0:
-                parsed_uri = urlparse(state["next"][0])
-                if parsed_uri.netloc != request.host:
-                    log.warning("Got an invalid next URL: %s", parsed_uri.netloc)
-                else:
-                    next_url = state["next"][0]
+                next_url = get_safe_redirect(state["next"][0])
             return redirect(next_url)
 
 
