@@ -48,17 +48,15 @@ class AuditMixin(object):
 
     @declared_attr
     def created_by_fk(cls):
-        return Column(Integer, ForeignKey('ab_user.id'),
-                      default=cls.get_user_id, nullable=False)
+        return Column(Integer,  default=cls.get_user_email, nullable=False)
 
     @declared_attr
     def created_by(cls):
-        return relationship("User", primaryjoin='%s.created_by_fk == User.id' % cls.__name__, enable_typechecks=False)
+        return relationship("User", primaryjoin='%s.changed_by_fk == User.id' % cls.__name__, enable_typechecks=False)
 
     @declared_attr
     def changed_by_fk(cls):
-        return Column(Integer, ForeignKey('ab_user.id'),
-                      default=cls.get_user_id, onupdate=cls.get_user_id, nullable=False)
+        return Column(Integer, default=cls.get_user_email, onupdate=cls.get_user_email, nullable=False)
 
     @declared_attr
     def changed_by(cls):
@@ -72,6 +70,21 @@ class AuditMixin(object):
             # log.warning("AuditMixin Get User ID {0}".format(str(e)))
             return None
 
+    @classmethod
+    def get_user_email(cls):
+        try:
+            return g.user.email
+        except Exception as e:
+            # log.warning("AuditMixin Get User ID {0}".format(str(e)))
+            return None
+
+    @classmethod
+    def get_username(cls):
+        try:
+            return g.user.username
+        except Exception as e:
+            # log.warning("AuditMixin Get User ID {0}".format(str(e)))
+            return None
 
 class UserExtensionMixin(object):
     __tablename__ = 'ab_user_extended'

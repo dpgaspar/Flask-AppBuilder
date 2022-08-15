@@ -97,23 +97,30 @@ class User(Model):
 
     @declared_attr
     def created_by_fk(self):
-        return Column(Integer, ForeignKey('ab_user.id'),
-                      default=self.get_user_id, nullable=True)
+        return Column(String(64), ForeignKey('ab_user.email'),
+                      default=self.get_user_email, nullable=True)
 
     @declared_attr
     def changed_by_fk(self):
-        return Column(Integer, ForeignKey('ab_user.id'),
-                      default=self.get_user_id, nullable=True)
+        return Column(String(64), ForeignKey('ab_user.email'),
+                      default=self.get_user_email, nullable=True)
 
     created_by = relationship("User", backref=backref("created", uselist=True),
-                              remote_side=[id], primaryjoin='User.created_by_fk == User.id', uselist=False)
+                              remote_side=[email], primaryjoin='User.created_by_fk == User.email', uselist=False)
     changed_by = relationship("User", backref=backref("changed", uselist=True),
-                              remote_side=[id], primaryjoin='User.changed_by_fk == User.id', uselist=False)
+                              remote_side=[email], primaryjoin='User.changed_by_fk == User.email', uselist=False)
 
     @classmethod
     def get_user_id(cls):
         try:
             return g.user.id
+        except Exception as e:
+            return None
+
+    @classmethod
+    def get_user_email(cls):
+        try:
+            return g.user.email
         except Exception as e:
             return None
 

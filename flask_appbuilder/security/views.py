@@ -138,9 +138,9 @@ class UserModelView(ModelView):
                      'login_count': lazy_gettext('Login count'),
                      'fail_login_count': lazy_gettext('Failed login count'),
                      'created_on': lazy_gettext('Created on'),
-                     'created_by': lazy_gettext('Created by'),
+                     'created_by_fk': lazy_gettext('Created by'),
                      'changed_on': lazy_gettext('Changed on'),
-                     'changed_by': lazy_gettext('Changed by')}
+                     'changed_by_fk': lazy_gettext('Changed by')}
 
     description_columns = {'first_name': lazy_gettext('Write the user first name or names'),
                            'last_name': lazy_gettext('Write the user last name'),
@@ -154,7 +154,7 @@ class UserModelView(ModelView):
                                'The user role on the application, this will associate with a list of permissions'),
                            'conf_password': lazy_gettext('Please rewrite the user\'s password to confirm')}
 
-    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'status', 'created_by', 'changed_by']
+    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'status', 'created_by_fk', 'changed_by_fk']
     search_columns = list_columns
     show_fieldsets = [
         (lazy_gettext('User info'),
@@ -176,7 +176,7 @@ class UserModelView(ModelView):
     search_exclude_columns = ['password']
 
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email']
-    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'created_by', 'changed_by']
+    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email']
     user_info_title = lazy_gettext("Your user information")
 
     @expose('/userinfo/')
@@ -348,7 +348,6 @@ class RoleModelView(ModelView):
     show_columns = list_columns
     edit_columns = list_columns
     add_columns = list_columns
-    search_columns = list_columns
     order_columns = ['name']
     base_filters = [['name', FilterInList, ('Admin-System', 'Admin-Data', 'Creator', 'Viewer')]]
 
