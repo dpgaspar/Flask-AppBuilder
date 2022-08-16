@@ -134,7 +134,7 @@ for example a confirmation field::
     class ContactModelView(ModelView):
         datamodel = SQLAInterface(Contact)
         add_form_extra_fields = {
-            'extra': TextField(gettext('Extra Field'),
+            'extra': StringField(gettext('Extra Field'),
             description=gettext('Extra Field description'),
             widget=BS3TextFieldWidget())
         }
@@ -158,7 +158,7 @@ Next override your field using your new widget::
     class ExampleView(ModelView):
         datamodel = SQLAInterface(ExampleModel)
         edit_form_extra_fields = {
-            'field2': TextField('field2', widget=BS3TextFieldROWidget())
+            'field2': StringField('field2', widget=BS3TextFieldROWidget())
         }
 
 Readonly select fields are a special case, but it's solved in a simpler way::
@@ -177,7 +177,7 @@ Readonly select fields are a special case, but it's solved in a simpler way::
         edit_form_extra_fields = {
             'department':  QuerySelectField(
                                 'Department',
-                                query_factory=department_query,
+                                query_func=department_query,
                                 widget=Select2Widget(extra_classes="readonly")
                            )
         }
