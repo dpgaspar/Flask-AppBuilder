@@ -71,18 +71,7 @@ class ContactModelView(ModelView):
             },
         ),
     ]
-    search_exclude_columns = ["contact_group"]
 
-
-class ContactModelView2(ModelView):
-    datamodel = SQLAInterface(Contact)
-
-    list_columns = ["name", "personal_celphone", "birthday", "contact_group.name"]
-
-    base_order = ("name", "asc")
-    edit_columns = ["name", "personal_celphone", "birthday", "contact_group"]
-    search_exclude_columns = ["contact_group"]
-    
 
 class GroupModelView(ModelView):
     datamodel = SQLAInterface(ContactGroup)
@@ -128,9 +117,6 @@ appbuilder.add_view(
 )
 appbuilder.add_view(
     ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
-)
-appbuilder.add_view(
-    ContactModelView2, "List Contacts2", icon="fa-envelope", category="Contacts"
 )
 
 
