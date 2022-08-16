@@ -1196,7 +1196,7 @@ class BaseCRUDView(BaseModelView):
             returns add widget or None
         """
         is_valid_form = True
-        get_filter_args(self._filters)
+        get_filter_args(self._filters, disallow_if_not_in_search=False)
         exclude_cols = self._filters.get_relation_cols()
         form = self.add_form.refresh()
 
@@ -1232,7 +1232,7 @@ class BaseCRUDView(BaseModelView):
         pages = get_page_args()
         page_sizes = get_page_size_args()
         orders = get_order_args()
-        get_filter_args(self._filters)
+        get_filter_args(self._filters, disallow_if_not_in_search=False)
         exclude_cols = self._filters.get_relation_cols()
 
         item = self.datamodel.get(pk, self._base_filters)

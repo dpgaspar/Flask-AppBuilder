@@ -45,6 +45,15 @@ class FlaskTestCase(FABTestCase):
             get_filter_args(filters)
             assert filters.values == []
 
+    def test_get_filter_args_disallow_off(self):
+        datamodel = SQLAInterface(Model1)
+        with self.appbuilder.get_app.test_request_context(
+            "/users/list?_flt_1_field_float=1.0"
+        ):
+            filters = datamodel.get_filters(["field_string", "field_integer"])
+            get_filter_args(filters, disallow_if_not_in_search=False)
+            assert filters.values == [["1.0"]]
+
     def test_get_filter_args_invalid_index(self):
         datamodel = SQLAInterface(Model1)
         with self.appbuilder.get_app.test_request_context(
