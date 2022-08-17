@@ -121,10 +121,18 @@ class Model(object):
     """
 
     __table_args__ = {"extend_existing": True}
+    """
+        Remove fields when invoke to_json method.
+        For example: json_hidden_fields = ['name', 'foo', 'baz']
+    """
+    json_hidden_fields = None
 
     def to_json(self):
         result = dict()
         for key in self.__mapper__.c.keys():
+            if self.json_hidden_fields is not None and key in self.json_hidden_fields:
+                continue
+
             col = getattr(self, key)
             if isinstance(col, datetime.datetime) or isinstance(col, datetime.date):
                 col = col.isoformat()
