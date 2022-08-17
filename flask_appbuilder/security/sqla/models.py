@@ -110,6 +110,8 @@ class User(Model):
     changed_on = Column(
         DateTime, default=lambda: datetime.datetime.now(), nullable=True
     )
+    
+    json_hidden_fields = ['password']
 
     @declared_attr
     def created_by_fk(self):
@@ -177,3 +179,5 @@ class RegisterUser(Model):
     email = Column(String(64), nullable=False)
     registration_date = Column(DateTime, default=datetime.datetime.now, nullable=True)
     registration_hash = Column(String(256))
+    
+    json_hidden_fields = ['password', 'registration_hash']
