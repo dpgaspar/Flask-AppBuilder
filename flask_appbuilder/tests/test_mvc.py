@@ -451,6 +451,7 @@ class MVCTestCase(BaseMVCTestCase):
             }
 
             order_columns = ["field_string", "group.field_string"]
+            search_exclude_columns = ["group"]
 
         class Model22View(ModelView):
             datamodel = SQLAInterface(Model2)
@@ -659,13 +660,13 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_fab_views(self):
         """
-            Test views creation and registration
+        Test views creation and registration
         """
         self.assertEqual(len(self.appbuilder.baseviews), 37)
 
     def test_back(self):
         """
-            Test Back functionality
+        Test Back functionality
         """
         with self.app.test_client() as c:
             self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -677,7 +678,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_creation(self):
         """
-            Test Model creation
+        Test Model creation
         """
         from sqlalchemy.engine.reflection import Inspector
 
@@ -688,6 +689,40 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertIn("model2", inspector.get_table_names())
         self.assertIn("model3", inspector.get_table_names())
         self.assertIn("model_with_enums", inspector.get_table_names())
+
+    def test_related_view_edit_with_excluded_search(self):
+        """
+        Test related edit view with excluded search field
+        """
+        with self.app.test_client() as client:
+            self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Test excluded search field will not impact related view
+            rv = client.get("/model2view/edit/1?_flt_0_group=1")
+            data = rv.data.decode("utf-8")
+            self.assertNotIn('<label for="group"', data)
+
+            # Test direct edit view includes related field
+            rv = client.get("/model2view/edit/2")
+            data = rv.data.decode("utf-8")
+            self.assertIn('<label for="group"', data)
+
+    def test_related_view_add_with_excluded_search(self):
+        """
+        Test related add view with excluded search field
+        """
+        with self.app.test_client() as client:
+            self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Test excluded search field will not impact related view
+            rv = client.get("/model2view/add?_flt_0_group=1")
+            data = rv.data.decode("utf-8")
+            self.assertNotIn('<label for="group"', data)
+
+            # Test direct edit view include related field
+            rv = client.get("/model2view/add")
+            data = rv.data.decode("utf-8")
+            self.assertIn('<label for="group"', data)
 
     def test_index(self):
         """

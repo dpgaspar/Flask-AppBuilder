@@ -715,7 +715,8 @@ class AuthRemoteUserView(AuthView):
     def login(self) -> WerkzeugResponse:
         username = request.environ.get("REMOTE_USER")
         if g.user is not None and g.user.is_authenticated:
-            return redirect(self.appbuilder.get_url_for_index)
+            next_url = request.args.get("next", "")
+            return redirect(get_safe_redirect(next_url))
         if username:
             user = self.appbuilder.sm.auth_user_remote_user(username)
             if user is None:
@@ -724,4 +725,5 @@ class AuthRemoteUserView(AuthView):
                 login_user(user)
         else:
             flash(as_unicode(self.invalid_login_message), "warning")
-        return redirect(self.appbuilder.get_url_for_index)
+        next_url = request.args.get("next", "")
+        return redirect(get_safe_redirect(next_url))

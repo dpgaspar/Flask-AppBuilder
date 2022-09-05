@@ -103,12 +103,12 @@ class BS3ImageUploadFieldWidget(object):
 
 
 # Fields
-class FileUploadField(fields.TextField):
+class FileUploadField(fields.StringField):
     """
         Customizable file-upload field.
 
         Saves file to configured path, handles updates and deletions.
-        Inherits from `TextField`, resulting filename will be stored as string.
+        Inherits from `StringField`, resulting filename will be stored as string.
     """
 
     widget = BS3FileUploadFieldWidget()
@@ -126,7 +126,7 @@ class FileUploadField(fields.TextField):
         self.filemanager = filemanager or FileManager()
         self._should_delete = False
 
-        super(FileUploadField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
 
     def process_on_delete(self, obj):
         """Override this method to make customised updates to the object
@@ -159,12 +159,12 @@ class FileUploadField(fields.TextField):
         ):
             raise ValidationError(gettext("Invalid file extension"))
 
-    def process(self, formdata, data=unset_value):
+    def process(self, formdata, data=unset_value, **kwargs):
         if formdata:
             marker = "_%s-delete" % self.name
             if marker in formdata:
                 self._should_delete = True
-        return super(FileUploadField, self).process(formdata, data)
+        return super().process(formdata, data, **kwargs)
 
     def populate_obj(self, obj, name):
         field = getattr(obj, name, None)
@@ -202,7 +202,7 @@ class ImageUploadField(fields.StringField):
 
         self.imagemanager = imagemanager or ImageManager()
         self._should_delete = False
-        super(ImageUploadField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
 
     def pre_validate(self, form):
         if (
@@ -212,12 +212,12 @@ class ImageUploadField(fields.StringField):
         ):
             raise ValidationError(gettext("Invalid file extension"))
 
-    def process(self, formdata, data=unset_value):
+    def process(self, formdata, data=unset_value, **kwargs):
         if formdata:
             marker = "_%s-delete" % self.name
             if marker in formdata:
                 self._should_delete = True
-        return super(ImageUploadField, self).process(formdata, data)
+        return super().process(formdata, data, **kwargs)
 
     def populate_obj(self, obj, name):
         field = getattr(obj, name, None)

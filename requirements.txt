@@ -36,7 +36,7 @@ flask-login==0.6.0
     # via Flask-AppBuilder (setup.py)
 flask-sqlalchemy==2.5.1
     # via Flask-AppBuilder (setup.py)
-flask-wtf==0.15.1
+flask-wtf==1.0.1
     # via Flask-AppBuilder (setup.py)
 greenlet==1.1.2
     # via sqlalchemy
@@ -104,7 +104,7 @@ werkzeug==2.0.3
     #   flask
     #   flask-jwt-extended
     #   flask-login
-wtforms==2.3.3
+wtforms==3.0.1
     # via
     #   Flask-AppBuilder (setup.py)
     #   flask-wtf

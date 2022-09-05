@@ -24,17 +24,17 @@ class MongoFileField(fields.FileField):
     widget = BS3FileUploadFieldWidget()
 
     def __init__(self, label=None, validators=None, **kwargs):
-        super(MongoFileField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
 
         self._should_delete = False
 
-    def process(self, formdata, data=unset_value):
+    def process(self, formdata, data=unset_value, **kwargs):
         if formdata:
             marker = "_%s-delete" % self.name
             if marker in formdata:
                 self._should_delete = True
 
-        return super(MongoFileField, self).process(formdata, data)
+        return super().process(formdata, data, **kwargs)
 
     def populate_obj(self, obj, name):
         field = getattr(obj, name, None)
