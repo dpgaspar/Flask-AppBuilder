@@ -46,7 +46,6 @@ class FlaskTestCase(FABTestCase):
         self.appbuilder = None
         self.app = None
         self.db = None
-        log.debug("TEAR DOWN")
 
     def test_menu_access_denied(self):
         """
