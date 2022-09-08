@@ -1,5 +1,5 @@
 from flask import current_app, request, url_for
-import sys
+
 from .const import PERMISSION_PREFIX
 
 
