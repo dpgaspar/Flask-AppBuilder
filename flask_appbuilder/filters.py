@@ -1,5 +1,5 @@
 from flask import current_app, request, url_for
-
+import sys
 from .const import PERMISSION_PREFIX
 
 
@@ -133,7 +133,9 @@ class TemplateFilters(object):
 
     @app_template_filter("is_menu_visible")
     def is_menu_visible(self, item):
-        return self.security_manager.has_access("menu_access", item.name)
+        if item.cond is None or item.cond():
+            return self.security_manager.has_access("menu_access", item.name)
+        return False
 
     @staticmethod
     def find_views_by_name(view_name):
