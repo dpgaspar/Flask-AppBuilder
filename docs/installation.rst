@@ -43,7 +43,7 @@ Using pip
     ::
 
         $ sudo apt-get install python-virtualenv
-
+ 
     Next create a virtualenv:
 
     ::
@@ -52,9 +52,21 @@ Using pip
         New python executable in venv/bin/python
         Installing distribute............done.
         $ . venv/bin/activate
-        (venv)$
+        (venv)$	
+ 
+    If you use a powershell on windows system, try:
 
-    Now install F.A.B on the virtual env,
+    ::
+
+        $ python -m venv venv
+
+    Next activate your virtual env
+   
+    :: 
+    
+   	$ .\venv\Scripts\activate
+
+    Now whatever your os, you can install F.A.B on the virtual env,
     it will install all the dependencies and these will be isolated from your system's python packages
 
     ::
@@ -72,8 +84,25 @@ Using pip
         Your engine type, SQLAlchemy or MongoEngine [SQLAlchemy]:
         Downloaded the skeleton app, good coding!
         (venv)$ cd first_app
-        (venv)$ export FLASK_APP=app
-        (venv)$ flask fab create-admin
+       
+    Create a FLASK_APP ennvronment variable 
+    on Unix:
+    
+    ::
+    
+       (venv)$ export FLASK_APP=app
+    
+    on Windows :
+    
+    ::
+    
+      (venv)$ New-Item -Path FLASK_APP -Value "app"
+     
+     Create now an admin user :
+    
+    ::
+    
+       (venv)$ flask fab create-admin
         Username [admin]:
         User first name [admin]:
         User last name [user]:
