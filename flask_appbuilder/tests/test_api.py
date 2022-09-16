@@ -605,7 +605,7 @@ class APITestCase(FABTestCase):
         uri = "api/v1/model1api/1"
         rv = client.get(uri)
         self.assertEqual(rv.status_code, 401)
-        # Test access wihout cookie or JWT
+        # Test access without cookie or JWT
         rv = self.browser_logout(client)
         # Test access with browser login
         uri = "api/v1/model1browserlogin/1"
