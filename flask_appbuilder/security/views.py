@@ -696,8 +696,8 @@ class AuthOAuthView(AuthView):
                 state = jwt.decode(
                     request.args["state"], session["oauth_state"], algorithms=["HS256"]
                 )
-            except jwt.InvalidTokenError:
-                flash(as_unicode("Invalid Signature"), "warning")
+            except (jwt.InvalidTokenError, KeyError):
+                flash(as_unicode("Invalid state signature"), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
 
             login_user(user)

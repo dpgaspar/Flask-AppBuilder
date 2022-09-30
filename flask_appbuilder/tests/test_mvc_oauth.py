@@ -1,6 +1,7 @@
 from flask_appbuilder import SQLA
 from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder.tests.base import FABTestCase
+from flask_login import current_user
 import jwt
 
 
@@ -51,26 +52,44 @@ class APICSRFTestCase(FABTestCase):
         """
         OAuth: Test login
         """
-        client = self.app.test_client()
-
         self.appbuilder.sm.oauth_remotes = {"google": OAuthRemoteMock()}
 
         raw_state = {}
-        state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
+        state = jwt.encode(raw_state, "random_state", algorithm="HS256")
 
-        response = client.get(f"/oauth-authorized/google?state={state}")
-        self.assertEqual(response.location, "http://localhost/")
+        with self.app.test_client() as client:
+            with client.session_transaction() as session_:
+                session_["oauth_state"] = "random_state"
+            response = client.get(f"/oauth-authorized/google?state={state}")
+            self.assertEqual(current_user.email, "user1@fab.org")
+            self.assertEqual(response.location, "http://localhost/")
+
+    def test_oauth_login_invalid_state(self):
+        """
+        OAuth: Test login
+        """
+        self.appbuilder.sm.oauth_remotes = {"google": OAuthRemoteMock()}
+
+        raw_state = {}
+        state = jwt.encode(raw_state, "random_state", algorithm="HS256")
+        with self.app.test_client() as client:
+            with client.session_transaction() as session:
+                session["oauth_state"] = "invalid_state"
+            response = client.get(f"/oauth-authorized/google?state={state}")
+            self.assertEqual(current_user.is_authenticated, False)
+            self.assertEqual(response.location, "http://localhost/login/")
 
     def test_oauth_login_unknown_provider(self):
         """
         OAuth: Test login with unknown provider
         """
-        client = self.app.test_client()
-
         self.appbuilder.sm.oauth_remotes = {"google": OAuthRemoteMock()}
 
         raw_state = {}
-        state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
+        state = jwt.encode(raw_state, "random_state", algorithm="HS256")
+        with self.app.test_client() as client:
+            with client.session_transaction() as session:
+                session["oauth_state"] = "random_state"
 
         response = client.get(f"/oauth-authorized/unknown_provider?state={state}")
         self.assertEqual(response.location, "http://localhost/login/")
@@ -79,13 +98,13 @@ class APICSRFTestCase(FABTestCase):
         """
         OAuth: Test login next
         """
-        client = self.app.test_client()
-
         self.appbuilder.sm.oauth_remotes = {"google": OAuthRemoteMock()}
 
         raw_state = {"next": ["http://localhost/users/list/"]}
-        state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
-
+        state = jwt.encode(raw_state, "random_state", algorithm="HS256")
+        with self.app.test_client() as client:
+            with client.session_transaction() as session:
+                session["oauth_state"] = "random_state"
         response = client.get(f"/oauth-authorized/google?state={state}")
         self.assertEqual(response.location, "http://localhost/users/list/")
 
@@ -98,7 +117,9 @@ class APICSRFTestCase(FABTestCase):
         self.appbuilder.sm.oauth_remotes = {"google": OAuthRemoteMock()}
 
         raw_state = {"next": ["ftp://sample"]}
-        state = jwt.encode(raw_state, self.app.config["SECRET_KEY"], algorithm="HS256")
-
+        state = jwt.encode(raw_state, "random_state", algorithm="HS256")
+        with self.app.test_client() as client:
+            with client.session_transaction() as session:
+                session["oauth_state"] = "random_state"
         response = client.get(f"/oauth-authorized/google?state={state}")
         self.assertEqual(response.location, "http://localhost/")
