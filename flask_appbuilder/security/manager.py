@@ -12,7 +12,7 @@ from flask_jwt_extended import JWTManager
 from flask_login import current_user, LoginManager
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from .api import SecurityApi
+from .api import AuthApi, SecurityApi
 from .registerviews import (
     RegisterUserDBView,
     RegisterUserOAuthView,
@@ -203,6 +203,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     # API
     security_api = SecurityApi
+    authentication_api = AuthApi
     """ Override if you want your own Security API login endpoint """
 
     rolemodelview = RoleModelView
@@ -693,6 +694,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         return jwt_decoded_payload
 
     def register_views(self):
+        if self.appbuilder.app.config.get("FAB_ADD_AUTHENTICATION_API", False):
+            self.appbuilder.add_api(self.authentication_api)
+
         if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEWS", True):
             return
         # Security APIs
