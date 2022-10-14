@@ -237,12 +237,12 @@ class LDAPSearchTestCase(unittest.TestCase):
         # MockLdap needs non-bytes for search filters, so we patch `memberOf`
         # to a string, only for this test
         with patch.dict(
-                self.directory[self.user_alice[0]],
-                {
-                    "memberOf": [
-                        i.decode() for i in self.directory[self.user_alice[0]]["memberOf"]
-                    ]
-                },
+            self.directory[self.user_alice[0]],
+            {
+                "memberOf": [
+                    i.decode() for i in self.directory[self.user_alice[0]]["memberOf"]
+                ]
+            },
         ):
             _mockldap = MockLdap(self.directory)
             _mockldap.start()
