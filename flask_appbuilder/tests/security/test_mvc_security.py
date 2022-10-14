@@ -203,7 +203,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             self.client,
             USERNAME_ADMIN,
             PASSWORD_ADMIN,
-            next_url=u"\u0001" + "sample.com",
+            next_url="\u0001" + "sample.com",
             follow_redirects=False,
         )
         assert response.location == "http://localhost/"
@@ -216,7 +216,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         response = self.browser_login(
             self.client,
             USERNAME_ADMIN,
-            f'wrong_{PASSWORD_ADMIN}',
+            f"wrong_{PASSWORD_ADMIN}",
             next_url="/users/list/",
             follow_redirects=False,
         )
