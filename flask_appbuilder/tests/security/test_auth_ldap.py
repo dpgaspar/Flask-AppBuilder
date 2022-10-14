@@ -10,7 +10,6 @@ import jinja2
 import ldap
 from mockldap import MockLdap
 
-
 from ..const import USERNAME_ADMIN, USERNAME_READONLY
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
@@ -238,12 +237,12 @@ class LDAPSearchTestCase(unittest.TestCase):
         # MockLdap needs non-bytes for search filters, so we patch `memberOf`
         # to a string, only for this test
         with patch.dict(
-            self.directory[self.user_alice[0]],
-            {
-                "memberOf": [
-                    i.decode() for i in self.directory[self.user_alice[0]]["memberOf"]
-                ]
-            },
+                self.directory[self.user_alice[0]],
+                {
+                    "memberOf": [
+                        i.decode() for i in self.directory[self.user_alice[0]]["memberOf"]
+                    ]
+                },
         ):
             _mockldap = MockLdap(self.directory)
             _mockldap.start()
@@ -1187,3 +1186,32 @@ class LDAPSearchTestCase(unittest.TestCase):
                 self.call_bind_alice,
             ],
         )
+
+    def test_login_failed_keep_next_url(self):
+        """
+        LDAP: Keeping next url after failed login attempt
+        """
+
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,o=test"
+        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "uid=%s,ou=users,o=test"
+        self.app.config["AUTH_USER_REGISTRATION"] = True
+        self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
+        self.app.config["WTF_CSRF_ENABLED"] = False
+        self.app.config["SECRET_KEY"] = "thisismyscretkey"
+
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        client = self.app.test_client()
+        client.get("/logout/")
+
+        response = client.post(
+            "/login/?next=/users/userinfo/",
+            data=dict(username="natalie", password="wrong_natalie_password"),
+            follow_redirects=False,
+        )
+        response = client.post(
+            response.location,
+            data=dict(username="natalie", password="natalie_password"),
+            follow_redirects=False,
+        )
+
+        assert response.location == "http://localhost/users/userinfo/"
