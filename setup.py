@@ -52,7 +52,7 @@ setup(
         "Flask>=2, <3",
         "Flask-Babel>=1, <3",
         "Flask-Login>=0.3, <0.7",
-        "Flask-SQLAlchemy>=2.4, <3",
+        "Flask-SQLAlchemy>=2.4, <4",
         "Flask-WTF>=0.14.2, <2",
         "Flask-JWT-Extended>=4.0.0, <5.0.0",
         "jsonschema>=3, <5",

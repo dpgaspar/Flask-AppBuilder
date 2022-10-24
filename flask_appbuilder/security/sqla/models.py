@@ -1,6 +1,8 @@
 import datetime
 
 from flask import g
+from flask_appbuilder import Model
+from flask_appbuilder._compat import as_unicode
 from sqlalchemy import (
     Boolean,
     Column,
@@ -14,9 +16,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import backref, relationship
-
-from ... import Model
-from ..._compat import as_unicode
 
 _dont_audit = False
 
