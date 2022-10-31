@@ -1,6 +1,15 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.1.5
+-----------------------------------
+
+- fix: HTML label IDs for db and ldap login (#1935) [Dosenpfand]
+- fix: OAuth state parameter (#1932) [Daniel Vaz Gaspar]
+- docs: Fix a few typos (#1929) [Tim Gates]
+- chore: Update compiled german translation, delete backup file (#1928) [Dosenpfand]
+- fix: addon managers import (#1920) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.1.4
 -----------------------------------
 
