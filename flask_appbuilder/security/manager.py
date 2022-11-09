@@ -1455,6 +1455,15 @@ class BaseSecurityManager(AbstractSecurityManager):
             return [self.get_public_role()]
         return user.roles
 
+    def get_user_roles_permissions(self, user) -> Dict[str, List[Tuple[str, str]]]:
+        """
+        Utility method just implemented for SQLAlchemy.
+        Take a look to: flask_appbuilder.security.sqla.manager
+        :param user:
+        :return:
+        """
+        raise NotImplementedError()
+
     def get_role_permissions(self, role) -> Set[Tuple[str, str]]:
         """
         Get all permissions for a certain role
