@@ -396,6 +396,20 @@ class SecurityManager(BaseSecurityManager):
         ).all()
 
     def get_user_roles_permissions(self, user) -> Dict[str, List[Tuple[str, str]]]:
+        """
+        Utility method for fetching all roles and permissions for a specific user.
+        Example of the returned data:
+        ```
+        {
+            'Admin': [
+                ('can_this_form_get', 'ResetPasswordView'),
+                ('can_this_form_post', 'ResetPasswordView'),
+                ...
+            ]
+             'EmptyRole': [],
+        }
+        ```
+        """
         if not user.roles:
             raise AttributeError("User object does not have roles")
 
