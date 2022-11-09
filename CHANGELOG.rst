@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.1.6
+-----------------------------------
+
+feat: add utility method on SM for fetching all roles and perms for a user (#1950) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.1.5
 -----------------------------------
 
