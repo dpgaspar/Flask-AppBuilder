@@ -1,6 +1,33 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.1.6
+-----------------------------------
+
+- feat: add utility method on SM for fetching all roles and perms for a user (#1950) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.1.5
+-----------------------------------
+
+- fix: HTML label IDs for db and ldap login (#1935) [Dosenpfand]
+- fix: OAuth state parameter (#1932) [Daniel Vaz Gaspar]
+- docs: Fix a few typos (#1929) [Tim Gates]
+- chore: Update compiled german translation, delete backup file (#1928) [Dosenpfand]
+- fix: addon managers import (#1920) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.1.4
+-----------------------------------
+
+- chore: Redirect to prev url on login for AuthRemoteUserView (#1901) [Alexander Ryndin]
+- chore: Bump upper bounds on wtforms and flask-wtf (#1904) [Tomáš Drtina]
+- fix(mvc): related model view setting default related field value (#1898) [Daniel Vaz Gaspar]
+- fix: DateTimePicker rendering in forms (#1698) [Federico Padua]
+- test(fab_cli): tag tests that need internet so they can be skipped (#1880) [jnahmias]
+- fix: fix a wrong 'next' URL in javascript (#1897) [Sansarun Sukawongviwat]
+- chore: allow authlib > 1 updated docs (#1891) [Daniel Vaz Gaspar]
+- docs: fix oauth example config (#1890) [Daniel Vaz Gaspar]
+- docs: fix oauth example config (#1889) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.1.3
 -----------------------------------
 

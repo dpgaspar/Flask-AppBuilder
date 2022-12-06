@@ -332,10 +332,10 @@ class AppBuilder:
         """
         for addon in self._addon_managers:
             addon_class_ = dynamic_class_import(addon)
-            addon_class = cast(Type[BaseManager], addon_class_)
+            addon_class = cast(Type["BaseManager"], addon_class_)
             if addon_class:
                 # Instantiate manager with appbuilder (self)
-                inst_addon_class: BaseManager = addon_class(self)
+                inst_addon_class: "BaseManager" = addon_class(self)
                 try:
                     inst_addon_class.pre_process()
                     inst_addon_class.register_views()

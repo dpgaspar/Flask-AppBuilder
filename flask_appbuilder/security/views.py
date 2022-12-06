@@ -9,6 +9,16 @@ from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.charts.views import DirectByChartView
 from flask_appbuilder.fieldwidgets import BS3PasswordFieldWidget
+from flask_appbuilder.security.decorators import has_access
+from flask_appbuilder.security.forms import (
+    DynamicForm,
+    LoginForm_db,
+    LoginForm_oid,
+    ResetPasswordForm,
+    SelectDataRequired,
+    UserInfoEdit,
+)
+from flask_appbuilder.security.utils import generate_random_string
 from flask_appbuilder.utils.base import get_safe_redirect, lazy_formatter_gettext
 from flask_appbuilder.validators import PasswordComplexityValidator
 from flask_appbuilder.views import expose, ModelView, SimpleFormView
@@ -21,15 +31,6 @@ from werkzeug.wrappers import Response as WerkzeugResponse
 from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
 
-from .decorators import has_access
-from .forms import (
-    DynamicForm,
-    LoginForm_db,
-    LoginForm_oid,
-    ResetPasswordForm,
-    SelectDataRequired,
-    UserInfoEdit,
-)
 
 log = logging.getLogger(__name__)
 
@@ -619,11 +620,11 @@ class AuthOAuthView(AuthView):
             )
 
         log.debug("Going to call authorize for: {0}".format(provider))
+        random_state = generate_random_string()
         state = jwt.encode(
-            request.args.to_dict(flat=False),
-            self.appbuilder.app.config["SECRET_KEY"],
-            algorithm="HS256",
+            request.args.to_dict(flat=False), random_state, algorithm="HS256"
         )
+        session["oauth_state"] = random_state
         try:
             if provider == "twitter":
                 return self.appbuilder.sm.oauth_remotes[provider].authorize_redirect(
@@ -691,16 +692,15 @@ class AuthOAuthView(AuthView):
             flash(as_unicode(self.invalid_login_message), "warning")
             return redirect(self.appbuilder.get_url_for_login)
         else:
-            login_user(user)
             try:
                 state = jwt.decode(
-                    request.args["state"],
-                    self.appbuilder.app.config["SECRET_KEY"],
-                    algorithms=["HS256"],
+                    request.args["state"], session["oauth_state"], algorithms=["HS256"]
                 )
-            except jwt.InvalidTokenError:
-                raise Exception("State signature is not valid!")
+            except (jwt.InvalidTokenError, KeyError):
+                flash(as_unicode("Invalid state signature"), "warning")
+                return redirect(self.appbuilder.get_url_for_login)
 
+            login_user(user)
             next_url = self.appbuilder.get_url_for_index
             # Check if there is a next url on state
             if "next" in state and len(state["next"]) > 0:
