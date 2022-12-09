@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 import logging
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 import uuid
 
 from sqlalchemy import and_, func, literal, update
@@ -394,6 +394,57 @@ class SecurityManager(BaseSecurityManager):
                 self.role_model.id.in_(role_ids),
             )
         ).all()
+
+    def get_user_roles_permissions(self, user) -> Dict[str, List[Tuple[str, str]]]:
+        """
+        Utility method for fetching all roles and permissions for a specific user.
+        Example of the returned data:
+        ```
+        {
+            'Admin': [
+                ('can_this_form_get', 'ResetPasswordView'),
+                ('can_this_form_post', 'ResetPasswordView'),
+                ...
+            ]
+             'EmptyRole': [],
+        }
+        ```
+        """
+        if not user.roles:
+            raise AttributeError("User object does not have roles")
+
+        result: Dict[str, List[Tuple[str, str]]] = {}
+        db_roles_ids = []
+        for role in user.roles:
+            # Make sure all db roles are included on the result
+            result[role.name] = []
+            if role.name in self.builtin_roles:
+                for permission in self.builtin_roles[role.name]:
+                    result[role.name].append((permission[1], permission[0]))
+            else:
+                db_roles_ids.append(role.id)
+
+        permission_views = (
+            self.appbuilder.get_session.query(PermissionView)
+            .join(Permission)
+            .join(ViewMenu)
+            .join(PermissionView.role)
+            .filter(Role.id.in_(db_roles_ids))
+            .options(contains_eager(PermissionView.permission))
+            .options(contains_eager(PermissionView.view_menu))
+            .options(contains_eager(PermissionView.role))
+        ).all()
+
+        for permission_view in permission_views:
+            for role_item in permission_view.role:
+                if role_item.name in result:
+                    result[role_item.name].append(
+                        (
+                            permission_view.permission.name,
+                            permission_view.view_menu.name,
+                        )
+                    )
+        return result
 
     def get_db_role_permissions(self, role_id: int) -> List[PermissionView]:
         """
