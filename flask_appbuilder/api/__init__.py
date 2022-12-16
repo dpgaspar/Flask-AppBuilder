@@ -1211,6 +1211,9 @@ class ModelRestApi(BaseModelApi):
         search_filters = dict()
         dict_filters = self._filters.get_search_filters()
         for col in self.search_columns:
+            if col not in dict_filters:
+                # column not in search filters but defined has one
+                continue
             search_filters[col] = [
                 {"name": as_unicode(flt.name), "operator": flt.arg_name}
                 for flt in dict_filters[col]
