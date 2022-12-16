@@ -220,6 +220,12 @@ class APITestCase(FABTestCase):
                     ~Model1.field_string.like(value + "%"), Model1.field_integer == 1
                 )
 
+        class Model2ApiInvalidSearchColumns(ModelRestApi):
+            datamodel = SQLAInterface(Model2)
+            search_columns = ["field_string", "group.field_string"]
+
+        self.appbuilder.add_api(Model2ApiInvalidSearchColumns)
+
         class Model1ApiSearchFilters(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             search_filters = {"field_string": [CustomFilter]}
@@ -1563,6 +1569,20 @@ class APITestCase(FABTestCase):
 
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 400)
+
+    def test_get_info_with_invalid_search_column(self):
+        """
+        REST Api: Test get info with invalid search column
+        """
+        uri = f"api/v1/model2apiinvalidsearchcolumns/_info"
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertIn("filters", data)
+        self.assertIn("field_string", data["filters"])
 
     def test_get_list_multiple_search_filters(self):
         """
