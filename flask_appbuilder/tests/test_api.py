@@ -1574,7 +1574,7 @@ class APITestCase(FABTestCase):
         """
         REST Api: Test get info with invalid search column
         """
-        uri = f"api/v1/model2apiinvalidsearchcolumns/_info"
+        uri = "api/v1/model2apiinvalidsearchcolumns/_info"
 
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
