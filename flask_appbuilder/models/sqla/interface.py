@@ -305,7 +305,7 @@ class SQLAInterface(BaseInterface):
                     root_relation
                 ) or self.is_relation_one_to_many(root_relation):
                     query = query.options(
-                        Load(self.obj).joinedload(root_relation).load_only(leaf_column)
+                        Load(self.obj).defaultload(root_relation).load_only(leaf_column)
                     )
                 else:
                     related_model = self.get_related_model(root_relation)
