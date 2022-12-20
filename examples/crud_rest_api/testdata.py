@@ -3,7 +3,7 @@ import logging
 import random
 
 from app import db
-from app.models import Contact, ContactGroup, Gender, ModelOMParent, ModelOMChild
+from app.models import Contact, ContactGroup, Gender, ModelOMParent, ModelOMChild, Child
 
 log = logging.getLogger(__name__)
 
@@ -82,6 +82,7 @@ for i in range(1, 1000):
     c.personal_celphone = random.randrange(1111111, 9999999)
     c.contact_group = groups[random.randrange(0, 3)]
     c.gender = genders[random.randrange(0, 2)]
+    c.child = Child(name=get_random_name(names_list, random.randrange(2, 6)))
     year = random.choice(range(1900, 2012))
     month = random.choice(range(1, 12))
     day = random.choice(range(1, 28))

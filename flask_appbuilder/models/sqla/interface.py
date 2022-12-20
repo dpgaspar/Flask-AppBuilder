@@ -255,41 +255,45 @@ class SQLAInterface(BaseInterface):
         """
         if not select_columns:
             return query
-        joined_models = list()
-        for column in select_columns:
-            if is_column_dotted(column):
-                root_relation = get_column_root_relation(column)
-                leaf_column = get_column_leaf(column)
-                if self.is_relation_many_to_one(
-                    root_relation
-                ) or self.is_relation_one_to_one(root_relation):
-                    if root_relation not in joined_models:
-                        query = self._query_join_relation(
-                            query, root_relation, aliases_mapping=aliases_mapping
-                        )
-                        query = query.add_entity(
-                            self.get_alias_mapping(root_relation, aliases_mapping)
-                        )
-                        # Add relation FK to avoid N+1 performance issue
-                        query = self._apply_relation_fks_select_options(
-                            query, root_relation
-                        )
-                        joined_models.append(root_relation)
 
-                    related_model_ = self.get_alias_mapping(
-                        root_relation, aliases_mapping
-                    )
-                    relation = getattr(self.obj, root_relation)
-                    # The Zen of eager loading :(
-                    # https://docs.sqlalchemy.org/en/13/orm/loading_relationships.html
-                    query = query.options(
-                        contains_eager(relation.of_type(related_model_)).load_only(
-                            leaf_column
-                        )
-                    )
-                    query = query.options(Load(related_model_).load_only(leaf_column))
-            else:
+        joined_models = []
+        for column in select_columns:
+            if not is_column_dotted(column):
                 query = self._apply_normal_col_select_option(query, column)
+                continue
+
+            # Dotted column
+            root_relation = get_column_root_relation(column)
+            leaf_column = get_column_leaf(column)
+            related_model = self.get_alias_mapping(root_relation, aliases_mapping)
+            relation = getattr(self.obj, root_relation)
+
+            if self.is_relation_many_to_one(
+                root_relation
+            ) or self.is_relation_many_to_many_special(root_relation):
+                if root_relation not in joined_models:
+                    query = self._query_join_relation(
+                        query, root_relation, aliases_mapping=aliases_mapping
+                    )
+                    query = query.add_entity(
+                        self.get_alias_mapping(root_relation, aliases_mapping)
+                    )
+                    # Add relation FK to avoid N+1 performance issue
+                    query = self._apply_relation_fks_select_options(
+                        query, root_relation
+                    )
+                    joined_models.append(root_relation)
+
+                related_model = self.get_alias_mapping(root_relation, aliases_mapping)
+                relation = getattr(self.obj, root_relation)
+                # The Zen of eager loading :(
+                # https://docs.sqlalchemy.org/en/13/orm/loading_relationships.html
+                query = query.options(
+                    contains_eager(relation.of_type(related_model)).load_only(
+                        leaf_column
+                    )
+                )
+                query = query.options(Load(related_model).load_only(leaf_column))
         return query
 
     def apply_outer_select_joins(
@@ -599,7 +603,17 @@ class SQLAInterface(BaseInterface):
     def is_relation_many_to_many(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == "MANYTOMANY"
+                relation = self.list_properties[col_name]
+                return relation.direction.name == "MANYTOMANY"
+            return False
+        except KeyError:
+            return False
+
+    def is_relation_many_to_many_special(self, col_name: str) -> bool:
+        try:
+            if self.is_relation(col_name):
+                relation = self.list_properties[col_name]
+                return relation.direction.name == "ONETOONE" and relation.uselist
             return False
         except KeyError:
             return False
