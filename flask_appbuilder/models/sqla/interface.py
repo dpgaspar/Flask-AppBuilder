@@ -607,7 +607,10 @@ class SQLAInterface(BaseInterface):
     def is_relation_one_to_one(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == "ONETOONE"
+                relation = self.list_properties[col_name]
+                return self.list_properties[col_name].direction.name == "ONETOONE" or (
+                    relation.direction.name == "ONETOMANY" and relation.uselist is False
+                )
             return False
         except KeyError:
             return False
@@ -615,7 +618,8 @@ class SQLAInterface(BaseInterface):
     def is_relation_one_to_many(self, col_name: str) -> bool:
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == "ONETOMANY"
+                relation = self.list_properties[col_name]
+                return relation.direction.name == "ONETOMANY" and relation.uselist
             return False
         except KeyError:
             return False
