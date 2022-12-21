@@ -3,13 +3,24 @@ import json
 import logging
 import re
 import traceback
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    TYPE_CHECKING,
+    Union,
+)
 import urllib.parse
 
 from apispec import APISpec, yaml_utils
 from apispec.exceptions import DuplicateComponentNameError
 from flask import Blueprint, current_app, jsonify, make_response, request, Response
-from flask_appbuilder import AppBuilder, Model
+from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_babel import lazy_gettext as _
 import jsonschema
@@ -65,6 +76,10 @@ from ..exceptions import FABException, InvalidOrderByColumnFABException
 from ..hooks import get_before_request_hooks, wrap_route_handler_with_hooks
 from ..models.filters import Filters
 from ..security.decorators import permission_name, protect
+
+if TYPE_CHECKING:
+    from flask_appbuilder import AppBuilder
+
 
 log = logging.getLogger(__name__)
 
@@ -497,7 +512,7 @@ class BaseApi(AbstractViewApi):
 
     def create_blueprint(
         self,
-        appbuilder: AppBuilder,
+        appbuilder: "AppBuilder",
         endpoint: Optional[str] = None,
         static_folder: Optional[str] = None,
     ) -> Blueprint:
@@ -1090,7 +1105,7 @@ class ModelRestApi(BaseModelApi):
         )
 
     def create_blueprint(
-        self, appbuilder: AppBuilder, *args: Any, **kwargs: Any
+        self, appbuilder: "AppBuilder", *args: Any, **kwargs: Any
     ) -> Blueprint:
         self._init_model_schemas()
         return super(ModelRestApi, self).create_blueprint(appbuilder, *args, **kwargs)
