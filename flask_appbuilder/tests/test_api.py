@@ -58,12 +58,12 @@ from .sqla.models import (
     ModelMMParentRequired,
     ModelOMChild,
     ModelOMParent,
+    ModelOOParent,
     ModelWithEnums,
     ModelWithProperty,
     TmpEnum,
     validate_name,
 )
-
 
 log = logging.getLogger(__name__)
 
@@ -318,6 +318,11 @@ class APITestCase(FABTestCase):
         self.modeldottedmmapi = ModelDottedMMApi
         self.appbuilder.add_api(ModelDottedMMApi)
 
+        class ModelMMRequiredApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelMMParentRequired)
+
+        self.appbuilder.add_api(ModelMMRequiredApi)
+
         class ModelOMParentApi(ModelRestApi):
             datamodel = SQLAInterface(ModelOMParent)
 
@@ -330,10 +335,17 @@ class APITestCase(FABTestCase):
 
         self.appbuilder.add_api(ModelDottedOMParentApi)
 
-        class ModelMMRequiredApi(ModelRestApi):
-            datamodel = SQLAInterface(ModelMMParentRequired)
+        class ModelOOParentApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelOOParent)
 
-        self.appbuilder.add_api(ModelMMRequiredApi)
+        self.appbuilder.add_api(ModelOOParentApi)
+
+        class ModelDottedOOParentApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelOOParent)
+            list_columns = ["field_string", "child.field_string"]
+            show_columns = ["field_string", "child.field_string"]
+
+        self.appbuilder.add_api(ModelDottedOOParentApi)
 
         class Model1CustomValidationApi(ModelRestApi):
             datamodel = SQLAInterface(Model1)
@@ -1023,6 +1035,43 @@ class APITestCase(FABTestCase):
         }
         self.assertEqual(data[API_RESULT_RES_KEY], expected_result)
 
+    def test_get_item_oo_field(self):
+        """
+        REST Api: Test get item with O-O related field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # We can't get a base filtered item
+        pk = 1
+        rv = self.auth_client_get(client, token, f"api/v1/modelooparentapi/{pk}")
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(
+            data[API_RESULT_RES_KEY],
+            {
+                "field_string": "text0",
+                "child": {"field_string": "text0.child", "id": 1},
+            },
+        )
+
+    def test_get_item_dotted_oo_field(self):
+        """
+        REST Api: Test get item with dotted O-O related field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # We can't get a base filtered item
+        pk = 1
+        rv = self.auth_client_get(client, token, f"api/v1/modeldottedooparentapi/{pk}")
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(
+            data[API_RESULT_RES_KEY],
+            {"field_string": "text0", "child": {"field_string": "text0.child"}},
+        )
+
     def test_get_item_om_field(self):
         """
         REST Api: Test get item with O-M related field
@@ -1115,6 +1164,36 @@ class APITestCase(FABTestCase):
             {"field_string": f"text0.{i}"} for i in range(1, MODELOMCHILD_DATA_SIZE)
         ]
         self.assertEqual(data[API_RESULT_RES_KEY][0]["children"], expected_rel_field)
+
+    def test_get_list_oo_field(self):
+        """
+        REST Api: Test get list with O-O related field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = self.auth_client_get(client, token, "api/v1/modelooparentapi/")
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(data["count"], MODEL1_DATA_SIZE)
+        self.assertEqual(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        expected_rel_field = {"field_string": "text0.child", "id": 1}
+        self.assertEqual(data[API_RESULT_RES_KEY][0]["child"], expected_rel_field)
+
+    def test_get_list_dotted_oo_field(self):
+        """
+        REST Api: Test get list with dotted O-O related field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = self.auth_client_get(client, token, "api/v1/modeldottedooparentapi/")
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(data["count"], MODEL1_DATA_SIZE)
+        self.assertEqual(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        expected_rel_field = {"field_string": "text0.child"}
+        self.assertEqual(data[API_RESULT_RES_KEY][0]["child"], expected_rel_field)
 
     def test_get_list_dotted_mm_field(self):
         """
