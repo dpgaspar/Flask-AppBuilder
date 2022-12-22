@@ -849,23 +849,22 @@ class SQLAInterface(BaseInterface):
     ------------------------------
     """
 
+    def get_col_default(self, col_name: str) -> Any:
+        default = getattr(self.list_columns[col_name], "default", None)
+        if default is None:
+            return None
 
-def get_col_default(self, col_name: str) -> Any:
-    default = getattr(self.list_columns[col_name], "default", None)
-    if default is None:
-        return None
+        value = getattr(default, "arg", None)
+        if value is None:
+            return None
 
-    value = getattr(default, "arg", None)
-    if value is None:
-        return None
+        if getattr(default, "is_callable", False):
+            return lambda: default.arg(None)
 
-    if getattr(default, "is_callable", False):
-        return lambda: default.arg(None)
+        if not getattr(default, "is_scalar", True):
+            return None
 
-    if not getattr(default, "is_scalar", True):
-        return None
-
-    return value
+        return value
 
     def get_related_model(self, col_name: str) -> Type[Model]:
         return self.list_properties[col_name].mapper.class_
