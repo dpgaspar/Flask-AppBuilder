@@ -11,3 +11,4 @@ parameterized==0.8.1
 pip-tools==6.8.0
 tox==3.24.3
 freezegun==1.2.1
+types-PyYAML==6.0.12.2
