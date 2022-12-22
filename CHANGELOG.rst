@@ -1,6 +1,22 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.1.7
+-----------------------------------
+
+- chore: Add more type annotation to REST API module (#1969) [Daniel Vaz Gaspar]
+- fix: upgrade Select2 to 4.0.13 (#1968) [Nicola Gramola]
+- fix: REST API one-to-one relationship (#1965) [Daniel Vaz Gaspar]
+- fix(api): _info HTTP 500 when exists a defined invalid search field (#1963) [Daniel Vaz Gaspar]
+- chore: Use implicit default loading rather than explicit joined eager loading (#1961) [John Bodley]
+- chore: Increase upper-bound on apispec (#1903) [Tomáš Drtina]
+- fix: replace deprecated attachment_filename (#1956) [Steve Embling]
+
+Improvements and Bug fixes on 4.1.6
+-----------------------------------
+
+- feat: add utility method on SM for fetching all roles and perms for a user (#1950) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.1.6
 -----------------------------------
 
