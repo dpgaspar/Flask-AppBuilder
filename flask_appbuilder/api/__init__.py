@@ -187,12 +187,12 @@ def rison(
 
 def expose(url: str = "/", methods: Tuple[str] = ("GET",)) -> Callable[..., Any]:
     """
-        Use this decorator to expose API endpoints on your API classes.
+    Use this decorator to expose API endpoints on your API classes.
 
-        :param url:
-            Relative URL for the endpoint
-        :param methods:
-            Allowed HTTP methods. By default only GET is allowed.
+    :param url:
+        Relative URL for the endpoint
+    :param methods:
+        Allowed HTTP methods. By default only GET is allowed.
     """
 
     def wrap(f: Callable[..., Any]) -> Callable[..., Any]:
@@ -231,12 +231,12 @@ def merge_response_func(func: Callable[..., Any], key: str) -> Callable[..., Any
 
 class BaseApi(AbstractViewApi):
     """
-        All apis inherit from this class.
-        it's constructor will register your exposed urls on flask
-        as a Blueprint.
+    All apis inherit from this class.
+    it's constructor will register your exposed urls on flask
+    as a Blueprint.
 
-        This class does not expose any urls,
-        but provides a common base for all APIS.
+    This class does not expose any urls,
+    but provides a common base for all APIS.
     """
 
     endpoint: Optional[str] = None
@@ -455,10 +455,10 @@ class BaseApi(AbstractViewApi):
 
     def __init__(self) -> None:
         """
-            Initialization of base permissions
-            based on exposed methods and actions
+        Initialization of base permissions
+        based on exposed methods and actions
 
-            Initialization of extra args
+        Initialization of extra args
         """
         self.appbuilder = None
         self.blueprint = None
@@ -958,6 +958,13 @@ class ModelRestApi(BaseModelApi):
     This is useful for including all necessary columns that are referenced
     by properties listed on `list_columns` without generating N+1 queries.
     """
+    list_outer_default_load = False
+    """
+    If True, the default load for outer joins will be applied on the get item endpoint.
+    This is useful for when you want to control the load of the many-to-many and
+    many-to-one relationships at the model level. Will apply:
+     https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html#sqlalchemy.orm.Load.defaultload
+    """
     list_columns: Optional[List[str]] = None
     """
     A list of columns (or model's methods) to be displayed on the list view.
@@ -968,6 +975,13 @@ class ModelRestApi(BaseModelApi):
     A List of column names that will be included on the SQL select.
     This is useful for including all necessary columns that are referenced
     by properties listed on `show_columns` without generating N+1 queries.
+    """
+    show_outer_default_load = False
+    """
+    If True, the default load for outer joins will be applied on the get item endpoint.
+    This is useful for when you want to control the load of the many-to-many and
+    many-to-one relationships at the model level. Will apply:
+     https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html#sqlalchemy.orm.Load.defaultload
     """
     show_columns: Optional[List[str]] = None
     """
@@ -1168,7 +1182,7 @@ class ModelRestApi(BaseModelApi):
 
     def _init_titles(self) -> None:
         """
-            Init Titles if not defined
+        Init Titles if not defined
         """
         super(ModelRestApi, self)._init_titles()
         class_name = self.datamodel.model_name
@@ -1359,7 +1373,7 @@ class ModelRestApi(BaseModelApi):
     @merge_response_func(merge_add_title, API_ADD_TITLE_RIS_KEY)
     @merge_response_func(merge_edit_title, API_EDIT_TITLE_RIS_KEY)
     def info(self, **kwargs: Any) -> Response:
-        """ Endpoint that renders a response for CRUD REST meta data
+        """Endpoint that renders a response for CRUD REST meta data
         ---
         get:
           description: >-
@@ -1423,7 +1437,12 @@ class ModelRestApi(BaseModelApi):
         :param kwargs: Query string parameter arguments
         :return: HTTP Response
         """
-        item = self.datamodel.get(pk, self._base_filters, self.show_select_columns)
+        item = self.datamodel.get(
+            pk,
+            self._base_filters,
+            self.show_select_columns,
+            self.show_outer_default_load,
+        )
         if not item:
             return self.response_404()
 
@@ -1528,7 +1547,7 @@ class ModelRestApi(BaseModelApi):
 
     def get_list_headless(self, **kwargs: Any) -> Response:
         """
-            Get list of items from Model
+        Get list of items from Model
         """
         response = dict()
         args = kwargs.get("rison", {})
@@ -1568,6 +1587,7 @@ class ModelRestApi(BaseModelApi):
             page=page_index,
             page_size=page_size,
             select_columns=self.list_select_columns,
+            outer_default_load=self.list_outer_default_load,
         )
         pks = self.datamodel.get_keys(lst)
         response[API_RESULT_RES_KEY] = list_model_schema.dump(lst, many=True)
@@ -1735,7 +1755,7 @@ class ModelRestApi(BaseModelApi):
 
     def put_headless(self, pk: ModelKeyType) -> Response:
         """
-            PUT/Edit item to Model
+        PUT/Edit item to Model
         """
         item = self.datamodel.get(pk, self._base_filters)
         if not request.is_json:
@@ -1907,7 +1927,7 @@ class ModelRestApi(BaseModelApi):
             )
         return order_column, order_direction
 
-    def _handle_filters_args(self, rison_args: Dict[str, Any]) -> List[Filters]:
+    def _handle_filters_args(self, rison_args: Dict[str, Any]) -> Filters:
         self._filters.clear_filters()
         self._filters.rest_add_filters(rison_args.get(API_FILTERS_RIS_KEY, []))
         return self._filters.get_joined_filters(self._base_filters)
