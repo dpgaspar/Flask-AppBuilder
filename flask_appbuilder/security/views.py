@@ -9,7 +9,7 @@ from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.charts.views import DirectByChartView
 from flask_appbuilder.fieldwidgets import BS3PasswordFieldWidget
-from flask_appbuilder.security.decorators import has_access
+from flask_appbuilder.security.decorators import has_access, limit
 from flask_appbuilder.security.forms import (
     DynamicForm,
     LoginForm_db,

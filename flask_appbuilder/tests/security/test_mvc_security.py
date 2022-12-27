@@ -3,12 +3,16 @@ from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.sqla.models import User
-
 from ..base import BaseMVCTestCase
-from ..const import PASSWORD_ADMIN, PASSWORD_READONLY, USERNAME_ADMIN, USERNAME_READONLY
+from ..const import (
+    PASSWORD_ADMIN,
+    PASSWORD_READONLY,
+    USERNAME_ADMIN,
+    USERNAME_READONLY,
+    INVALID_LOGIN_STRING,
+)
 from ..sqla.models import Model1, Model2
 
-INVALID_LOGIN_STRING = "Invalid login"
 PASSWORD_COMPLEXITY_ERROR = (
     "Must have at least two capital letters, "
     "one special character, two digits, three lower case letters and "
@@ -203,7 +207,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             self.client,
             USERNAME_ADMIN,
             PASSWORD_ADMIN,
-            next_url=u"\u0001" + "sample.com",
+            next_url="\u0001" + "sample.com",
             follow_redirects=False,
         )
         assert response.location == "http://localhost/"
