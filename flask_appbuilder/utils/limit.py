@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Union, Callable, Optional, Tuple
+from typing import Callable, Optional, Tuple, Union
 
 from flask import Response
 from flask_limiter.wrappers import RequestLimit

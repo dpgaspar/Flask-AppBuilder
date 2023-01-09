@@ -3,14 +3,10 @@ from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.sqla.models import User
+
 from ..base import BaseMVCTestCase
-from ..const import (
-    PASSWORD_ADMIN,
-    PASSWORD_READONLY,
-    USERNAME_ADMIN,
-    USERNAME_READONLY,
-    INVALID_LOGIN_STRING,
-)
+from ..const import (INVALID_LOGIN_STRING, PASSWORD_ADMIN, PASSWORD_READONLY,
+                     USERNAME_ADMIN, USERNAME_READONLY)
 from ..sqla.models import Model1, Model2
 
 PASSWORD_COMPLEXITY_ERROR = (

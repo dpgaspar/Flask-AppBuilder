@@ -1,33 +1,20 @@
-from datetime import date, datetime
-from inspect import isclass
 import json
 import logging
 import re
-from typing import List, Optional, TYPE_CHECKING
+from datetime import date, datetime
+from inspect import isclass
+from typing import TYPE_CHECKING, List, Optional
 
-from flask import (
-    abort,
-    Blueprint,
-    current_app,
-    flash,
-    render_template,
-    request,
-    session,
-    url_for,
-)
+from flask import (Blueprint, abort, current_app, flash, render_template,
+                   request, session, url_for)
 
 from ._compat import as_unicode
 from .actions import ActionItem
 from .const import PERMISSION_PREFIX
 from .forms import GeneralModelConverter
 from .hooks import get_before_request_hooks, wrap_route_handler_with_hooks
-from .urltools import (
-    get_filter_args,
-    get_order_args,
-    get_page_args,
-    get_page_size_args,
-    Stack,
-)
+from .urltools import (Stack, get_filter_args, get_order_args, get_page_args,
+                       get_page_size_args)
 from .widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
 
 if TYPE_CHECKING:
