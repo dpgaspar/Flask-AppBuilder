@@ -456,14 +456,14 @@ class BaseApi(AbstractViewApi):
     """
 
     limits: Optional[List[Limit]] = None
-    """ 
+    """
         List of limits for this api.
 
         Use it like this if you want to restrict the rate of requests to a view:
 
             class MyView(ModelView):
                 limits = [Limit("2 per 5 second")]
-        
+
         or use the decorator @limit.
     """
 

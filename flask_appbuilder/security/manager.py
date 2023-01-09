@@ -757,7 +757,8 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         self.appbuilder.add_view_no_menu(self.auth_view)
 
-        # this needs to be done after the view is added, otherwise the blueprint is not initialized
+        # this needs to be done after the view is added, otherwise the blueprint
+        # is not initialized
         if self.is_auth_limited:
             self.limiter.limit(self.auth_rate_limit, methods=["POST"])(
                 self.auth_view.blueprint
