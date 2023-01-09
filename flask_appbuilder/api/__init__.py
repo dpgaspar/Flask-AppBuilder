@@ -4,16 +4,25 @@ import logging
 import re
 import traceback
 import urllib.parse
-from typing import (TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set,
-                    Tuple, Type, Union)
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
 
 import jsonschema
 import prison
 import yaml
 from apispec import APISpec, yaml_utils
 from apispec.exceptions import DuplicateComponentNameError
-from flask import (Blueprint, Response, current_app, jsonify, make_response,
-                   request)
+from flask import Blueprint, Response, current_app, jsonify, make_response, request
 from flask_babel import lazy_gettext as _
 from marshmallow import Schema, ValidationError
 from marshmallow.fields import Field
@@ -26,24 +35,42 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 
 from .._compat import as_unicode
 from ..baseviews import AbstractViewApi
-from ..const import (API_ADD_COLUMNS_RES_KEY, API_ADD_COLUMNS_RIS_KEY,
-                     API_ADD_TITLE_RES_KEY, API_ADD_TITLE_RIS_KEY,
-                     API_DESCRIPTION_COLUMNS_RES_KEY,
-                     API_DESCRIPTION_COLUMNS_RIS_KEY, API_EDIT_COLUMNS_RES_KEY,
-                     API_EDIT_COLUMNS_RIS_KEY, API_EDIT_TITLE_RES_KEY,
-                     API_EDIT_TITLE_RIS_KEY, API_FILTERS_RES_KEY,
-                     API_FILTERS_RIS_KEY, API_LABEL_COLUMNS_RES_KEY,
-                     API_LABEL_COLUMNS_RIS_KEY, API_LIST_COLUMNS_RES_KEY,
-                     API_LIST_COLUMNS_RIS_KEY, API_LIST_TITLE_RES_KEY,
-                     API_LIST_TITLE_RIS_KEY, API_ORDER_COLUMN_RIS_KEY,
-                     API_ORDER_COLUMNS_RES_KEY, API_ORDER_COLUMNS_RIS_KEY,
-                     API_ORDER_DIRECTION_RIS_KEY, API_PAGE_INDEX_RIS_KEY,
-                     API_PAGE_SIZE_RIS_KEY, API_PERMISSIONS_RES_KEY,
-                     API_PERMISSIONS_RIS_KEY, API_RESULT_RES_KEY,
-                     API_SELECT_COLUMNS_RIS_KEY, API_SHOW_COLUMNS_RES_KEY,
-                     API_SHOW_COLUMNS_RIS_KEY, API_SHOW_TITLE_RES_KEY,
-                     API_SHOW_TITLE_RIS_KEY, API_URI_RIS_KEY,
-                     PERMISSION_PREFIX)
+from ..const import (
+    API_ADD_COLUMNS_RES_KEY,
+    API_ADD_COLUMNS_RIS_KEY,
+    API_ADD_TITLE_RES_KEY,
+    API_ADD_TITLE_RIS_KEY,
+    API_DESCRIPTION_COLUMNS_RES_KEY,
+    API_DESCRIPTION_COLUMNS_RIS_KEY,
+    API_EDIT_COLUMNS_RES_KEY,
+    API_EDIT_COLUMNS_RIS_KEY,
+    API_EDIT_TITLE_RES_KEY,
+    API_EDIT_TITLE_RIS_KEY,
+    API_FILTERS_RES_KEY,
+    API_FILTERS_RIS_KEY,
+    API_LABEL_COLUMNS_RES_KEY,
+    API_LABEL_COLUMNS_RIS_KEY,
+    API_LIST_COLUMNS_RES_KEY,
+    API_LIST_COLUMNS_RIS_KEY,
+    API_LIST_TITLE_RES_KEY,
+    API_LIST_TITLE_RIS_KEY,
+    API_ORDER_COLUMN_RIS_KEY,
+    API_ORDER_COLUMNS_RES_KEY,
+    API_ORDER_COLUMNS_RIS_KEY,
+    API_ORDER_DIRECTION_RIS_KEY,
+    API_PAGE_INDEX_RIS_KEY,
+    API_PAGE_SIZE_RIS_KEY,
+    API_PERMISSIONS_RES_KEY,
+    API_PERMISSIONS_RIS_KEY,
+    API_RESULT_RES_KEY,
+    API_SELECT_COLUMNS_RIS_KEY,
+    API_SHOW_COLUMNS_RES_KEY,
+    API_SHOW_COLUMNS_RIS_KEY,
+    API_SHOW_TITLE_RES_KEY,
+    API_SHOW_TITLE_RIS_KEY,
+    API_URI_RIS_KEY,
+    PERMISSION_PREFIX,
+)
 from ..exceptions import FABException, InvalidOrderByColumnFABException
 from ..hooks import get_before_request_hooks, wrap_route_handler_with_hooks
 from ..models.filters import Filters

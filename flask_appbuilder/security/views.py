@@ -4,8 +4,7 @@ import re
 from typing import Any, List, Optional
 
 import jwt
-from flask import (abort, current_app, flash, g, redirect, request, session,
-                   url_for)
+from flask import abort, current_app, flash, g, redirect, request, session, url_for
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
 from werkzeug.security import generate_password_hash
@@ -19,12 +18,16 @@ from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.charts.views import DirectByChartView
 from flask_appbuilder.fieldwidgets import BS3PasswordFieldWidget
 from flask_appbuilder.security.decorators import has_access, limit
-from flask_appbuilder.security.forms import (DynamicForm, LoginForm_db,
-                                             LoginForm_oid, ResetPasswordForm,
-                                             SelectDataRequired, UserInfoEdit)
+from flask_appbuilder.security.forms import (
+    DynamicForm,
+    LoginForm_db,
+    LoginForm_oid,
+    ResetPasswordForm,
+    SelectDataRequired,
+    UserInfoEdit,
+)
 from flask_appbuilder.security.utils import generate_random_string
-from flask_appbuilder.utils.base import (get_safe_redirect,
-                                         lazy_formatter_gettext)
+from flask_appbuilder.utils.base import get_safe_redirect, lazy_formatter_gettext
 from flask_appbuilder.validators import PasswordComplexityValidator
 from flask_appbuilder.views import ModelView, SimpleFormView, expose
 from flask_appbuilder.widgets import ListWidget, ShowWidget
@@ -648,7 +651,7 @@ class AuthOAuthView(AuthView):
     def oauth_authorized(self, provider: str) -> WerkzeugResponse:
         log.debug("Authorized init")
         if provider not in self.appbuilder.sm.oauth_remotes:
-            flash(u"Provider not supported.", "warning")
+            flash("Provider not supported.", "warning")
             log.warning("OAuth authorized got an unknown provider %s", provider)
             return redirect(self.appbuilder.get_url_for_login)
         try:
@@ -679,7 +682,7 @@ class AuthOAuthView(AuthView):
                         allow = True
                         break
                 if not allow:
-                    flash(u"You are not authorized.", "warning")
+                    flash("You are not authorized.", "warning")
                     return redirect(self.appbuilder.get_url_for_login)
             else:
                 log.debug("No whitelist for OAuth provider")

@@ -5,8 +5,13 @@ from hiro import Timeline
 from flask_appbuilder import SQLA
 
 from ..base import FABTestCase
-from ..const import (MODEL1_DATA_SIZE, PASSWORD_ADMIN, PASSWORD_READONLY,
-                     USERNAME_ADMIN, USERNAME_READONLY)
+from ..const import (
+    MODEL1_DATA_SIZE,
+    PASSWORD_ADMIN,
+    PASSWORD_READONLY,
+    USERNAME_ADMIN,
+    USERNAME_READONLY,
+)
 from ..sqla.models import insert_data
 
 
