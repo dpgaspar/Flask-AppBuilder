@@ -1,11 +1,11 @@
 from __future__ import unicode_literals
 
+import datetime
 import operator
 
 from wtforms import widgets
 from wtforms.fields import Field, SelectField, SelectFieldBase
 from wtforms.validators import ValidationError
-import datetime
 
 
 class AJAXSelectField(Field):
@@ -315,7 +315,9 @@ class TimeDeltaField(Field):
             time_str = " ".join(valuelist)
             try:
                 date_str = "1970-01-01 " + time_str
-                self.data = datetime.datetime.strptime(date_str, self.format) - datetime.datetime(1970, 1, 1, 0, 0)
+                self.data = datetime.datetime.strptime(
+                    date_str, self.format
+                ) - datetime.datetime(1970, 1, 1, 0, 0)
             except ValueError:
                 self.data = None
                 raise ValueError(

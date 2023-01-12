@@ -13,15 +13,20 @@ from wtforms import (
 )
 from wtforms import validators
 
-from .fields import EnumField, QuerySelectField, QuerySelectMultipleField, TimeDeltaField
+from .fields import (
+    EnumField,
+    QuerySelectField,
+    QuerySelectMultipleField,
+    TimeDeltaField,
+)
 from .fieldwidgets import (
     BS3TextAreaFieldWidget,
     BS3TextFieldWidget,
     DatePickerWidget,
-    TimeDeltaPickerWidget,
     DateTimePickerWidget,
     Select2ManyWidget,
     Select2Widget,
+    TimeDeltaPickerWidget,
 )
 from .models.mongoengine.fields import MongoFileField, MongoImageField
 from .upload import (
