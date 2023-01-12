@@ -30,6 +30,32 @@ class DatePickerWidget(object):
         )
 
 
+class TimeDeltaPickerWidget(object):
+    """
+    Date Time picker from Eonasdan GitHub
+
+    """
+
+    data_template = (
+        '<div class="input-group timedelta appbuilder_timedelta" id="timedeltapicker">'
+        '<span class="input-group-addon"><i class="fa fa-calendar cursor-hand"></i>'
+        "</span>"
+        '<input class="form-control" data-format="yyyy-MM-dd hh:mm:ss" %(text)s />'
+        "</div>"
+    )
+
+    def __call__(self, field, **kwargs):
+        kwargs.setdefault("id", field.id)
+        kwargs.setdefault("name", field.name)
+        if not field.data:
+            field.data = ""
+        template = self.data_template
+
+        return Markup(
+            template % {"text": html_params(type="text", value=field.data, **kwargs)}
+        )
+
+
 class DateTimePickerWidget(object):
     """
     Date Time picker from Eonasdan GitHub

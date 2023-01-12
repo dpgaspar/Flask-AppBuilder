@@ -50,6 +50,9 @@ $(function() {
     $('.appbuilder_datetime').datetimepicker();
     $('.appbuilder_date').datetimepicker({
         pickTime: false });
+    $('.appbuilder_timedelta ').datetimepicker({
+        pickDate: false, pickTime: true, format : 'hh:mm:ss',
+    });
     $(".my_select2").select2({placeholder: "Select a State", allowClear: true});
     $(".my_select2.readonly").select2("readonly", true);
     loadSelectData();

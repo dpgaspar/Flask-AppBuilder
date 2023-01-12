@@ -214,6 +214,9 @@ class BaseInterface:
     def is_datetime(self, col_name):
         return False
 
+    def is_timedelta(self, col_name):
+        return False
+
     def is_enum(self, col_name):
         return False
 

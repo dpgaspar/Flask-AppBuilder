@@ -13,11 +13,12 @@ from wtforms import (
 )
 from wtforms import validators
 
-from .fields import EnumField, QuerySelectField, QuerySelectMultipleField
+from .fields import EnumField, QuerySelectField, QuerySelectMultipleField, TimeDeltaField
 from .fieldwidgets import (
     BS3TextAreaFieldWidget,
     BS3TextFieldWidget,
     DatePickerWidget,
+    TimeDeltaPickerWidget,
     DateTimePickerWidget,
     Select2ManyWidget,
     Select2Widget,
@@ -59,6 +60,7 @@ class FieldConverter(object):
         ("is_numeric", DecimalField, BS3TextFieldWidget),
         ("is_float", FloatField, BS3TextFieldWidget),
         ("is_boolean", BooleanField, None),
+        ("is_timedelta", TimeDeltaField, TimeDeltaPickerWidget),
         ("is_date", DateField, DatePickerWidget),
         ("is_datetime", DateTimeField, DateTimePickerWidget),
     )

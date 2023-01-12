@@ -605,6 +605,12 @@ class SQLAInterface(BaseInterface):
         except KeyError:
             return False
 
+    def is_timedelta(self, col_name: str) -> bool:
+        try:
+            return _is_sqla_type(self.list_columns[col_name].type, sa_types.Interval)
+        except KeyError:
+            return False
+
     def is_enum(self, col_name: str) -> bool:
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa_types.Enum)
