@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-04-07 22:16+0200\n"
+"POT-Creation-Date: 2023-01-13 11:43+0300\n"
 "PO-Revision-Date: 2022-04-07 22:47+0200\n"
+"Last-Translator: dkrat7 <dkrat7 @github.com>\n"
 "Language: sl\n"
 "Language-Team: sl <LL@li.org>\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n"
-"%100==4 ? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 "
+"|| n%100==4 ? 2 : 3)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
-"Last-Translator: dkrat7 <dkrat7 @github.com>\n"
-"X-Generator: Poedit 2.3\n"
 
 #: flask_appbuilder/const.py:128
 msgid "Access is Denied"
@@ -38,19 +37,19 @@ msgstr "Izberite vrednost"
 #: flask_appbuilder/templates/appbuilder/general/charts/chart.html:8
 #: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:10
 #: flask_appbuilder/templates/appbuilder/general/charts/jsonchart.html:8
-#: flask_appbuilder/templates/appbuilder/general/lib.html:357
+#: flask_appbuilder/templates/appbuilder/general/lib.html:353
 #: flask_appbuilder/templates/appbuilder/general/model/list.html:8
 msgid "Search"
 msgstr "Iskanje"
 
 #: flask_appbuilder/messages.py:10
-#: flask_appbuilder/templates/appbuilder/general/lib.html:364
-#: flask_appbuilder/templates/appbuilder/general/lib.html:365
+#: flask_appbuilder/templates/appbuilder/general/lib.html:360
+#: flask_appbuilder/templates/appbuilder/general/lib.html:361
 msgid "Back"
 msgstr "Nazaj"
 
 #: flask_appbuilder/messages.py:11
-#: flask_appbuilder/templates/appbuilder/general/lib.html:304
+#: flask_appbuilder/templates/appbuilder/general/lib.html:300
 msgid "Save"
 msgstr "Shrani"
 
@@ -79,8 +78,8 @@ msgstr "Že obstaja."
 
 #: flask_appbuilder/validators.py:87
 msgid ""
-"Must have at least two capital letters, one special character, two digits, "
-"three lower case letters and a minimal length of 10."
+"Must have at least two capital letters, one special character, two "
+"digits, three lower case letters and a minimal length of 10."
 msgstr ""
 "Mora vsebovati vsaj dve tiskani črki, en poseben znak, dve številki, tri "
 "male tiskane črke, dolžina pa mora biti vsaj 10 znakov."
@@ -207,8 +206,8 @@ msgstr "OpenID"
 
 #: flask_appbuilder/security/forms.py:26 flask_appbuilder/security/forms.py:31
 #: flask_appbuilder/security/forms.py:70 flask_appbuilder/security/forms.py:109
-#: flask_appbuilder/security/views.py:156
-#: flask_appbuilder/security/views.py:405
+#: flask_appbuilder/security/views.py:157
+#: flask_appbuilder/security/views.py:406
 msgid "User Name"
 msgstr "Uporabniško ime"
 
@@ -217,8 +216,8 @@ msgid "Remember me"
 msgstr "Opomni me"
 
 #: flask_appbuilder/security/forms.py:32 flask_appbuilder/security/forms.py:52
-#: flask_appbuilder/security/forms.py:90 flask_appbuilder/security/views.py:157
-#: flask_appbuilder/security/views.py:304
+#: flask_appbuilder/security/forms.py:90 flask_appbuilder/security/views.py:158
+#: flask_appbuilder/security/views.py:305
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:30
 #: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:27
 msgid "Password"
@@ -226,32 +225,32 @@ msgstr "Geslo"
 
 #: flask_appbuilder/security/forms.py:37 flask_appbuilder/security/forms.py:75
 #: flask_appbuilder/security/forms.py:114
-#: flask_appbuilder/security/views.py:154
+#: flask_appbuilder/security/views.py:155
 msgid "First Name"
 msgstr "Ime"
 
-#: flask_appbuilder/security/forms.py:40 flask_appbuilder/security/views.py:171
+#: flask_appbuilder/security/forms.py:40 flask_appbuilder/security/views.py:172
 msgid "Write the user first name or names"
 msgstr "Vpišite ime uporabnika"
 
 #: flask_appbuilder/security/forms.py:43 flask_appbuilder/security/forms.py:80
 #: flask_appbuilder/security/forms.py:119
-#: flask_appbuilder/security/views.py:155
+#: flask_appbuilder/security/views.py:156
 msgid "Last Name"
 msgstr "Priimek"
 
-#: flask_appbuilder/security/forms.py:46 flask_appbuilder/security/views.py:172
+#: flask_appbuilder/security/forms.py:46 flask_appbuilder/security/views.py:173
 msgid "Write the user last name"
 msgstr "Vpišite priimek uporabnika"
 
 #: flask_appbuilder/security/forms.py:53 flask_appbuilder/security/forms.py:91
 msgid ""
-"Please use a good password policy, this application does not check this for "
-"you"
+"Please use a good password policy, this application does not check this "
+"for you"
 msgstr "Uporabite varno geslo. Ta aplikacija tega ne bo preverila"
 
 #: flask_appbuilder/security/forms.py:61 flask_appbuilder/security/forms.py:99
-#: flask_appbuilder/security/views.py:310
+#: flask_appbuilder/security/views.py:311
 msgid "Confirm Password"
 msgstr "Potrdite geslo"
 
@@ -260,46 +259,46 @@ msgid "Please rewrite the password to confirm"
 msgstr "Ponovno vpišite geslo za potrditev"
 
 #: flask_appbuilder/security/forms.py:63 flask_appbuilder/security/forms.py:101
-#: flask_appbuilder/security/views.py:314
+#: flask_appbuilder/security/views.py:315
 msgid "Passwords must match"
 msgstr "Gesli se morata ujemati"
 
 #: flask_appbuilder/security/forms.py:85 flask_appbuilder/security/forms.py:124
-#: flask_appbuilder/security/views.py:159
+#: flask_appbuilder/security/views.py:160
 msgid "Email"
 msgstr "E-pošta"
 
-#: flask_appbuilder/security/manager.py:728
-#: flask_appbuilder/security/views.py:147
+#: flask_appbuilder/security/manager.py:742
+#: flask_appbuilder/security/views.py:148
 msgid "List Users"
 msgstr "Seznam uporabnikov"
 
-#: flask_appbuilder/security/manager.py:731
+#: flask_appbuilder/security/manager.py:745
 msgid "Security"
 msgstr "Varnost"
 
-#: flask_appbuilder/security/manager.py:738
-#: flask_appbuilder/security/views.py:441
+#: flask_appbuilder/security/manager.py:752
+#: flask_appbuilder/security/views.py:442
 msgid "List Roles"
 msgstr "Seznam vlog"
 
-#: flask_appbuilder/security/manager.py:749
+#: flask_appbuilder/security/manager.py:763
 msgid "User's Statistics"
 msgstr "Uporabnikova statistika"
 
-#: flask_appbuilder/security/manager.py:757
+#: flask_appbuilder/security/manager.py:771
 msgid "User Registrations"
 msgstr "Registracija uporabnikov"
 
-#: flask_appbuilder/security/manager.py:766
+#: flask_appbuilder/security/manager.py:780
 msgid "Base Permissions"
 msgstr "Bazna dovoljenja"
 
-#: flask_appbuilder/security/manager.py:774
+#: flask_appbuilder/security/manager.py:788
 msgid "Views/Menus"
 msgstr "Pogledi/Meniji"
 
-#: flask_appbuilder/security/manager.py:784
+#: flask_appbuilder/security/manager.py:798
 msgid "Permission on Views/Menus"
 msgstr "Dovoljenja za Poglede/Menije"
 
@@ -323,229 +322,229 @@ msgstr "Registracija ni najdena"
 msgid "Fill out the registration form"
 msgstr "Izpolnite registracijski obrazec"
 
-#: flask_appbuilder/security/views.py:41
+#: flask_appbuilder/security/views.py:42
 msgid "List Base Permissions"
 msgstr "Seznam baznih dovoljenj"
 
-#: flask_appbuilder/security/views.py:42
+#: flask_appbuilder/security/views.py:43
 msgid "Show Base Permission"
 msgstr "Prikaži bazna dovoljenja"
 
-#: flask_appbuilder/security/views.py:43
+#: flask_appbuilder/security/views.py:44
 msgid "Add Base Permission"
 msgstr "Dodaj bazno dovoljenje"
 
-#: flask_appbuilder/security/views.py:44
+#: flask_appbuilder/security/views.py:45
 msgid "Edit Base Permission"
 msgstr "Uredi bazno dovoljenje"
 
-#: flask_appbuilder/security/views.py:46 flask_appbuilder/security/views.py:58
-#: flask_appbuilder/security/views.py:450
+#: flask_appbuilder/security/views.py:47 flask_appbuilder/security/views.py:59
+#: flask_appbuilder/security/views.py:451
 msgid "Name"
 msgstr "Ime"
 
-#: flask_appbuilder/security/views.py:53
+#: flask_appbuilder/security/views.py:54
 msgid "List View Menus"
 msgstr "Seznam pogledov menijev"
 
-#: flask_appbuilder/security/views.py:54
+#: flask_appbuilder/security/views.py:55
 msgid "Show View Menu"
 msgstr "Prikaži meni pogleda"
 
-#: flask_appbuilder/security/views.py:55
+#: flask_appbuilder/security/views.py:56
 msgid "Add View Menu"
 msgstr "Dodaj meni pogleda"
 
-#: flask_appbuilder/security/views.py:56
+#: flask_appbuilder/security/views.py:57
 msgid "Edit View Menu"
 msgstr "Uredi meni pogleda"
 
-#: flask_appbuilder/security/views.py:65
+#: flask_appbuilder/security/views.py:66
 msgid "List Permissions on Views/Menus"
 msgstr "Seznam dovoljenj za Poglede/Menije"
 
-#: flask_appbuilder/security/views.py:66
+#: flask_appbuilder/security/views.py:67
 msgid "Show Permission on Views/Menus"
 msgstr "Prikaži dovoljenja za Poglede/Menije"
 
-#: flask_appbuilder/security/views.py:67
+#: flask_appbuilder/security/views.py:68
 msgid "Add Permission on Views/Menus"
 msgstr "Dodaj dovoljenja za Poglede/Menije"
 
-#: flask_appbuilder/security/views.py:68
+#: flask_appbuilder/security/views.py:69
 msgid "Edit Permission on Views/Menus"
 msgstr "Uredi dovoljenja za Poglede/Menije"
 
-#: flask_appbuilder/security/views.py:71
+#: flask_appbuilder/security/views.py:72
 msgid "Permission"
 msgstr "Dovoljenje"
 
-#: flask_appbuilder/security/views.py:72
+#: flask_appbuilder/security/views.py:73
 msgid "View/Menu"
 msgstr "Pogled/Meni"
 
-#: flask_appbuilder/security/views.py:84 flask_appbuilder/security/views.py:100
+#: flask_appbuilder/security/views.py:85 flask_appbuilder/security/views.py:101
 msgid "Reset Password Form"
 msgstr "Obrazec za ponastavitev gesla"
 
-#: flask_appbuilder/security/views.py:86 flask_appbuilder/security/views.py:102
+#: flask_appbuilder/security/views.py:87 flask_appbuilder/security/views.py:103
 msgid "Password Changed"
 msgstr "Geslo spremenjeno"
 
-#: flask_appbuilder/security/views.py:112
+#: flask_appbuilder/security/views.py:113
 msgid "Edit User Information"
 msgstr "Uredite informacije o uporabniku"
 
-#: flask_appbuilder/security/views.py:114
+#: flask_appbuilder/security/views.py:115
 msgid "User information changed"
 msgstr "Uporabnikovi podatki spremenjeni"
 
-#: flask_appbuilder/security/views.py:148
+#: flask_appbuilder/security/views.py:149
 msgid "Show User"
 msgstr "Prikaži uporabnika"
 
-#: flask_appbuilder/security/views.py:149
+#: flask_appbuilder/security/views.py:150
 msgid "Add User"
 msgstr "Dodaj uporabnika"
 
-#: flask_appbuilder/security/views.py:150
-#: flask_appbuilder/security/views.py:248
+#: flask_appbuilder/security/views.py:151
+#: flask_appbuilder/security/views.py:249
 msgid "Edit User"
 msgstr "Uredi uporabnika"
 
-#: flask_appbuilder/security/views.py:153
+#: flask_appbuilder/security/views.py:154
 msgid "Full Name"
 msgstr "Celotno ime"
 
-#: flask_appbuilder/security/views.py:158
+#: flask_appbuilder/security/views.py:159
 msgid "Is Active?"
 msgstr "Aktiven?"
 
-#: flask_appbuilder/security/views.py:160
+#: flask_appbuilder/security/views.py:161
 msgid "Role"
 msgstr "Vloga"
 
-#: flask_appbuilder/security/views.py:161
+#: flask_appbuilder/security/views.py:162
 msgid "Last login"
 msgstr "Zadnja prijava"
 
-#: flask_appbuilder/security/views.py:162
-#: flask_appbuilder/security/views.py:406
+#: flask_appbuilder/security/views.py:163
+#: flask_appbuilder/security/views.py:407
 msgid "Login count"
 msgstr "Število prijav"
 
-#: flask_appbuilder/security/views.py:163
-#: flask_appbuilder/security/views.py:407
+#: flask_appbuilder/security/views.py:164
+#: flask_appbuilder/security/views.py:408
 msgid "Failed login count"
 msgstr "Število neuspešnih prijav"
 
-#: flask_appbuilder/security/views.py:164
+#: flask_appbuilder/security/views.py:165
 msgid "Created on"
 msgstr "Ustvarjeno"
 
-#: flask_appbuilder/security/views.py:165
+#: flask_appbuilder/security/views.py:166
 msgid "Created by"
 msgstr "Ustvaril"
 
-#: flask_appbuilder/security/views.py:166
+#: flask_appbuilder/security/views.py:167
 msgid "Changed on"
 msgstr "Spremenjen"
 
-#: flask_appbuilder/security/views.py:167
+#: flask_appbuilder/security/views.py:168
 msgid "Changed by"
 msgstr "Spremenil"
 
-#: flask_appbuilder/security/views.py:173
+#: flask_appbuilder/security/views.py:174
 msgid "Username valid for authentication on DB or LDAP, unused for OID auth"
 msgstr ""
-"Uporabniško ime je veljavno za DB ali LDAP avtentikacijo. Ni uporabljeno za "
-"OID avtentikacijo"
+"Uporabniško ime je veljavno za DB ali LDAP avtentikacijo. Ni uporabljeno "
+"za OID avtentikacijo"
 
-#: flask_appbuilder/security/views.py:176
-#: flask_appbuilder/security/views.py:305
+#: flask_appbuilder/security/views.py:177
+#: flask_appbuilder/security/views.py:306
 msgid "The user's password for authentication"
 msgstr "Uporabnikovo geslo za avtentikacijo"
 
-#: flask_appbuilder/security/views.py:177
+#: flask_appbuilder/security/views.py:178
 msgid "It's not a good policy to remove a user, just make it inactive"
 msgstr "Izbris uporabnika ni dobra praksa, raje ga deaktivirajte"
 
-#: flask_appbuilder/security/views.py:180
+#: flask_appbuilder/security/views.py:181
 msgid "The user's email, this will also be used for OID auth"
 msgstr "Uporabnikov e-naslov, uporabljen bo tudi za OID avtentikacijo"
 
-#: flask_appbuilder/security/views.py:186
-#: flask_appbuilder/security/views.py:311
+#: flask_appbuilder/security/views.py:187
+#: flask_appbuilder/security/views.py:312
 msgid "Please rewrite the user's password to confirm"
 msgstr "Ponovno vpišite geslo za potrditev"
 
-#: flask_appbuilder/security/views.py:193
-#: flask_appbuilder/security/views.py:218
+#: flask_appbuilder/security/views.py:194
+#: flask_appbuilder/security/views.py:219
 msgid "User info"
 msgstr "Informacije o uporabniku"
 
-#: flask_appbuilder/security/views.py:197
-#: flask_appbuilder/security/views.py:222
+#: flask_appbuilder/security/views.py:198
+#: flask_appbuilder/security/views.py:223
 msgid "Personal Info"
 msgstr "Osebne informacije"
 
-#: flask_appbuilder/security/views.py:201
+#: flask_appbuilder/security/views.py:202
 msgid "Audit Info"
 msgstr "Revizijske informacije"
 
-#: flask_appbuilder/security/views.py:231
+#: flask_appbuilder/security/views.py:232
 msgid "Your user information"
 msgstr "Vaše uporabniške informacije"
 
-#: flask_appbuilder/security/views.py:373
+#: flask_appbuilder/security/views.py:374
 msgid "Reset my password"
 msgstr "Ponastavi geslo"
 
-#: flask_appbuilder/security/views.py:384
+#: flask_appbuilder/security/views.py:385
 msgid "Reset Password"
 msgstr "Ponastavi geslo"
 
-#: flask_appbuilder/security/views.py:403
+#: flask_appbuilder/security/views.py:404
 msgid "User Statistics"
 msgstr "Uporabnikova statistika"
 
-#: flask_appbuilder/security/views.py:442
+#: flask_appbuilder/security/views.py:443
 msgid "Show Role"
 msgstr "Prikaži vlogo"
 
-#: flask_appbuilder/security/views.py:443
+#: flask_appbuilder/security/views.py:444
 msgid "Add Role"
 msgstr "Dodaj vlogo"
 
-#: flask_appbuilder/security/views.py:444
+#: flask_appbuilder/security/views.py:445
 msgid "Edit Role"
 msgstr "Uredi vlogo"
 
-#: flask_appbuilder/security/views.py:451
+#: flask_appbuilder/security/views.py:452
 msgid "Permissions"
 msgstr "Dovoljenja"
 
-#: flask_appbuilder/security/views.py:461
+#: flask_appbuilder/security/views.py:462
 msgid "Copy Role"
 msgstr "Kopiraj vlogo"
 
-#: flask_appbuilder/security/views.py:462
+#: flask_appbuilder/security/views.py:463
 msgid "Copy the selected roles?"
 msgstr "Kopiraj izbrane vloge?"
 
-#: flask_appbuilder/security/views.py:480
+#: flask_appbuilder/security/views.py:481
 msgid "List of Registration Requests"
 msgstr "Seznam zahtev za registracijo"
 
-#: flask_appbuilder/security/views.py:481
+#: flask_appbuilder/security/views.py:482
 msgid "Show Registration"
 msgstr "Prikaži registracijo"
 
-#: flask_appbuilder/security/views.py:490
+#: flask_appbuilder/security/views.py:491
 msgid "Invalid login. Please try again."
 msgstr "Neveljavna prijava. Poskusite znova."
 
-#: flask_appbuilder/security/views.py:491
+#: flask_appbuilder/security/views.py:492
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:46
 #: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:40
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:118
@@ -588,43 +587,43 @@ msgstr "Velikost strani"
 msgid "Order by"
 msgstr "Razvrsti"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:324
+#: flask_appbuilder/templates/appbuilder/general/lib.html:320
 msgid "Record Count"
 msgstr "Število zapisov"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:373
+#: flask_appbuilder/templates/appbuilder/general/lib.html:369
 msgid "Add a new record"
 msgstr "Dodaj zapis"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:374
+#: flask_appbuilder/templates/appbuilder/general/lib.html:370
 msgid "Add"
 msgstr "Dodaj"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:381
+#: flask_appbuilder/templates/appbuilder/general/lib.html:377
 msgid "Edit record"
 msgstr "Uredi zapis"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:382
+#: flask_appbuilder/templates/appbuilder/general/lib.html:378
 msgid "Edit"
 msgstr "Uredi"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:389
+#: flask_appbuilder/templates/appbuilder/general/lib.html:385
 msgid "Show record"
 msgstr "Prikaži zapis"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:390
+#: flask_appbuilder/templates/appbuilder/general/lib.html:386
 msgid "Show"
 msgstr "Prikaži"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:396
+#: flask_appbuilder/templates/appbuilder/general/lib.html:392
 msgid "Delete record"
 msgstr "Izbriši zapis"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:397
+#: flask_appbuilder/templates/appbuilder/general/lib.html:393
 msgid "You sure you want to delete this item?"
 msgstr "Ste prepričani, da želite izbrisati ta vnos?"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:398
+#: flask_appbuilder/templates/appbuilder/general/lib.html:394
 msgid "Delete"
 msgstr "Izbriši"
 
@@ -688,3 +687,4 @@ msgstr "Prijavite se z:"
 #: flask_appbuilder/templates/appbuilder/general/widgets/search.html:7
 msgid "Add Filter"
 msgstr "Dodaj filter"
+
