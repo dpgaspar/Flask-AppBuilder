@@ -17,7 +17,11 @@
 
     {% block head_css %}
       <link href="{{url_for('appbuilder.static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
-      <link href="{{url_for('appbuilder.static',filename='css/font-awesome.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/fontawesome/fontawesome.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/fontawesome/regular.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/fontawesome/solid.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/fontawesome/brands.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/fontawesome/v4-shims.min.css')}}" rel="stylesheet">
       {% if appbuilder.app_theme %}
         <link href="{{url_for('appbuilder.static',filename='css/themes/'+ appbuilder.app_theme )}}" rel="stylesheet">
       {% endif %}
