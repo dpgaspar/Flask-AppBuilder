@@ -140,7 +140,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	// ----------------------------------------------------------
     function changeOperation(e, $el, name) {
         $in = $el.find('.filter_val');
-        $in.attr('name','_flt_' + e.val + '_' + name);
+        $in.attr('name','_flt_' + e.delegateTarget.value + '_' + name);
     }
 
 
