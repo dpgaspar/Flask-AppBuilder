@@ -506,6 +506,10 @@ class SQLAInterface(BaseInterface):
         )
         query_results = query.all()
 
+        # add filters to the result for further processing (render can highlight text for example
+        for i,item in enumerate(query_results):
+            query_results[i]._filters = filters
+
         result = []
         for item in query_results:
             if hasattr(item, self.obj.__name__):
