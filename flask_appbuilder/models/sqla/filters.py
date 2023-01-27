@@ -116,6 +116,15 @@ class FilterNotEndsWith(BaseFilter):
         return query.filter(~field.ilike("%" + value))
 
 
+class FilterMatch(BaseFilter):
+    name = lazy_gettext("Match")
+    arg_name = "mt"
+
+    def apply(self, query, value):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(field.match(value))
+
+
 class FilterContains(BaseFilter):
     name = lazy_gettext("Contains")
     arg_name = "ct"
@@ -307,6 +316,7 @@ class SQLAFilterConverter(BaseFilterConverter):
                 FilterNotEndsWith,
                 FilterNotContains,
                 FilterNotEqual,
+                FilterMatch,
             ],
         ),
         (
@@ -333,6 +343,7 @@ class SQLAFilterConverter(BaseFilterConverter):
                 FilterNotEndsWith,
                 FilterNotContains,
                 FilterNotEqual,
+                FilterMatch,
             ],
         ),
         ("is_integer", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
