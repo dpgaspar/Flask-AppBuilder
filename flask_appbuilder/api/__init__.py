@@ -110,7 +110,7 @@ def safe(f: Callable[..., Any]) -> Callable[..., Any]:
         except BadRequest as e:
             return self.response_400(message=str(e))
         except Exception as e:
-            logging.exception(e)
+            log.exception(e)
             return self.response_500(message=get_error_msg())
 
     return functools.update_wrapper(wraps, f)
