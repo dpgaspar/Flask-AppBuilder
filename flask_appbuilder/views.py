@@ -555,6 +555,9 @@ class ModelView(RestCRUDView):
         except FABException as exc:
             flash(f"An error occurred: {exc}", "warning")
             return redirect(self.get_redirect())
+        except sqlalchemy.exc.OperationalError as exc:
+            flash( f"An error occurred: {exc}. ", "warning")
+            return redirect(self.get_redirect())
         return self.render_template(
             self.list_template, title=self.list_title, widgets=widgets
         )
