@@ -640,7 +640,7 @@ class ModelView(RestCRUDView):
     def download(self, filename):
         return send_file(
             op.join(self.appbuilder.app.config["UPLOAD_FOLDER"], filename),
-            attachment_filename=uuid_originalname(filename),
+            download_name=uuid_originalname(filename),
             as_attachment=True,
         )
 

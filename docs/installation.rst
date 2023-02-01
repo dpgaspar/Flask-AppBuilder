@@ -114,7 +114,7 @@ Installation Requirements
 
 pip installs all the requirements for you.
 
-Flask App Builder dependes on
+Flask App Builder depends on
 
     - flask : The web framework, this is what we're extending.
     - flask-sqlalchemy : DB access (see SQLAlchemy).

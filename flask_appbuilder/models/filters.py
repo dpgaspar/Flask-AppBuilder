@@ -240,7 +240,7 @@ class Filters(object):
             self._add_filter(filter_class(column_name, self.datamodel), value)
         return self
 
-    def get_joined_filters(self, filters):
+    def get_joined_filters(self, filters) -> "Filters":
         """
             Creates a new filters class with active filters joined
         """

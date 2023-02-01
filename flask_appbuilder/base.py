@@ -59,8 +59,7 @@ def dynamic_class_import(class_path: str) -> Optional[DynamicImportType]:
 class AppBuilder:
     """
     This is the base class for all the framework.
-    This is were you will register all your views
-    and create the menu structure.
+    This is where you will register all your views and create the menu structure.
     Will hold your flask app object, all your views, and security classes.
 
     initialize your application like this for SQLAlchemy::
@@ -294,9 +293,9 @@ class AppBuilder:
     @property
     def version(self) -> str:
         """
-            Get the current F.A.B. version
+        Get the current F.A.B. version
 
-            :return: String with the current F.A.B. version
+        :return: String with the current F.A.B. version
         """
         return __version__
 
