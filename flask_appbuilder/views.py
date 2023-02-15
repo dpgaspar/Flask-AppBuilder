@@ -15,7 +15,7 @@ from flask import (
     url_for,
 )
 from flask_appbuilder.exceptions import FABException
-
+import sqlalchemy
 
 from ._compat import as_unicode, string_types
 from .baseviews import BaseCRUDView, BaseFormView, BaseView, expose, expose_api
