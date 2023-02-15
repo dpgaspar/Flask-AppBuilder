@@ -82,7 +82,7 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | PEM-encoded                                |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_CACERTFILE               | CA Certificate file to check peer          |   No      |
-|                                        | certificate. FIle must be PEM-encoded      |           |
+|                                        | certificate. File must be PEM-encoded      |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_CERTFILE                 | Certificate file for client auth           |   No      |
 |                                        | use with AUTH_LDAP_TLS_KEYFILE             |           |
