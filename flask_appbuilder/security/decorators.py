@@ -1,6 +1,7 @@
 import functools
 import logging
-from typing import Callable, List, Optional, Union, TypeVar, ParamSpec
+from typing import Callable, List, Optional, Union, TypeVar
+from typing_extensions import ParamSpec
 
 from flask import (
     Response,
