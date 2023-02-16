@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from hiro import Timeline
-
 from flask_appbuilder import SQLA
+from hiro import Timeline
 
 from ..base import FABTestCase
 from ..const import (

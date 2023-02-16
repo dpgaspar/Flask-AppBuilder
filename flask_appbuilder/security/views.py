@@ -3,15 +3,7 @@ import logging
 import re
 from typing import Any, List, Optional
 
-import jwt
 from flask import abort, current_app, flash, g, redirect, request, session, url_for
-from flask_babel import lazy_gettext
-from flask_login import login_user, logout_user
-from werkzeug.security import generate_password_hash
-from werkzeug.wrappers import Response as WerkzeugResponse
-from wtforms import PasswordField, validators
-from wtforms.validators import EqualTo
-
 from flask_appbuilder._compat import as_unicode
 from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import BaseView
@@ -29,8 +21,16 @@ from flask_appbuilder.security.forms import (
 from flask_appbuilder.security.utils import generate_random_string
 from flask_appbuilder.utils.base import get_safe_redirect, lazy_formatter_gettext
 from flask_appbuilder.validators import PasswordComplexityValidator
-from flask_appbuilder.views import ModelView, SimpleFormView, expose
+from flask_appbuilder.views import expose, ModelView, SimpleFormView
 from flask_appbuilder.widgets import ListWidget, ShowWidget
+from flask_babel import lazy_gettext
+from flask_login import login_user, logout_user
+import jwt
+from werkzeug.security import generate_password_hash
+from werkzeug.wrappers import Response as WerkzeugResponse
+from wtforms import PasswordField, validators
+from wtforms.validators import EqualTo
+
 
 log = logging.getLogger(__name__)
 

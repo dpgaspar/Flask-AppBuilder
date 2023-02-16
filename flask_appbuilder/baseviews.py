@@ -1,13 +1,13 @@
+from datetime import date, datetime
+from inspect import isclass
 import json
 import logging
 import re
-from datetime import date, datetime
-from inspect import isclass
-from typing import TYPE_CHECKING, List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from flask import (
-    Blueprint,
     abort,
+    Blueprint,
     current_app,
     flash,
     render_template,
@@ -22,11 +22,11 @@ from .const import PERMISSION_PREFIX
 from .forms import GeneralModelConverter
 from .hooks import get_before_request_hooks, wrap_route_handler_with_hooks
 from .urltools import (
-    Stack,
     get_filter_args,
     get_order_args,
     get_page_args,
     get_page_size_args,
+    Stack,
 )
 from .widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
 

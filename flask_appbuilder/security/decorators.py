@@ -1,22 +1,17 @@
 import functools
 import logging
-from typing import Callable, List, Optional, Union, TypeVar
-from typing_extensions import ParamSpec
+from typing import Callable, List, Optional, TypeVar, Union
 
 from flask import (
-    Response,
     current_app,
     flash,
     jsonify,
     make_response,
     redirect,
     request,
+    Response,
     url_for,
 )
-from flask_jwt_extended import verify_jwt_in_request
-from flask_limiter.wrappers import RequestLimit
-from flask_login import current_user
-
 from flask_appbuilder._compat import as_unicode
 from flask_appbuilder.const import (
     FLAMSG_ERR_SEC_ACCESS_DENIED,
@@ -24,6 +19,10 @@ from flask_appbuilder.const import (
     PERMISSION_PREFIX,
 )
 from flask_appbuilder.utils.limit import Limit
+from flask_jwt_extended import verify_jwt_in_request
+from flask_limiter.wrappers import RequestLimit
+from flask_login import current_user
+from typing_extensions import ParamSpec
 
 log = logging.getLogger(__name__)
 

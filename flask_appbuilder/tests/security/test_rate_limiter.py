@@ -1,11 +1,11 @@
 import logging
 
+from flask import Flask
+from flask_appbuilder import AppBuilder, BaseView, SQLA
+from flask_appbuilder.tests.base import FABTestCase
 import hiro
 import jinja2
-from flask import Flask
 
-from flask_appbuilder import SQLA, AppBuilder, BaseView
-from flask_appbuilder.tests.base import FABTestCase
 from ..const import INVALID_LOGIN_STRING, PASSWORD_ADMIN, USERNAME_ADMIN
 from ...api import BaseApi, expose
 from ...security.decorators import limit
