@@ -1,6 +1,6 @@
 import functools
 import logging
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Union, TypeVar, ParamSpec
 
 from flask import (
     Response,
@@ -25,6 +25,9 @@ from flask_appbuilder.const import (
 from flask_appbuilder.utils.limit import Limit
 
 log = logging.getLogger(__name__)
+
+R = TypeVar('R')
+P = ParamSpec('P')
 
 
 def response_unauthorized_mvc(status_code: int) -> Response:
@@ -279,7 +282,7 @@ def limit(
      takes no parameters and returns the cost as an integer (Default: ``1``).
     """
 
-    def wraps(f):
+    def wraps(f: Callable[P, R]) -> Callable[P, R]:
         _limit = Limit(
             limit_value=limit_value,
             key_func=key_func,

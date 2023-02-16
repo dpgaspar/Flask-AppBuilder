@@ -5,7 +5,7 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
-from flask import g, session, url_for
+from flask import Flask, g, session, url_for
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
@@ -294,7 +294,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Setup Flask-Limiter
         self.limiter = self.create_limiter(app)
 
-    def create_limiter(self, app) -> Limiter:
+    def create_limiter(self, app: Flask) -> Limiter:
         limiter = Limiter(key_func=get_remote_address)
         limiter.init_app(app)
         return limiter
@@ -504,11 +504,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["OAUTH_PROVIDERS"]
 
     @property
-    def is_auth_limited(self):
+    def is_auth_limited(self) -> bool:
         return self.appbuilder.get_app.config["AUTH_RATE_LIMITED"]
 
     @property
-    def auth_rate_limit(self):
+    def auth_rate_limit(self) -> str:
         return self.appbuilder.get_app.config["AUTH_RATE_LIMIT"]
 
     @property
@@ -1578,20 +1578,22 @@ class BaseSecurityManager(AbstractSecurityManager):
             )
 
     def add_limit_view(self, baseview):
-        if baseview.limits:
-            for limit in baseview.limits:
-                self.limiter.limit(
-                    limit_value=limit.limit_value,
-                    key_func=limit.key_func,
-                    per_method=limit.per_method,
-                    methods=limit.methods,
-                    error_message=limit.error_message,
-                    exempt_when=limit.exempt_when,
-                    override_defaults=limit.override_defaults,
-                    deduct_when=limit.deduct_when,
-                    on_breach=limit.on_breach,
-                    cost=limit.cost,
-                )(baseview.blueprint)
+        if not baseview.limits:
+            return
+
+        for limit in baseview.limits:
+            self.limiter.limit(
+                limit_value=limit.limit_value,
+                key_func=limit.key_func,
+                per_method=limit.per_method,
+                methods=limit.methods,
+                error_message=limit.error_message,
+                exempt_when=limit.exempt_when,
+                override_defaults=limit.override_defaults,
+                deduct_when=limit.deduct_when,
+                on_breach=limit.on_breach,
+                cost=limit.cost,
+            )(baseview.blueprint)
 
     def add_permissions_view(self, base_permissions, view_menu):
         """
