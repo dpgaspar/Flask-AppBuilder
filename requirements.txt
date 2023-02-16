@@ -37,7 +37,7 @@ flask-babel==2.0.0
     # via Flask-AppBuilder (setup.py)
 flask-jwt-extended==4.3.1
     # via Flask-AppBuilder (setup.py)
-flask-limiter==3.1.0
+flask-limiter==3.2.0
     # via Flask-AppBuilder (setup.py)
 flask-login==0.6.0
     # via Flask-AppBuilder (setup.py)
