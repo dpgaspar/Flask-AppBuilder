@@ -10,6 +10,7 @@ from flask_appbuilder.models.filters import (
 )
 from flask_babel import lazy_gettext
 from sqlalchemy.exc import SQLAlchemyError
+import sqlalchemy
 
 log = logging.getLogger(__name__)
 
@@ -122,7 +123,7 @@ class FilterMatch(BaseFilter):
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(field.match(value))
+        return query.filter(sqlalchemy.func.matching(value,field))
 
 
 class FilterContains(BaseFilter):
