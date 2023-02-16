@@ -27,8 +27,8 @@ from flask_appbuilder.utils.limit import Limit
 
 log = logging.getLogger(__name__)
 
-R = TypeVar('R')
-P = ParamSpec('P')
+R = TypeVar("R")
+P = ParamSpec("P")
 
 
 def response_unauthorized_mvc(status_code: int) -> Response:
