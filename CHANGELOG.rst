@@ -1,6 +1,15 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.2.1
+-----------------------------------
+
+- ci: fix pyodbc install failure (#1992) [Daniel Vaz Gaspar]
+- fix: Remove unused parameter from QuerySelectMultipleField instantiation (#1991) [Dosenpfand]
+- fix: Make sure user input is not treated as safe in the oauth view (#1978) [Glenn Schuurman]
+- fix: don't use root logger on safe decorator (#1990) [Igor Khrol]
+- chore: upgrade Font Awesome to version 6 (#1979) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.2.0
 -----------------------------------
 
