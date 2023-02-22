@@ -4,7 +4,7 @@ from wtforms import widgets
 from wtforms.widgets import html_params
 
 
-class DatePickerWidget(object):
+class DatePickerWidget:
     """
     Date Time picker from Eonasdan GitHub
 
@@ -30,7 +30,7 @@ class DatePickerWidget(object):
         )
 
 
-class DateTimePickerWidget(object):
+class DateTimePickerWidget:
     """
     Date Time picker from Eonasdan GitHub
 
@@ -58,7 +58,7 @@ class DateTimePickerWidget(object):
 
 class BS3TextFieldWidget(widgets.TextInput):
     def __call__(self, field, **kwargs):
-        kwargs["class"] = u"form-control"
+        kwargs["class"] = "form-control"
         if field.label:
             kwargs["placeholder"] = field.label.text
         if "name_" in kwargs:
@@ -68,7 +68,7 @@ class BS3TextFieldWidget(widgets.TextInput):
 
 class BS3TextAreaFieldWidget(widgets.TextArea):
     def __call__(self, field, **kwargs):
-        kwargs["class"] = u"form-control"
+        kwargs["class"] = "form-control"
         kwargs["rows"] = 3
         if field.label:
             kwargs["placeholder"] = field.label.text
@@ -77,25 +77,26 @@ class BS3TextAreaFieldWidget(widgets.TextArea):
 
 class BS3PasswordFieldWidget(widgets.PasswordInput):
     def __call__(self, field, **kwargs):
-        kwargs["class"] = u"form-control"
+        kwargs["class"] = "form-control"
         if field.label:
             kwargs["placeholder"] = field.label.text
         return super(BS3PasswordFieldWidget, self).__call__(field, **kwargs)
 
 
-class Select2AJAXWidget(object):
+class Select2AJAXWidget:
     data_template = "<input %(text)s />"
 
     def __init__(self, endpoint, extra_classes=None, style=None):
         self.endpoint = endpoint
         self.extra_classes = extra_classes
-        self.style = style or u"width:250px"
+        self.style = style or ""
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault("id", field.id)
         kwargs.setdefault("name", field.name)
         kwargs.setdefault("endpoint", self.endpoint)
-        kwargs.setdefault("style", self.style)
+        if self.style:
+            kwargs.setdefault("style", self.style)
         input_classes = "input-group my_select2_ajax"
         if self.extra_classes:
             input_classes = input_classes + " " + self.extra_classes
@@ -109,21 +110,22 @@ class Select2AJAXWidget(object):
         )
 
 
-class Select2SlaveAJAXWidget(object):
+class Select2SlaveAJAXWidget:
     data_template = '<input class="input-group my_select2_ajax_slave" %(text)s />'
 
     def __init__(self, master_id, endpoint, extra_classes=None, style=None):
         self.endpoint = endpoint
         self.master_id = master_id
         self.extra_classes = extra_classes
-        self.style = style or u"width:250px"
+        self.style = style or ""
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault("id", field.id)
         kwargs.setdefault("name", field.name)
         kwargs.setdefault("endpoint", self.endpoint)
         kwargs.setdefault("master_id", self.master_id)
-        kwargs.setdefault("style", self.style)
+        if self.style:
+            kwargs.setdefault("style", self.style)
         input_classes = "input-group my_select2_ajax"
         if self.extra_classes:
             input_classes = input_classes + " " + self.extra_classes
@@ -143,14 +145,15 @@ class Select2Widget(widgets.Select):
 
     def __init__(self, extra_classes=None, style=None):
         self.extra_classes = extra_classes
-        self.style = style or u"width:250px"
+        self.style = style
         super(Select2Widget, self).__init__()
 
     def __call__(self, field, **kwargs):
-        kwargs["class"] = u"my_select2 form-control"
+        kwargs["class"] = "my_select2 form-control"
         if self.extra_classes:
             kwargs["class"] = kwargs["class"] + " " + self.extra_classes
-        kwargs["style"] = self.style
+        if self.style:
+            kwargs["style"] = self.style
         kwargs["data-placeholder"] = _("Select Value")
         if "name_" in kwargs:
             field.name = kwargs["name_"]
@@ -162,16 +165,17 @@ class Select2ManyWidget(widgets.Select):
 
     def __init__(self, extra_classes=None, style=None):
         self.extra_classes = extra_classes
-        self.style = style or u"width:250px"
+        self.style = style
         super(Select2ManyWidget, self).__init__()
 
     def __call__(self, field, **kwargs):
-        kwargs["class"] = u"my_select2 form-control"
+        kwargs["class"] = "my_select2 form-control"
         if self.extra_classes:
             kwargs["class"] = kwargs["class"] + " " + self.extra_classes
-        kwargs["style"] = self.style
+        if self.style:
+            kwargs["style"] = self.style
         kwargs["data-placeholder"] = _("Select Value")
-        kwargs["multiple"] = u"true"
+        kwargs["multiple"] = "true"
         if "name_" in kwargs:
             field.name = kwargs["name_"]
         return super(Select2ManyWidget, self).__call__(field, **kwargs)
