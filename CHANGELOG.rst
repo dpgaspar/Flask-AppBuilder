@@ -1,6 +1,41 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.2.1
+-----------------------------------
+
+- ci: fix pyodbc install failure (#1992) [Daniel Vaz Gaspar]
+- fix: Remove unused parameter from QuerySelectMultipleField instantiation (#1991) [Dosenpfand]
+- fix: Make sure user input is not treated as safe in the oauth view (#1978) [Glenn Schuurman]
+- fix: don't use root logger on safe decorator (#1990) [Igor Khrol]
+- chore: upgrade Font Awesome to version 6 (#1979) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.2.0
+-----------------------------------
+
+- feat: add opt-in outer default load option to model REST API (#1971) [Daniel Vaz Gaspar]
+- chore: Add more type annotation to REST API module (#1969) [Daniel Vaz Gaspar]
+- fix: upgrade Select2 to 4.0.13 (#1968) [Nicola Gramola]
+- fix: REST API one-to-one relationship (#1965) [Daniel Vaz Gaspar]
+- fix(api): _info HTTP 500 when exists a defined invalid search field (#1963) [Daniel Vaz Gaspar]
+- chore: Use implicit default loading rather than explicit joined eager loading (#1961) [John Bodley]
+- chore: Increase upper-bound on apispec (#1903) [Tomáš Drtina]
+- fix: replace deprecated attachment_filename (#1956) [Steve Embling]
+
+Improvements and Bug fixes on 4.1.6
+-----------------------------------
+
+- feat: add utility method on SM for fetching all roles and perms for a user (#1950) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.1.5
+-----------------------------------
+
+- fix: HTML label IDs for db and ldap login (#1935) [Dosenpfand]
+- fix: OAuth state parameter (#1932) [Daniel Vaz Gaspar]
+- docs: Fix a few typos (#1929) [Tim Gates]
+- chore: Update compiled german translation, delete backup file (#1928) [Dosenpfand]
+- fix: addon managers import (#1920) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.1.4
 -----------------------------------
 
