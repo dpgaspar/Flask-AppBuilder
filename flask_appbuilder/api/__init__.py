@@ -487,7 +487,9 @@ class BaseApi(AbstractViewApi):
         # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
             self.previous_class_permission_name = self.__class__.__name__
-        self.class_permission_name = self.class_permission_name or self.__class__.__name__
+        self.class_permission_name = (
+            self.class_permission_name or self.__class__.__name__
+        )
 
         # Init previous permission override attrs
         is_collect_previous = False
@@ -1237,8 +1239,9 @@ class ModelRestApi(BaseModelApi):
             ]
         self.list_select_columns = self.list_select_columns or self.list_columns
 
-        self.order_columns = self.order_columns or self.datamodel.get_order_columns_list(
-            list_columns=self.list_columns
+        self.order_columns = (
+            self.order_columns
+            or self.datamodel.get_order_columns_list(list_columns=self.list_columns)
         )
         # Process excluded columns
         if not self.show_columns:
@@ -1248,7 +1251,9 @@ class ModelRestApi(BaseModelApi):
         self.show_select_columns = self.show_select_columns or self.show_columns
 
         if not self.add_columns:
-            self.add_columns = [x for x in list_cols if x not in self.add_exclude_columns]
+            self.add_columns = [
+                x for x in list_cols if x not in self.add_exclude_columns
+            ]
         if not self.edit_columns:
             self.edit_columns = [
                 x for x in list_cols if x not in self.edit_exclude_columns
@@ -1326,7 +1331,9 @@ class ModelRestApi(BaseModelApi):
         else:
             response[API_SHOW_COLUMNS_RES_KEY] = self.show_columns
 
-    def merge_description_columns(self, response: Dict[str, Any], **kwargs: Any) -> None:
+    def merge_description_columns(
+        self, response: Dict[str, Any], **kwargs: Any
+    ) -> None:
         pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if pruned_select_cols:
             response[API_DESCRIPTION_COLUMNS_RES_KEY] = self._description_columns_json(
@@ -1376,7 +1383,9 @@ class ModelRestApi(BaseModelApi):
     @safe
     @rison(get_info_schema)
     @permission_name("info")
-    @merge_response_func(BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY)
+    @merge_response_func(
+        BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY
+    )
     @merge_response_func(merge_add_field_info, API_ADD_COLUMNS_RIS_KEY)
     @merge_response_func(merge_edit_field_info, API_EDIT_COLUMNS_RIS_KEY)
     @merge_response_func(merge_search_filters, API_FILTERS_RIS_KEY)
