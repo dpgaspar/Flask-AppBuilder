@@ -1,7 +1,7 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
-Improvements and Bug fixes on 4.2.2
+Improvements and Bug fixes on 4.3.0
 -----------------------------------
 
 - fix: disable rate limit by default (#1999) [Daniel Vaz Gaspar]
