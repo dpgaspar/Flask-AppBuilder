@@ -393,8 +393,9 @@ Authentication: Rate limiting
 -----------------------------
 
 To prevent brute-forcing of credentials, you can apply rate limits to AuthViews in 4.2.0, so that
-only 10 POST requests can be made every 20 seconds. This can be enabled by setting ``AUTH_RATE_LIMITED`` to
-``True`` or can be changed by adjusting ``AUTH_RATE_LIMIT`` to, for example, ``1 per 10 seconds``. Take a look
+only 10 POST requests can be made every 20 seconds. This can be enabled by setting
+``AUTH_RATE_LIMITED`` and ``RATELIMIT_ENABLED`` to ``True``.
+The rate can be changed by adjusting ``AUTH_RATE_LIMIT`` to, for example, ``1 per 10 seconds``. Take a look
 at the `documentation <https://flask-limiter.readthedocs.io/en/stable/>`_ of Flask-Limiter for more options and
 examples.
 
