@@ -258,7 +258,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
 
         # Rate limiting
-        app.config.setdefault("AUTH_RATE_LIMITED", True)
+        app.config.setdefault("AUTH_RATE_LIMITED", False)
         app.config.setdefault("AUTH_RATE_LIMIT", "10 per 20 second")
 
         if self.auth_type == AUTH_OID:
