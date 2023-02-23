@@ -244,78 +244,78 @@ class BaseApi(AbstractViewApi):
 
     version: Optional[str] = "v1"
     """
-        Define the Api version for this resource/class
+    Define the Api version for this resource/class
     """
     route_base: Optional[str] = None
     """
-        Define the route base where all methods will suffix from
+    Define the route base where all methods will suffix from
     """
     resource_name: Optional[str] = None
     """
-        Defines a custom resource name, overrides the inferred from Class name
-        makes no sense to use it with route base
+    Defines a custom resource name, overrides the inferred from Class name
+    makes no sense to use it with route base
     """
     base_permissions: Optional[List[str]] = None
     """
-        A list of allowed base permissions::
+    A list of allowed base permissions::
 
-            class ExampleApi(BaseApi):
-                base_permissions = ['can_get']
+        class ExampleApi(BaseApi):
+            base_permissions = ['can_get']
 
     """
     class_permission_name: Optional[str] = None
     """
-        Override class permission name default fallback to self.__class__.__name__
+    Override class permission name default fallback to self.__class__.__name__
     """
     previous_class_permission_name: Optional[str] = None
     """
-        If set security converge will replace all permissions tuples
-        with this name by the class_permission_name or self.__class__.__name__
+    If set security converge will replace all permissions tuples
+    with this name by the class_permission_name or self.__class__.__name__
     """
     method_permission_name: Optional[Dict[str, str]] = None
     """
-        Override method permission names, example::
+    Override method permission names, example::
 
-            method_permissions_name = {
-                'get_list': 'read',
-                'get': 'read',
-                'put': 'write',
-                'post': 'write',
-                'delete': 'write'
-            }
+        method_permissions_name = {
+            'get_list': 'read',
+            'get': 'read',
+            'put': 'write',
+            'post': 'write',
+            'delete': 'write'
+        }
     """
     previous_method_permission_name: Optional[Dict[str, str]] = None
     """
-        Use same structure as method_permission_name. If set security converge
-        will replace all method permissions by the new ones
+    Use same structure as method_permission_name. If set security converge
+    will replace all method permissions by the new ones
     """
     allow_browser_login = False
     """
-        Will allow flask-login cookie authorization on the API
-        default is False.
+    Will allow flask-login cookie authorization on the API
+    default is False.
     """
     csrf_exempt = True
     """
-        If using flask-wtf CSRFProtect exempt the API from check
+    If using flask-wtf CSRFProtect exempt the API from check
     """
     apispec_parameter_schemas: Optional[Dict[str, Dict[str, Any]]] = None
     """
-        Set your custom Rison parameter schemas here so that
-        they get registered on the OpenApi spec::
+    Set your custom Rison parameter schemas here so that
+    they get registered on the OpenApi spec::
 
-            custom_parameter = {
-                "type": "object"
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    }
+        custom_parameter = {
+            "type": "object"
+            "properties": {
+                "name": {
+                    "type": "string"
                 }
             }
+        }
 
-            class CustomApi(BaseApi):
-                apispec_parameter_schemas = {
-                    "custom_parameter": custom_parameter
-                }
+        class CustomApi(BaseApi):
+            apispec_parameter_schemas = {
+                "custom_parameter": custom_parameter
+            }
     """
     _apispec_parameter_schemas: Optional[Dict[str, Dict[str, Any]]] = None
 
@@ -404,66 +404,66 @@ class BaseApi(AbstractViewApi):
         },
     }
     """
-        Override custom OpenApi responses
+    Override custom OpenApi responses
     """
 
     exclude_route_methods: Set[str] = set()
     """
-        Does not register routes for a set of builtin ModelRestApi functions.
-        example::
+    Does not register routes for a set of builtin ModelRestApi functions.
+    example::
 
-            class ContactModelView(ModelRestApi):
-                datamodel = SQLAInterface(Contact)
-                exclude_route_methods = {"info", "get_list", "get"}
+        class ContactModelView(ModelRestApi):
+            datamodel = SQLAInterface(Contact)
+            exclude_route_methods = {"info", "get_list", "get"}
 
 
-        The previous examples will only register the `put`, `post` and `delete` routes
+    The previous examples will only register the `put`, `post` and `delete` routes
     """
     include_route_methods: Optional[Set[str]] = None
     """
-        If defined will assume a white list setup, where all endpoints are excluded
-        except those define on this attribute
-        example::
+    If defined will assume a white list setup, where all endpoints are excluded
+    except those define on this attribute
+    example::
 
-            class ContactModelView(ModelRestApi):
-                datamodel = SQLAInterface(Contact)
-                include_route_methods = {"list"}
+        class ContactModelView(ModelRestApi):
+            datamodel = SQLAInterface(Contact)
+            include_route_methods = {"list"}
 
 
-        The previous example will exclude all endpoints except the `list` endpoint
+    The previous example will exclude all endpoints except the `list` endpoint
     """
     openapi_spec_methods: Dict[str, Any] = {}
     """
-        Merge OpenAPI spec defined on the method's doc.
-        For example to merge/override `get_list`::
+    Merge OpenAPI spec defined on the method's doc.
+    For example to merge/override `get_list`::
 
 
-            class GreetingApi(BaseApi):
-                resource_name = "greeting"
-                openapi_spec_methods = {
-                    "greeting": {
-                        "get": {
-                           "description": "Override description",
-                        }
+        class GreetingApi(BaseApi):
+            resource_name = "greeting"
+            openapi_spec_methods = {
+                "greeting": {
+                    "get": {
+                       "description": "Override description",
                     }
                 }
+            }
     """
     openapi_spec_tag: Optional[str] = None
     """
-        By default all endpoints will be tagged (grouped) to their class name.
-        Use this attribute to override the tag name
+    By default all endpoints will be tagged (grouped) to their class name.
+    Use this attribute to override the tag name
     """
 
     limits: Optional[List[Limit]] = None
     """
-        List of limits for this api.
+    List of limits for this api.
 
-        Use it like this if you want to restrict the rate of requests to a view:
+    Use it like this if you want to restrict the rate of requests to a view::
 
-            class MyView(ModelView):
-                limits = [Limit("2 per 5 second")]
+        class MyView(ModelView):
+            limits = [Limit("2 per 5 second")]
 
-        or use the decorator @limit.
+    or use the decorator @limit.
     """
 
     def __init__(self) -> None:
@@ -487,9 +487,7 @@ class BaseApi(AbstractViewApi):
         # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
             self.previous_class_permission_name = self.__class__.__name__
-        self.class_permission_name = (
-            self.class_permission_name or self.__class__.__name__
-        )
+        self.class_permission_name = self.class_permission_name or self.__class__.__name__
 
         # Init previous permission override attrs
         is_collect_previous = False
@@ -1239,9 +1237,8 @@ class ModelRestApi(BaseModelApi):
             ]
         self.list_select_columns = self.list_select_columns or self.list_columns
 
-        self.order_columns = (
-            self.order_columns
-            or self.datamodel.get_order_columns_list(list_columns=self.list_columns)
+        self.order_columns = self.order_columns or self.datamodel.get_order_columns_list(
+            list_columns=self.list_columns
         )
         # Process excluded columns
         if not self.show_columns:
@@ -1251,9 +1248,7 @@ class ModelRestApi(BaseModelApi):
         self.show_select_columns = self.show_select_columns or self.show_columns
 
         if not self.add_columns:
-            self.add_columns = [
-                x for x in list_cols if x not in self.add_exclude_columns
-            ]
+            self.add_columns = [x for x in list_cols if x not in self.add_exclude_columns]
         if not self.edit_columns:
             self.edit_columns = [
                 x for x in list_cols if x not in self.edit_exclude_columns
@@ -1331,9 +1326,7 @@ class ModelRestApi(BaseModelApi):
         else:
             response[API_SHOW_COLUMNS_RES_KEY] = self.show_columns
 
-    def merge_description_columns(
-        self, response: Dict[str, Any], **kwargs: Any
-    ) -> None:
+    def merge_description_columns(self, response: Dict[str, Any], **kwargs: Any) -> None:
         pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if pruned_select_cols:
             response[API_DESCRIPTION_COLUMNS_RES_KEY] = self._description_columns_json(
@@ -1383,9 +1376,7 @@ class ModelRestApi(BaseModelApi):
     @safe
     @rison(get_info_schema)
     @permission_name("info")
-    @merge_response_func(
-        BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY
-    )
+    @merge_response_func(BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY)
     @merge_response_func(merge_add_field_info, API_ADD_COLUMNS_RIS_KEY)
     @merge_response_func(merge_edit_field_info, API_EDIT_COLUMNS_RIS_KEY)
     @merge_response_func(merge_search_filters, API_FILTERS_RIS_KEY)
