@@ -213,6 +213,26 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         assert response.location == "http://localhost/"
 
+    def test_db_login_failed_keep_next_url(self):
+        """
+        Test Security Keeping next url after failed login attempt
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            f"wrong_{PASSWORD_ADMIN}",
+            next_url="/users/list/",
+            follow_redirects=False,
+        )
+        response = self.client.post(
+            response.location,
+            data=dict(username=USERNAME_ADMIN, password=PASSWORD_ADMIN),
+            follow_redirects=False,
+        )
+
+        assert response.location == "http://localhost/users/list/"
+
     def test_auth_builtin_roles(self):
         """
         Test Security builtin roles readonly

@@ -154,6 +154,21 @@ You can give FlaskAppBuilder roles based on LDAP roles (note, this requires AUTH
     # force users to re-auth after 30min of inactivity (to keep roles in sync)
     PERMANENT_SESSION_LIFETIME = 1800
 
+TLS
+~~~
+
+For STARTTLS, configure an `ldap://` server and set `AUTH_LDAP_USE_TLS` to `True`::
+
+    AUTH_LDAP_SERVER = "ldap://ldap.example.com"
+    AUTH_LDAP_USE_TLS = True
+
+For LDAP over TLS (ldaps), configure the server with the `ldaps://` scheme and set `AUTH_LDAP_USE_TLS` to `False`::
+
+    AUTH_LDAP_SERVER = "ldaps://ldap.example.com"
+    AUTH_LDAP_USE_TLS = False
+
+Additional LDAP/TLS Options, including CA certificate settings and client authentication, can be found in the :doc:`config`.
+
 Authentication: OAuth
 ---------------------
 

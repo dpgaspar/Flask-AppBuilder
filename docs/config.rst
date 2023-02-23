@@ -56,6 +56,12 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | AUTH_TYPE = 2                              |           |
 |                                        |                                            |           |
 |                                        | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                        |                                            |           |
+|                                        | For using LDAP over TLS, set the protocol  |           |
+|                                        | scheme to "ldaps" and set                  |           |
+|                                        | "AUTH_LDAP_USE_TLS = False"                |           |
++----------------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_USE_TLS                      | Require the use of STARTTLS                |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_BIND_USER                    | Define the DN for the user that will be    |   No      |
 |                                        | used for the initial LDAP BIND.            |           |
@@ -72,10 +78,11 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | (Bool)                                     |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_CACERTDIR                | CA Certificate directory to check peer     |   No      |
-|                                        | certificate                                |           |
+|                                        | certificate. Certificate files must be     |           |
+|                                        | PEM-encoded                                |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_CACERTFILE               | CA Certificate file to check peer          |   No      |
-|                                        | certificate                                |           |
+|                                        | certificate. File must be PEM-encoded      |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_CERTFILE                 | Certificate file for client auth           |   No      |
 |                                        | use with AUTH_LDAP_TLS_KEYFILE             |           |
