@@ -389,6 +389,15 @@ Therefore, you can send tweets, post on the users Facebook, retrieve the user's 
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
 to get an idea of a simple use for this.
 
+Authentication: Rate limiting
+-----------------------------
+
+To prevent brute-forcing of credentials, FlaskApplicationBuilder applies rate limits to AuthViews in 4.2.0, so that
+only 2 POST requests can be made every 5 seconds. This can be disabled by setting ``AUTH_RATE_LIMITED`` to
+``False`` or can be changed by adjusting ``AUTH_RATE_LIMIT`` to, for example, ``1 per 10 seconds``. Take a look
+at the `documentation <https://flask-limiter.readthedocs.io/en/stable/>`_ of Flask-Limiter for more options and
+examples.
+
 Role based
 ----------
 

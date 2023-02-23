@@ -181,8 +181,20 @@ class BaseView(AbstractViewApi):
     default_view = "list"
     """ the default view for this BaseView, to be used with url_for (method name) """
     extra_args = None
-
     """ dictionary for injecting extra arguments into template """
+
+    limits = None
+    """
+        List of limits for this view.
+
+        Use it like this if you want to restrict the rate of requests to a view:
+
+            class MyView(ModelView):
+                limits = [Limit("2 per 5 second")]
+
+        or use the decorator @limit.
+    """
+
     _apis = None
 
     def __init__(self):
@@ -212,6 +224,9 @@ class BaseView(AbstractViewApi):
             self.base_permissions = set()
             is_add_base_permissions = True
 
+        if self.limits is None:
+            self.limits = []
+
         for attr_name in dir(self):
             # If include_route_methods is not None white list
             if (
@@ -239,6 +254,8 @@ class BaseView(AbstractViewApi):
                 _extra = getattr(getattr(self, attr_name), "_extra")
                 for key in _extra:
                     self._apis[key] = _extra[key]
+            if hasattr(getattr(self, attr_name), "_limit"):
+                self.limits.append(getattr(getattr(self, attr_name), "_limit"))
 
     def create_blueprint(self, appbuilder, endpoint=None, static_folder=None):
         """
@@ -385,7 +402,6 @@ class BaseView(AbstractViewApi):
         """
         Sets initialized inner views
         """
-        pass
 
     def get_method_permission(self, method_name: str) -> str:
         """
@@ -436,7 +452,6 @@ class BaseFormView(BaseView):
         """
         Override this method to implement your form processing
         """
-        pass
 
     def form_post(self, form):
         """
@@ -447,7 +462,6 @@ class BaseFormView(BaseView):
         Return None or a flask response to render
         a custom template or redirect the user
         """
-        pass
 
     def _get_edit_widget(self, form=None, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
@@ -1380,7 +1394,6 @@ class BaseCRUDView(BaseModelView):
                 if form.email.data:
                     form.email_confirmation.data = form.email.data
         """
-        pass
 
     def process_form(self, form, is_created):
         """
@@ -1396,7 +1409,6 @@ class BaseCRUDView(BaseModelView):
                 if not form.owner:
                     form.owner.data = 'n/a'
         """
-        pass
 
     def pre_update(self, item):
         """
@@ -1407,13 +1419,11 @@ class BaseCRUDView(BaseModelView):
         implement more complex logic around updates. For instance
         allowing only the original creator of the object to update it.
         """
-        pass
 
     def post_update(self, item):
         """
         Override this, will be called after update
         """
-        pass
 
     def pre_add(self, item):
         """
@@ -1421,13 +1431,11 @@ class BaseCRUDView(BaseModelView):
         If an exception is raised by this method,
         the message is shown to the user and the add operation is aborted.
         """
-        pass
 
     def post_add(self, item):
         """
         Override this, will be called after update
         """
-        pass
 
     def pre_delete(self, item):
         """
@@ -1438,10 +1446,8 @@ class BaseCRUDView(BaseModelView):
         implement more complex logic around deletes. For instance
         allowing only the original creator of the object to delete it.
         """
-        pass
 
     def post_delete(self, item):
         """
         Override this, will be called after delete
         """
-        pass

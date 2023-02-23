@@ -51,6 +51,7 @@ setup(
         "email_validator>=1.0.5, <2",
         "Flask>=2, <3",
         "Flask-Babel>=1, <3",
+        "Flask-Limiter>3,<4",
         "Flask-Login>=0.3, <0.7",
         "Flask-SQLAlchemy>=2.4, <3",
         "Flask-WTF>=0.14.2, <2",
@@ -72,7 +73,7 @@ setup(
         "oauth": ["Authlib>=0.14, <2.0.0"],
         "openid": ["Flask-OpenID>=1.2.5, <2"],
     },
-    tests_require=["nose>=1.0", "mockldap>=0.3.0"],
+    tests_require=["nose>=1.0", "mockldap>=0.3.0", "hiro>=0.5.1"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",

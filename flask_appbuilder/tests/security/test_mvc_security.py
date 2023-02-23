@@ -5,10 +5,15 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.sqla.models import User
 
 from ..base import BaseMVCTestCase
-from ..const import PASSWORD_ADMIN, PASSWORD_READONLY, USERNAME_ADMIN, USERNAME_READONLY
+from ..const import (
+    INVALID_LOGIN_STRING,
+    PASSWORD_ADMIN,
+    PASSWORD_READONLY,
+    USERNAME_ADMIN,
+    USERNAME_READONLY,
+)
 from ..sqla.models import Model1, Model2
 
-INVALID_LOGIN_STRING = "Invalid login"
 PASSWORD_COMPLEXITY_ERROR = (
     "Must have at least two capital letters, "
     "one special character, two digits, three lower case letters and "

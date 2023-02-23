@@ -651,7 +651,7 @@ class AuthOAuthView(AuthView):
     def oauth_authorized(self, provider: str) -> WerkzeugResponse:
         log.debug("Authorized init")
         if provider not in self.appbuilder.sm.oauth_remotes:
-            flash(u"Provider not supported.", "warning")
+            flash("Provider not supported.", "warning")
             log.warning("OAuth authorized got an unknown provider %s", provider)
             return redirect(self.appbuilder.get_url_for_login)
         try:
@@ -682,7 +682,7 @@ class AuthOAuthView(AuthView):
                         allow = True
                         break
                 if not allow:
-                    flash(u"You are not authorized.", "warning")
+                    flash("You are not authorized.", "warning")
                     return redirect(self.appbuilder.get_url_for_login)
             else:
                 log.debug("No whitelist for OAuth provider")

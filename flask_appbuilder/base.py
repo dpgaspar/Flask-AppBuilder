@@ -446,6 +446,7 @@ class AppBuilder:
             if self.app:
                 self.register_blueprint(baseview)
                 self._add_permission(baseview)
+                self.add_limits(baseview)
         self.add_link(
             name=name,
             href=href,
@@ -564,6 +565,7 @@ class AppBuilder:
                     baseview, endpoint=endpoint, static_folder=static_folder
                 )
                 self._add_permission(baseview)
+                self.add_limits(baseview)
         else:
             log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.__class__.__name__))
         return baseview
@@ -648,6 +650,10 @@ class AppBuilder:
             "%s.%s" % (self.bm.locale_view.endpoint, self.bm.locale_view.default_view),
             locale=lang,
         )
+
+    def add_limits(self, baseview: "AbstractViewApi") -> None:
+        if hasattr(baseview, "limits"):
+            self.sm.add_limit_view(baseview)
 
     def add_permissions(self, update_perms: bool = False) -> None:
         from flask_appbuilder.baseviews import AbstractViewApi

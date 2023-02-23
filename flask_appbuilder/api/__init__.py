@@ -76,6 +76,7 @@ from ..exceptions import FABException, InvalidOrderByColumnFABException
 from ..hooks import get_before_request_hooks, wrap_route_handler_with_hooks
 from ..models.filters import Filters
 from ..security.decorators import permission_name, protect
+from ..utils.limit import Limit
 
 if TYPE_CHECKING:
     from flask_appbuilder import AppBuilder
@@ -453,6 +454,18 @@ class BaseApi(AbstractViewApi):
         Use this attribute to override the tag name
     """
 
+    limits: Optional[List[Limit]] = None
+    """
+        List of limits for this api.
+
+        Use it like this if you want to restrict the rate of requests to a view:
+
+            class MyView(ModelView):
+                limits = [Limit("2 per 5 second")]
+
+        or use the decorator @limit.
+    """
+
     def __init__(self) -> None:
         """
         Initialization of base permissions
@@ -490,7 +503,13 @@ class BaseApi(AbstractViewApi):
         if self.base_permissions is None:
             self.base_permissions = set()
             is_add_base_permissions = True
+
+        if self.limits is None:
+            self.limits = []
+
         for attr_name in dir(self):
+            if hasattr(getattr(self, attr_name), "_limit"):
+                self.limits.append(getattr(getattr(self, attr_name), "_limit"))
             # If include_route_methods is not None white list
             if (
                 self.include_route_methods is not None

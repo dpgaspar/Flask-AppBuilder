@@ -18,3 +18,5 @@ FAB_ROLES = {
         [".*", "can_show"],
     ]
 }
+
+RATELIMIT_ENABLED = False
