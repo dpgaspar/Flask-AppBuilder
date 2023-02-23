@@ -34,5 +34,3 @@ AUTH_USER_REGISTRATION = True
 
 # The default user self registration role for all users
 AUTH_USER_REGISTRATION_ROLE = "Admin"
-
-RATELIMIT_ENABLED = False

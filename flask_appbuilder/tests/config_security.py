@@ -15,4 +15,3 @@ FAB_ROLES = {
     "FAB_ROLE1": [["Model1View", "can_list"], ["Model2View", "can_list"]],
     "FAB_ROLE2": [["Model3View", "can_list"], ["Model4View", "can_list"]],
 }
-RATELIMIT_ENABLED = False
