@@ -610,6 +610,11 @@ class AppBuilder:
             return {}
         return self.sm.security_converge(self.baseviews, self.menu.menu, dry)
 
+    def get_url_for_login_with(self, next_url: str = None) -> str:
+        if self.sm.auth_view is None:
+            return ""
+        return url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"), next=next_url)
+
     @property
     def get_url_for_login(self) -> str:
         if self.sm.auth_view is None:
