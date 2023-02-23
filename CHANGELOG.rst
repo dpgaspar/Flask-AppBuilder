@@ -1,6 +1,17 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.0
+-----------------------------------
+
+- fix: disable rate limit by default (#1999) [Daniel Vaz Gaspar]
+- fix: auth rate limit docs and default rate (#1997) [Daniel Vaz Gaspar]
+- feat: Add rate limiter (#1976) [bolkedebruin]
+- docs: Updated LDAP Documentation (#1988) [Alissa Gerhard]
+- fix: Save next URL on failed login attempt (#1936) [Dosenpfand]
+- fix: select2 theme use bootstrap (#1995) [Daniel Vaz Gaspar]
+- fix: CI broken by pyodbc vs unixodbc (#1996) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.2.1
 -----------------------------------
 
