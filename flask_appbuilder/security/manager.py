@@ -259,7 +259,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         # Rate limiting
         app.config.setdefault("AUTH_RATE_LIMITED", True)
-        app.config.setdefault("AUTH_RATE_LIMIT", "2 per 5 second")
+        app.config.setdefault("AUTH_RATE_LIMIT", "10 per 20 second")
 
         if self.auth_type == AUTH_OID:
             from flask_openid import OpenID
