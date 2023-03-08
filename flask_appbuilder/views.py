@@ -15,7 +15,7 @@ from flask import (
     url_for,
 )
 from flask_appbuilder.exceptions import FABException
-
+import sqlalchemy
 
 from ._compat import as_unicode, string_types
 from .baseviews import BaseCRUDView, BaseFormView, BaseView, expose, expose_api
@@ -555,6 +555,9 @@ class ModelView(RestCRUDView):
         except FABException as exc:
             flash(f"An error occurred: {exc}", "warning")
             return redirect(self.get_redirect())
+        except sqlalchemy.exc.OperationalError as exc:
+            flash( f"An error occurred: {exc}. ", "warning")
+            return redirect(self.get_redirect())
         return self.render_template(
             self.list_template, title=self.list_title, widgets=widgets
         )
@@ -635,14 +638,21 @@ class ModelView(RestCRUDView):
         self._delete(pk)
         return self.post_delete_redirect()
 
+    # GBR 28-1-2023: allow open in browser
     @expose("/download/<string:filename>")
+    @expose("/download/<string:filename>/<int:as_attachment>")
     @has_access
-    def download(self, filename):
+    def download(self, filename, as_attachment=1):
+        if as_attachment == 1:
+            as_attachment = True
+        else:
+            as_attachment = False
         return send_file(
             op.join(self.appbuilder.app.config["UPLOAD_FOLDER"], filename),
             download_name=uuid_originalname(filename),
-            as_attachment=True,
+            as_attachment=as_attachment,
         )
+
 
     def get_action_permission_name(self, name: str) -> str:
         """
