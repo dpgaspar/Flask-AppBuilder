@@ -26,6 +26,7 @@ class EmployeeView(ModelView):
             "Department",
             query_func=department_query,
             widget=Select2Widget(extra_classes="readonly"),
+            get_pk_func=lambda x: x.id,
         )
     }
 

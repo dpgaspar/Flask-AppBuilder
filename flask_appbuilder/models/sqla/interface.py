@@ -178,35 +178,42 @@ class SQLAInterface(BaseInterface):
     def apply_order_by(
         self,
         query: Query,
-        order_column: str,
+        order_column: Any,
         order_direction: str,
         aliases_mapping: Dict[str, AliasedClass] = None,
     ) -> Query:
-        if order_column != "":
-            # if Model has custom decorator **renders('<COL_NAME>')**
-            # this decorator will add a property to the method named *_col_name*
-            if hasattr(self.obj, order_column):
-                if hasattr(getattr(self.obj, order_column), "_col_name"):
-                    order_column = getattr(self._get_attr(order_column), "_col_name")
-            _order_column = self._get_attr(order_column) or order_column
+        if isinstance(order_column, str):
+            if order_column != "":
+                # if Model has custom decorator **renders('<COL_NAME>')**
+                # this decorator will add a property to the method named *_col_name*
+                if hasattr(self.obj, order_column):
+                    if hasattr(getattr(self.obj, order_column), "_col_name"):
+                        order_column = getattr(self._get_attr(order_column), "_col_name")
+                _order_column = self._get_attr(order_column) or order_column
 
-            if is_column_dotted(order_column):
-                root_relation = get_column_root_relation(order_column)
-                # On MVC we still allow for joins to happen here
-                if not self.is_model_already_joined(
-                    query, self.get_related_model(root_relation)
-                ):
-                    query = self._query_join_relation(
-                        query, root_relation, aliases_mapping=aliases_mapping
-                    )
-                column_leaf = get_column_leaf(order_column)
-                _alias = self.get_alias_mapping(root_relation, aliases_mapping)
-                _order_column = getattr(_alias, column_leaf)
-            if order_direction == "asc":
-                query = query.order_by(asc(_order_column))
-            else:
-                query = query.order_by(desc(_order_column))
-        return query
+                if is_column_dotted(order_column):
+                    root_relation = get_column_root_relation(order_column)
+                    # On MVC we still allow for joins to happen here
+                    if not self.is_model_already_joined(
+                        query, self.get_related_model(root_relation)
+                    ):
+                        query = self._query_join_relation(
+                            query, root_relation, aliases_mapping=aliases_mapping
+                        )
+                    column_leaf = get_column_leaf(order_column)
+                    _alias = self.get_alias_mapping(root_relation, aliases_mapping)
+                    _order_column = getattr(_alias, column_leaf)
+                if order_direction == "asc":
+                    query = query.order_by(asc(_order_column))
+                else:
+                    query = query.order_by(desc(_order_column))
+            return query
+        elif isinstance(order_column, tuple):
+            for col in order_column:
+                query = self.apply_order_by(query, col, order_direction)
+            return query
+        else:
+            return query      
 
     def apply_pagination(
         self, query: Query, page: Optional[int], page_size: Optional[int]
