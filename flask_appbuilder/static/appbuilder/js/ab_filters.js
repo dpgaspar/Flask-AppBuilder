@@ -73,8 +73,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 
     function addFilterOptionsValue($el, name, value)
 	{
-		var $select = $('<select class="filter-op my_select2" />')                     
-
+		var $select = $('<select class="filter-op my_select2" />');
 		cx = 0;
         var i_option = -1;
         $(filters[name]).each(function() {
@@ -93,10 +92,10 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
         );
         // avoids error
         if (i_option == -1) { $select.select2(); }
-        $select.on('change', function(e) {
-        	changeOperation(e, $el, name)
+        $select.on('change', function() {
+        	changeOperation(this, $el, name)
     	});
-        
+
         return i_option;
 	}
     
@@ -140,9 +139,8 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	// ----------------------------------------------------------
     function changeOperation(e, $el, name) {
         $in = $el.find('.filter_val');
-        $in.attr('name','_flt_' + e.val + '_' + name);
+        $in.attr('name','_flt_' + e.value + '_' + name);
     }
-
 
     $('a.filter').on('click', function() {
         var name = $(this).attr('name');
