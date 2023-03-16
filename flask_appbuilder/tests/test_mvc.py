@@ -62,7 +62,7 @@ log = logging.getLogger(__name__)
 class MVCBabelTestCase(FABTestCase):
     def test_babel_empty_languages(self):
         """
-            MVC: Test babel empty languages
+        MVC: Test babel empty languages
         """
         app = Flask(__name__)
         app.config.from_object("flask_appbuilder.tests.config_api")
@@ -80,7 +80,7 @@ class MVCBabelTestCase(FABTestCase):
 
     def test_babel_languages(self):
         """
-            MVC: Test babel languages
+        MVC: Test babel languages
         """
         app = Flask(__name__)
         app.config.from_object("flask_appbuilder.tests.config_api")
@@ -104,6 +104,51 @@ class MVCBabelTestCase(FABTestCase):
 
 
 class ListFilterTestCase(BaseMVCTestCase):
+    def setUp(self):
+        super().setUp()
+
+        class Model1View(ModelView):
+            datamodel = SQLAInterface(Model1)
+
+        self.appbuilder.add_view(Model1View, "Model1", category="Model1")
+
+    def test_list_filter_starts_with(self):
+        """
+        MVC: Test starts with filter
+        """
+        with self.app.test_client() as client:
+            self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+            # test filter starts with
+            rv = client.get(
+                "/model1view/list?_flt_0_field_string=test0", follow_redirects=True
+            )
+            data = rv.data.decode("utf-8")
+            self.assertIn("test0", data)
+            rv = client.get(
+                "/model1view/list?_flt_0_field_string=test1", follow_redirects=True
+            )
+            data = rv.data.decode("utf-8")
+            self.assertNotIn("test0", data)
+
+    def test_list_filter_end_with(self):
+        """
+        MVC: Test ends with filter
+        """
+        with self.app.test_client() as client:
+            self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+            # test filter ends with
+            rv = client.get(
+                "/model1view/list?_flt_1_field_string=0", follow_redirects=True
+            )
+            data = rv.data.decode("utf-8")
+            self.assertIn("test0", data)
+
+            rv = client.get(
+                "/model1view/list?_flt_1_field_string=1", follow_redirects=True
+            )
+            data = rv.data.decode("utf-8")
+            self.assertNotIn("test0", data)
+
     def test_list_filter_invalid_object(self):
         """
         MVC: Test Filter with related object not found
@@ -209,6 +254,12 @@ class ListFilterTestCase(BaseMVCTestCase):
             data = rv.data.decode("utf-8")
             self.assertIn("admin@fab.org", data)
 
+            #  Two filters, matching admin@fab.org
+            rv = c.get("/users/list/?_flt_2_email=a&_flt_2_email=z")
+            self.assertEqual(rv.status_code, 200)
+            data = rv.data.decode("utf-8")
+            self.assertNotIn("admin@fab.org", data)
+
 
 class MVCCSRFTestCase(BaseMVCTestCase):
     def setUp(self):
@@ -228,7 +279,7 @@ class MVCCSRFTestCase(BaseMVCTestCase):
 
     def test_a_csrf_delete_not_allowed(self):
         """
-            MVC: Test GET delete with CSRF is not allowed
+        MVC: Test GET delete with CSRF is not allowed
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -251,7 +302,7 @@ class MVCCSRFTestCase(BaseMVCTestCase):
 
     def test_a_csrf_delete_protected(self):
         """
-            MVC: Test POST delete with CSRF
+        MVC: Test POST delete with CSRF
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -334,7 +385,7 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
 
     def test_include_route_methods(self):
         """
-            MVC: Include route methods
+        MVC: Include route methods
         """
         expected_endpoints = {"Model2IncludeView.list", "Model2IncludeView.show"}
         self.assertEqual(
@@ -362,7 +413,7 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
 
     def test_exclude_route_methods(self):
         """
-            MVC: Exclude route methods
+        MVC: Exclude route methods
         """
         expected_endpoints: Set = {
             "Model2ExcludeView.list",
@@ -380,7 +431,7 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
 
     def test_include_exclude_route_methods(self):
         """
-            MVC: Include and Exclude route methods
+        MVC: Include and Exclude route methods
         """
 
         expected_endpoints: Set = {
@@ -405,7 +456,7 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
 
     def test_disable_mvc_api_methods(self):
         """
-            MVC: Disable MVC API
+        MVC: Disable MVC API
         """
         expected_endpoints: Set = {
             "Model2DisableMVCApiView.list",
@@ -726,7 +777,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_index(self):
         """
-            Test initial access and index message
+        Test initial access and index message
         """
         client = self.app.test_client()
 
@@ -737,7 +788,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_generic_interface(self):
         """
-            Test Generic Interface for generic-alter datasource
+        Test Generic Interface for generic-alter datasource
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -746,7 +797,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_crud_add(self):
         """
-            Test ModelView CRUD Add
+        Test ModelView CRUD Add
         """
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -778,7 +829,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_crud_edit(self):
         """
-            Test ModelView CRUD Edit
+        Test ModelView CRUD Edit
         """
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -805,7 +856,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_crud_delete(self):
         """
-            Test Model CRUD delete
+        Test Model CRUD delete
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -827,7 +878,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_delete_integrity(self):
         """
-            Test Model CRUD delete integrity validation
+        Test Model CRUD delete integrity validation
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -845,8 +896,8 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_crud_composite_pk(self):
         """
-            MVC CRUD generic-alter datasource where model has composite
-            primary keys
+        MVC CRUD generic-alter datasource where model has composite
+        primary keys
         """
         try:
             from urllib import quote
@@ -925,7 +976,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_crud_add_with_enum(self):
         """
-            Test Model add for Model with Enum Columns
+        Test Model add for Model with Enum Columns
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -953,7 +1004,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_crud_edit_with_enum(self):
         """
-            Test Model edit for Model with Enum Columns
+        Test Model edit for Model with Enum Columns
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -978,7 +1029,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_formatted_cols(self):
         """
-            Test ModelView's formatters_columns
+        Test ModelView's formatters_columns
         """
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -993,7 +1044,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_modelview_add_redirects(self):
         """
-            Test ModelView redirects after add
+        Test ModelView redirects after add
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1016,7 +1067,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_modelview_edit_redirects(self):
         """
-            Test ModelView redirects after edit
+        Test ModelView redirects after edit
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1038,7 +1089,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_modelview_delete_redirects(self):
         """
-            Test ModelView redirects after delete
+        Test ModelView redirects after delete
         """
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1053,7 +1104,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_add_excluded_cols(self):
         """
-            Test add_exclude_columns
+        Test add_exclude_columns
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1068,7 +1119,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_edit_excluded_cols(self):
         """
-            Test edit_exclude_columns
+        Test edit_exclude_columns
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1089,7 +1140,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_show_excluded_cols(self):
         """
-            Test show_exclude_columns
+        Test show_exclude_columns
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1132,7 +1183,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_list_order(self):
         """
-            Test Model order on lists
+        Test Model order on lists
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1187,7 +1238,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_add_required_validation(self):
         """
-            Test Model add required fields validation
+        Test Model add required fields validation
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1207,7 +1258,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_edit_unique_validation(self):
         """
-            Test Model edit unique validation
+        Test Model edit unique validation
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1223,7 +1274,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_edit_required_validation(self):
         """
-            Test Model edit required validation
+        Test Model edit required validation
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1239,7 +1290,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_base_filter(self):
         """
-            Test Model base filtered views
+        Test Model base filtered views
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1260,7 +1311,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_model_list_method_field(self):
         """
-            Tests a model's field has a method
+        Tests a model's field has a method
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1271,7 +1322,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_compactCRUDMixin(self):
         """
-            Test CompactCRUD Mixin view with composite keys
+        Test CompactCRUD Mixin view with composite keys
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1304,7 +1355,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_edit_add_form_action_prefix_for_compactCRUDMixin(self):
         """
-            Test form_action in add, form_action in edit (CompactCRUDMixin)
+        Test form_action in add, form_action in edit (CompactCRUDMixin)
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1327,7 +1378,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_charts_view(self):
         """
-            Test Various Chart views
+        Test Various Chart views
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1344,7 +1395,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_master_detail_view(self):
         """
-            Test Master detail view
+        Test Master detail view
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1440,7 +1491,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_class_method_permission_override(self):
         """
-            MVC: Test class method permission name override
+        MVC: Test class method permission name override
         """
         from flask_appbuilder import ModelView
         from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -1505,7 +1556,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_method_permission_override(self):
         """
-            MVC: Test method permission name override
+        MVC: Test method permission name override
         """
         from flask_appbuilder import ModelView
         from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -1616,7 +1667,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_action_permission_override(self):
         """
-            MVC: Test action permission name override
+        MVC: Test action permission name override
         """
         from flask_appbuilder import action, ModelView
         from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -1691,7 +1742,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_permission_converge_compress(self):
         """
-            MVC: Test permission name converge compress
+        MVC: Test permission name converge compress
         """
         from flask_appbuilder import ModelView
         from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -1764,7 +1815,7 @@ class MVCTestCase(BaseMVCTestCase):
 
     def test_before_request(self):
         """
-            Test before_request hooks
+        Test before_request hooks
         """
         # All flags are false, so all request should 404.
         self._before_request_enabled = False
