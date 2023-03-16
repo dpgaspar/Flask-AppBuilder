@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.1
+-----------------------------------
+
+- fix(mvc): operation filters with new select2 (#2005) [Daniel Vaz Gaspar]
+- fix(translations): misspell in ru translations (#2002) [Stepan]
+
 Improvements and Bug fixes on 4.3.0
 -----------------------------------
 
