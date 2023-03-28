@@ -77,10 +77,18 @@ class FieldConverter(object):
         # sqlalchemy.types.Enum inherits from String, therefore `is_enum` must be
         # checked before checking for `is_string`:
         if getattr(self.datamodel, "is_enum")(self.colname):
-            col_type = self.datamodel.list_columns[self.colname].type
+            # sqlalchemy
+            if hasattr(self.datamodel.list_columns[self.colname], 'type'):
+                col_type = self.datamodel.list_columns[self.colname].type
+                enum_class = col_type.enum_class
+                enums = col_type.enums
+            # mongoengine
+            else:
+                enum_class = self.datamodel.list_columns[self.colname]._enum_cls
+                enums = list(enum_class.__members__)
             return EnumField(
-                enum_class=col_type.enum_class,
-                enums=col_type.enums,
+                enum_class=enum_class,
+                enums=enums,
                 label=self.label,
                 description=self.description,
                 validators=self.validators,
