@@ -1,4 +1,4 @@
-funcparserlib==1.0.0.a0   # required by: https://github.com/vlasovskikh/funcparserlib/issues/70
+funcparserlib==1.0.0   # required by: https://github.com/vlasovskikh/funcparserlib/issues/70
 sphinxcontrib-blockdiag>=1.5.0
 sphinx-rtd-theme>=0.2.4
 apispec[yaml]==3.3.2

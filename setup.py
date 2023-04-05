@@ -62,7 +62,7 @@ setup(
         "marshmallow-sqlalchemy>=0.22.0, <0.27.0",
         "python-dateutil>=2.3, <3",
         "prison>=0.2.1, <1.0.0",
-        "PyJWT>=2.0.0, <3.0.0",
+        "PyJWT>=2.4.0, <3.0.0",
         # Cautious cap
         "SQLAlchemy<1.5",
         "sqlalchemy-utils>=0.32.21, <1",
