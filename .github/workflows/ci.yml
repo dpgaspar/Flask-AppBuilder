@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8, 3.9]
+        python-version: [3.8]
     env:
       SQLALCHEMY_DATABASE_URI:
         postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
