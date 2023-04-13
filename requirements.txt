@@ -118,7 +118,7 @@ typing-extensions==4.4.0
     # via
     #   flask-limiter
     #   limits
-werkzeug==2.0.3
+werkzeug==2.2.3
     # via
     #   flask
     #   flask-jwt-extended

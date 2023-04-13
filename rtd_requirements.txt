@@ -92,7 +92,7 @@ sqlalchemy==1.4.29
     #   sqlalchemy-utils
 sqlalchemy-utils==0.37.8
     # via Flask-AppBuilder (setup.py)
-werkzeug==2.0.3
+werkzeug==2.2.3
     # via
     #   flask
     #   flask-jwt-extended
