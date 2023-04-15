@@ -7,3 +7,4 @@ PASSWORD_ADMIN = "password"
 MAX_PAGE_SIZE = 25
 USERNAME_READONLY = "readonly"
 PASSWORD_READONLY = "readonly"
+INVALID_LOGIN_STRING = "Invalid login"

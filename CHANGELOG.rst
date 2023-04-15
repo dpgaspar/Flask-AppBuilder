@@ -1,6 +1,135 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.1
+-----------------------------------
+
+- fix(mvc): operation filters with new select2 (#2005) [Daniel Vaz Gaspar]
+- fix(translations): misspell in ru translations (#2002) [Stepan]
+
+Improvements and Bug fixes on 4.3.0
+-----------------------------------
+
+- fix: disable rate limit by default (#1999) [Daniel Vaz Gaspar]
+- fix: auth rate limit docs and default rate (#1997) [Daniel Vaz Gaspar]
+- feat: Add rate limiter (#1976) [bolkedebruin]
+- docs: Updated LDAP Documentation (#1988) [Alissa Gerhard]
+- fix: Save next URL on failed login attempt (#1936) [Dosenpfand]
+- fix: select2 theme use bootstrap (#1995) [Daniel Vaz Gaspar]
+- fix: CI broken by pyodbc vs unixodbc (#1996) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.2.1
+-----------------------------------
+
+- ci: fix pyodbc install failure (#1992) [Daniel Vaz Gaspar]
+- fix: Remove unused parameter from QuerySelectMultipleField instantiation (#1991) [Dosenpfand]
+- fix: Make sure user input is not treated as safe in the oauth view (#1978) [Glenn Schuurman]
+- fix: don't use root logger on safe decorator (#1990) [Igor Khrol]
+- chore: upgrade Font Awesome to version 6 (#1979) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.2.0
+-----------------------------------
+
+- feat: add opt-in outer default load option to model REST API (#1971) [Daniel Vaz Gaspar]
+- chore: Add more type annotation to REST API module (#1969) [Daniel Vaz Gaspar]
+- fix: upgrade Select2 to 4.0.13 (#1968) [Nicola Gramola]
+- fix: REST API one-to-one relationship (#1965) [Daniel Vaz Gaspar]
+- fix(api): _info HTTP 500 when exists a defined invalid search field (#1963) [Daniel Vaz Gaspar]
+- chore: Use implicit default loading rather than explicit joined eager loading (#1961) [John Bodley]
+- chore: Increase upper-bound on apispec (#1903) [Tomáš Drtina]
+- fix: replace deprecated attachment_filename (#1956) [Steve Embling]
+
+Improvements and Bug fixes on 4.1.6
+-----------------------------------
+
+- feat: add utility method on SM for fetching all roles and perms for a user (#1950) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.1.5
+-----------------------------------
+
+- fix: HTML label IDs for db and ldap login (#1935) [Dosenpfand]
+- fix: OAuth state parameter (#1932) [Daniel Vaz Gaspar]
+- docs: Fix a few typos (#1929) [Tim Gates]
+- chore: Update compiled german translation, delete backup file (#1928) [Dosenpfand]
+- fix: addon managers import (#1920) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.1.4
+-----------------------------------
+
+- chore: Redirect to prev url on login for AuthRemoteUserView (#1901) [Alexander Ryndin]
+- chore: Bump upper bounds on wtforms and flask-wtf (#1904) [Tomáš Drtina]
+- fix(mvc): related model view setting default related field value (#1898) [Daniel Vaz Gaspar]
+- fix: DateTimePicker rendering in forms (#1698) [Federico Padua]
+- test(fab_cli): tag tests that need internet so they can be skipped (#1880) [jnahmias]
+- fix: fix a wrong 'next' URL in javascript (#1897) [Sansarun Sukawongviwat]
+- chore: allow authlib > 1 updated docs (#1891) [Daniel Vaz Gaspar]
+- docs: fix oauth example config (#1890) [Daniel Vaz Gaspar]
+- docs: fix oauth example config (#1889) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.1.3
+-----------------------------------
+
+- fix: user stats view search (#1887) [Daniel Vaz Gaspar]
+- fix: Do not render hidden form fields twice (#1848) [Dosenpfand]
+- chore: Bump requirements pillow version, remove PIL from doc (#1873) [Dosenpfand]
+- fix: custom menu option (#1884) [Daniel Vaz Gaspar]
+- fix: FAB_INDEX_VIEW type check (#1883) [Daniel Vaz Gaspar]
+- fix(api): register responses with apispec using components.response() (#1881) [jnahmias]
+- docs: add responsible disclosure text to security (#1882) [Daniel Vaz Gaspar]
+- chore: Improve german translation  (#1872) [Dosenpfand]
+- fix: populating permission and vm instead of just setting the id (#1874) [Zef Lin]
+
+Improvements and Bug fixes on 4.1.2
+-----------------------------------
+
+- fix: remove sqlite dbs from examples (#1853) [Daniel Vaz Gaspar]
+- fix(MVC): discard excluded filters from query (#1862) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.1.1
+-----------------------------------
+
+- fix: custom security class import, bad cast (#1851) [Daniel Vaz Gaspar]
+- fix: Set certificates before reconnecting to LDAP (#1846) [Sebastian Bernauer]
+
+Improvements and Bug fixes on 4.1.0
+-----------------------------------
+
+- docs: add FAB_ADD_SECURITY_API config option (#1840) [Daniel Vaz Gaspar]
+- feat: add keycloak auth provider options (#1832) [nilivingston]
+- docs: add Azure OAUTH example (#1837) [Mathew Wicks]
+- fix: security api (#1831) [Daniel Vaz Gaspar]
+- fix: dependency constraints, bump flask-login, flask-wtf (#1838) [Daniel Vaz Gaspar]
+- fix: noop user update on Auth db, use set user model (#1834) [Daniel Vaz Gaspar]
+- chore: bump postgres to 14 (#1833) [Daniel Vaz Gaspar]
+- chore: Update and fix german translation (#1827) [Dosenpfand]
+- chore: Enhance is_safe_redirect_url (#1826) [Geido]
+- feat: Add CRUD apis for role, permission, user (#1801) [Mayur]
+- docs: updated brackets in OAuth Authentication (#1798) [David Berg]
+- chore: add Slovenian language (#1828) [dkrat7]
+- fix: doc requirements (#1820) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.0.0
+-----------------------------------
+
+- chore: major bumps Flask, Click, PyJWT and flask-jwt-extended (#1817) [Daniel Vaz Gaspar]
+  [Breaking changes]
+
+Improvements and Bug fixes on 3.4.5
+-----------------------------------
+
+- test: Add test for `export-roles --indent`'s argument “duck casting” to int (#1811) [Étienne Boisseau-Sierra]
+- fix: next url on login (OAuth, OID, DB) (#1804) [Daniel Vaz Gaspar]
+- docs: Update doc i18 to flask_babel (#1792) [Federico Padua]
+- feat(cli): allow `export-roles` to be beautified (#1724) [Étienne Boisseau-Sierra]
+
+Improvements and Bug fixes on 3.4.4
+-----------------------------------
+
+- fix: Support SQLAlchemy 1.4.X (#1786) [Daniel Vaz Gaspar]
+- feat: allow multiple values for the same filter (#1737) [Will Rogers]
+- fix: Only update user.last_login on successful authentication (#1775) [blag]
+- chore: update jsonschema pip package (#1782) [Hugh A. Miles II]
+
 Improvements and Bug fixes on 3.4.3
 -----------------------------------
 

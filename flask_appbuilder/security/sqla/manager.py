@@ -1,10 +1,11 @@
 from datetime import datetime
 import json
 import logging
+
 import uuid
 from datetime import datetime, timedelta
 from smtplib import SMTPException
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple, Union
 
 
 from flask import flash, render_template, url_for
@@ -21,6 +22,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound
 
 from werkzeug.security import generate_password_hash
 
+from .apis import PermissionApi, PermissionViewMenuApi, RoleApi, UserApi, ViewMenuApi
 from .models import (
     Permission,
     PermissionView,
@@ -59,11 +61,20 @@ class SecurityManager(BaseSecurityManager):
     permissionview_model = PermissionView
     registeruser_model = RegisterUser
 
+
     # The template used to generate the reset password email sent to the user
     email_template = "appbuilder/general/security/resetpw_mail.html"
 
     # The reset password email subject
     email_subject = lazy_gettext("Reset your password")
+
+    # APIs
+    permission_api = PermissionApi
+    role_api = RoleApi
+    user_api = UserApi
+    view_menu_api = ViewMenuApi
+    permission_view_menu_api = PermissionViewMenuApi
+
 
     def __init__(self, appbuilder):
         """
@@ -105,6 +116,13 @@ class SecurityManager(BaseSecurityManager):
 
     def register_views(self):
         super(SecurityManager, self).register_views()
+
+        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_API", False):
+            self.appbuilder.add_api(self.permission_api)
+            self.appbuilder.add_api(self.role_api)
+            self.appbuilder.add_api(self.user_api)
+            self.appbuilder.add_api(self.view_menu_api)
+            self.appbuilder.add_api(self.permission_view_menu_api)
 
     def create_db(self):
         try:
@@ -260,7 +278,7 @@ class SecurityManager(BaseSecurityManager):
 
     def noop_user_update(self, user: "User") -> None:
         stmt = (
-            update(User)
+            update(self.user_model)
             .where(self.user_model.id == user.id)
             .values(login_count=user.login_count)
         )
@@ -527,6 +545,57 @@ class SecurityManager(BaseSecurityManager):
             )
         ).all()
 
+    def get_user_roles_permissions(self, user) -> Dict[str, List[Tuple[str, str]]]:
+        """
+        Utility method for fetching all roles and permissions for a specific user.
+        Example of the returned data:
+        ```
+        {
+            'Admin': [
+                ('can_this_form_get', 'ResetPasswordView'),
+                ('can_this_form_post', 'ResetPasswordView'),
+                ...
+            ]
+             'EmptyRole': [],
+        }
+        ```
+        """
+        if not user.roles:
+            raise AttributeError("User object does not have roles")
+
+        result: Dict[str, List[Tuple[str, str]]] = {}
+        db_roles_ids = []
+        for role in user.roles:
+            # Make sure all db roles are included on the result
+            result[role.name] = []
+            if role.name in self.builtin_roles:
+                for permission in self.builtin_roles[role.name]:
+                    result[role.name].append((permission[1], permission[0]))
+            else:
+                db_roles_ids.append(role.id)
+
+        permission_views = (
+            self.appbuilder.get_session.query(PermissionView)
+            .join(Permission)
+            .join(ViewMenu)
+            .join(PermissionView.role)
+            .filter(Role.id.in_(db_roles_ids))
+            .options(contains_eager(PermissionView.permission))
+            .options(contains_eager(PermissionView.view_menu))
+            .options(contains_eager(PermissionView.role))
+        ).all()
+
+        for permission_view in permission_views:
+            for role_item in permission_view.role:
+                if role_item.name in result:
+                    result[role_item.name].append(
+                        (
+                            permission_view.permission.name,
+                            permission_view.view_menu.name,
+                        )
+                    )
+        return result
+
     def get_db_role_permissions(self, role_id: int) -> List[PermissionView]:
         """
         Get all DB permissions from a role (one single query)
@@ -705,7 +774,7 @@ class SecurityManager(BaseSecurityManager):
         vm = self.add_view_menu(view_menu_name)
         perm = self.add_permission(permission_name)
         pv = self.permissionview_model()
-        pv.view_menu_id, pv.permission_id = vm.id, perm.id
+        pv.view_menu, pv.permission = vm, perm
         try:
             self.get_session.add(pv)
             self.get_session.commit()
@@ -807,7 +876,9 @@ class SecurityManager(BaseSecurityManager):
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))
                 self.get_session.rollback()
 
-    def export_roles(self, path: Optional[str] = None) -> None:
+    def export_roles(
+        self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
+    ) -> None:
         """ Exports roles to JSON file. """
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         filename = path or f"roles_export_{timestamp}.json"
@@ -827,7 +898,7 @@ class SecurityManager(BaseSecurityManager):
             serialized_roles.append(serialized_role)
 
         with open(filename, "w") as fd:
-            fd.write(json.dumps(serialized_roles))
+            fd.write(json.dumps(serialized_roles, indent=indent))
 
     def import_roles(self, path: str) -> None:
         """ Imports roles from JSON file. """

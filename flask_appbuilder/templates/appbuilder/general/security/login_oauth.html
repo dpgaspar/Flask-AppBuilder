@@ -6,7 +6,7 @@
 <script type="text/javascript">
     var baseLoginUrl = "{{appbuilder.get_url_for_login}}";
     var baseRegisterUrl = "{{appbuilder.get_url_for_login}}";
-    var next = "?next={{request.args.get('next', '')}}"
+    var next = "?next=" + encodeURIComponent("{{request.args.get('next', '')}}");
 
     function signin(provider) {
         window.location.href = baseLoginUrl + provider + next;

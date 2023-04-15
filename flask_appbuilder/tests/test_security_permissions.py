@@ -145,3 +145,25 @@ class SecurityPermissionsTestCase(FABTestCase):
             ("can_show", "ModelDBView"),
             ("can_delete", "ModelDBView"),
         } == self.appbuilder.sm.get_role_permissions(role)
+
+    def test_get_user_roles_permissions_one_db_role(self):
+        assert {
+            "DB_ROLE1": [("can_show", "ModelDBView"), ("can_delete", "ModelDBView")]
+        } == self.appbuilder.sm.get_user_roles_permissions(self._user02)
+
+    def test_get_user_roles_permissions_mixed_roles(self):
+        assert {
+            "FAB_ROLE1": [("can_list", "Model1View"), ("can_list", "Model2View")],
+            "DB_ROLE1": [("can_show", "ModelDBView"), ("can_delete", "ModelDBView")],
+        } == self.appbuilder.sm.get_user_roles_permissions(self._user01)
+
+    def test_get_user_roles_permissions_one_builtin_roles(self):
+        assert {
+            "FAB_ROLE2": [("can_list", "Model3View"), ("can_list", "Model4View")]
+        } == self.appbuilder.sm.get_user_roles_permissions(self._user03)
+
+    def test_get_user_roles_permissions_mul_builtin_roles(self):
+        assert {
+            "FAB_ROLE1": [("can_list", "Model1View"), ("can_list", "Model2View")],
+            "FAB_ROLE2": [("can_list", "Model3View"), ("can_list", "Model4View")],
+        } == self.appbuilder.sm.get_user_roles_permissions(self._user04)

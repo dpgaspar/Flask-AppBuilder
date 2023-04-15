@@ -183,6 +183,20 @@ class ModelOMChild(Model):
         foreign_keys=[parent_id],
     )
 
+
+class ModelOOParent(Model):
+    __tablename__ = "model_oo_parent"
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+    child = relationship("ModelOOChild", back_populates="parent", uselist=False)
+
+
+class ModelOOChild(Model):
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+    parent_id = Column(Integer, ForeignKey("model_oo_parent.id"))
+    parent = relationship("ModelOOParent", back_populates="child")
+
     """ ---------------------------------
             TEST HELPER FUNCTIONS
         ---------------------------------
@@ -338,3 +352,10 @@ def insert_data(session, count):
             model.parent = model_om_parents[i]
             session.add(model)
             session.commit()
+
+    for i in range(count):
+        model = ModelOOParent()
+        model.field_string = f"text{i}"
+        model.child = ModelOOChild(field_string=f"text{i}.child")
+        session.add(model)
+        session.commit()

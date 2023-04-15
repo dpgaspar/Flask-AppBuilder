@@ -326,7 +326,7 @@ class RestCRUDView(BaseCRUDView):
     @permission_name("add")
     def api_create(self):
         log.warning("This API is deprecated and will be removed on 2.3.X")
-        get_filter_args(self._filters)
+        get_filter_args(self._filters, disallow_if_not_in_search=False)
         exclude_cols = self._filters.get_relation_cols()
         form = self.add_form.refresh()
         self._fill_form_exclude_cols(exclude_cols, form)
@@ -354,7 +354,7 @@ class RestCRUDView(BaseCRUDView):
     @permission_name("edit")
     def api_update(self, pk):
         log.warning("This API is deprecated and will be removed on 2.3.X")
-        get_filter_args(self._filters)
+        get_filter_args(self._filters, disallow_if_not_in_search=False)
         exclude_cols = self._filters.get_relation_cols()
 
         item = self.datamodel.get(pk, self._base_filters)
@@ -640,7 +640,7 @@ class ModelView(RestCRUDView):
     def download(self, filename):
         return send_file(
             op.join(self.appbuilder.app.config["UPLOAD_FOLDER"], filename),
-            attachment_filename=uuid_originalname(filename),
+            download_name=uuid_originalname(filename),
             as_attachment=True,
         )
 

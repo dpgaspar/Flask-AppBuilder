@@ -1,6 +1,6 @@
 import functools
 import logging
-from typing import TYPE_CHECKING
+from typing import Callable, List, Optional, TypeVar, Union
 
 from flask import (
     current_app,
@@ -18,28 +18,19 @@ from flask_appbuilder.const import (
     LOGMSG_ERR_SEC_ACCESS_DENIED,
     PERMISSION_PREFIX,
 )
+from flask_appbuilder.utils.limit import Limit
 from flask_jwt_extended import verify_jwt_in_request
+from flask_limiter.wrappers import RequestLimit
 from flask_login import current_user
-
+from typing_extensions import ParamSpec
 
 log = logging.getLogger(__name__)
 
-if TYPE_CHECKING:
-    from flask_appbuilder.api import BaseApi
+R = TypeVar("R")
+P = ParamSpec("P")
 
 
-def response_unauthorized(base_class: "BaseApi") -> Response:
-    if current_app.config.get("AUTH_STRICT_RESPONSE_CODES", False):
-        return base_class.response_403()
-    return base_class.response_401()
-
-
-def response_unauthorized_mvc() -> Response:
-    status_code = 401
-    if current_app.appbuilder.sm.current_user and current_app.config.get(
-        "AUTH_STRICT_RESPONSE_CODES", False
-    ):
-        status_code = 403
+def response_unauthorized_mvc(status_code: int) -> Response:
     response = make_response(
         jsonify({"message": str(FLAMSG_ERR_SEC_ACCESS_DENIED), "severity": "danger"}),
         status_code,
@@ -88,7 +79,7 @@ def protect(allow_browser_login=False):
             class_permission_name = self.class_permission_name
             # Check if permission is allowed on the class
             if permission_str not in self.base_permissions:
-                return response_unauthorized(self)
+                return self.response_403()
             # Check if the resource is public
             if current_app.appbuilder.sm.is_item_public(
                 permission_str, class_permission_name
@@ -116,7 +107,7 @@ def protect(allow_browser_login=False):
                     permission_str, class_permission_name
                 )
             )
-            return response_unauthorized(self)
+            return self.response_403()
 
         f._permission_name = permission_str
         return functools.update_wrapper(wraps, f)
@@ -194,7 +185,9 @@ def has_access_api(f):
                     permission_str, self.__class__.__name__
                 )
             )
-            return response_unauthorized_mvc()
+            if not current_user.is_authenticated:
+                return response_unauthorized_mvc(401)
+            return response_unauthorized_mvc(403)
 
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
@@ -238,6 +231,71 @@ def permission_name(name):
 
     def wraps(f):
         f._permission_name = name
+        return f
+
+    return wraps
+
+
+def limit(
+    limit_value: Union[str, Callable[[], str]],
+    key_func: Optional[Callable[[], str]] = None,
+    per_method: bool = False,
+    methods: Optional[List[str]] = None,
+    error_message: Optional[str] = None,
+    exempt_when: Optional[Callable[[], bool]] = None,
+    override_defaults: bool = True,
+    deduct_when: Optional[Callable[[Response], bool]] = None,
+    on_breach: Optional[Callable[[RequestLimit], Optional[Response]]] = None,
+    cost: Union[int, Callable[[], int]] = 1,
+):
+    """
+    Decorator to be used for rate limiting individual routes or blueprints.
+
+    :param limit_value: rate limit string or a callable that returns a
+     string. :ref:`ratelimit-string` for more details.
+    :param key_func: function/lambda to extract the unique
+     identifier for the rate limit. defaults to remote address of the
+     request.
+    :param per_method: whether the limit is sub categorized into the
+     http method of the request.
+    :param methods: if specified, only the methods in this list will
+     be rate limited (default: ``None``).
+    :param error_message: string (or callable that returns one) to override
+     the error message used in the response.
+    :param exempt_when: function/lambda used to decide if the rate
+     limit should skipped.
+    :param override_defaults:  whether the decorated limit overrides
+     the default limits (Default: ``True``).
+
+     .. note:: When used with a :class:`~BaseView` the meaning
+        of the parameter extends to any parents the blueprint instance is
+        registered under. For more details see :ref:`recipes:nested blueprints`
+
+    :param deduct_when: a function that receives the current
+     :class:`flask.Response` object and returns True/False to decide if a
+     deduction should be done from the rate limit
+    :param on_breach: a function that will be called when this limit
+     is breached. If the function returns an instance of :class:`flask.Response`
+     that will be the response embedded into the :exc:`RateLimitExceeded` exception
+     raised.
+    :param cost: The cost of a hit or a function that
+     takes no parameters and returns the cost as an integer (Default: ``1``).
+    """
+
+    def wraps(f: Callable[P, R]) -> Callable[P, R]:
+        _limit = Limit(
+            limit_value=limit_value,
+            key_func=key_func,
+            per_method=per_method,
+            methods=methods,
+            error_message=error_message,
+            exempt_when=exempt_when,
+            override_defaults=override_defaults,
+            deduct_when=deduct_when,
+            on_breach=on_breach,
+            cost=cost,
+        )
+        f._limit = _limit
         return f
 
     return wraps

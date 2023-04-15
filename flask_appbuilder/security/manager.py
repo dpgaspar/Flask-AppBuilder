@@ -3,12 +3,14 @@ import datetime
 import json
 import logging
 import re
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
-from flask import g, session, url_for
+from flask import Flask, g, session, url_for
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_login import current_user, LoginManager
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -263,6 +265,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_LASTNAME_FIELD", "sn")
             app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
 
+        # Rate limiting
+        app.config.setdefault("AUTH_RATE_LIMITED", False)
+        app.config.setdefault("AUTH_RATE_LIMIT", "10 per 20 second")
+
         if self.auth_type == AUTH_OID:
             from flask_openid import OpenID
 
@@ -293,6 +299,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Setup Flask-Jwt-Extended
         self.jwt_manager = self.create_jwt_manager(app)
 
+        # Setup Flask-Limiter
+        self.limiter = self.create_limiter(app)
+
+    def create_limiter(self, app: Flask) -> Limiter:
+        limiter = Limiter(key_func=get_remote_address)
+        limiter.init_app(app)
+        return limiter
+
     def create_login_manager(self, app) -> LoginManager:
         """
         Override to implement your custom login manager instance
@@ -312,7 +326,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         jwt_manager = JWTManager()
         jwt_manager.init_app(app)
-        jwt_manager.user_loader_callback_loader(self.load_user_jwt)
+        jwt_manager.user_lookup_loader(self.load_user_jwt)
         return jwt_manager
 
     def create_builtin_roles(self):
@@ -505,6 +519,14 @@ class BaseSecurityManager(AbstractSecurityManager):
     def email_prot_available(self):
         return self.appbuilder.get_app.config["EMAIL_PROT"]
 
+    def is_auth_limited(self) -> bool:
+        return self.appbuilder.get_app.config["AUTH_RATE_LIMITED"]
+
+    @property
+    def auth_rate_limit(self) -> str:
+        return self.appbuilder.get_app.config["AUTH_RATE_LIMIT"]
+
+
     @property
     def current_user(self):
         if current_user.is_authenticated:
@@ -660,6 +682,20 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "email": data.get("email", ""),
                 "role_keys": data.get("groups", []),
             }
+        # for Keycloak
+        if provider in ["keycloak", "keycloak_before_17"]:
+            me = self.appbuilder.sm.oauth_remotes[provider].get(
+                "openid-connect/userinfo"
+            )
+            me.raise_for_status()
+            data = me.json()
+            log.debug("User info from Keycloak: %s", data)
+            return {
+                "username": data.get("preferred_username", ""),
+                "first_name": data.get("given_name", ""),
+                "last_name": data.get("family_name", ""),
+                "email": data.get("email", ""),
+            }
         else:
             return {}
 
@@ -738,6 +774,13 @@ class BaseSecurityManager(AbstractSecurityManager):
                 # self.appbuilder.add_view_no_menu(self.registeruser_view)
 
         self.appbuilder.add_view_no_menu(self.auth_view)
+
+        # this needs to be done after the view is added, otherwise the blueprint
+        # is not initialized
+        if self.is_auth_limited:
+            self.limiter.limit(self.auth_rate_limit, methods=["POST"])(
+                self.auth_view.blueprint
+            )
 
         self.user_view = self.appbuilder.add_view(
             self.user_view,
@@ -899,7 +942,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             # Balance failure and success
-            self.noop_user_update(first_user)
+            if first_user:
+                self.noop_user_update(first_user)
             return None
         elif check_password_hash(user.password, password):
             self.update_user_auth_stat(user, True)
@@ -1093,12 +1137,6 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         try:
             # LDAP certificate settings
-            if self.auth_ldap_allow_self_signed:
-                ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
-                ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
-            elif self.auth_ldap_tls_demand:
-                ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
-                ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
             if self.auth_ldap_tls_cacertdir:
                 ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, self.auth_ldap_tls_cacertdir)
             if self.auth_ldap_tls_cacertfile:
@@ -1109,6 +1147,12 @@ class BaseSecurityManager(AbstractSecurityManager):
                 ldap.set_option(ldap.OPT_X_TLS_CERTFILE, self.auth_ldap_tls_certfile)
             if self.auth_ldap_tls_keyfile:
                 ldap.set_option(ldap.OPT_X_TLS_KEYFILE, self.auth_ldap_tls_keyfile)
+            if self.auth_ldap_allow_self_signed:
+                ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
+                ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+            elif self.auth_ldap_tls_demand:
+                ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
+                ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
 
             # Initialise LDAP connection
             con = ldap.initialize(self.auth_ldap_server)
@@ -1468,6 +1512,15 @@ class BaseSecurityManager(AbstractSecurityManager):
             return [self.get_public_role()]
         return user.roles
 
+    def get_user_roles_permissions(self, user) -> Dict[str, List[Tuple[str, str]]]:
+        """
+        Utility method just implemented for SQLAlchemy.
+        Take a look to: flask_appbuilder.security.sqla.manager
+        :param user:
+        :return:
+        """
+        raise NotImplementedError()
+
     def get_role_permissions(self, role) -> Set[Tuple[str, str]]:
         """
         Get all permissions for a certain role
@@ -1527,7 +1580,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         result.update(pvms_names)
         return result
 
-    def has_access(self, permission_name, view_name):
+    def has_access(self, permission_name: str, view_name: str) -> bool:
         """
         Check if current user or public has access to view or menu
         """
@@ -1551,6 +1604,24 @@ class BaseSecurityManager(AbstractSecurityManager):
             return self._get_user_permission_view_menus(
                 None, "menu_access", view_menus_name=menu_names
             )
+
+    def add_limit_view(self, baseview):
+        if not baseview.limits:
+            return
+
+        for limit in baseview.limits:
+            self.limiter.limit(
+                limit_value=limit.limit_value,
+                key_func=limit.key_func,
+                per_method=limit.per_method,
+                methods=limit.methods,
+                error_message=limit.error_message,
+                exempt_when=limit.exempt_when,
+                override_defaults=limit.override_defaults,
+                deduct_when=limit.deduct_when,
+                on_breach=limit.on_breach,
+                cost=limit.cost,
+            )(baseview.blueprint)
 
     def add_permissions_view(self, base_permissions, view_menu):
         """
@@ -1708,7 +1779,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                 )
                 state_transitions["del_perms"].discard(permission)
 
-    def create_state_transitions(self, baseviews: List, menus: List) -> Dict:
+    def create_state_transitions(
+        self, baseviews: List, menus: Optional[List[Any]]
+    ) -> Dict:
         """
         Creates a Dict with all the necessary vm/permission transitions
 
@@ -1764,7 +1837,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         self._update_del_transitions(state_transitions, baseviews)
         return state_transitions
 
-    def security_converge(self, baseviews: List, menus: List, dry=False) -> Dict:
+    def security_converge(
+        self, baseviews: List, menus: Optional[List[Any]], dry=False
+    ) -> Dict:
         """
         Converges overridden permissions on all registered views/api
         will compute all necessary operations from `class_permissions_name`,
@@ -1842,6 +1917,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def get_user_by_id(self, pk):
         """
         Generic function to return user by it's id (pk)
+
         """
         raise NotImplementedError
 
@@ -2064,19 +2140,22 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def export_roles(self, path: Optional[str] = None) -> None:
-        """ Exports roles to JSON file. """
+    def export_roles(
+        self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
+    ) -> None:
+        """Exports roles to JSON file."""
         raise NotImplementedError
 
     def import_roles(self, path: str) -> None:
-        """ Imports roles from JSON file. """
+        """Imports roles from JSON file."""
         raise NotImplementedError
 
     def load_user(self, pk):
         return self.get_user_by_id(int(pk))
 
-    def load_user_jwt(self, pk):
-        user = self.load_user(pk)
+    def load_user_jwt(self, _jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        user = self.load_user(identity)
         # Set flask g.user to JWT user, we can't do it on before request
         g.user = user
         return user

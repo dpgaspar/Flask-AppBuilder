@@ -104,8 +104,12 @@ class User(Model):
     login_count = Column(Integer)
     fail_login_count = Column(Integer)
     roles = relationship("Role", secondary=assoc_user_role, backref="user")
-    created_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
-    changed_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
+    created_on = Column(
+        DateTime, default=lambda: datetime.datetime.now(), nullable=True
+    )
+    changed_on = Column(
+        DateTime, default=lambda: datetime.datetime.now(), nullable=True
+    )
 
     @declared_attr
     def created_by_fk(self):

@@ -30,6 +30,10 @@ th.action_checkboxes {
     width: 1%;
 }
 
+select {
+	width: 100%;
+}
+
 .cursor-hand {
     cursor: pointer;
     cursor: hand;

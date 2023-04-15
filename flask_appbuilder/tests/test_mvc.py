@@ -104,6 +104,51 @@ class MVCBabelTestCase(FABTestCase):
 
 
 class ListFilterTestCase(BaseMVCTestCase):
+    def setUp(self):
+        super().setUp()
+
+        class Model1View(ModelView):
+            datamodel = SQLAInterface(Model1)
+
+        self.appbuilder.add_view(Model1View, "Model1", category="Model1")
+
+    def test_list_filter_starts_with(self):
+        """
+        MVC: Test starts with filter
+        """
+        with self.app.test_client() as client:
+            self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+            # test filter starts with
+            rv = client.get(
+                "/model1view/list?_flt_0_field_string=test0", follow_redirects=True
+            )
+            data = rv.data.decode("utf-8")
+            self.assertIn("test0", data)
+            rv = client.get(
+                "/model1view/list?_flt_0_field_string=test1", follow_redirects=True
+            )
+            data = rv.data.decode("utf-8")
+            self.assertNotIn("test0", data)
+
+    def test_list_filter_end_with(self):
+        """
+        MVC: Test ends with filter
+        """
+        with self.app.test_client() as client:
+            self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+            # test filter ends with
+            rv = client.get(
+                "/model1view/list?_flt_1_field_string=0", follow_redirects=True
+            )
+            data = rv.data.decode("utf-8")
+            self.assertIn("test0", data)
+
+            rv = client.get(
+                "/model1view/list?_flt_1_field_string=1", follow_redirects=True
+            )
+            data = rv.data.decode("utf-8")
+            self.assertNotIn("test0", data)
+
     def test_list_filter_invalid_object(self):
         """
         MVC: Test Filter with related object not found
@@ -208,6 +253,12 @@ class ListFilterTestCase(BaseMVCTestCase):
             self.assertEqual(rv.status_code, 200)
             data = rv.data.decode("utf-8")
             self.assertIn("admin@fab.org", data)
+
+            #  Two filters, matching admin@fab.org
+            rv = c.get("/users/list/?_flt_2_email=a&_flt_2_email=z")
+            self.assertEqual(rv.status_code, 200)
+            data = rv.data.decode("utf-8")
+            self.assertNotIn("admin@fab.org", data)
 
 
 class MVCCSRFTestCase(BaseMVCTestCase):
@@ -451,6 +502,7 @@ class MVCTestCase(BaseMVCTestCase):
             }
 
             order_columns = ["field_string", "group.field_string"]
+            search_exclude_columns = ["group"]
 
         class Model22View(ModelView):
             datamodel = SQLAInterface(Model2)
@@ -690,6 +742,40 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertIn("model2", inspector.get_table_names())
         self.assertIn("model3", inspector.get_table_names())
         self.assertIn("model_with_enums", inspector.get_table_names())
+
+    def test_related_view_edit_with_excluded_search(self):
+        """
+        Test related edit view with excluded search field
+        """
+        with self.app.test_client() as client:
+            self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Test excluded search field will not impact related view
+            rv = client.get("/model2view/edit/1?_flt_0_group=1")
+            data = rv.data.decode("utf-8")
+            self.assertNotIn('<label for="group"', data)
+
+            # Test direct edit view includes related field
+            rv = client.get("/model2view/edit/2")
+            data = rv.data.decode("utf-8")
+            self.assertIn('<label for="group"', data)
+
+    def test_related_view_add_with_excluded_search(self):
+        """
+        Test related add view with excluded search field
+        """
+        with self.app.test_client() as client:
+            self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Test excluded search field will not impact related view
+            rv = client.get("/model2view/add?_flt_0_group=1")
+            data = rv.data.decode("utf-8")
+            self.assertNotIn('<label for="group"', data)
+
+            # Test direct edit view include related field
+            rv = client.get("/model2view/add")
+            data = rv.data.decode("utf-8")
+            self.assertIn('<label for="group"', data)
 
     def test_index(self):
         """
@@ -1344,10 +1430,7 @@ class MVCTestCase(BaseMVCTestCase):
         Testing unauthenticated access to MVC API
         """
         client = self.app.test_client()
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
-        rv = client.get("/model1formattedview/api/read")
-        self.assertEqual(rv.status_code, 401)
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
+        self.browser_logout(client)
         rv = client.get("/model1formattedview/api/read")
         self.assertEqual(rv.status_code, 401)
 
@@ -1357,7 +1440,6 @@ class MVCTestCase(BaseMVCTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = True
 
         rv = client.post(
             "/model1view/api/create",
@@ -1365,13 +1447,6 @@ class MVCTestCase(BaseMVCTestCase):
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 403)
-        self.app.config["AUTH_STRICT_RESPONSE_CODES"] = False
-        rv = client.post(
-            "/model1view/api/create",
-            data=dict(field_string="zzz"),
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 401)
 
     def test_api_create(self):
         """
@@ -1450,7 +1525,7 @@ class MVCTestCase(BaseMVCTestCase):
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu("can_access", "view")
         self.appbuilder.sm.add_permission_role(role, pvm)
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
 
@@ -1476,6 +1551,10 @@ class MVCTestCase(BaseMVCTestCase):
         )
         self.assertEqual(model.field_string, "test1")
         self.assertEqual(model.field_integer, 1)
+
+        # Cleanup
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_method_permission_override(self):
         """
@@ -1517,7 +1596,7 @@ class MVCTestCase(BaseMVCTestCase):
         self.appbuilder.sm.add_permission_role(role, pvm_read)
         self.appbuilder.sm.add_permission_role(role, pvm_write)
 
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
 
@@ -1584,8 +1663,9 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertIn("/model1permoverride/show/1", data)
 
         # Revert data changes
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
-        self.appbuilder.get_session.commit()
+        self.db.session.delete(self.appbuilder.sm.find_role("Test"))
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_action_permission_override(self):
         """
@@ -1624,7 +1704,7 @@ class MVCTestCase(BaseMVCTestCase):
 
         # Add a user and login before enabling CSRF
         role = self.appbuilder.sm.add_role("Test")
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
         pvm_read = self.appbuilder.sm.find_permission_view_menu(
@@ -1657,6 +1737,10 @@ class MVCTestCase(BaseMVCTestCase):
 
         rv = client.get("/model1permoverride/action/action1/1")
         self.assertEqual(rv.status_code, 302)
+
+        # cleanup
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_permission_converge_compress(self):
         """
@@ -1694,7 +1778,7 @@ class MVCTestCase(BaseMVCTestCase):
         pvm = self.appbuilder.sm.find_permission_view_menu("can_add", "Model1View")
         self.appbuilder.sm.add_permission_role(role, pvm)
         role = self.appbuilder.sm.find_role("Test")
-        self.appbuilder.sm.add_user(
+        user = self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
         # Remove previous class, Hack to test code change
@@ -1727,10 +1811,13 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 1)
+        # cleanup
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_before_request(self):
         """
-            Test before_request hooks
+        Test before_request hooks
         """
         # All flags are false, so all request should 404.
         self._before_request_enabled = False

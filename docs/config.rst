@@ -56,6 +56,12 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | AUTH_TYPE = 2                              |           |
 |                                        |                                            |           |
 |                                        | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                        |                                            |           |
+|                                        | For using LDAP over TLS, set the protocol  |           |
+|                                        | scheme to "ldaps" and set                  |           |
+|                                        | "AUTH_LDAP_USE_TLS = False"                |           |
++----------------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_USE_TLS                      | Require the use of STARTTLS                |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_BIND_USER                    | Define the DN for the user that will be    |   No      |
 |                                        | used for the initial LDAP BIND.            |           |
@@ -72,10 +78,11 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | (Bool)                                     |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_CACERTDIR                | CA Certificate directory to check peer     |   No      |
-|                                        | certificate                                |           |
+|                                        | certificate. Certificate files must be     |           |
+|                                        | PEM-encoded                                |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_CACERTFILE               | CA Certificate file to check peer          |   No      |
-|                                        | certificate                                |           |
+|                                        | certificate. File must be PEM-encoded      |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_CERTFILE                 | Certificate file for client auth           |   No      |
 |                                        | use with AUTH_LDAP_TLS_KEYFILE             |           |
@@ -202,11 +209,6 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | AUTH_ROLE_PUBLIC                       | Special Role that holds the public         |   No      |
 |                                        | permissions, no authentication needed.     |           |
 +----------------------------------------+--------------------------------------------+-----------+
-| AUTH_STRICT_RESPONSE_CODES             | When True, protected endpoints will return |   No      |
-|                                        | HTTP 403 instead of 401. This option will  |           |
-|                                        | be removed and default to True on the next |           |
-|                                        | major release. defaults to False           |           |
-+----------------------------------------+--------------------------------------------+-----------+
 | AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS| Allow REST API login with alternative auth |   No      |
 | True|False                             | providers (default False)                  |           |
 +----------------------------------------+--------------------------------------------+-----------+
@@ -261,6 +263,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +----------------------------------------+--------------------------------------------+-----------+
 | FAB_SECURITY_MANAGER_CLASS             | Declare a new custom SecurityManager       |           |
 |                                        | class                                      |   No      |
++----------------------------------------+--------------------------------------------+-----------+
+| FAB_ADD_SECURITY_API                   | [Beta] Adds a CRUD REST API for users,     |           |
+|                                        | roles, permissions, view_menus.            |   No      |
+|                                        | Further details on /swagger/v1             |           |
+|                                        | All endpoints are under /api/v1/sercurity/ |           |
+|                                        | [Note]: This feature is still in beta      |           |
+|                                        | breaking changes are likely to occur       |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | FAB_ADD_SECURITY_VIEWS                 | Enables or disables registering all        |           |
 |                                        | security views (boolean default:True)      |   No      |
