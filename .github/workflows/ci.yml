@@ -9,21 +9,21 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version: [3.8]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
@@ -35,10 +35,10 @@ jobs:
         run: mypy flask_appbuilder
 
   test-postgres:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9.7]
+        python-version: ["3.7", "3.8", "3.9"]
     env:
       SQLALCHEMY_DATABASE_URI:
         postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
@@ -52,15 +52,27 @@ jobs:
         ports:
           - 15432:5432
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Run openldap
+        run: |
+          docker run -d \
+            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+            -e LDAP_URI=ldap://openldap:1389 \
+            -e LDAP_BASE=dc=example,dc=org \
+            -e LDAP_ADMIN_USERNAME=admin \
+            -e LDAP_ADMIN_PASSWORD=admin_password \
+            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+            -p 1389:1389 \
+            bitnami/openldap:2.6.4
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
@@ -73,10 +85,10 @@ jobs:
           bash <(curl -s https://codecov.io/bash) -cF python
 
   test-mysql:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     env:
       SQLALCHEMY_DATABASE_URI: |
         mysql+mysqldb://mysqluser:mysqluserpassword@127.0.0.1:13306/app?charset=utf8mb4&binary_prefix=true
@@ -91,15 +103,27 @@ jobs:
         ports:
           - 13306:3306
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Run openldap
+        run: |
+          docker run -d \
+            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+            -e LDAP_URI=ldap://openldap:1389 \
+            -e LDAP_BASE=dc=example,dc=org \
+            -e LDAP_ADMIN_USERNAME=admin \
+            -e LDAP_ADMIN_PASSWORD=admin_password \
+            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+            -p 1389:1389 \
+            bitnami/openldap:2.6.4
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
@@ -112,10 +136,10 @@ jobs:
           bash <(curl -s https://codecov.io/bash) -cF python
 
   test-mssql:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     env:
       SQLALCHEMY_DATABASE_URI: |
         mssql+pyodbc://sa:Password_123@localhost:11433/master?driver=FreeTDS
@@ -128,15 +152,27 @@ jobs:
         ports:
           - 11433:1433
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Run openldap
+        run: |
+          docker run -d \
+            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+            -e LDAP_URI=ldap://openldap:1389 \
+            -e LDAP_BASE=dc=example,dc=org \
+            -e LDAP_ADMIN_USERNAME=admin \
+            -e LDAP_ADMIN_PASSWORD=admin_password \
+            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+            -p 1389:1389 \
+            bitnami/openldap:2.6.4
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev freetds-bin unixodbc-dev tdsodbc
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev freetds-bin unixodbc-dev tdsodbc
           pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
@@ -150,29 +186,42 @@ jobs:
           bash <(curl -s https://codecov.io/bash) -cF python
 
   test-mongodb:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version: [3.7]
     services:
-      mssql:
+      mongo:
         image: mongo:4.4.1-bionic
         ports:
           - 27017:27017
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Run openldap
+        run: |
+          docker run -d \
+            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+            -e LDAP_URI=ldap://openldap:1389 \
+            -e LDAP_BASE=dc=example,dc=org \
+            -e LDAP_ADMIN_USERNAME=admin \
+            -e LDAP_ADMIN_PASSWORD=admin_password \
+            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+            -p 1389:1389 \
+            bitnami/openldap:2.6.4
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           pip install -r requirements-extra.txt
+          pip install -r requirements-mongodb.txt
       - name: Run tests
         run: |
           nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder/tests/test_mongoengine.py
