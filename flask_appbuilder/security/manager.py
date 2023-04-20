@@ -668,9 +668,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             }
         # for Keycloak
         if provider in ["keycloak", "keycloak_before_17"]:
-            me = self.appbuilder.sm.oauth_remotes[provider].get(
-                "openid-connect/userinfo"
-            )
+            me = self.appbuilder.sm.oauth_remotes[provider].get("openid-connect/userinfo")
             me.raise_for_status()
             data = me.json()
             log.debug("User info from Keycloak: %s", data)
@@ -817,9 +815,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 label=_("Views/Menus"),
                 category="Security",
             )
-        if self.appbuilder.app.config.get(
-            "FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW", True
-        ):
+        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW", True):
             self.appbuilder.add_view(
                 self.permissionviewmodelview,
                 "Permission on Views/Menus",
@@ -991,9 +987,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         except (IndexError, NameError):
             return None, None
 
-    def _ldap_calculate_user_roles(
-        self, user_attributes: Dict[str, bytes]
-    ) -> List[str]:
+    def _ldap_calculate_user_roles(self, user_attributes: Dict[str, bytes]) -> List[str]:
         user_role_objects = set()
 
         # apply AUTH_ROLES_MAPPING
@@ -1063,9 +1057,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             return False
 
     @staticmethod
-    def ldap_extract(
-        ldap_dict: Dict[str, bytes], field_name: str, fallback: str
-    ) -> str:
+    def ldap_extract(ldap_dict: Dict[str, bytes], field_name: str, fallback: str) -> str:
         raw_value = ldap_dict.get(field_name, [bytes()])
         # decode - if empty string, default to fallback, otherwise take first element
         return raw_value[0].decode("utf-8") or fallback
@@ -1112,9 +1104,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             if self.auth_ldap_tls_cacertdir:
                 ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, self.auth_ldap_tls_cacertdir)
             if self.auth_ldap_tls_cacertfile:
-                ldap.set_option(
-                    ldap.OPT_X_TLS_CACERTFILE, self.auth_ldap_tls_cacertfile
-                )
+                ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.auth_ldap_tls_cacertfile)
             if self.auth_ldap_tls_certfile:
                 ldap.set_option(ldap.OPT_X_TLS_CERTFILE, self.auth_ldap_tls_certfile)
             if self.auth_ldap_tls_keyfile:
@@ -1133,9 +1123,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 try:
                     con.start_tls_s()
                 except Exception:
-                    log.error(
-                        LOGMSG_ERR_SEC_AUTH_LDAP_TLS.format(self.auth_ldap_server)
-                    )
+                    log.error(LOGMSG_ERR_SEC_AUTH_LDAP_TLS.format(self.auth_ldap_server))
                     return None
 
             # Define variables, so we can check if they are set in later steps
@@ -1389,9 +1377,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if user and self.auth_roles_sync_at_login:
             user.roles = self._oauth_calculate_user_roles(userinfo)
             log.debug(
-                "Calculated new roles for user='{0}' as: {1}".format(
-                    username, user.roles
-                )
+                "Calculated new roles for user='{0}' as: {1}".format(username, user.roles)
             )
 
         # If the user is new, register them
@@ -1545,9 +1531,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Then check against database-stored roles
         pvms_names = [
             pvm.view_menu.name
-            for pvm in self.find_roles_permission_view_menus(
-                permission_name, db_role_ids
-            )
+            for pvm in self.find_roles_permission_view_menus(permission_name, db_role_ids)
         ]
         result.update(pvms_names)
         return result
@@ -1694,9 +1678,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 method_name
             )
             # Actions do not get prefix when normally defined
-            if hasattr(baseview, "actions") and baseview.actions.get(
-                old_permission_name
-            ):
+            if hasattr(baseview, "actions") and baseview.actions.get(old_permission_name):
                 permission_prefix = ""
             else:
                 permission_prefix = PERMISSION_PREFIX
@@ -1972,9 +1954,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def find_roles_permission_view_menus(
-        self, permission_name: str, role_ids: List[int]
-    ):
+    def find_roles_permission_view_menus(self, permission_name: str, role_ids: List[int]):
         raise NotImplementedError
 
     def exist_permission_on_roles(
