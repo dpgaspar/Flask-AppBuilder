@@ -34,30 +34,6 @@ jobs:
       - name: mypy
         run: mypy flask_appbuilder
 
-  move-ldap-config:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Move LDAP configs
-        id: move-ldap-config
-        run: |
-          pwd "${{ github.workspace }}"
-          pwd "${{ github.home }}"
-          cp -Rv "${{ github.workspace }}"/docker "${{ github.home }}"/docker
-
-  move-ldap-config2:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Move LDAP configs2
-        id: move-ldap-config2
-        run: |
-          pwd "${{ github.workspace }}"
-          pwd "${{ github.home }}"
-          ls -R "${{ github.home }}"/docker
-
   test-postgres:
     runs-on: ubuntu-22.04
     strategy:
@@ -75,26 +51,24 @@ jobs:
           POSTGRES_DB: app
         ports:
           - 15432:5432
-      ldap:
-        image: bitnami/openldap:2.6.4
-        env:
-          LDAP_URI: ldap://openldap:1389
-          LDAP_BASE: dc=example,dc=org
-          LDAP_ADMIN_USERNAME: admin
-          LDAP_ADMIN_PASSWORD: admin_password
-          LDAP_CUSTOM_LDIF_DIR: /ldifs
-          LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
-        volumes:
-          - '${{ github.workspace }}/openldap/ldifs:/ldifs'
-          - '${{ github.workspace }}/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
-        ports:
-          - 1389:1389
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Run openldap
+        run: |
+          docker run \
+            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+            -e LDAP_URI=ldap://openldap:1389 \
+            -e LDAP_BASE=dc=example,dc=org \
+            -e LDAP_ADMIN_USERNAME=admin \
+            -e LDAP_ADMIN_PASSWORD=admin_password \
+            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+            -p 1389:1389 \
+            bitnami/openldap:2.6.4
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -128,26 +102,24 @@ jobs:
           MYSQL_DATABASE: app
         ports:
           - 13306:3306
-      ldap:
-        image: bitnami/openldap:2.6.4
-        env:
-          LDAP_URI: ldap://openldap:1389
-          LDAP_BASE: dc=example,dc=org
-          LDAP_ADMIN_USERNAME: admin
-          LDAP_ADMIN_PASSWORD: admin_password
-          LDAP_CUSTOM_LDIF_DIR: /ldifs
-          LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
-        volumes:
-          - '${{ github.workspace }}/openldap/ldifs:/ldifs'
-          - '${{ github.workspace }}/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
-        ports:
-          - 1389:1389
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Run openldap
+        run: |
+          docker run \
+            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+            -e LDAP_URI=ldap://openldap:1389 \
+            -e LDAP_BASE=dc=example,dc=org \
+            -e LDAP_ADMIN_USERNAME=admin \
+            -e LDAP_ADMIN_PASSWORD=admin_password \
+            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+            -p 1389:1389 \
+            bitnami/openldap:2.6.4
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -179,26 +151,24 @@ jobs:
           ACCEPT_EULA: Y
         ports:
           - 11433:1433
-      ldap:
-        image: bitnami/openldap:2.6.4
-        env:
-          LDAP_URI: ldap://openldap:1389
-          LDAP_BASE: dc=example,dc=org
-          LDAP_ADMIN_USERNAME: admin
-          LDAP_ADMIN_PASSWORD: admin_password
-          LDAP_CUSTOM_LDIF_DIR: /ldifs
-          LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
-        volumes:
-          - '${{ github.workspace }}/openldap/ldifs:/ldifs'
-          - '${{ github.workspace }}/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
-        ports:
-          - 1389:1389
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Run openldap
+        run: |
+          docker run \
+            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+            -e LDAP_URI=ldap://openldap:1389 \
+            -e LDAP_BASE=dc=example,dc=org \
+            -e LDAP_ADMIN_USERNAME=admin \
+            -e LDAP_ADMIN_PASSWORD=admin_password \
+            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+            -p 1389:1389 \
+            bitnami/openldap:2.6.4
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -225,26 +195,24 @@ jobs:
         image: mongo:4.4.1-bionic
         ports:
           - 27017:27017
-      ldap:
-        image: bitnami/openldap:2.6.4
-        env:
-          LDAP_URI: ldap://openldap:1389
-          LDAP_BASE: dc=example,dc=org
-          LDAP_ADMIN_USERNAME: admin
-          LDAP_ADMIN_PASSWORD: admin_password
-          LDAP_CUSTOM_LDIF_DIR: /ldifs
-          LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
-        volumes:
-          - '${{ github.workspace }}/openldap/ldifs:/ldifs'
-          - '${{ github.workspace }}/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
-        ports:
-          - 1389:1389
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Run openldap
+        run: |
+          docker run \
+            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+            -e LDAP_URI=ldap://openldap:1389 \
+            -e LDAP_BASE=dc=example,dc=org \
+            -e LDAP_ADMIN_USERNAME=admin \
+            -e LDAP_ADMIN_PASSWORD=admin_password \
+            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+            -p 1389:1389 \
+            bitnami/openldap:2.6.4
       - name: Install dependencies
         run: |
           sudo apt-get update
