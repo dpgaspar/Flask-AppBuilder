@@ -221,6 +221,7 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           pip install -r requirements-extra.txt
+          pip install -r requirements-mongodb.txt
       - name: Run tests
         run: |
           nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder/tests/test_mongoengine.py
