@@ -5,14 +5,13 @@ import unittest
 from unittest.mock import Mock
 
 from flask import Flask
-
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.security.manager import AUTH_LDAP
-from flask_appbuilder.security.sqla.models import Role, User
+from flask_appbuilder.security.sqla.models import User
+from flask_appbuilder.tests.const import USERNAME_ADMIN, USERNAME_READONLY
 import jinja2
 import ldap
 
-from flask_appbuilder.tests.const import USERNAME_ADMIN, USERNAME_READONLY
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
