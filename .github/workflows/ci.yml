@@ -59,7 +59,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
         run: |
-          docker run \
+          docker run -d \
             -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
             -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
             -e LDAP_URI=ldap://openldap:1389 \
@@ -110,7 +110,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
         run: |
-          docker run \
+          docker run -d \
             -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
             -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
             -e LDAP_URI=ldap://openldap:1389 \
@@ -159,7 +159,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
         run: |
-          docker run \
+          docker run -d \
             -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
             -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
             -e LDAP_URI=ldap://openldap:1389 \
@@ -203,7 +203,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
         run: |
-          docker run \
+          docker run -d \
             -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
             -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
             -e LDAP_URI=ldap://openldap:1389 \
