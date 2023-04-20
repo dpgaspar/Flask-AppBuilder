@@ -34,13 +34,13 @@ __all__ = [
 
 def get_field_setup_query(query, model, column_name):
     """
-        Help function for SQLA filters, checks for dot notation on column names.
-        If it exists, will join the query with the model
-        from the first part of the field name.
+    Help function for SQLA filters, checks for dot notation on column names.
+    If it exists, will join the query with the model
+    from the first part of the field name.
 
-        example:
-            Contact.created_by: if created_by is a User model,
-            it will be joined to the query.
+    example:
+        Contact.created_by: if created_by is a User model,
+        it will be joined to the query.
     """
     if not hasattr(model, column_name):
         # it's an inner obj attr
@@ -195,7 +195,11 @@ class FilterRelationOneToManyEqual(FilterRelation):
             logging.warning(
                 "Filter exception for %s with value %s, will not apply", field, value
             )
-            self.datamodel.session.rollback()
+            try:
+                self.datamodel.session.rollback()
+            except SQLAlchemyError:
+                # on MSSQL a rollback would fail here
+                pass
             raise ApplyFilterException(exception=exc)
         return query.filter(field == rel_obj)
 
@@ -212,7 +216,11 @@ class FilterRelationOneToManyNotEqual(FilterRelation):
             logging.warning(
                 "Filter exception for %s with value %s, will not apply", field, value
             )
-            self.datamodel.session.rollback()
+            try:
+                self.datamodel.session.rollback()
+            except SQLAlchemyError:
+                # on MSSQL a rollback would fail here
+                pass
             raise ApplyFilterException(exception=exc)
         return query.filter(field != rel_obj)
 
@@ -234,7 +242,11 @@ class FilterRelationManyToManyEqual(FilterRelation):
                 field,
                 value_item,
             )
-            self.datamodel.session.rollback()
+            try:
+                self.datamodel.session.rollback()
+            except SQLAlchemyError:
+                # on MSSQL a rollback would fail here
+                pass
             raise ApplyFilterException(exception=exc)
 
         if rel_obj:
@@ -279,8 +291,8 @@ class FilterInFunction(BaseFilter):
 
 class SQLAFilterConverter(BaseFilterConverter):
     """
-        Class for converting columns into a supported list of filters
-        specific for SQLAlchemy.
+    Class for converting columns into a supported list of filters
+    specific for SQLAlchemy.
 
     """
 

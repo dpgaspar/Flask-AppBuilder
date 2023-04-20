@@ -82,7 +82,7 @@ prison==0.2.1
     # via Flask-AppBuilder (setup.py)
 pygments==2.13.0
     # via rich
-pyjwt==2.3.0
+pyjwt==2.6.0
     # via
     #   Flask-AppBuilder (setup.py)
     #   flask-jwt-extended
