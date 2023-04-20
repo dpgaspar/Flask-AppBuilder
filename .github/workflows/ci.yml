@@ -51,6 +51,20 @@ jobs:
           POSTGRES_DB: app
         ports:
           - 15432:5432
+      ldap:
+        image: bitnami/openldap:2.6.4
+        env:
+          LDAP_URI: ldap://openldap:1389
+          LDAP_BASE: dc=example,dc=org
+          LDAP_ADMIN_USERNAME: admin
+          LDAP_ADMIN_PASSWORD: admin_password
+          LDAP_CUSTOM_LDIF_DIR: /ldifs
+          LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
+        volumes:
+          - './docker/openldap/ldifs:/ldifs'
+          - './docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
+        ports:
+          - 1389:1389
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
@@ -90,6 +104,20 @@ jobs:
           MYSQL_DATABASE: app
         ports:
           - 13306:3306
+      ldap:
+        image: bitnami/openldap:2.6.4
+        env:
+          LDAP_URI: ldap://openldap:1389
+          LDAP_BASE: dc=example,dc=org
+          LDAP_ADMIN_USERNAME: admin
+          LDAP_ADMIN_PASSWORD: admin_password
+          LDAP_CUSTOM_LDIF_DIR: /ldifs
+          LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
+        volumes:
+          - './docker/openldap/ldifs:/ldifs'
+          - './docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
+        ports:
+          - 1389:1389
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
@@ -127,6 +155,20 @@ jobs:
           ACCEPT_EULA: Y
         ports:
           - 11433:1433
+      ldap:
+        image: bitnami/openldap:2.6.4
+        env:
+          LDAP_URI: ldap://openldap:1389
+          LDAP_BASE: dc=example,dc=org
+          LDAP_ADMIN_USERNAME: admin
+          LDAP_ADMIN_PASSWORD: admin_password
+          LDAP_CUSTOM_LDIF_DIR: /ldifs
+          LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
+        volumes:
+          - './docker/openldap/ldifs:/ldifs'
+          - './docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
+        ports:
+          - 1389:1389
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
@@ -155,10 +197,24 @@ jobs:
       matrix:
         python-version: [3.8]
     services:
-      mssql:
+      mongo:
         image: mongo:4.4.1-bionic
         ports:
           - 27017:27017
+      ldap:
+        image: bitnami/openldap:2.6.4
+        env:
+          LDAP_URI: ldap://openldap:1389
+          LDAP_BASE: dc=example,dc=org
+          LDAP_ADMIN_USERNAME: admin
+          LDAP_ADMIN_PASSWORD: admin_password
+          LDAP_CUSTOM_LDIF_DIR: /ldifs
+          LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
+        volumes:
+          - './docker/openldap/ldifs:/ldifs'
+          - './docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
+        ports:
+          - 1389:1389
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
