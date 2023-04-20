@@ -61,8 +61,8 @@ jobs:
           LDAP_CUSTOM_LDIF_DIR: /ldifs
           LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
         volumes:
-          - '/docker/openldap/ldifs:/ldifs'
-          - '/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
+          - 'docker/openldap/ldifs:/ldifs'
+          - 'docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
         ports:
           - 1389:1389
     steps:
@@ -114,8 +114,8 @@ jobs:
           LDAP_CUSTOM_LDIF_DIR: /ldifs
           LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
         volumes:
-          - '/docker/openldap/ldifs:/ldifs'
-          - '/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
+          - 'docker/openldap/ldifs:/ldifs'
+          - 'docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
         ports:
           - 1389:1389
     steps:
@@ -165,8 +165,8 @@ jobs:
           LDAP_CUSTOM_LDIF_DIR: /ldifs
           LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
         volumes:
-          - '/docker/openldap/ldifs:/ldifs'
-          - '/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
+          - 'docker/openldap/ldifs:/ldifs'
+          - 'docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
         ports:
           - 1389:1389
     steps:
@@ -211,8 +211,8 @@ jobs:
           LDAP_CUSTOM_LDIF_DIR: /ldifs
           LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
         volumes:
-          - '/docker/openldap/ldifs:/ldifs'
-          - '/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
+          - 'docker/openldap/ldifs:/ldifs'
+          - 'docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
         ports:
           - 1389:1389
     steps:
