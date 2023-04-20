@@ -43,7 +43,20 @@ jobs:
         id: move-ldap-config
         run: |
           pwd "${{ github.workspace }}"
-          ls -R "${{ github.workspace }}"
+          pwd "${{ github.home }}"
+          cp -Rv "${{ github.workspace }}"/docker "${{ github.home }}"/docker
+
+  move-ldap-config2:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Move LDAP configs2
+        id: move-ldap-config2
+        run: |
+          pwd "${{ github.workspace }}"
+          pwd "${{ github.home }}"
+          ls -R "${{ github.home }}"/docker
 
   test-postgres:
     runs-on: ubuntu-22.04
