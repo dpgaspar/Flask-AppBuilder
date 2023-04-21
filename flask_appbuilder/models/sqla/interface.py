@@ -345,7 +345,9 @@ class SQLAInterface(BaseInterface):
                     _filters.append((flt.column_name, flt.__class__, value))
                 elif self.is_relation_many_to_one(
                     get_column_root_relation(flt.column_name)
-                ) or self.is_relation_one_to_one(get_column_root_relation(flt.column_name)):
+                ) or self.is_relation_one_to_one(
+                    get_column_root_relation(flt.column_name)
+                ):
                     _filters.append((flt.column_name, flt.__class__, value))
             inner_filters.add_filter_list(_filters)
         return inner_filters
