@@ -12,16 +12,18 @@ from flask_appbuilder.fieldwidgets import BS3PasswordFieldWidget
 from flask_appbuilder.security.decorators import has_access
 from flask_appbuilder.security.forms import (
     DynamicForm,
+    ForgotMyPasswordForm,
     LoginForm_db,
     LoginForm_oid,
     ResetPasswordForm,
     SelectDataRequired,
     UserInfoEdit,
 )
+from flask_appbuilder.security.sqla.models import UserResetPassword
 from flask_appbuilder.security.utils import generate_random_string
 from flask_appbuilder.utils.base import get_safe_redirect, lazy_formatter_gettext
 from flask_appbuilder.validators import PasswordComplexityValidator
-from flask_appbuilder.views import expose, ModelView, SimpleFormView
+from flask_appbuilder.views import expose, ModelView, PublicFormView, SimpleFormView
 from flask_appbuilder.widgets import ListWidget, ShowWidget
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
@@ -75,6 +77,20 @@ class PermissionViewModelView(ModelView):
     list_columns = ["permission", "view_menu"]
 
 
+class ForgotMyPasswordView(PublicFormView):
+    """
+    View for resetting user password via Email when the user is locked out
+    """
+
+    route_base = "/forgotmypassword"
+    form = ForgotMyPasswordForm
+    form_title = lazy_gettext("Send Password Reset-link")
+    redirect_url = "/"
+
+    def form_post(self, form):
+        self.appbuilder.sm.forgot_password(form.email.data)
+
+
 class ResetMyPasswordView(SimpleFormView):
     """
     View for resetting own user password
@@ -85,10 +101,117 @@ class ResetMyPasswordView(SimpleFormView):
     form_title = lazy_gettext("Reset Password Form")
     redirect_url = "/"
     message = lazy_gettext("Password Changed")
+    forbidden_msg = lazy_gettext(
+        "You have to confirm the "
+        + "Reset your password email in order to change the password"
+    )
+
+    def form_get(self, form):
+        if current_app.config["EMAIL_PROT"]:
+            resetpw = self.appbuilder.sm.get_reset_password_hash(g.user.id)
+            valid = self.appbuilder.sm.check_expire_reset_password_hash(resetpw)
+
+            # prevents browsing to the url while there's no valid reset_hash
+            if resetpw.ack and valid:
+                pass
+            else:
+                flash(self.forbidden_msg, "danger")
+                abort(401)
 
     def form_post(self, form: DynamicForm) -> None:
         self.appbuilder.sm.reset_password(g.user.id, form.password.data)
+
+        if current_app.config["EMAIL_PROT"]:
+            # remove resetpw from db
+            resetpw = self.appbuilder.sm.get_reset_password_hash(g.user.id)
+            
+            try:
+                self.appbuilder.get_session.delete(resetpw)
+                self.appbuilder.get_session.commit()
+            except Exception:
+                log.error(c.LOGMSG_ERR_SEC_REMOVE_RESET_PW_HASH.format(str(e)))
+                self.appbuilder.get_session.rollback()
+
         flash(as_unicode(self.message), "info")
+
+
+class PublicResetMyPasswordView(PublicFormView):
+    """
+    View for resetting own user password
+    """
+
+    route_base = "/resetmypassword"
+    form = ResetPasswordForm
+    form_title = lazy_gettext("Reset Password Form")
+    redirect_url = "/"
+    message = lazy_gettext("Password Changed")
+
+    @expose("/form/<string:reset_hash>", methods=["GET"])
+    def this_form_get(self, reset_hash):
+        if current_app.config["EMAIL_PROT"]:
+            user_id = (
+                self.appbuilder.get_session.query(UserResetPassword.id)
+                .filter_by(reset_hash=reset_hash)
+                .scalar()
+            )
+            resetpw = self.appbuilder.sm.get_reset_password_hash(user_id)
+            valid = self.appbuilder.sm.check_expire_reset_password_hash(resetpw)
+
+            # prevents browsing to the url while there's no valid reset_hash
+            if resetpw.ack and valid:
+                self._init_vars()
+                form = self.form.refresh()
+                self.form_get(form)
+                widgets = self._get_edit_widget(form=form)
+                self.update_redirect()
+                return self.render_template(
+                    self.form_template,
+                    title=self.form_title,
+                    widgets=widgets,
+                    appbuilder=self.appbuilder,
+                )
+
+        abort(404)
+
+    @expose("/form/<string:reset_hash>", methods=["POST"])
+    def this_form_post(self, reset_hash):
+        if current_app.config["EMAIL_PROT"]:
+            user_id = (
+                self.appbuilder.get_session.query(UserResetPassword.id)
+                .filter_by(reset_hash=reset_hash)
+                .scalar()
+            )
+
+            self._init_vars()
+            form = self.form.refresh()
+            if form.validate_on_submit():
+                self.appbuilder.sm.reset_password(user_id, form.password.data)
+                flash(as_unicode(self.message), "info")
+
+                # remove resetpw from db!
+                resetpw = self.appbuilder.sm.get_reset_password_hash(user_id)
+                self.appbuilder.get_session.delete(resetpw)
+                
+                try:
+                    self.appbuilder.get_session.commit()
+                except Exception:
+                    log.error(c.LOGMSG_ERR_SEC_REMOVE_RESET_PW_HASH.format(str(e)))
+                    self.appbuilder.get_session.rollback()
+
+
+                response = self.form_post(form)
+                if not response:
+                    return redirect(self.get_redirect())
+                return response
+            else:
+                widgets = self._get_edit_widget(form=form)
+                return self.render_template(
+                    self.form_template,
+                    title=self.form_title,
+                    widgets=widgets,
+                    appbuilder=self.appbuilder,
+                )
+        abort(404)
 
 
 class ResetPasswordView(SimpleFormView):
@@ -369,6 +492,23 @@ class UserDBModelView(UserModelView):
             appbuilder=self.appbuilder,
         )
 
+    @expose("/resetpw", methods=["GET"])
+    def resetpw(self):
+        access = None
+
+        if g.user is not None and g.user.is_authenticated:
+            user = self.appbuilder.sm.get_user_by_id(g.user.id)
+            access = self.appbuilder.sm.reset_pw_hash(user)
+
+        if access:
+            return redirect(
+                url_for(
+                    self.appbuilder.sm.resetmypasswordview.__name__ + ".this_form_get"
+                )
+            )
+        else:
+            return redirect(self.get_redirect())
+
     @action(
         "resetmypassword",
         lazy_gettext("Reset my password"),
@@ -376,10 +516,17 @@ class UserDBModelView(UserModelView):
         "fa-lock",
         multiple=False,
     )
+
     def resetmypassword(self, item: Any):
-        return redirect(
-            url_for(self.appbuilder.sm.resetmypasswordview.__name__ + ".this_form_get")
-        )
+        if current_app.config["EMAIL_PROT"]:
+            return redirect(url_for(".resetpw"))
+
+        else:
+            return redirect(
+                url_for(
+                    self.appbuilder.sm.resetmypasswordview.__name__ + ".this_form_get"
+                )
+            )
 
     @action(
         "resetpasswords", lazy_gettext("Reset Password"), "", "fa-lock", multiple=False
@@ -398,6 +545,57 @@ class UserDBModelView(UserModelView):
 
     def pre_add(self, item: Any) -> None:
         item.password = generate_password_hash(item.password)
+
+    @expose("/resetmypw/<string:reset_hash>")
+    def resetmypw(self, reset_hash):
+        """
+        Endpoint to expose an reset password url, this url
+        is sent to the user by E-mail, when accessed the user will grant
+        access to the change password form
+        """
+        false_error_message = lazy_gettext("Not able to reset the password")
+
+        resetpw = (
+            self.appbuilder.get_session.query(UserResetPassword)
+            .filter(UserResetPassword.reset_hash == reset_hash)
+            .scalar()
+        )
+
+        if resetpw:
+            not_expired = self.appbuilder.sm.check_expire_reset_password_hash(resetpw)
+
+            if not_expired:
+                # confirm user is validated by email
+                resetpw.ack = True
+                
+                try:
+                    self.appbuilder.get_session.merge(resetpw)
+                    self.appbuilder.get_session.commit()
+                except Exception:
+                    log.error(c.LOGMSG_ERR_SEC_SAVE_ACK_RESET_PW_HASH.format(str(e)))
+                    self.appbuilder.get_session.rollback()
+
+
+                if g.user is not None and g.user.is_authenticated:
+                    return redirect(
+                        url_for(
+                            self.appbuilder.sm.resetmypasswordview.__name__
+                            + ".this_form_get"
+                        )
+                    )
+
+                else:
+                    return redirect(
+                        url_for(
+                            self.appbuilder.sm.publicresetmypasswordview.__name__
+                            + ".this_form_get",
+                            reset_hash=reset_hash,
+                        )
+                    )
+
+        else:
+            flash(as_unicode(false_error_message), "danger")
+            return redirect(self.appbuilder.get_url_for_index)
 
 
 class UserStatsChartView(DirectByChartView):

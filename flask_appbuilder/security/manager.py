@@ -26,8 +26,10 @@ from .views import (
     AuthOAuthView,
     AuthOIDView,
     AuthRemoteUserView,
+    ForgotMyPasswordView,
     PermissionModelView,
     PermissionViewModelView,
+    PublicResetMyPasswordView,
     RegisterUserModelView,
     ResetMyPasswordView,
     ResetPasswordView,
@@ -200,6 +202,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own reset my password view """
     resetpasswordview = ResetPasswordView
     """ Override if you want your own reset password view """
+    publicresetmypasswordview = PublicResetMyPasswordView
+    """ Override if you want your own reset password view """
+    forgotpasswordview = ForgotMyPasswordView
+    """ Override if you want your own forgot password view """
     userinfoeditview = UserInfoEditView
     """ Override if you want your own User information edit view """
 
@@ -220,6 +226,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault("AUTH_ROLE_ADMIN", "Admin")
         app.config.setdefault("AUTH_ROLE_PUBLIC", "Public")
         app.config.setdefault("AUTH_TYPE", AUTH_DB)
+        app.config.setdefault("EMAIL_PROT", False)
+
         # Self Registration
         app.config.setdefault("AUTH_USER_REGISTRATION", False)
         app.config.setdefault("AUTH_USER_REGISTRATION_ROLE", self.auth_role_public)
@@ -364,6 +372,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
 
     @property
+    def get_url_for_forgotpassword(self):
+        return url_for(ForgotMyPasswordView.__name__ + ".this_form_get")
+
+    @property
     def get_user_datamodel(self):
         return self.user_view.datamodel
 
@@ -504,12 +516,16 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["OAUTH_PROVIDERS"]
 
     @property
+    def email_prot_available(self):
+        return self.appbuilder.get_app.config["EMAIL_PROT"]
+
     def is_auth_limited(self) -> bool:
         return self.appbuilder.get_app.config["AUTH_RATE_LIMITED"]
 
     @property
     def auth_rate_limit(self) -> str:
         return self.appbuilder.get_app.config["AUTH_RATE_LIMIT"]
+
 
     @property
     def current_user(self):
@@ -731,6 +747,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 self.appbuilder.add_view_no_menu(self.registeruser_view)
 
         self.appbuilder.add_view_no_menu(self.resetpasswordview())
+        self.appbuilder.add_view_no_menu(self.forgotpasswordview())
+        self.appbuilder.add_view_no_menu(self.publicresetmypasswordview())
         self.appbuilder.add_view_no_menu(self.resetmypasswordview())
         self.appbuilder.add_view_no_menu(self.userinfoeditview())
 
@@ -860,6 +878,16 @@ class BaseSecurityManager(AbstractSecurityManager):
         user = self.get_user_by_id(userid)
         user.password = generate_password_hash(password)
         self.update_user(user)
+
+    def forgot_password(self, email):
+        """
+        Send reset password link to user.
+
+        :param email:
+            the user.email to send the Email
+        """
+        user = self.find_user(email=email)
+        self.appbuilder.sm.reset_pw_hash(user)
 
     def update_user_auth_stat(self, user, success=True):
         """
@@ -1889,6 +1917,19 @@ class BaseSecurityManager(AbstractSecurityManager):
     def get_user_by_id(self, pk):
         """
         Generic function to return user by it's id (pk)
+
+        """
+        raise NotImplementedError
+
+    def get_reset_password_hash(self, user_id):
+        """
+        Generic function to return reset_password_hash by it's id (pk)
+        """
+        raise NotImplementedError
+
+    def check_expire_reset_password_hash(self, resetpw):
+        """
+        Generic function to check if reset_password_hash is expired
         """
         raise NotImplementedError
 
@@ -1907,6 +1948,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def get_db_role_permissions(self, role_id: int) -> List[object]:
         """
         Get all DB permissions from a role id
+
         """
         raise NotImplementedError
 
