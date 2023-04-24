@@ -21,8 +21,8 @@ from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 from flask_appbuilder.models.sqla.filters import (
     FilterEqual,
-    FilterStartsWith,
     FilterEqualFunction,
+    FilterStartsWith,
 )
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView, ModelView
