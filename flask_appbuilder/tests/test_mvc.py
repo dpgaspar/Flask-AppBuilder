@@ -19,7 +19,7 @@ from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
-from flask_appbuilder.models.sqla.filters import FilterEqual, FilterStartsWith
+from flask_appbuilder.models.sqla.filters import FilterEqual, FilterStartsWith, FilterEqualFunction
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView, ModelView
 from flask_wtf import CSRFProtect
@@ -566,6 +566,18 @@ class MVCTestCase(BaseMVCTestCase):
             datamodel = SQLAInterface(Model1)
             base_filters = [["field_integer", FilterEqual, 0]]
 
+        def get_model1_by_name(datamodel, name):
+            model = datamodel.session.query(Model1) \
+            .filter_by(field_string=name) \
+            .one_or_none()
+            return model
+        
+        class Model2FilterEqualFunctionView(ModelView):
+            datamodel = SQLAInterface(Model2)
+            base_filters = [["group", FilterEqualFunction, lambda: get_model1_by_name(Model2FilterEqualFunctionView.datamodel,"test1")]]
+            list_columns = ["group"]
+            search_columns = ["field_integer"]
+
         class Model2ChartView(ChartView):
             datamodel = SQLAInterface(Model2)
             chart_title = "Test Model1 Chart"
@@ -667,6 +679,9 @@ class MVCTestCase(BaseMVCTestCase):
         )
         self.appbuilder.add_view(
             Model1Filtered2View, "Model1Filtered2", category="Model1"
+        )
+        self.appbuilder.add_view(
+            Model2FilterEqualFunctionView, "Model2FilterEqualFunction", category="Model2"
         )
         self.appbuilder.add_view(
             Model1FormattedView, "Model1FormattedView", category="Model1FormattedView"
@@ -1309,6 +1324,22 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertIn("test0", data)
         self.assertNotIn("test1", data)
 
+    def test_filterequalfunction_with_relation(self):
+        """
+        Test FilterEqualFunction
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        
+        # Base filter string starts with
+        rv = client.get("/model2filterequalfunctionview/list/")
+        self.assertEqual(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        self.assertIn("test1", data)
+        self.assertNotIn("test0", data)
+        self.assertNotIn("test2", data)
+        
+        
     def test_model_list_method_field(self):
         """
         Tests a model's field has a method
