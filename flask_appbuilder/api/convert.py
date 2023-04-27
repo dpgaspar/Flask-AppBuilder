@@ -4,7 +4,6 @@ from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from marshmallow import fields
 from marshmallow.fields import Field
-from marshmallow_enum import EnumField
 from marshmallow_sqlalchemy import field_for
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
@@ -133,11 +132,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         enum_class = datamodel.list_columns[column.data].info.get(
             "enum_class", datamodel.list_columns[column.data].type
         )
-        if enum_dump_by_name:
-            enum_dump_by = EnumField.NAME
-        else:
-            enum_dump_by = EnumField.VALUE
-        field = EnumField(enum_class, dump_by=enum_dump_by, required=required)
+        field = fields.Enum(enum_class, by_value=not enum_dump_by_name, required=required)
         field.unique = datamodel.is_unique(column.data)
         return field
 
