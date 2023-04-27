@@ -132,7 +132,9 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         enum_class = datamodel.list_columns[column.data].info.get(
             "enum_class", datamodel.list_columns[column.data].type
         )
-        field = fields.Enum(enum_class, by_value=not enum_dump_by_name, required=required)
+        field = fields.Enum(
+            enum_class, by_value=not enum_dump_by_name, required=required
+        )
         field.unique = datamodel.is_unique(column.data)
         return field
 
