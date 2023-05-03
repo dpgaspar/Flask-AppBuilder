@@ -38,15 +38,35 @@ class FlaskTestCase(FABTestCase):
         log.debug("TEAR DOWN")
 
     @attr("needs_inet")
+    def test_create_app_invalid_secret_key(self):
+        os.environ["FLASK_APP"] = "app:app"
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(
+                create_app,
+                [
+                    f"--name={APP_DIR}",
+                    "--engine=SQLAlchemy",
+                    f"--secret-key=SHORT_SECRET",
+                ],
+            )
+            self.assertIn("Invalid value for '--secret-key'", result.output)
+
+    @attr("needs_inet")
     def test_create_app(self):
         """
-            Test create app, create-user
+        Test create app, create-user
         """
         os.environ["FLASK_APP"] = "app:app"
         runner = CliRunner()
         with runner.isolated_filesystem():
             result = runner.invoke(
-                create_app, [f"--name={APP_DIR}", "--engine=SQLAlchemy"]
+                create_app,
+                [
+                    f"--name={APP_DIR}",
+                    "--engine=SQLAlchemy",
+                    f"--secret-key={10*'SECRET'}",
+                ],
             )
             self.assertIn("Downloaded the skeleton app, good coding!", result.output)
             os.chdir(APP_DIR)
@@ -74,7 +94,7 @@ class FlaskTestCase(FABTestCase):
     @attr("needs_inet")
     def test_list_views(self):
         """
-            CLI: Test list views
+        CLI: Test list views
         """
         os.environ["FLASK_APP"] = "app:app"
         runner = CliRunner()
