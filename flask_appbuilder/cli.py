@@ -13,7 +13,9 @@ import jinja2
 from .const import AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_OID, AUTH_REMOTE_USER
 
 
-SQLA_REPO_URL = "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip"
+SQLA_REPO_URL = (
+    "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip"
+)
 MONGOENGIE_REPO_URL = (
     "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip"
 )
@@ -184,7 +186,9 @@ def export_roles(
 
 @fab.command("import-roles")
 @with_appcontext
-@click.option("--path", "-p", help="Path to a JSON file containing roles", required=True)
+@click.option(
+    "--path", "-p", help="Path to a JSON file containing roles", required=True
+)
 def import_roles(path: str) -> None:
     """Imports roles with permissions and view menus from JSON file"""
     current_app.appbuilder.sm.import_roles(path)
@@ -216,7 +220,9 @@ def security_cleanup():
 
 
 @fab.command("security-converge")
-@click.option("--dry-run", "-d", is_flag=True, help="Dry run & print state transitions.")
+@click.option(
+    "--dry-run", "-d", is_flag=True, help="Dry run & print state transitions."
+)
 @with_appcontext
 def security_converge(dry_run=False):
     """
@@ -331,7 +337,9 @@ def create_app(name: str, engine: str, secret_key: str) -> None:
         click.echo(click.style("Something went wrong {0}".format(e), fg="red"))
         if engine.lower() == "sqlalchemy":
             click.echo(
-                click.style("Try downloading from {0}".format(SQLA_REPO_URL), fg="green")
+                click.style(
+                    "Try downloading from {0}".format(SQLA_REPO_URL), fg="green"
+                )
             )
         elif engine.lower() == "mongoengine":
             click.echo(
@@ -365,7 +373,9 @@ def create_addon(name):
         f.write("ADDON_NAME='" + name + "'\n")
         f.write("FULL_ADDON_NAME='fab_addon_' + ADDON_NAME\n")
         f.close()
-        click.echo(click.style("Downloaded the skeleton addon, good coding!", fg="green"))
+        click.echo(
+            click.style("Downloaded the skeleton addon, good coding!", fg="green")
+        )
         return True
     except Exception as e:
         click.echo(click.style("Something went wrong {0}".format(e), fg="red"))
@@ -373,7 +383,9 @@ def create_addon(name):
 
 
 @fab.command("collect-static")
-@click.option("--static_folder", default="app/static", help="Your projects static folder")
+@click.option(
+    "--static_folder", default="app/static", help="Your projects static folder"
+)
 def collect_static(static_folder):
     """
     Copies flask-appbuilder static files to your projects static folder
@@ -424,7 +436,9 @@ def babel_extract(config, input, output, target, keywords):
     )
     keywords = " -k ".join(keywords)
     os.popen(
-        "pybabel extract -F {0} -k {1} -o {2} {3}".format(config, keywords, output, input)
+        "pybabel extract -F {0} -k {1} -o {2} {3}".format(
+            config, keywords, output, input
+        )
     )
     click.echo(click.style("Starting Update target:{0}".format(target), fg="green"))
     os.popen("pybabel update -N -i {0} -d {1}".format(output, target))
