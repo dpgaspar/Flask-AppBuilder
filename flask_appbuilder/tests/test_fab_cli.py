@@ -47,7 +47,7 @@ class FlaskTestCase(FABTestCase):
                 [
                     f"--name={APP_DIR}",
                     "--engine=SQLAlchemy",
-                    f"--secret-key=SHORT_SECRET",
+                    "--secret-key=SHORT_SECRET",
                 ],
             )
             self.assertIn("Invalid value for '--secret-key'", result.output)
@@ -147,9 +147,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                 resulting_roles = json.loads(fd.read())
 
             for expected_role in self.expected_roles:
-                match = [
-                    r for r in resulting_roles if r["name"] == expected_role["name"]
-                ]
+                match = [r for r in resulting_roles if r["name"] == expected_role["name"]]
                 self.assertTrue(match)
                 resulting_role = match[0]
                 resulting_role_permission_view_menus = {
@@ -183,9 +181,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             os.chdir(owd)
 
             self.assertEqual(export_result.exit_code, 0)
-            self.assertGreater(
-                len(glob.glob(os.path.join(tmp_dir, "roles_export_*"))), 0
-            )
+            self.assertGreater(len(glob.glob(os.path.join(tmp_dir, "roles_export_*"))), 0)
 
     @patch("json.dumps")
     def test_export_roles_indent(self, mock_json_dumps):
