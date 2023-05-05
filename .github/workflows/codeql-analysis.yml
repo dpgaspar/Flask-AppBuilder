@@ -1,6 +1,8 @@
 on:
   push:
     branches: [master]
+    paths:
+      - flask_appbuilder
   pull_request:
     branches: [master]
     paths:
