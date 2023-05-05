@@ -1,0 +1,43 @@
+on:
+  push:
+    branches: [main, protected]
+  pull_request:
+    branches: [main]
+    paths:
+      - flask_appbuilder
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python' ]
+  build:
+    runs-on: ubuntu-22.04
+    permissions:
+      security-events: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: python
+          # Override the default behavior so that the action doesn't attempt
+          # to auto-install Python dependencies
+          setup-python-dependencies: false
