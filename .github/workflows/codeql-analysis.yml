@@ -1,0 +1,20 @@
+on:
+  push:
+    branches: [master]
+    paths:
+      - flask_appbuilder
+  pull_request:
+    branches: [master]
+    paths:
+      - flask_appbuilder
+  schedule:
+    - cron: '0 3 * * *'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python' ]
