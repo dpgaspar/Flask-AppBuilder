@@ -62,11 +62,11 @@ class APICSRFTestCase(FABTestCase):
                 session_["oauth_state"] = "random_state"
             response = client.get(f"/oauth-authorized/google?state={state}")
             self.assertEqual(current_user.email, "user1@fab.org")
-            self.assertEqual(response.location, "http://localhost/")
+            self.assertEqual(response.location, "/")
 
     def test_oauth_login_invalid_state(self):
         """
-        OAuth: Test login
+        OAuth: Test login invalid state
         """
         self.appbuilder.sm.oauth_remotes = {"google": OAuthRemoteMock()}
 
@@ -77,7 +77,7 @@ class APICSRFTestCase(FABTestCase):
                 session["oauth_state"] = "invalid_state"
             response = client.get(f"/oauth-authorized/google?state={state}")
             self.assertEqual(current_user.is_authenticated, False)
-            self.assertEqual(response.location, "http://localhost/login/")
+            self.assertEqual(response.location, "/login/")
 
     def test_oauth_login_unknown_provider(self):
         """
@@ -92,7 +92,7 @@ class APICSRFTestCase(FABTestCase):
                 session["oauth_state"] = "random_state"
 
         response = client.get(f"/oauth-authorized/unknown_provider?state={state}")
-        self.assertEqual(response.location, "http://localhost/login/")
+        self.assertEqual(response.location, "/login/")
 
     def test_oauth_login_next(self):
         """
@@ -122,4 +122,4 @@ class APICSRFTestCase(FABTestCase):
             with client.session_transaction() as session:
                 session["oauth_state"] = "random_state"
         response = client.get(f"/oauth-authorized/google?state={state}")
-        self.assertEqual(response.location, "http://localhost/")
+        self.assertEqual(response.location, "/")
