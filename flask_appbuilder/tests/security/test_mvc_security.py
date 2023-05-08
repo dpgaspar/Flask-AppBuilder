@@ -99,7 +99,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         response = self.browser_login(
             self.client, USERNAME_ADMIN, PASSWORD_ADMIN, follow_redirects=False
         )
-        assert response.location == "http://localhost/"
+        assert response.location == "/"
 
     def test_db_login_valid_next_url(self):
         """
@@ -113,7 +113,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             next_url="/users/list/",
             follow_redirects=False,
         )
-        assert response.location == "http://localhost/users/list/"
+        assert response.location == "/users/list/"
 
     def test_db_login_valid_http_scheme_url(self):
         """
@@ -155,7 +155,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             next_url="https://google.com",
             follow_redirects=False,
         )
-        assert response.location == "http://localhost/"
+        assert response.location == "/"
 
     def test_db_login_invalid_scheme_next_url(self):
         """
@@ -169,7 +169,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             next_url="ftp://sample",
             follow_redirects=False,
         )
-        assert response.location == "http://localhost/"
+        assert response.location == "/"
 
     def test_db_login_invalid_localhost_file_next_url(self):
         """
@@ -183,7 +183,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             next_url="file:///path",
             follow_redirects=False,
         )
-        assert response.location == "http://localhost/"
+        assert response.location == "/"
 
     def test_db_login_invalid_no_netloc_with_scheme_next_url(self):
         """
@@ -197,7 +197,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             next_url="http:///sample.com ",
             follow_redirects=False,
         )
-        assert response.location == "http://localhost/"
+        assert response.location == "/"
 
     def test_db_login_invalid_control_characters_next_url(self):
         """
@@ -211,7 +211,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             next_url="\u0001" + "sample.com",
             follow_redirects=False,
         )
-        assert response.location == "http://localhost/"
+        assert response.location == "/"
 
     def test_db_login_failed_keep_next_url(self):
         """
@@ -231,7 +231,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             follow_redirects=False,
         )
 
-        assert response.location == "http://localhost/users/list/"
+        assert response.location == "/users/list/"
 
     def test_auth_builtin_roles(self):
         """
