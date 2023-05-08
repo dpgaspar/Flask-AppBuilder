@@ -3,7 +3,7 @@ import json
 import logging
 from typing import Set
 
-from flask import Flask, make_response, redirect, request, session
+from flask import Flask, make_response, redirect, session
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import expose
@@ -754,9 +754,11 @@ class MVCTestCase(BaseMVCTestCase):
             self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
             c.get("/model1view/list/?_flt_0_field_string=f")
             c.get("/model2view/list/")
-            c.get("/back", follow_redirects=True)
-            assert request.args["_flt_0_field_string"] == "f"
-            assert "/model1view/list/" == request.path
+            response = c.get("/back", follow_redirects=False)
+            assert (
+                response.location
+                == "http://localhost/model1view/list/?_flt_0_field_string=f"
+            )
 
     def test_model_creation(self):
         """
@@ -1085,7 +1087,7 @@ class MVCTestCase(BaseMVCTestCase):
         )
 
         self.assertEqual(rv.status_code, 302)
-        self.assertEqual("http://localhost/", rv.headers["Location"])
+        self.assertEqual("/", rv.headers["Location"])
 
         # Revert data changes
         model1 = (
@@ -1113,7 +1115,7 @@ class MVCTestCase(BaseMVCTestCase):
             data=dict(field_string="test_redirect", field_integer="200"),
         )
         self.assertEqual(rv.status_code, 302)
-        self.assertEqual("http://localhost/", rv.headers["Location"])
+        self.assertEqual("/", rv.headers["Location"])
 
         # Revert data changes
         insert_model1(self.appbuilder.get_session, i=model_id - 1)
@@ -1129,7 +1131,7 @@ class MVCTestCase(BaseMVCTestCase):
         )
         rv = client.get(f"/model1viewwithredirects/delete/{model_id}")
         self.assertEqual(rv.status_code, 302)
-        self.assertEqual("http://localhost/", rv.headers["Location"])
+        self.assertEqual("/", rv.headers["Location"])
         # Revert data changes
         insert_model1(self.appbuilder.get_session, i=model_id - 1)
 
