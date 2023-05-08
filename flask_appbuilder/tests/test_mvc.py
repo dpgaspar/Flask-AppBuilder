@@ -1115,7 +1115,7 @@ class MVCTestCase(BaseMVCTestCase):
             data=dict(field_string="test_redirect", field_integer="200"),
         )
         self.assertEqual(rv.status_code, 302)
-        self.assertEqual("http://localhost/", rv.headers["Location"])
+        self.assertEqual("/", rv.headers["Location"])
 
         # Revert data changes
         insert_model1(self.appbuilder.get_session, i=model_id - 1)
