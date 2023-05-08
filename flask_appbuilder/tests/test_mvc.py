@@ -754,9 +754,11 @@ class MVCTestCase(BaseMVCTestCase):
             self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
             c.get("/model1view/list/?_flt_0_field_string=f")
             c.get("/model2view/list/")
-            c.get("/back", follow_redirects=True)
-            assert request.args["_flt_0_field_string"] == "f"
-            assert "/model1view/list/" == request.path
+            response = c.get("/back", follow_redirects=False)
+            assert (
+                response.location
+                == "http://localhost/model1view/list/?_flt_0_field_string=f"
+            )
 
     def test_model_creation(self):
         """
