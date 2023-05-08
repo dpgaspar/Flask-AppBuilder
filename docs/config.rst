@@ -13,6 +13,11 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +========================================+============================================+===========+
 | SQLALCHEMY_DATABASE_URI                | DB connection string (flask-sqlalchemy)    |   Cond.   |
 +----------------------------------------+--------------------------------------------+-----------+
+| SECRET_KEY                             | Flask secret key used for securely signing |           |
+|                                        | the session cookie Set the secret_key on   |           |
+|                                        | the application to something unique and    |           |
+|                                        | secret.                                    |   Yes     |
++----------------------------------------+--------------------------------------------+-----------+
 | MONGODB_SETTINGS                       | DB connection string (flask-mongoengine)   |   Cond.   |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_TYPE = 0 | 1 | 2 | 3 | 4          | This is the authentication type            |   Yes     |
@@ -316,6 +321,15 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | Default is False.                          |           |
 +----------------------------------------+--------------------------------------------+-----------+
 
+Note
+----
+
+Make sure you set your own `SECRET_KEY` to something unique and secret. This secret key is used by Flask for
+securely signing the session cookie and can be used for any other security related needs by extensions or your application.
+It should be a long random bytes or str. For example, copy the output of this to your config::
+
+    $ python -c 'import secrets; print(secrets.token_hex())'
+    '192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
 
 Using config.py
 ---------------
