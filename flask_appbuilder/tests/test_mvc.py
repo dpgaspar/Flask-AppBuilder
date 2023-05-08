@@ -572,9 +572,7 @@ class MVCTestCase(BaseMVCTestCase):
 
         def get_model1_by_name(datamodel, name):
             model = (
-                datamodel.session.query(Model1)
-                .filter_by(field_string=name)
-                .one_or_none()
+                datamodel.session.query(Model1).filter_by(field_string=name).one_or_none()
             )
             return model
 
@@ -947,9 +945,7 @@ class MVCTestCase(BaseMVCTestCase):
         )
 
         self.assertEqual(rv.status_code, 200)
-        model = (
-            self.appbuilder.get_session.query(Model3).filter_by(pk1="1").one_or_none()
-        )
+        model = self.appbuilder.get_session.query(Model3).filter_by(pk1="1").one_or_none()
         self.assertEqual(model.pk1, 1)
         self.assertEqual(model.pk2, datetime.datetime(2017, 1, 1))
         self.assertEqual(model.field_string, "foo2")
@@ -1087,7 +1083,7 @@ class MVCTestCase(BaseMVCTestCase):
         )
 
         self.assertEqual(rv.status_code, 302)
-        self.assertEqual("http://localhost/", rv.headers["Location"])
+        self.assertEqual("/", rv.headers["Location"])
 
         # Revert data changes
         model1 = (
@@ -1105,10 +1101,7 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model_id = (
-            self.db.session.query(Model1)
-            .filter_by(field_string="test0")
-            .one_or_none()
-            .id
+            self.db.session.query(Model1).filter_by(field_string="test0").one_or_none().id
         )
         rv = client.post(
             f"/model1viewwithredirects/edit/{model_id}",
@@ -1506,9 +1499,7 @@ class MVCTestCase(BaseMVCTestCase):
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 200)
-        model1 = (
-            self.db.session.query(Model1).filter_by(field_string="zzz").one_or_none()
-        )
+        model1 = self.db.session.query(Model1).filter_by(field_string="zzz").one_or_none()
         self.assertIsNotNone(model1)
 
         # Revert data changes
