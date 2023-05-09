@@ -1,6 +1,16 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.2
+-----------------------------------
+
+- chore: bump Flask and werkzeug (#2034) [Daniel Vaz Gaspar]
+- ci: improve codeql configuration  (#2032) [Daniel Vaz Gaspar]
+- ci: add codeQL analysis (#2031) [Daniel Vaz Gaspar]
+- fix: cli create app ask for initial secret key (#2029) [Daniel Vaz Gaspar]
+- fix: using base_filters with FilterEqualFunction not working for relation fields (#2011) [ThomasP0815]
+- ci: bump ubuntu version, remove mockldap (#2013) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.3.1
 -----------------------------------
 
