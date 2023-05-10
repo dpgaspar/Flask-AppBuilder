@@ -933,5 +933,4 @@ class LDAPSearchTestCase(unittest.TestCase):
             data=dict(username="natalie", password="natalie_password"),
             follow_redirects=False,
         )
-
-        assert response.location == "http://localhost/users/userinfo/"
+        assert response.location == "/users/userinfo/"

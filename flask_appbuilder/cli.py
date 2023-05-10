@@ -8,6 +8,7 @@ from zipfile import ZipFile
 import click
 from flask import current_app
 from flask.cli import with_appcontext
+import jinja2
 
 from .const import AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_OID, AUTH_REMOTE_USER
 
@@ -21,6 +22,14 @@ MONGOENGIE_REPO_URL = (
 ADDON_REPO_URL = (
     "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-AddOn/archive/master.zip"
 )
+
+MIN_SECRET_KEY_SIZE = 20
+
+
+def validate_secret_key(ctx, param, value):
+    if len(value) < MIN_SECRET_KEY_SIZE:
+        raise click.BadParameter(f"SECRET_KEY size is less then {MIN_SECRET_KEY_SIZE}")
+    return value
 
 
 def echo_header(title):
@@ -45,7 +54,7 @@ def cast_int_like_to_int(cli_arg: Union[None, str, int]) -> Union[None, str, int
 
 @click.group()
 def fab():
-    """ FAB flask group commands"""
+    """FAB flask group commands"""
     pass
 
 
@@ -58,7 +67,7 @@ def fab():
 @with_appcontext
 def create_admin(username, firstname, lastname, email, password):
     """
-        Creates an admin user
+    Creates an admin user
     """
     auth_type = {
         AUTH_DB: "Database Authentications",
@@ -105,7 +114,7 @@ def create_admin(username, firstname, lastname, email, password):
 @with_appcontext
 def create_user(role, username, firstname, lastname, email, password):
     """
-        Create a user
+    Create a user
     """
     user = current_app.appbuilder.sm.find_user(username=username)
     if user:
@@ -139,7 +148,7 @@ def create_user(role, username, firstname, lastname, email, password):
 @with_appcontext
 def reset_password(username, password):
     """
-        Resets a user's password
+    Resets a user's password
     """
     user = current_app.appbuilder.sm.find_user(username=username)
     if not user:
@@ -153,7 +162,7 @@ def reset_password(username, password):
 @with_appcontext
 def create_db():
     """
-        Create all your database objects (SQLAlchemy specific).
+    Create all your database objects (SQLAlchemy specific).
     """
     from flask_appbuilder.models.sqla import Model
 
@@ -181,7 +190,7 @@ def export_roles(
     "--path", "-p", help="Path to a JSON file containing roles", required=True
 )
 def import_roles(path: str) -> None:
-    """ Imports roles with permissions and view menus from JSON file """
+    """Imports roles with permissions and view menus from JSON file"""
     current_app.appbuilder.sm.import_roles(path)
 
 
@@ -189,7 +198,7 @@ def import_roles(path: str) -> None:
 @with_appcontext
 def version():
     """
-        Flask-AppBuilder package version
+    Flask-AppBuilder package version
     """
     click.echo(
         click.style(
@@ -204,7 +213,7 @@ def version():
 @with_appcontext
 def security_cleanup():
     """
-        Cleanup unused permissions from views and roles.
+    Cleanup unused permissions from views and roles.
     """
     current_app.appbuilder.security_cleanup()
     click.echo(click.style("Finished security cleanup", fg="green"))
@@ -217,7 +226,7 @@ def security_cleanup():
 @with_appcontext
 def security_converge(dry_run=False):
     """
-        Converges security deletes previous_class_permission_name
+    Converges security deletes previous_class_permission_name
     """
     state_transitions = current_app.appbuilder.security_converge(dry=dry_run)
     if dry_run:
@@ -242,7 +251,7 @@ def security_converge(dry_run=False):
 @with_appcontext
 def create_permissions():
     """
-        Creates all permissions and add them to the ADMIN Role.
+    Creates all permissions and add them to the ADMIN Role.
     """
     current_app.appbuilder.add_permissions(update_perms=True)
     click.echo(click.style("Created all permissions", fg="green"))
@@ -252,7 +261,7 @@ def create_permissions():
 @with_appcontext
 def list_views():
     """
-        List all registered views
+    List all registered views
     """
     echo_header("List of registered views")
     for view in current_app.appbuilder.baseviews:
@@ -267,7 +276,7 @@ def list_views():
 @with_appcontext
 def list_users():
     """
-        List all users on the database
+    List all users on the database
     """
     echo_header("List of users")
     for user in current_app.appbuilder.sm.get_all_users():
@@ -291,9 +300,18 @@ def list_users():
     default="SQLAlchemy",
     help="Write your engine type",
 )
-def create_app(name, engine):
+@click.option(
+    "--secret-key",
+    prompt="Your app SECRET_KEY. It should be a long random string. Minimal size is 20",
+    callback=validate_secret_key,
+    help="This secret key is used by Flask for"
+    "securely signing the session cookie and can be used for any other security"
+    "related needs by extensions or your application."
+    "It should be a long random bytes or str",
+)
+def create_app(name: str, engine: str, secret_key: str) -> None:
     """
-        Create a Skeleton application (needs internet connection to github)
+    Create a Skeleton application (needs internet connection to github)
     """
     try:
         if engine.lower() == "sqlalchemy":
@@ -305,6 +323,14 @@ def create_app(name, engine):
         zipfile = ZipFile(BytesIO(url.read()))
         zipfile.extractall()
         os.rename(dirname, name)
+
+        template_filename = os.path.join(os.path.abspath(name), "config.py.tpl")
+        config_filename = os.path.join(os.path.abspath(name), "config.py")
+        template = jinja2.Template(open(template_filename).read())
+        rendered_template = template.render({"secret_key": secret_key})
+        with open(config_filename, "w") as fd:
+            fd.write(rendered_template)
+
         click.echo(click.style("Downloaded the skeleton app, good coding!", fg="green"))
         return True
     except Exception as e:
@@ -332,7 +358,7 @@ def create_app(name, engine):
 )
 def create_addon(name):
     """
-        Create a Skeleton AddOn (needs internet connection to github)
+    Create a Skeleton AddOn (needs internet connection to github)
     """
     try:
         full_name = "fab_addon_" + name
@@ -362,7 +388,7 @@ def create_addon(name):
 )
 def collect_static(static_folder):
     """
-        Copies flask-appbuilder static files to your projects static folder
+    Copies flask-appbuilder static files to your projects static folder
     """
     appbuilder_static_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "static/appbuilder"
@@ -398,7 +424,7 @@ def collect_static(static_folder):
 )
 def babel_extract(config, input, output, target, keywords):
     """
-        Babel, Extracts and updates all messages marked for translation
+    Babel, Extracts and updates all messages marked for translation
     """
     click.echo(
         click.style(
@@ -427,7 +453,7 @@ def babel_extract(config, input, output, target, keywords):
 )
 def babel_compile(target):
     """
-        Babel, Compiles all translations
+    Babel, Compiles all translations
     """
     click.echo(click.style("Starting Compile target:{0}".format(target), fg="green"))
     os.popen("pybabel compile -f -d {0}".format(target))
