@@ -4,6 +4,7 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 4.3.2
 -----------------------------------
 
+- fix: deprecated method for getting value on select2 (#2039) [Viacheslav]
 - chore: bump Flask and werkzeug (#2034) [Daniel Vaz Gaspar]
 - ci: improve codeql configuration  (#2032) [Daniel Vaz Gaspar]
 - ci: add codeQL analysis (#2031) [Daniel Vaz Gaspar]
