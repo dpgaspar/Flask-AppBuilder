@@ -292,7 +292,7 @@ class UserRemoteUserModelView(UserModelView):
     pass
 
 
-class UserADFSUserModelView(UserModelView):
+class UserADFSModelView(UserModelView):
     """
     View that add ADFS specifics to User view.
     Override to implement your own custom view.
@@ -738,7 +738,7 @@ class AuthRemoteUserView(AuthView):
         return redirect(get_safe_redirect(next_url))
 
 class AuthADFSView(AuthView):
-    login_template = '' # this needs to be updated
+    login_template = 'appbuilder/general/security/login_adfs.html' # this needs to be updated
 
     def __init__(self):
         super(AuthADFSView, self).__init__()
@@ -750,7 +750,7 @@ class AuthADFSView(AuthView):
             log.debug("Already authenticated {0}".format(g.user))
             return redirect(self.appbuilder.get_url_for_index)
         
-        auth, auth_request = self.appbuilder.sm.auth_user_adfs()
+        auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
         next_url = get_safe_redirect(request.args.get("next", ""))
 
         if 'sso2' in request.args:

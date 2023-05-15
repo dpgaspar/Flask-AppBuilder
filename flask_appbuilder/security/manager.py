@@ -271,10 +271,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         # ADFS Config
         if self.auth_type == AUTH_ADFS:
             if "AUTH_ADFS_XML_FILE_IDP" or "AUTH_ADFS_XML_FILE_SP" or "AUTH_ADFS_ADVANCED_SETTINGS" not in app.config:
-                raise Exception(
-                    "No AUTH_ADFS_XML_FILE_IDP or AUTH_ADFS_XML_FILE_SP or AUTH_ADFS_ADVANCED_SETTINGS defined in config"
-                    " with AUTH_ADFS authentication type."
-                )
+                pass
+                #raise Exception(
+                #    "No AUTH_ADFS_XML_FILE_IDP or AUTH_ADFS_XML_FILE_SP or AUTH_ADFS_ADVANCED_SETTINGS defined in config"
+                #    " with AUTH_ADFS authentication type."
+                #)
                         
             # app.config.setdefault("AUTH_LDAP_SEARCH_FILTER", "")
             # app.config.setdefault("AUTH_LDAP_APPEND_DOMAIN", "")
@@ -1015,12 +1016,13 @@ class BaseSecurityManager(AbstractSecurityManager):
                 log.error("python3-saml library is not installed")
                 return None
 
-            xml_idp = OneLogin_Saml2_IdPMetadataParser.parse_remote('AUTH_ADFS_XML_FILE_IDP') # this includes the SP portion as well
+            xml_idp = OneLogin_Saml2_IdPMetadataParser.parse_remote(self.auth_adfs_xml_file_idp) # this includes the SP portion as well
             # replace the SP portion with the SP xml file
-            xml_sp = OneLogin_Saml2_IdPMetadataParser.parse_remote('AUTH_ADFS_XML_FILE_SP')
+            with open(self.auth_adfs_xml_file_sp, 'r') as data: 
+                sp_data = json.load(data)
             #combine the files into a single xml
             final_xml = xml_idp
-            final_xml["sp"] = xml_sp["sp"]
+            final_xml["sp"] = sp_data["sp"]
 
             auth = OneLogin_Saml2_Auth(req, final_xml) #authentication request
             
@@ -1031,7 +1033,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             return {
                 'https': 'on' if request.scheme == 'https' else 'off',
                 'http_host': request.host,
-                'server_port': request.port,
+                'server_port': '4040',
                 'script_name': request.path,
                 'get_data': request.args.copy(),
                 # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
@@ -1190,17 +1192,17 @@ class BaseSecurityManager(AbstractSecurityManager):
         # decode - removing empty strings
         return [x.decode("utf-8") for x in raw_list if x.decode("utf-8")]
 
-    def auth_user_adfs(self):
+    def auth_user_adfs(self, request):
 
-        auth_request = _prepare_flask_request(request)
-        auth = _init_saml_auth(auth_request)
+        auth_request = self._prepare_flask_request(request)
+        auth = self._init_saml_auth(auth_request)
 
         return auth, auth_request
 
     def adfs_metadata(self):
 
-        auth_request = _prepare_flask_request(request)
-        auth = _init_saml_auth(auth_request)
+        auth_request = self._prepare_flask_request(request)
+        auth = self._init_saml_auth(auth_request)
         settings = auth.get_settings()
         metadata = settings.get_sp_metadata()
         errors = settings.validate_metadata(metadata)
