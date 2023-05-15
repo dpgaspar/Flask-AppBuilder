@@ -785,5 +785,11 @@ class AuthADFSView(AuthView):
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
 
+    @expose("/metadata/", methods=["GET", "POST"])
+
+    def metadata(self):
+        response = self.appbuilder.sm.adfs_metadata()
+        return response
+
     @expose('/logout/')
 
