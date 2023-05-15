@@ -738,12 +738,13 @@ class AuthRemoteUserView(AuthView):
         return redirect(get_safe_redirect(next_url))
 
 class AuthADFSView(AuthView):
-    login_template = 'appbuilder/general/security/login_adfs.html' # this needs to be updated
+    login_template = 'appbuilder/general/security/login_oauth.html' # this needs to be updated
 
     def __init__(self):
         super(AuthADFSView, self).__init__()
 
     @expose("/login/", methods=["GET", "POST"])
+    @expose("/login/saml", methods=["GET", "POST"])
     def login(self):
         form = None # this needs to be updated 
         if g.user is not None and g.user.is_authenticated:
@@ -751,44 +752,37 @@ class AuthADFSView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
         
         auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
-        next_url = get_safe_redirect(request.args.get("next", ""))
+        next_url = get_safe_redirect(request.args.get("next", "/"))
 
         if 'sso2' in request.args:
-            return_to = '%sattrs/' % request.host_url # change this to login page
+            return_to = request.host_url # change this to login page
             return redirect(auth.login(return_to))
-        
-        elif 'acs' in request.args:
-            request_id = None
-            if 'AuthNRequestID' in session:
-                request_id = session['AuthNRequestID']
-
-            auth.process_response(request_id=request_id)
-            errors = auth.get_errors()
-            if len(errors)== 0:
-                user, self_url = self.appbuilder.sm.auth_user_adfs_login(session, auth, auth_request)
-                
-                if not user:
-                    flash(as_unicode(self.invalid_login_message), "warning")
-                    return redirect(self.appbuilder.get_url_for_login_with(next_url))
-                login_user(user, remember=False)            
-                
-                # This is redirect and self_url will braek              
-                if 'RelayState' in request.form and self_url != request.form['RelayState']:
-                    # To avoid 'Open Redirect' attacks, before execute the redirection confirm
-                    # the value of the request.form['RelayState'] is a trusted URL.
-                    return redirect(auth.redirect_to(request.form['RelayState']))
-            elif auth.get_settings().is_debug_active():
-                error_reason = auth.get_last_error_reason()
         
         # form will fail for now
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
 
+    @expose("/login/acs", methods=["GET", "POST"])
+    def acs(self):
+        auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
+        auth.process_response()
+        errors = saml_auth.get_errors()
+
+        if len(errors) == 0:  # No errors, let's authenticate the user
+            user, self_url = self.appbuilder.sm.auth_user_adfs_login(session, auth, auth_request)
+            if not user:
+                flash(as_unicode(self.invalid_login_message), "warning")
+                return redirect(self.appbuilder.get_url_for_login_with(next_url))
+            login_user(user, remember=False)
+
+            if 'RelayState' in request.form and self_url != request.form['RelayState']:
+                return redirect(saml_auth.redirect_to(request.form['RelayState']))
+             
     @expose("/metadata/", methods=["GET", "POST"])
 
     def metadata(self):
-        response = self.appbuilder.sm.adfs_metadata()
+        response = self.appbuilder.sm.adfs_metadata(request)
         return response
 
     @expose('/logout/')

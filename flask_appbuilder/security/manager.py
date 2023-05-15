@@ -5,7 +5,7 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
-from flask import Flask, g, session, url_for
+from flask import Flask, g, session, url_for, make_response
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
@@ -1199,7 +1199,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         return auth, auth_request
 
-    def adfs_metadata(self):
+    def adfs_metadata(self, request):
 
         auth_request = self._prepare_flask_request(request)
         auth = self._init_saml_auth(auth_request)

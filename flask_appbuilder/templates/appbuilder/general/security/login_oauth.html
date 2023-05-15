@@ -3,15 +3,6 @@
 
 {% block content %}
 
-<script type="text/javascript">
-    var baseLoginUrl = "{{appbuilder.get_url_for_login}}";
-    var baseRegisterUrl = "{{appbuilder.get_url_for_login}}";
-    var next = "?next=" + encodeURIComponent("{{request.args.get('next', '')}}");
-
-    function signin(provider) {
-        window.location.href = baseLoginUrl + provider + next;
-    }
-</script>
 
 <div class="container">
     <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
