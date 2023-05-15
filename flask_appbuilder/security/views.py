@@ -31,7 +31,6 @@ from werkzeug.wrappers import Response as WerkzeugResponse
 from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
 
-
 log = logging.getLogger(__name__)
 
 
@@ -286,6 +285,16 @@ class UserOAuthModelView(UserModelView):
 class UserRemoteUserModelView(UserModelView):
     """
     View that add REMOTE_USER specifics to User view.
+    Override to implement your own custom view.
+    Then override userldapmodelview property on SecurityManager
+    """
+
+    pass
+
+
+class UserADFSUserModelView(UserModelView):
+    """
+    View that add ADFS specifics to User view.
     Override to implement your own custom view.
     Then override userldapmodelview property on SecurityManager
     """
@@ -727,3 +736,80 @@ class AuthRemoteUserView(AuthView):
             flash(as_unicode(self.invalid_login_message), "warning")
         next_url = request.args.get("next", "")
         return redirect(get_safe_redirect(next_url))
+
+class AuthADFSView(AuthView):
+    login_template = ''
+
+    def __init__(self):
+        super(AuthADFSView, self).__init__()
+
+    @expose("/login/", methods=["GET", "POST"])
+    def login(self):
+        form = None
+        if g.user is not None and g.user.is_authenticated:
+            log.debug("Already authenticated {0}".format(g.user))
+            return redirect(self.appbuilder.get_url_for_index)
+        
+        auth, auth_request = self.appbuilder.sm.auth_user_adfs()
+        next_url = get_safe_redirect(request.args.get("next", ""))
+
+        if 'sso2' in request.args:
+            return_to = '%sattrs/' % request.host_url # change this to login page
+            return redirect(auth.login(return_to))
+        
+        elif 'acs' in request.args:
+            request_id = None
+            if 'AuthNRequestID' in session:
+                request_id = session['AuthNRequestID']
+
+            auth.process_response(request_id=request_id)
+            errors = auth.get_errors()
+            if len(errors)== 0:
+                user, self_url = self.appbuilder.sm.auth_user_adfs_login(session, auth, auth_request)
+                
+                if not user:
+                    flash(as_unicode(self.invalid_login_message), "warning")
+                    return redirect(self.appbuilder.get_url_for_login_with(next_url))
+                login_user(user, remember=False)            
+                
+                # This is redirect and self_url will braek              
+                if 'RelayState' in request.form and self_url != request.form['RelayState']:
+                    # To avoid 'Open Redirect' attacks, before execute the redirection confirm
+                    # the value of the request.form['RelayState'] is a trusted URL.
+                    return redirect(auth.redirect_to(request.form['RelayState']))
+            elif auth.get_settings().is_debug_active():
+                error_reason = auth.get_last_error_reason()
+        
+        # form will fail for now
+        return self.render_template(
+            self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
+        )
+
+    # @expose('/logout/')
+    # def logout(self):
+    #     auth_cas_token_session_key = self.appbuilder.sm.auth_cas_token_session_key
+    #     auth_cas_username_session_key = self.appbuilder.sm.auth_cas_username_session_key
+    #     auth_cas_attributes_session_key = self.appbuilder.sm\
+    #                                                      .auth_cas_attributes_session_key
+    #     auth_cas_after_logout = urllib.parse.urljoin(
+    #         request.host_url,
+    #         self.appbuilder.sm.auth_cas_after_logout
+    #     ) if self.appbuilder.sm.auth_cas_after_logout else None
+
+    #     if auth_cas_token_session_key in session:
+    #         del session[auth_cas_token_session_key]
+
+    #     if auth_cas_username_session_key in session:
+    #         del session[auth_cas_username_session_key]
+
+    #     if auth_cas_attributes_session_key in session:
+    #         del session[auth_cas_attributes_session_key]
+
+    #     service_url = self._get_service_url()
+    #     client = self._get_cas_client(service_url)
+    #     redirect_url = client.get_logout_url(auth_cas_after_logout)
+    #     logout_user()
+    #     log.debug('Redirecting to: '.format(redirect_url))
+
+    #     return redirect(redirect_url)
+

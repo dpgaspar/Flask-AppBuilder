@@ -19,8 +19,10 @@ from .registerviews import (
     RegisterUserDBView,
     RegisterUserOAuthView,
     RegisterUserOIDView,
+    RegisterUserADFSView,
 )
 from .views import (
+    AuthADFSView,
     AuthDBView,
     AuthLDAPView,
     AuthOAuthView,
@@ -35,6 +37,7 @@ from .views import (
     UserDBModelView,
     UserInfoEditView,
     UserLDAPModelView,
+    UserADFSModelView
     UserOAuthModelView,
     UserOIDModelView,
     UserRemoteUserModelView,
@@ -46,6 +49,7 @@ from ..const import (
     AUTH_DB,
     AUTH_LDAP,
     AUTH_OAUTH,
+    AUTH_ADFS,
     AUTH_OID,
     AUTH_REMOTE_USER,
     LOGMSG_ERR_SEC_ADD_REGISTER_USER,
@@ -56,6 +60,10 @@ from ..const import (
     LOGMSG_WAR_SEC_NOLDAP_OBJ,
     PERMISSION_PREFIX,
 )
+
+from onelogin.saml2.auth import OneLogin_Saml2_Auth
+from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
 
 log = logging.getLogger(__name__)
 
@@ -174,6 +182,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own user OID view """
     useroauthmodelview = UserOAuthModelView
     """ Override if you want your own user OAuth view """
+    userADFSmodelview = UserADFSModelView
+    """ Override if you want your own user ADFS view """
     userremoteusermodelview = UserRemoteUserModelView
     """ Override if you want your own user REMOTE_USER view """
     registerusermodelview = RegisterUserModelView
@@ -188,6 +198,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Authentication OAuth view """
     authremoteuserview = AuthRemoteUserView
     """ Override if you want your own Authentication REMOTE_USER view """
+    authADFSview = AuthADFSView
+    """ Override if you want your own Authentication ADFS view """
 
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
@@ -195,6 +207,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own register user OpenID view """
     registeruseroauthview = RegisterUserOAuthView
     """ Override if you want your own register user OAuth view """
+    registeruserADFSview = RegisterUserADFSView
+    """ Override if you want your own register user ADFS view """
+
 
     resetmypasswordview = ResetMyPasswordView
     """ Override if you want your own reset my password view """
@@ -256,6 +271,34 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_FIRSTNAME_FIELD", "givenName")
             app.config.setdefault("AUTH_LDAP_LASTNAME_FIELD", "sn")
             app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
+
+        # ADFS Config
+        if self.auth_type == AUTH_ADFS:
+            if "AUTH_ADFS_XML_FILE_IDP" or "AUTH_ADFS_XML_FILE_SP" or "AUTH_ADFS_ADVANCED_SETTINGS" not in app.config:
+                raise Exception(
+                    "No AUTH_ADFS_XML_FILE_IDP or AUTH_ADFS_XML_FILE_SP or AUTH_ADFS_ADVANCED_SETTINGS defined in config"
+                    " with AUTH_ADFS authentication type."
+                )
+                        
+            # app.config.setdefault("AUTH_LDAP_SEARCH_FILTER", "")
+            # app.config.setdefault("AUTH_LDAP_APPEND_DOMAIN", "")
+            # app.config.setdefault("AUTH_LDAP_USERNAME_FORMAT", "")
+            # app.config.setdefault("AUTH_LDAP_BIND_USER", "")
+            # app.config.setdefault("AUTH_LDAP_BIND_PASSWORD", "")
+            # # TLS options
+            # app.config.setdefault("AUTH_LDAP_USE_TLS", False)
+            # app.config.setdefault("AUTH_LDAP_ALLOW_SELF_SIGNED", False)
+            # app.config.setdefault("AUTH_LDAP_TLS_DEMAND", False)
+            # app.config.setdefault("AUTH_LDAP_TLS_CACERTDIR", "")
+            # app.config.setdefault("AUTH_LDAP_TLS_CACERTFILE", "")
+            # app.config.setdefault("AUTH_LDAP_TLS_CERTFILE", "")
+            # app.config.setdefault("AUTH_LDAP_TLS_KEYFILE", "")
+            # Mapping options - need to be update
+            app.config.setdefault("AUTH_ADFS_UID_FIELD", "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn")
+            app.config.setdefault("AUTH_ADFS_GROUP_FIELD", "")
+            app.config.setdefault("AUTH_ADFS_FIRSTNAME_FIELD", "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")
+            app.config.setdefault("AUTH_ADFS_LASTNAME_FIELD", "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'")
+            app.config.setdefault("AUTH_ADFS_EMAIL_FIELD", "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn")
 
         # Rate limiting
         app.config.setdefault("AUTH_RATE_LIMITED", False)
@@ -512,6 +555,38 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["AUTH_RATE_LIMIT"]
 
     @property
+    def auth_adfs_xml_file_idp(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_XML_FILE_IDP"]
+
+    @property
+    def auth_adfs_xml_file_sp(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_XML_FILE_SP"]
+
+    @property
+    def auth_adfs_advanced_settings(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_ADVANCED_SETTINGS"]
+
+    @property
+    def auth_adfs_uid_field(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_UID_FIELD"]
+
+    @property
+    def auth_adfs_group_field(self) -> str:
+        return self.appbuilder.get_app.config["AUTH_ADFS_GROUP_FIELD"]
+
+    @property
+    def auth_adfs_firstname_field(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_FIRSTNAME_FIELD"]
+
+    @property
+    def auth_adfs_lastname_field(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_LASTNAME_FIELD"]
+
+    @property
+    def auth_adfs_email_field(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_EMAIL_FIELD"]
+
+    @property
     def current_user(self):
         if current_user.is_authenticated:
             return g.user
@@ -727,6 +802,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 self.registeruser_view = self.registeruseroidview()
             elif self.auth_type == AUTH_OAUTH:
                 self.registeruser_view = self.registeruseroauthview()
+            elif self.auth_type == AUTH_ADFS:
+                self.registeruser_view = self.registeruserADFSview()                
             if self.registeruser_view:
                 self.appbuilder.add_view_no_menu(self.registeruser_view)
 
@@ -747,6 +824,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         elif self.auth_type == AUTH_REMOTE_USER:
             self.user_view = self.userremoteusermodelview
             self.auth_view = self.authremoteuserview()
+        elif self.auth_type == AUTH_ADFS:
+            self.user_view = self.userADFSmodelview
+            self.auth_view = self.authADFSview()            
         else:
             self.user_view = self.useroidmodelview
             self.auth_view = self.authoidview()
@@ -925,6 +1005,44 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
 
+def _init_saml_auth(self, req):
+        """
+        Initialize ADFS request using SP and IDP information.
+
+        :param req: The request
+        :return: auth object array
+        """
+    try:
+        from onelogin.saml2.auth import OneLogin_Saml2_Auth
+        from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
+    except ImportError:
+        log.error("python3-saml library is not installed")
+        return None
+
+    xml_idp = OneLogin_Saml2_IdPMetadataParser.parse_remote('AUTH_ADFS_XML_FILE_IDP') # this includes the SP portion as well
+    # replace the SP portion with the SP xml file
+    xml_sp = OneLogin_Saml2_IdPMetadataParser.parse_remote('AUTH_ADFS_XML_FILE_SP')
+    #combine the files into a single xml
+    final_xml = xml_idp
+    final_xml["sp"] = xml_sp["sp"]
+
+    auth = OneLogin_Saml2_Auth(req, final_xml) #authentication request
+    
+    return auth
+
+def _prepare_flask_request(self, request):
+        # If server is behind proxys or balancers use the HTTP_X_FORWARDED fields
+        return {
+            'https': 'on' if request.scheme == 'https' else 'off',
+            'http_host': request.host,
+            'server_port': request.port,,
+            'script_name': request.path,
+            'get_data': request.args.copy(),
+            # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
+            #'lowercase_urlencoding': True,
+            'post_data': request.form.copy()
+        }
+
     def _search_ldap(self, ldap, con, username):
         """
         Searches LDAP for user.
@@ -1075,6 +1193,95 @@ class BaseSecurityManager(AbstractSecurityManager):
         raw_list = ldap_dict.get(field_name, [])
         # decode - removing empty strings
         return [x.decode("utf-8") for x in raw_list if x.decode("utf-8")]
+
+    def auth_user_adfs(self):
+
+        auth_request = _prepare_flask_request(request)
+        auth = _init_saml_auth(auth_request)
+
+        return auth, auth_request
+
+    def adfs_metadata(self):
+
+        auth_request = _prepare_flask_request(request)
+        auth = _init_saml_auth(auth_request)
+        settings = auth.get_settings()
+        metadata = settings.get_sp_metadata()
+        errors = settings.validate_metadata(metadata)
+
+        if len(errors) == 0:
+            response = make_response(metadata, 200)
+            response.headers['Content-Type'] = 'text/xml'
+        else:
+            response = make_response(', '.join(errors), 500)
+
+        return response
+
+    def auth_user_adfs_login(self, session, auth): # this is temporary that needs to be converted
+        """
+        Method for authenticating user with LDAP.
+
+        NOTE: this depends on python3-saml module
+
+        :param username: the username
+        :param password: the password
+        """
+
+        try:
+            from onelogin.saml2.utils import OneLogin_Saml2_Utils
+            if 'AuthNRequestID' in session:
+                del session['AuthNRequestID']
+            session['samlUserdata'] = auth.get_attributes()
+            session['samlNameId'] = auth.get_nameid()
+            session['samlNameIdFormat'] = auth.get_nameid_format()
+            session['samlNameIdNameQualifier'] = auth.get_nameid_nq()
+            session['samlNameIdSPNameQualifier'] = auth.get_nameid_spnq()
+            session['samlSessionIndex'] = auth.get_session_index()
+            self_url = OneLogin_Saml2_Utils.get_self_url(auth_request)
+
+            username = session['samlUserdata'][auth_adfs_uid_field]
+            # Search the DB for this user
+            user = self.find_user(username=username)                
+
+            # If user is not active, go away
+            if user and (not user.is_active):
+                return None
+
+            user_attributes = {}
+            # If the user is new, register them
+            if (not user) and self.auth_user_registration:
+                user = self.add_user(
+                    username=username,
+                    first_name= session['samlUserdata'][auth_adfs_firstname_field],
+                    last_name= session['samlUserdata'][auth_adfs_lastname_field],
+                    email= session['samlUserdata'][auth_adfs_email_field] or f"{username}@email.notfound",
+                    role=self.auth_user_registration_role,
+                )
+                log.debug("New user registered: {0}".format(user))
+
+                # If user registration failed, go away
+                if not user:
+                    log.info(LOGMSG_ERR_SEC_ADD_REGISTER_USER.format(username))
+                    return None
+
+            # LOGIN SUCCESS (only if user is now registered)
+            if user:
+                self.update_user_auth_stat(user)
+                return user, self_url
+            else:
+                return None
+
+            # This is redirect               
+            if 'RelayState' in request.form and self_url != request.form['RelayState']:
+                # To avoid 'Open Redirect' attacks, before execute the redirection confirm
+                # the value of the request.form['RelayState'] is a trusted URL.
+                return redirect(auth.redirect_to(request.form['RelayState']))
+        elif auth.get_settings().is_debug_active():
+            error_reason = auth.get_last_error_reason()
+ 
+         except ImportError:
+            log.error("python3-saml library is not installed")
+            return None  
 
     def auth_user_ldap(self, username, password):
         """

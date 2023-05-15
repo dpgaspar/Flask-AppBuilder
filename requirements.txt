@@ -135,6 +135,7 @@ wtforms==3.0.1
     #   flask-wtf
 zipp==3.15.0
     # via importlib-metadata
+python3-saml==1.15.0
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
