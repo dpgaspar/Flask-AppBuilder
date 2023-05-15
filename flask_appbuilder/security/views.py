@@ -785,31 +785,5 @@ class AuthADFSView(AuthView):
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
 
-    # @expose('/logout/')
-    # def logout(self):
-    #     auth_cas_token_session_key = self.appbuilder.sm.auth_cas_token_session_key
-    #     auth_cas_username_session_key = self.appbuilder.sm.auth_cas_username_session_key
-    #     auth_cas_attributes_session_key = self.appbuilder.sm\
-    #                                                      .auth_cas_attributes_session_key
-    #     auth_cas_after_logout = urllib.parse.urljoin(
-    #         request.host_url,
-    #         self.appbuilder.sm.auth_cas_after_logout
-    #     ) if self.appbuilder.sm.auth_cas_after_logout else None
-
-    #     if auth_cas_token_session_key in session:
-    #         del session[auth_cas_token_session_key]
-
-    #     if auth_cas_username_session_key in session:
-    #         del session[auth_cas_username_session_key]
-
-    #     if auth_cas_attributes_session_key in session:
-    #         del session[auth_cas_attributes_session_key]
-
-    #     service_url = self._get_service_url()
-    #     client = self._get_cas_client(service_url)
-    #     redirect_url = client.get_logout_url(auth_cas_after_logout)
-    #     logout_user()
-    #     log.debug('Redirecting to: '.format(redirect_url))
-
-    #     return redirect(redirect_url)
+    @expose('/logout/')
 
