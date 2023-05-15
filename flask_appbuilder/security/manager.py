@@ -37,7 +37,7 @@ from .views import (
     UserDBModelView,
     UserInfoEditView,
     UserLDAPModelView,
-    UserADFSModelView
+    UserADFSModelView,
     UserOAuthModelView,
     UserOIDModelView,
     UserRemoteUserModelView,
@@ -60,10 +60,6 @@ from ..const import (
     LOGMSG_WAR_SEC_NOLDAP_OBJ,
     PERMISSION_PREFIX,
 )
-
-from onelogin.saml2.auth import OneLogin_Saml2_Auth
-from onelogin.saml2.utils import OneLogin_Saml2_Utils
-from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
 
 log = logging.getLogger(__name__)
 
@@ -1005,43 +1001,43 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
 
-def _init_saml_auth(self, req):
-        """
-        Initialize ADFS request using SP and IDP information.
+    def _init_saml_auth(self, req):
+            """
+            Initialize ADFS request using SP and IDP information.
 
-        :param req: The request
-        :return: auth object array
-        """
-    try:
-        from onelogin.saml2.auth import OneLogin_Saml2_Auth
-        from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
-    except ImportError:
-        log.error("python3-saml library is not installed")
-        return None
+            :param req: The request
+            :return: auth object array
+            """
+            try:
+                from onelogin.saml2.auth import OneLogin_Saml2_Auth
+                from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
+            except ImportError:
+                log.error("python3-saml library is not installed")
+                return None
 
-    xml_idp = OneLogin_Saml2_IdPMetadataParser.parse_remote('AUTH_ADFS_XML_FILE_IDP') # this includes the SP portion as well
-    # replace the SP portion with the SP xml file
-    xml_sp = OneLogin_Saml2_IdPMetadataParser.parse_remote('AUTH_ADFS_XML_FILE_SP')
-    #combine the files into a single xml
-    final_xml = xml_idp
-    final_xml["sp"] = xml_sp["sp"]
+            xml_idp = OneLogin_Saml2_IdPMetadataParser.parse_remote('AUTH_ADFS_XML_FILE_IDP') # this includes the SP portion as well
+            # replace the SP portion with the SP xml file
+            xml_sp = OneLogin_Saml2_IdPMetadataParser.parse_remote('AUTH_ADFS_XML_FILE_SP')
+            #combine the files into a single xml
+            final_xml = xml_idp
+            final_xml["sp"] = xml_sp["sp"]
 
-    auth = OneLogin_Saml2_Auth(req, final_xml) #authentication request
-    
-    return auth
+            auth = OneLogin_Saml2_Auth(req, final_xml) #authentication request
+            
+            return auth
 
-def _prepare_flask_request(self, request):
-        # If server is behind proxys or balancers use the HTTP_X_FORWARDED fields
-        return {
-            'https': 'on' if request.scheme == 'https' else 'off',
-            'http_host': request.host,
-            'server_port': request.port,,
-            'script_name': request.path,
-            'get_data': request.args.copy(),
-            # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
-            #'lowercase_urlencoding': True,
-            'post_data': request.form.copy()
-        }
+    def _prepare_flask_request(self, request):
+            # If server is behind proxys or balancers use the HTTP_X_FORWARDED fields
+            return {
+                'https': 'on' if request.scheme == 'https' else 'off',
+                'http_host': request.host,
+                'server_port': request.port,
+                'script_name': request.path,
+                'get_data': request.args.copy(),
+                # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
+                #'lowercase_urlencoding': True,
+                'post_data': request.form.copy()
+            }
 
     def _search_ldap(self, ldap, con, username):
         """
@@ -1276,12 +1272,12 @@ def _prepare_flask_request(self, request):
                 # To avoid 'Open Redirect' attacks, before execute the redirection confirm
                 # the value of the request.form['RelayState'] is a trusted URL.
                 return redirect(auth.redirect_to(request.form['RelayState']))
-        elif auth.get_settings().is_debug_active():
-            error_reason = auth.get_last_error_reason()
- 
-         except ImportError:
+            elif auth.get_settings().is_debug_active():
+                error_reason = auth.get_last_error_reason()
+
+        except ImportError:
             log.error("python3-saml library is not installed")
-            return None  
+            return None
 
     def auth_user_ldap(self, username, password):
         """
