@@ -738,14 +738,14 @@ class AuthRemoteUserView(AuthView):
         return redirect(get_safe_redirect(next_url))
 
 class AuthADFSView(AuthView):
-    login_template = ''
+    login_template = '' # this needs to be updated
 
     def __init__(self):
         super(AuthADFSView, self).__init__()
 
     @expose("/login/", methods=["GET", "POST"])
     def login(self):
-        form = None
+        form = None # this needs to be updated 
         if g.user is not None and g.user.is_authenticated:
             log.debug("Already authenticated {0}".format(g.user))
             return redirect(self.appbuilder.get_url_for_index)
