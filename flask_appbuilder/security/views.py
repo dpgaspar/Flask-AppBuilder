@@ -792,4 +792,21 @@ class AuthADFSView(AuthView):
         return response
 
     @expose('/logout/')
+    def logout():
 
+        if 'sls' in request.args:
+            request_id = None
+            if 'LogoutRequestID' in session:
+                request_id = session['LogoutRequestID']
+            dscb = lambda: session.clear()
+            url = auth.process_slo(request_id=request_id, delete_session_cb=dscb)
+            errors = auth.get_errors()
+            if len(errors) == 0:
+                if url is not None:
+                    # To avoid 'Open Redirect' attacks, before execute the redirection confirm
+                    # the value of the url is a trusted URL.
+                    return redirect(url)
+                else:
+                    success_slo = True
+            elif auth.get_settings().is_debug_active():
+                error_reason = auth.get_last_error_reason()
