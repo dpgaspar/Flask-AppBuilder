@@ -767,7 +767,7 @@ class AuthADFSView(AuthView):
     def acs(self):
         auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
         auth.process_response()
-        errors = saml_auth.get_errors()
+        errors = auth.get_errors()
 
         if len(errors) == 0:  # No errors, let's authenticate the user
             user, self_url = self.appbuilder.sm.auth_user_adfs_login(session, auth, auth_request)
@@ -777,7 +777,7 @@ class AuthADFSView(AuthView):
             login_user(user, remember=False)
 
             if 'RelayState' in request.form and self_url != request.form['RelayState']:
-                return redirect(saml_auth.redirect_to(request.form['RelayState']))
+                return redirect(auth.redirect_to(request.form['RelayState']))
              
     @expose("/metadata/", methods=["GET", "POST"])
 

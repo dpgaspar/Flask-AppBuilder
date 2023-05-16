@@ -1215,7 +1215,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         return response
 
-    def auth_user_adfs_login(self, session, auth): # this is temporary that needs to be converted
+    def auth_user_adfs_login(self, session, auth, auth_request): # this is temporary that needs to be converted
         """
         Method for authenticating user with LDAP.
 
@@ -1237,23 +1237,25 @@ class BaseSecurityManager(AbstractSecurityManager):
             session['samlSessionIndex'] = auth.get_session_index()
             self_url = OneLogin_Saml2_Utils.get_self_url(auth_request)
 
-            username = session['samlUserdata'][auth_adfs_uid_field]
+            user_name = session['samlUserdata'][self.auth_adfs_uid_field]
+            
             # Search the DB for this user
-            user = self.find_user(username=username)                
+            user = self.find_user(username=user_name[0].split("@")[0]) #simplify it
 
             # If user is not active, go away
             if user and (not user.is_active):
                 return None
 
             user_attributes = {}
+            
             # If the user is new, register them
             if (not user) and self.auth_user_registration:
                 user = self.add_user(
-                    username=username,
-                    first_name= session['samlUserdata'][auth_adfs_firstname_field],
-                    last_name= session['samlUserdata'][auth_adfs_lastname_field],
-                    email= session['samlUserdata'][auth_adfs_email_field] or f"{username}@email.notfound",
-                    role=self.auth_user_registration_role,
+                    username=user_name[0].split("@")[0],
+                    first_name= session['samlUserdata'][self.auth_adfs_firstname_field][0],
+                    last_name= session['samlUserdata'][self.auth_adfs_firstname_field][0],
+                    email= session['samlUserdata'][self.auth_adfs_email_field][0] or f"{user_name}@email.notfound",
+                    role=self.find_role(self.auth_user_registration_role),
                 )
                 log.debug("New user registered: {0}".format(user))
 
