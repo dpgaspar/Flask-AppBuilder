@@ -785,9 +785,9 @@ class AuthADFSView(AuthView):
         response = self.appbuilder.sm.adfs_metadata(request)
         return response
 
-    @expose('/logout/')
+    @expose('/logout/') #this remains
     def logout():
-        auth, auth_request = self.appbuilder.sm.auth_user_adfs()
+        auth, auth_request = self.appbuilder.sm.auth_user_adfs(session, auth, auth_request)
         if 'sls' in request.args:
             request_id = None
             if 'LogoutRequestID' in session:
