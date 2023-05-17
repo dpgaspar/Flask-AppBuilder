@@ -759,8 +759,6 @@ class AuthADFSView(AuthView):
 
         if request.method == "POST":
             if 'sso2' in request.args:
-                auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
-                next_url = get_safe_redirect(request.args.get("next", "/"))
                 return_to = request.host_url # change this to login page
                 return redirect(auth.login(return_to))
             

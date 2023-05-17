@@ -1012,8 +1012,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             try:
                 from onelogin.saml2.auth import OneLogin_Saml2_Auth
                 from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
-            except ImportError:
-                log.error("python3-saml library is not installed")
+            except Exception as e:
+                log.error("python3-saml library is not installed" + str(e))
                 return None
 
             xml_idp = OneLogin_Saml2_IdPMetadataParser.parse_remote(self.auth_adfs_xml_file_idp) # this includes the SP portion as well
