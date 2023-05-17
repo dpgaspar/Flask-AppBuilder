@@ -757,8 +757,7 @@ class AuthADFSView(AuthView):
                 flash(str(e), "danger")
                 return redirect(self.appbuilder.get_url_for_index)
 
-        if request.method == "POST":
-            if 'sso2' in request.args:
+        if 'sso2' in request.args:
                 return_to = request.host_url # change this to login page
                 return redirect(auth.login(return_to))
             
