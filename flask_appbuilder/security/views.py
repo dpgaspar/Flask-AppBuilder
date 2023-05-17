@@ -751,13 +751,14 @@ class AuthADFSView(AuthView):
             log.debug("Already authenticated {0}".format(g.user))
             return redirect(self.appbuilder.get_url_for_index)
         
-        auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
-        next_url = get_safe_redirect(request.args.get("next", "/"))
+        if request.method == "POST":
+            auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
+            next_url = get_safe_redirect(request.args.get("next", "/"))
 
-        if 'sso2' in request.args:
-            return_to = request.host_url # change this to login page
-            return redirect(auth.login(return_to))
-        
+            if 'sso2' in request.args:
+                return_to = request.host_url # change this to login page
+                return redirect(auth.login(return_to))
+            
         # form will fail for now
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
