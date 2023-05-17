@@ -736,11 +736,8 @@ class SQLAInterface(BaseInterface):
                 raise e
             return False
         except Exception as e:
-            self.message = (
-                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
-                "danger",
-            )
-            log.exception(LOGMSG_ERR_DBI_ADD_GENERIC.format(str(e)))
+            self.message = (as_unicode(self.database_error_message), "danger")
+            log.exception("Database error")
             self.session.rollback()
             if raise_exception:
                 raise e
@@ -760,11 +757,8 @@ class SQLAInterface(BaseInterface):
                 raise e
             return False
         except Exception as e:
-            self.message = (
-                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
-                "danger",
-            )
-            log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC.format(str(e)))
+            self.message = (as_unicode(self.database_error_message), "danger")
+            log.exception("Database error")
             self.session.rollback()
             if raise_exception:
                 raise e
@@ -785,11 +779,8 @@ class SQLAInterface(BaseInterface):
                 raise e
             return False
         except Exception as e:
-            self.message = (
-                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
-                "danger",
-            )
-            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
+            self.message = (as_unicode(self.database_error_message), "danger")
+            log.exception("Database error")
             self.session.rollback()
             if raise_exception:
                 raise e
@@ -809,10 +800,7 @@ class SQLAInterface(BaseInterface):
             self.session.rollback()
             return False
         except Exception as e:
-            self.message = (
-                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
-                "danger",
-            )
+            self.message = (as_unicode(self.database_error_message), "danger")
             log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             self.session.rollback()
             return False
