@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 from flask_appbuilder import ModelView
 from flask_appbuilder.exceptions import PasswordComplexityValidationError
@@ -432,24 +432,29 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        read_ony_user: User = (
-            self.db.session.query(User)
-            .filter(User.username == USERNAME_READONLY)
-            .one_or_none()
+        _tmp_user = self.create_user(
+            self.appbuilder,
+            "tmp_user",
+            "password1",
+            "",
+            first_name="tmp",
+            last_name="user",
+            email="tmp@fab.org",
+            role_names=["Admin"],
         )
 
         # use all required params
-        rv = client.get(f"/users/edit/{read_ony_user.id}", follow_redirects=True)
+        rv = client.get(f"/users/edit/{_tmp_user.id}", follow_redirects=True)
         data = rv.data.decode("utf-8")
         self.assertIn("Edit User", data)
         rv = client.post(
-            f"/users/edit/{read_ony_user.id}",
+            f"/users/edit/{_tmp_user.id}",
             data=dict(
-                first_name=read_ony_user.first_name,
-                last_name=read_ony_user.last_name,
-                username=read_ony_user.username,
+                first_name=_tmp_user.first_name,
+                last_name=_tmp_user.last_name,
+                username=_tmp_user.username,
                 email="changed@changed.org",
-                roles=read_ony_user.roles[0].id,
+                roles=_tmp_user.roles[0].id,
             ),
             follow_redirects=True,
         )
@@ -458,11 +463,12 @@ class MVCSecurityTestCase(BaseMVCTestCase):
 
         user = (
             self.db.session.query(User)
-            .filter(User.username == USERNAME_READONLY)
+            .filter(User.username == _tmp_user.username)
             .one_or_none()
         )
+
         assert user.email == "changed@changed.org"
-        user.email = "readonly@fab.org"
+        self.db.session.delete(user)
         self.db.session.commit()
 
     def test_edit_user_email_validation(self):
@@ -514,17 +520,8 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("Edit User", data)
 
-        with patch.object(
-            self.appbuilder.session,
-            "merge",
-        ) as mock_merge:
-            with patch.object(
-                self.appbuilder.sm, "has_access", return_value=True
-            ) as mock_has_access:
-
-                # self.appbuilder.session.merge = Mock()
-                # self.appbuilder.sm.has_access = MagicMock()
-                # self.appbuilder.sm.has_access.return_value = True
+        with patch.object(self.appbuilder.session, "merge") as mock_merge:
+            with patch.object(self.appbuilder.sm, "has_access", return_value=True) as _:
                 mock_merge.side_effect = Exception("BANG!")
 
                 rv = client.post(
