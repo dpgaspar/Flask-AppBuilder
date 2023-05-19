@@ -20,7 +20,9 @@ class BabelManager(BaseManager):
         appbuilder_parent_dir = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), os.pardir
         )
-        appbuilder_translations_path = os.path.join(appbuilder_parent_dir, "translations")
+        appbuilder_translations_path = os.path.join(
+            appbuilder_parent_dir, "translations"
+        )
         if "BABEL_TRANSLATION_DIRECTORIES" in app.config:
             current_translation_directories = app.config.get(
                 "BABEL_TRANSLATION_DIRECTORIES"
