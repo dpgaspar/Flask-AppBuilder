@@ -1238,9 +1238,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             self_url = OneLogin_Saml2_Utils.get_self_url(auth_request)
 
             user_name = session['samlUserdata'][self.auth_adfs_uid_field]
-            
+            username = user_name[0].split("@")[0]
             # Search the DB for this user
-            user = self.find_user(username=user_name[0].split("@")[0]) #simplify it
+            user = self.find_user(username=username) #simplify it
 
             # If user is not active, go away
             if user and (not user.is_active):
@@ -1251,7 +1251,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             # If the user is new, register them
             if (not user) and self.auth_user_registration:
                 user = self.add_user(
-                    username=user_name[0].split("@")[0],
+                    username=username,
                     first_name= session['samlUserdata'][self.auth_adfs_firstname_field][0],
                     last_name= session['samlUserdata'][self.auth_adfs_firstname_field][0],
                     email= session['samlUserdata'][self.auth_adfs_email_field][0] or f"{user_name}@email.notfound",
