@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, Mock, patch
+
 from flask_appbuilder import ModelView
 from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
@@ -498,8 +500,6 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         Test edit user with DB fail
         """
-        from unittest.mock import Mock, MagicMock
-
         client = self.app.test_client()
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -514,22 +514,30 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("Edit User", data)
 
-        self.appbuilder.session.merge = Mock()
-        self.appbuilder.sm.has_access = MagicMock()
-        self.appbuilder.sm.has_access.return_value = True
-        self.appbuilder.session.merge.side_effect = Exception("BANG!")
+        with patch.object(
+            self.appbuilder.session,
+            "merge",
+        ) as mock_merge:
+            with patch.object(
+                self.appbuilder.sm, "has_access", return_value=True
+            ) as mock_has_access:
 
-        rv = client.post(
-            f"/users/edit/{read_ony_user.id}",
-            data=dict(
-                first_name=read_ony_user.first_name,
-                last_name=read_ony_user.last_name,
-                username=read_ony_user.username,
-                email="changed@changed.org",
-                roles=read_ony_user.roles[0].id,
-            ),
-            follow_redirects=True,
-        )
+                # self.appbuilder.session.merge = Mock()
+                # self.appbuilder.sm.has_access = MagicMock()
+                # self.appbuilder.sm.has_access.return_value = True
+                mock_merge.side_effect = Exception("BANG!")
 
-        data = rv.data.decode("utf-8")
-        self.assertIn("Database Error", data)
+                rv = client.post(
+                    f"/users/edit/{read_ony_user.id}",
+                    data=dict(
+                        first_name=read_ony_user.first_name,
+                        last_name=read_ony_user.last_name,
+                        username=read_ony_user.username,
+                        email="changed@changed.org",
+                        roles=read_ony_user.roles[0].id,
+                    ),
+                    follow_redirects=True,
+                )
+
+                data = rv.data.decode("utf-8")
+                self.assertIn("Database Error", data)
