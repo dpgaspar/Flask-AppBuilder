@@ -1033,7 +1033,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             return {
                 'https': 'on' if request.scheme == 'https' else 'off',
                 'http_host': request.host,
-                'server_port': '4040',
+                # 'server_port': '4040',
                 'script_name': request.path,
                 'get_data': request.args.copy(),
                 # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
