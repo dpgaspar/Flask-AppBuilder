@@ -7,7 +7,7 @@ from sqlalchemy.orm.session import Session as SessionBase
 
 from . import __version__
 from .api.manager import OpenApiManager
-from .babel.manager import BabelManager
+from .babels.manager import BabelManager
 from .const import (
     LOGMSG_ERR_FAB_ADD_PERMISSION_MENU,
     LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW,

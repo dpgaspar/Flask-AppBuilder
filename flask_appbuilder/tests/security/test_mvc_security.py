@@ -422,3 +422,114 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         self.db.session.delete(user)
         self.db.session.commit()
+
+    def test_edit_user(self):
+        """
+        Test edit user
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        read_ony_user: User = (
+            self.db.session.query(User)
+            .filter(User.username == USERNAME_READONLY)
+            .one_or_none()
+        )
+
+        # use all required params
+        rv = client.get(f"/users/edit/{read_ony_user.id}", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Edit User", data)
+        rv = client.post(
+            f"/users/edit/{read_ony_user.id}",
+            data=dict(
+                first_name=read_ony_user.first_name,
+                last_name=read_ony_user.last_name,
+                username=read_ony_user.username,
+                email="changed@changed.org",
+                roles=read_ony_user.roles[0].id,
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Changed Row", data)
+
+        user = (
+            self.db.session.query(User)
+            .filter(User.username == USERNAME_READONLY)
+            .one_or_none()
+        )
+        assert user.email == "changed@changed.org"
+        user.email = "readonly@fab.org"
+        self.db.session.commit()
+
+    def test_edit_user_email_validation(self):
+        """
+        Test edit user with email not null validation
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        read_ony_user: User = (
+            self.db.session.query(User)
+            .filter(User.username == USERNAME_READONLY)
+            .one_or_none()
+        )
+
+        # use all required params
+        rv = client.get(f"/users/edit/{read_ony_user.id}", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Edit User", data)
+        rv = client.post(
+            f"/users/edit/{read_ony_user.id}",
+            data=dict(
+                first_name=read_ony_user.first_name,
+                last_name=read_ony_user.last_name,
+                username=read_ony_user.username,
+                email=None,
+                roles=read_ony_user.roles[0].id,
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("This field is required", data)
+
+    def test_edit_user_db_fail(self):
+        """
+        Test edit user with DB fail
+        """
+        from unittest.mock import Mock, MagicMock
+
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        read_ony_user: User = (
+            self.db.session.query(User)
+            .filter(User.username == USERNAME_READONLY)
+            .one_or_none()
+        )
+
+        # use all required params
+        rv = client.get(f"/users/edit/{read_ony_user.id}", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Edit User", data)
+
+        self.appbuilder.session.merge = Mock()
+        self.appbuilder.sm.has_access = MagicMock()
+        self.appbuilder.sm.has_access.return_value = True
+        self.appbuilder.session.merge.side_effect = Exception("BANG!")
+
+        rv = client.post(
+            f"/users/edit/{read_ony_user.id}",
+            data=dict(
+                first_name=read_ony_user.first_name,
+                last_name=read_ony_user.last_name,
+                username=read_ony_user.username,
+                email="changed@changed.org",
+                roles=read_ony_user.roles[0].id,
+            ),
+            follow_redirects=True,
+        )
+
+        data = rv.data.decode("utf-8")
+        self.assertIn("Database Error", data)
