@@ -758,9 +758,11 @@ class AuthADFSView(AuthView):
                 return redirect(self.appbuilder.get_url_for_index)
 
         if 'sso2' in request.args:
-                return_to = request.host_url # change this to login page
-                return redirect(auth.login(return_to))
-            
+                auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
+                redir = request.args.get('next', '/')
+                if "/sso2" in redir:
+                    redir = '/login/acs'
+                return redirect(auth.login(redir))
         # form will fail for now
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
@@ -771,14 +773,13 @@ class AuthADFSView(AuthView):
         auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
         auth.process_response()
         errors = auth.get_errors()
-
-        if len(errors) == 0:  # No errors, let's authenticate the user
+        if len(errors) == 0:  # no errors, let's authenticate the user
             user, self_url = self.appbuilder.sm.auth_user_adfs_login(session, auth, auth_request)
             if not user:
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login_with(next_url))
             login_user(user, remember=False)
-
+            
             if 'RelayState' in request.form and self_url != request.form['RelayState']:
                 return redirect(auth.redirect_to(request.form['RelayState']))
              
