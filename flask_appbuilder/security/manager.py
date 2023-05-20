@@ -1031,8 +1031,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     def _prepare_flask_request(self, request):
             # If server is behind proxys or balancers use the HTTP_X_FORWARDED fields
             return {
-                'https': 'on' if request.scheme == 'https' else 'off',
-                'http_host': request.host,
+                'https': 'on' if request.scheme == 'https' or ('https' in request.Referer) else 'off',
+                'http_host': request.host.split(":")[0] if ":" in request.host else reqest.host,
                 # 'server_port': '4040',
                 'script_name': request.path,
                 'get_data': request.args.copy(),
