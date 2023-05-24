@@ -795,7 +795,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_user_registration:
             self.appbuilder.add_view(
                 self.registerusermodelview,
-                "User's Statistics",
+                "User Registrations",
                 icon="fa-user-plus",
                 label=_("User Registrations"),
                 category="Security",
