@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 from contextlib import suppress
 import logging
-import sys
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from flask_appbuilder._compat import as_unicode
 from flask_appbuilder.const import (
-    LOGMSG_ERR_DBI_ADD_GENERIC,
     LOGMSG_ERR_DBI_DEL_GENERIC,
-    LOGMSG_ERR_DBI_EDIT_GENERIC,
     LOGMSG_WAR_DBI_ADD_INTEGRITY,
     LOGMSG_WAR_DBI_DEL_INTEGRITY,
     LOGMSG_WAR_DBI_EDIT_INTEGRITY,
@@ -736,11 +733,8 @@ class SQLAInterface(BaseInterface):
                 raise e
             return False
         except Exception as e:
-            self.message = (
-                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
-                "danger",
-            )
-            log.exception(LOGMSG_ERR_DBI_ADD_GENERIC.format(str(e)))
+            self.message = (as_unicode(self.database_error_message), "danger")
+            log.exception("Database error")
             self.session.rollback()
             if raise_exception:
                 raise e
@@ -760,11 +754,8 @@ class SQLAInterface(BaseInterface):
                 raise e
             return False
         except Exception as e:
-            self.message = (
-                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
-                "danger",
-            )
-            log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC.format(str(e)))
+            self.message = (as_unicode(self.database_error_message), "danger")
+            log.exception("Database error")
             self.session.rollback()
             if raise_exception:
                 raise e
@@ -785,11 +776,8 @@ class SQLAInterface(BaseInterface):
                 raise e
             return False
         except Exception as e:
-            self.message = (
-                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
-                "danger",
-            )
-            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
+            self.message = (as_unicode(self.database_error_message), "danger")
+            log.exception("Database error")
             self.session.rollback()
             if raise_exception:
                 raise e
@@ -809,10 +797,7 @@ class SQLAInterface(BaseInterface):
             self.session.rollback()
             return False
         except Exception as e:
-            self.message = (
-                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
-                "danger",
-            )
+            self.message = (as_unicode(self.database_error_message), "danger")
             log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             self.session.rollback()
             return False
