@@ -6,6 +6,7 @@ function loadSelectDataSlave(elem) {
         var elem = $(this);
         var master_id = elem.attr('master_id');
         var master_val = $('#' + master_id).val();
+​
         if (master_val) {
             var endpoint = elem.attr('endpoint');
             endpoint = endpoint.replace("{{ID}}", master_val);
@@ -16,10 +17,13 @@ function loadSelectDataSlave(elem) {
         else {
             elem.select2({data: {id: "",text: ""}, placeholder: "Select", allowClear: true});
         }
+​
         $('#' + master_id).on("change", function(e) {
+            var change_master_id = elem.attr('master_id');
+            var change_master_val = $('#' + master_id).val();
             var endpoint = elem.attr('endpoint');
-            if (e.val) {
-                endpoint = endpoint.replace("{{ID}}", e.val);
+            if (change_master_val) {
+                endpoint = endpoint.replace("{{ID}}", change_master_val);
                 $.get( endpoint, function( data ) {
                     elem.select2({data: data, placeholder: "Select", allowClear: true});
                 });
