@@ -6,7 +6,6 @@ function loadSelectDataSlave(elem) {
         var elem = $(this);
         var master_id = elem.attr('master_id');
         var master_val = $('#' + master_id).val();
-​
         if (master_val) {
             var endpoint = elem.attr('endpoint');
             endpoint = endpoint.replace("{{ID}}", master_val);
@@ -17,7 +16,6 @@ function loadSelectDataSlave(elem) {
         else {
             elem.select2({data: {id: "",text: ""}, placeholder: "Select", allowClear: true});
         }
-​
         $('#' + master_id).on("change", function(e) {
             var change_master_id = elem.attr('master_id');
             var change_master_val = $('#' + master_id).val();
