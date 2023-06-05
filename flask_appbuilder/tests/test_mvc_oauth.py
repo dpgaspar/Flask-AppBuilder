@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 from flask_appbuilder import SQLA
 from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder.tests.base import FABTestCase
@@ -123,3 +125,17 @@ class APICSRFTestCase(FABTestCase):
                 session["oauth_state"] = "random_state"
         response = client.get(f"/oauth-authorized/google?state={state}")
         self.assertEqual(response.location, "/")
+
+    def test_oauth_next_login_param(self):
+        """
+        OAuth: Test next quoted next_url param
+        """
+        self.appbuilder.sm.oauth_remotes = {"google": OAuthRemoteMock()}
+
+        next_url = "http://localhost/data?param1=1&param2=2&param3="
+        with self.app.test_client() as client:
+            # use quote function to reproduce redirect to login
+            response = client.get(
+                f"/login/?next={quote(next_url)}", follow_redirects=True
+            )
+            self.assertTrue(quote(next_url) in response.text)
