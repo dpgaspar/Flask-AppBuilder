@@ -111,7 +111,7 @@ class SecurityManager(BaseSecurityManager):
                 log.info(c.LOGMSG_INF_SEC_ADD_DB)
             super(SecurityManager, self).create_db()
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_CREATE_DB.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_CREATE_DB, e)
             exit(1)
 
     def find_register_user(self, registration_hash):
@@ -144,7 +144,7 @@ class SecurityManager(BaseSecurityManager):
             self.get_session.commit()
             return register_user
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER, e)
             self.appbuilder.get_session.rollback()
             return None
 
@@ -159,7 +159,7 @@ class SecurityManager(BaseSecurityManager):
             self.get_session.commit()
             return True
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_DEL_REGISTER_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_DEL_REGISTER_USER, e)
             self.get_session.rollback()
             return False
 
@@ -184,7 +184,7 @@ class SecurityManager(BaseSecurityManager):
                         .one_or_none()
                     )
             except MultipleResultsFound:
-                log.error(f"Multiple results found for user {username}")
+                log.error("Multiple results found for user %s", username)
                 return None
         elif email:
             try:
@@ -194,7 +194,7 @@ class SecurityManager(BaseSecurityManager):
                     .one_or_none()
                 )
             except MultipleResultsFound:
-                log.error(f"Multiple results found for user with email {email}")
+                log.error("Multiple results found for user with email %s", email)
                 return None
 
     def get_all_users(self):
@@ -227,10 +227,10 @@ class SecurityManager(BaseSecurityManager):
                 user.password = generate_password_hash(password)
             self.get_session.add(user)
             self.get_session.commit()
-            log.info(c.LOGMSG_INF_SEC_ADD_USER.format(username))
+            log.info(c.LOGMSG_INF_SEC_ADD_USER, username)
             return user
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_ADD_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_USER, e)
             self.get_session.rollback()
             return False
 
@@ -241,9 +241,9 @@ class SecurityManager(BaseSecurityManager):
         try:
             self.get_session.merge(user)
             self.get_session.commit()
-            log.info(c.LOGMSG_INF_SEC_UPD_USER.format(user))
+            log.info(c.LOGMSG_INF_SEC_UPD_USER, user)
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_UPD_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_UPD_USER, e)
             self.get_session.rollback()
             return False
 
@@ -282,10 +282,10 @@ class SecurityManager(BaseSecurityManager):
                 role.permissions = permissions
                 self.get_session.add(role)
                 self.get_session.commit()
-                log.info(c.LOGMSG_INF_SEC_ADD_ROLE.format(name))
+                log.info(c.LOGMSG_INF_SEC_ADD_ROLE, name)
                 return role
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_ROLE.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_ROLE, e)
                 self.get_session.rollback()
         return role
 
@@ -297,9 +297,9 @@ class SecurityManager(BaseSecurityManager):
             role.name = name
             self.get_session.merge(role)
             self.get_session.commit()
-            log.info(c.LOGMSG_INF_SEC_UPD_ROLE.format(role))
+            log.info(c.LOGMSG_INF_SEC_UPD_ROLE, role)
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_UPD_ROLE.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_UPD_ROLE, e)
             self.get_session.rollback()
             return
 
@@ -477,7 +477,7 @@ class SecurityManager(BaseSecurityManager):
                 self.get_session.commit()
                 return perm
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_PERMISSION.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_PERMISSION, e)
                 self.get_session.rollback()
         return perm
 
@@ -490,7 +490,7 @@ class SecurityManager(BaseSecurityManager):
         """
         perm = self.find_permission(name)
         if not perm:
-            log.warning(c.LOGMSG_WAR_SEC_DEL_PERMISSION.format(name))
+            log.warning(c.LOGMSG_WAR_SEC_DEL_PERMISSION, name)
             return False
         try:
             pvms = (
@@ -499,13 +499,13 @@ class SecurityManager(BaseSecurityManager):
                 .all()
             )
             if pvms:
-                log.warning(c.LOGMSG_WAR_SEC_DEL_PERM_PVM.format(perm, pvms))
+                log.warning(c.LOGMSG_WAR_SEC_DEL_PERM_PVM, perm, pvms)
                 return False
             self.get_session.delete(perm)
             self.get_session.commit()
             return True
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION, e)
             self.get_session.rollback()
             return False
 
@@ -543,7 +543,7 @@ class SecurityManager(BaseSecurityManager):
                 self.get_session.commit()
                 return view_menu
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_VIEWMENU.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_VIEWMENU, e)
                 self.get_session.rollback()
         return view_menu
 
@@ -556,7 +556,7 @@ class SecurityManager(BaseSecurityManager):
         """
         view_menu = self.find_view_menu(name)
         if not view_menu:
-            log.warning(c.LOGMSG_WAR_SEC_DEL_VIEWMENU.format(name))
+            log.warning(c.LOGMSG_WAR_SEC_DEL_VIEWMENU, name)
             return False
         try:
             pvms = (
@@ -565,13 +565,13 @@ class SecurityManager(BaseSecurityManager):
                 .all()
             )
             if pvms:
-                log.warning(c.LOGMSG_WAR_SEC_DEL_VIEWMENU_PVM.format(view_menu, pvms))
+                log.warning(c.LOGMSG_WAR_SEC_DEL_VIEWMENU_PVM, view_menu, pvms)
                 return False
             self.get_session.delete(view_menu)
             self.get_session.commit()
             return True
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION, e)
             self.get_session.rollback()
             return False
 
@@ -628,10 +628,10 @@ class SecurityManager(BaseSecurityManager):
         try:
             self.get_session.add(pv)
             self.get_session.commit()
-            log.info(c.LOGMSG_INF_SEC_ADD_PERMVIEW.format(str(pv)))
+            log.info(c.LOGMSG_INF_SEC_ADD_PERMVIEW, pv)
             return pv
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW, e)
             self.get_session.rollback()
 
     def del_permission_view_menu(self, permission_name, view_menu_name, cascade=True):
@@ -647,9 +647,8 @@ class SecurityManager(BaseSecurityManager):
         )
         if roles_pvs:
             log.warning(
-                c.LOGMSG_WAR_SEC_DEL_PERMVIEW.format(
-                    view_menu_name, permission_name, roles_pvs
-                )
+                c.LOGMSG_WAR_SEC_DEL_PERMVIEW,
+                view_menu_name, permission_name, roles_pvs
             )
             return
         try:
@@ -666,10 +665,10 @@ class SecurityManager(BaseSecurityManager):
             ):
                 self.del_permission(pv.permission.name)
             log.info(
-                c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(permission_name, view_menu_name)
+                c.LOGMSG_INF_SEC_DEL_PERMVIEW, permission_name, view_menu_name
             )
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW, e)
             self.get_session.rollback()
 
     def exist_permission_on_views(self, lst, item):
@@ -699,10 +698,10 @@ class SecurityManager(BaseSecurityManager):
                 self.get_session.merge(role)
                 self.get_session.commit()
                 log.info(
-                    c.LOGMSG_INF_SEC_ADD_PERMROLE.format(str(perm_view), role.name)
+                    c.LOGMSG_INF_SEC_ADD_PERMROLE, perm_view, role.name
                 )
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE, e)
                 self.get_session.rollback()
 
     def del_permission_role(self, role, perm_view):
@@ -720,10 +719,10 @@ class SecurityManager(BaseSecurityManager):
                 self.get_session.merge(role)
                 self.get_session.commit()
                 log.info(
-                    c.LOGMSG_INF_SEC_DEL_PERMROLE.format(str(perm_view), role.name)
+                    c.LOGMSG_INF_SEC_DEL_PERMROLE, perm_view, role.name
                 )
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE, e)
                 self.get_session.rollback()
 
     def export_roles(
