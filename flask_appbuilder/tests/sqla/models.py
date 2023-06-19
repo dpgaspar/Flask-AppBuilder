@@ -112,8 +112,8 @@ class TmpEnum(enum.Enum):
 
 class ModelWithEnums(Model):
     id = Column(Integer, primary_key=True)
-    enum1 = Column(Enum("e1", "e2", "e3", name="enum1"))
-    enum2 = Column(Enum(TmpEnum), info={"enum_class": TmpEnum})
+    enum1 = Column(Enum("e1", "e2", "e3", "e4", name="enum1"))
+    enum2 = Column(Enum(TmpEnum))
 
 
 assoc_parent_child = Table(

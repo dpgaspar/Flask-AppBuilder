@@ -45,7 +45,7 @@ setup(
     zip_safe=False,
     platforms="any",
     install_requires=[
-        "apispec[yaml]>=3.3, <7",
+        "apispec[yaml]>=6.0.0, <7",
         "colorama>=0.3.9, <1",
         "click>=8, <9",
         "email_validator>=1.0.5, <2",
