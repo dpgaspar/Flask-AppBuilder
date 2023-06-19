@@ -249,7 +249,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             ma_sqla_fields_override[column.data] = self._column2field(
                 _datamodel, column, nested, parent_schema_name=parent_schema_name
             )
-            print(ma_sqla_fields_override[column.data], column.data)
             _columns.append(column.data)
         for k, v in ma_sqla_fields_override.items():
             setattr(SchemaMixin, k, v)

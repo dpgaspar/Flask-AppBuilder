@@ -1,4 +1,5 @@
 import datetime
+import enum
 
 from flask_appbuilder import Model
 from sqlalchemy import Column, Date, ForeignKey, Integer, String, Enum
@@ -15,12 +16,9 @@ class ContactGroup(Model):
         return self.name
 
 
-class Gender(Model):
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique=True, nullable=False)
-
-    def __repr__(self):
-        return self.name
+class Gender(enum.Enum):
+    Female = "Female"
+    Male = "Male"
 
 
 class Contact(Model):
@@ -32,8 +30,7 @@ class Contact(Model):
     personal_celphone = Column(String(20))
     contact_group_id = Column(Integer, ForeignKey("contact_group.id"), nullable=False)
     contact_group = relationship("ContactGroup")
-    gender_id = Column(Integer, ForeignKey("gender.id"), nullable=False)
-    gender = relationship("Gender")
+    gender = Column(Enum(Gender))
 
     def __repr__(self):
         return self.name
@@ -45,21 +42,6 @@ class Contact(Model):
     def year(self):
         date = self.birthday or mindate
         return datetime.datetime(date.year, 1, 1)
-
-
-import enum
-
-
-class TmpEnum(enum.Enum):
-    e1 = "a"
-    e2 = 2
-    e3 = 3
-
-
-class ModelWithEnums(Model):
-    id = Column(Integer, primary_key=True)
-    enum1 = Column(Enum("e1", "e2", "e3", name="enum1"))
-    enum2 = Column(Enum(TmpEnum), info={"enum_class": TmpEnum})
 
 
 class ModelOMParent(Model):
