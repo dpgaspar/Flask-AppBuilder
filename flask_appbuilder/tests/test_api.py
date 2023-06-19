@@ -2629,6 +2629,66 @@ class APITestCase(FABTestCase):
         ).delete()
         self.appbuilder.get_session.commit()
 
+    def test_list_items_with_enum(self):
+        """
+        REST Api: Test list items with enums
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "api/v1/modelwithenumsapi/"
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(data["result"], [{"enum1": "e1", "enum2": "e2"}])
+        self.assertEqual(data["count"], 1)
+
+    def test_get_item_with_enums(self):
+        """
+        REST Api: Test get item with enums
+        """
+        model1 = (
+            self.appbuilder.get_session.query(ModelWithEnums)
+            .filter(ModelWithEnums.enum1 == "e1")
+            .one_or_none()
+        )
+        pk = model1.id
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = f"api/v1/modelwithenumsapi/{pk}"
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(data["result"], {"enum1": "e1", "enum2": "e2"})
+
+    def test_model_with_enum_oas(self):
+        """
+        REST Api: Test model with enum OAS
+        """
+        self.maxDiff = None
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "/api/v1/_openapi"
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        expected_response = {
+            "properties": {
+                "enum1": {
+                    "enum": ["e1", "e2", "e3", "e4"],
+                    "maxLength": 2,
+                    "nullable": True,
+                },
+                "enum2": {"enum": ["e1", "e2", "e3"], "type": "string"},
+            },
+            "type": "object",
+        }
+
+        self.assertEqual(
+            data["components"]["schemas"]["ModelWithEnumsApi.get"], expected_response
+        )
+        self.assertEqual(
+            data["components"]["schemas"]["ModelWithEnumsApi.post"], expected_response
+        )
+
     def test_create_item_with_enum(self):
         """
         REST Api: Test create item with enum

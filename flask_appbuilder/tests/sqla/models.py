@@ -291,12 +291,13 @@ def insert_data(session, count):
         insert_model2(session, i=i, model1_collection=model1_collection)
     insert_model3(session)
 
-    for i in range(count):
-        model = ModelWithEnums()
-        model.enum1 = "e1"
-        model.enum2 = TmpEnum.e2
-        session.add(model)
-        session.commit()
+    # One is enough for the following tests
+    model = ModelWithEnums()
+    model.enum1 = "e1"
+    model.enum2 = TmpEnum.e2
+    session.add(model)
+    session.commit()
+
     # Fill Model4
     for i in range(count):
         model = Model4()
