@@ -101,7 +101,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
     def _meta_schema_factory(
         self,
         columns: List[str],
-        model: Model,
+        model: Optional[Type[Model]],
         class_mixin: Type[Schema],
         parent_schema_name: Optional[str] = None,
     ) -> Type[SQLAlchemyAutoSchema]:
@@ -252,7 +252,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             columns, model=model, nested=nested, parent_schema_name=parent_schema_name
         )
 
-        class SchemaMixin:
+        class SchemaMixin(Schema):
             pass
 
         _model = model or self.datamodel.obj
