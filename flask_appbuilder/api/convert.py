@@ -71,7 +71,7 @@ class BaseModel2SchemaConverter(object):
 
 class Model2SchemaConverter(BaseModel2SchemaConverter):
     """
-        Class that converts Models to marshmallow Schemas
+    Class that converts Models to marshmallow Schemas
     """
 
     def __init__(self, datamodel: SQLAInterface, validators_columns):
@@ -205,10 +205,10 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                 datamodel, column, nested=nested, parent_schema_name=parent_schema_name
             )
         # Handle Enums
-        elif datamodel.is_enum(column.data):
-            return self._column2enum(
-                datamodel, column, enum_dump_by_name=enum_dump_by_name
-            )
+        # elif datamodel.is_enum(column.data):
+        #     return self._column2enum(
+        #         datamodel, column, enum_dump_by_name=enum_dump_by_name
+        #     )
         # is custom property method field?
         if hasattr(getattr(datamodel.obj, column.data), "fget"):
             return fields.Raw(dump_only=True)

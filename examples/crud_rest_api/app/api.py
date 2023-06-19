@@ -5,7 +5,7 @@ from flask_appbuilder.models.filters import BaseFilter
 from sqlalchemy import or_
 
 from . import appbuilder, db
-from .models import Contact, ContactGroup, Gender, ModelOMParent
+from .models import Contact, ContactGroup, Gender, ModelOMParent, ModelWithEnums
 from marshmallow import fields, Schema
 
 
@@ -39,7 +39,7 @@ class GreetingApi(BaseApi):
         }
     }
 
-    @expose('/')
+    @expose("/")
     def greeting(self):
         """Send a greeting
         ---
@@ -104,4 +104,10 @@ class ModelOMParentApi(ModelRestApi):
     datamodel = SQLAInterface(ModelOMParent)
 
 
+class ModelWithEnumsApi(ModelRestApi):
+    allow_browser_login = True
+    datamodel = SQLAInterface(ModelWithEnums)
+
+
 appbuilder.add_api(ModelOMParentApi)
+appbuilder.add_api(ModelWithEnumsApi)
