@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-apispec[yaml]==5.2.2
+apispec[yaml]==6.3.0
     # via Flask-AppBuilder (setup.py)
 attrs==21.4.0
     # via jsonschema

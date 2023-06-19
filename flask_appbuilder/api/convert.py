@@ -122,23 +122,16 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
 
         return MetaSchema
 
-    # def _column2enum(
-    #     self,
-    #     datamodel: SQLAInterface,
-    #     column: TreeNode,
-    #     enum_dump_by_name: bool = False,
-    # ):
-    #     required = not datamodel.is_nullable(column.data)
-    #     enum_class = datamodel.list_columns[column.data].info.get(
-    #         "enum_class", datamodel.list_columns[column.data].type
-    #     )
-    #     if enum_dump_by_name:
-    #         enum_dump_by = EnumField.NAME
-    #     else:
-    #         enum_dump_by = EnumField.VALUE
-    #     field = EnumField(enum_class, dump_by=enum_dump_by, required=required)
-    #     field.unique = datamodel.is_unique(column.data)
-    #     return field
+    def _column2enum(self, datamodel: SQLAInterface, column: TreeNode):
+        required = not datamodel.is_nullable(column.data)
+        # Get the original enum class from SQLAlchemy Enum field
+        enum_class = datamodel.list_columns[column.data].type.enum_class
+        if not enum_class:
+            field = field_for(datamodel.obj, column.data)
+        else:
+            field = fields.Enum(enum_class, required=required)
+        field.unique = datamodel.is_unique(column.data)
+        return field
 
     def _column2relation(
         self,
@@ -187,7 +180,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         datamodel: SQLAInterface,
         column: TreeNode,
         nested: bool = True,
-        enum_dump_by_name: bool = False,
         parent_schema_name: Optional[str] = None,
     ) -> Field:
         """
@@ -195,7 +187,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         :param datamodel: SQLAInterface
         :param column: TreeNode column (childs are dotted columns)
         :param nested: Boolean if will create nested fields
-        :param enum_dump_by_name:
         :return: Schema.field
         """
         # Handle relations
@@ -204,10 +195,8 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                 datamodel, column, nested=nested, parent_schema_name=parent_schema_name
             )
         # Handle Enums
-        # elif datamodel.is_enum(column.data):
-        #     return self._column2enum(
-        #         datamodel, column, enum_dump_by_name=enum_dump_by_name
-        #     )
+        elif datamodel.is_enum(column.data):
+            return self._column2enum(datamodel, column)
         # is custom property method field?
         if hasattr(getattr(datamodel.obj, column.data), "fget"):
             return fields.Raw(dump_only=True)
@@ -230,7 +219,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         columns: List[str],
         model: Optional[Type[Model]] = None,
         nested: bool = True,
-        enum_dump_by_name: bool = False,
         parent_schema_name: Optional[str] = None,
     ):
         """
@@ -259,12 +247,9 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         for column in tree_columns.root.childs:
             # Get child model is column is dotted notation
             ma_sqla_fields_override[column.data] = self._column2field(
-                _datamodel,
-                column,
-                nested,
-                enum_dump_by_name,
-                parent_schema_name=parent_schema_name,
+                _datamodel, column, nested, parent_schema_name=parent_schema_name
             )
+            print(ma_sqla_fields_override[column.data], column.data)
             _columns.append(column.data)
         for k, v in ma_sqla_fields_override.items():
             setattr(SchemaMixin, k, v)
