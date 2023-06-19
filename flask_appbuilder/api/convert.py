@@ -1,4 +1,4 @@
-from typing import List, Optional, Type, Callable, Any, Dict
+from typing import Any, Callable, Dict, List, Optional, Type
 
 from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
