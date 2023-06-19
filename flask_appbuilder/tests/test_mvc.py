@@ -40,7 +40,6 @@ from .sqla.models import (
     insert_model1,
     insert_model2,
     insert_model3,
-    insert_model_with_enums,
     Model1,
     Model2,
     Model3,
@@ -1056,9 +1055,9 @@ class MVCTestCase(BaseMVCTestCase):
         )
         self.assertIsNotNone(model)
         self.assertEqual(model.enum2, TmpEnum.e3)
-
-        # Revert data changes
-        insert_model_with_enums(self.appbuilder.get_session, i=pk - 1)
+        model.enum2 = TmpEnum.e2
+        model.enum1 = "e1"
+        self.appbuilder.get_session.commit()
 
     def test_formatted_cols(self):
         """
