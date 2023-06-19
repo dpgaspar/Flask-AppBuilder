@@ -172,9 +172,7 @@ class AppBuilder:
 
         self.base_template = app.config.get("FAB_BASE_TEMPLATE", self.base_template)
         self.static_folder = app.config.get("FAB_STATIC_FOLDER", self.static_folder)
-        self.static_url_path = app.config.get(
-            "FAB_STATIC_URL_PATH", self.static_url_path
-        )
+        self.static_url_path = app.config.get("FAB_STATIC_URL_PATH", self.static_url_path)
         _index_view = app.config.get("FAB_INDEX_VIEW", None)
         if _index_view:
             self.indexview = dynamic_class_import(_index_view)  # type: ignore
@@ -193,9 +191,7 @@ class AppBuilder:
 
         if self.update_perms:  # default is True, if False takes precedence from config
             self.update_perms = app.config.get("FAB_UPDATE_PERMS", True)
-        _security_manager_class_name = app.config.get(
-            "FAB_SECURITY_MANAGER_CLASS", None
-        )
+        _security_manager_class_name = app.config.get("FAB_SECURITY_MANAGER_CLASS", None)
         if _security_manager_class_name is not None:
             security_manager_class = dynamic_class_import(_security_manager_class_name)
             self.security_manager_class = cast(
@@ -634,9 +630,7 @@ class AppBuilder:
     def get_url_for_index(self) -> str:
         if self._indexview is None:
             return ""
-        return url_for(
-            "%s.%s" % (self._indexview.endpoint, self._indexview.default_view)
-        )
+        return url_for("%s.%s" % (self._indexview.endpoint, self._indexview.default_view))
 
     @property
     def get_url_for_userinfo(self) -> str:
