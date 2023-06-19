@@ -252,7 +252,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             columns, model=model, nested=nested, parent_schema_name=parent_schema_name
         )
 
-        class SchemaMixin(Schema):
+        class SchemaMixin:
             pass
 
         _model = model or self.datamodel.obj
