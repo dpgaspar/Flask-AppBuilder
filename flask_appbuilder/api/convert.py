@@ -4,7 +4,6 @@ from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from marshmallow import fields
 from marshmallow.fields import Field
-from marshmallow_enum import EnumField
 from marshmallow_sqlalchemy import field_for
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
@@ -123,23 +122,23 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
 
         return MetaSchema
 
-    def _column2enum(
-        self,
-        datamodel: SQLAInterface,
-        column: TreeNode,
-        enum_dump_by_name: bool = False,
-    ):
-        required = not datamodel.is_nullable(column.data)
-        enum_class = datamodel.list_columns[column.data].info.get(
-            "enum_class", datamodel.list_columns[column.data].type
-        )
-        if enum_dump_by_name:
-            enum_dump_by = EnumField.NAME
-        else:
-            enum_dump_by = EnumField.VALUE
-        field = EnumField(enum_class, dump_by=enum_dump_by, required=required)
-        field.unique = datamodel.is_unique(column.data)
-        return field
+    # def _column2enum(
+    #     self,
+    #     datamodel: SQLAInterface,
+    #     column: TreeNode,
+    #     enum_dump_by_name: bool = False,
+    # ):
+    #     required = not datamodel.is_nullable(column.data)
+    #     enum_class = datamodel.list_columns[column.data].info.get(
+    #         "enum_class", datamodel.list_columns[column.data].type
+    #     )
+    #     if enum_dump_by_name:
+    #         enum_dump_by = EnumField.NAME
+    #     else:
+    #         enum_dump_by = EnumField.VALUE
+    #     field = EnumField(enum_class, dump_by=enum_dump_by, required=required)
+    #     field.unique = datamodel.is_unique(column.data)
+    #     return field
 
     def _column2relation(
         self,

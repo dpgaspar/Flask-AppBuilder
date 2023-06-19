@@ -1,7 +1,7 @@
 import datetime
 
 from flask_appbuilder import Model
-from sqlalchemy import Column, Date, ForeignKey, Integer, String
+from sqlalchemy import Column, Date, ForeignKey, Integer, String, Enum
 from sqlalchemy.orm import relationship, backref
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
@@ -45,6 +45,21 @@ class Contact(Model):
     def year(self):
         date = self.birthday or mindate
         return datetime.datetime(date.year, 1, 1)
+
+
+import enum
+
+
+class TmpEnum(enum.Enum):
+    e1 = "a"
+    e2 = 2
+    e3 = 3
+
+
+class ModelWithEnums(Model):
+    id = Column(Integer, primary_key=True)
+    enum1 = Column(Enum("e1", "e2", "e3", name="enum1"))
+    enum2 = Column(Enum(TmpEnum), info={"enum_class": TmpEnum})
 
 
 class ModelOMParent(Model):
