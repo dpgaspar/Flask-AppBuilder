@@ -94,7 +94,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         super(Model2SchemaConverter, self).__init__(datamodel, validators_columns)
 
     @staticmethod
-    def _debug_schema(schema: SQLAlchemyAutoSchema) -> None:
+    def _debug_schema(schema) -> None:
         for k, v in schema._declared_fields.items():
             print(k, v)
 
