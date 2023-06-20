@@ -141,6 +141,12 @@ You can give FlaskAppBuilder roles based on LDAP roles (note, this requires AUTH
 
     # a mapping from LDAP DN to a list of FAB roles
     AUTH_ROLES_MAPPING = {
+        "CN=fab_users,OU=groups,DC=example,DC=com": ["User"],
+        "CN=fab_admins,OU=groups,DC=example,DC=com": ["Admin"],
+    }
+
+    # a mapping from OpenLDAP DN to a list of FAB roles
+    AUTH_ROLES_MAPPING = {
         "cn=fab_users,ou=groups,dc=example,dc=com": ["User"],
         "cn=fab_admins,ou=groups,dc=example,dc=com": ["Admin"],
     }
