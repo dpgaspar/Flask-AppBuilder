@@ -11,10 +11,10 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 class TreeNode:
     def __init__(self, name: str) -> None:
         self.name = name
-        self.childs: List["TreeNode"] = []
+        self.children: List["TreeNode"] = []
 
     def __repr__(self) -> str:
-        return f"{self.name}.{str(self.childs)}"
+        return f"{self.name}.{str(self.children)}"
 
 
 class Tree:
@@ -27,21 +27,21 @@ class Tree:
 
     def add(self, name: str) -> None:
         node = TreeNode(name)
-        self.root.childs.append(node)
+        self.root.children.append(node)
 
     def add_child(self, parent: str, name: str) -> None:
         node = TreeNode(name)
-        for child in self.root.childs:
+        for child in self.root.children:
             if child.name == parent:
-                child.childs.append(node)
+                child.children.append(node)
                 return
         root = TreeNode(parent)
-        self.root.childs.append(root)
-        root.childs.append(node)
+        self.root.children.append(root)
+        root.children.append(node)
 
     def __repr__(self) -> str:
         ret = ""
-        for node in self.root.childs:
+        for node in self.root.children:
             ret += str(node)
         return ret
 
@@ -161,7 +161,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         if nested:
             required = not datamodel.is_nullable(column.name)
             nested_model = datamodel.get_related_model(column.name)
-            lst = [item.name for item in column.childs]
+            lst = [item.name for item in column.children]
             nested_schema = self.convert(
                 lst, nested_model, nested=False, parent_schema_name=parent_schema_name
             )
@@ -262,7 +262,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
 
         _columns = list()
         tree_columns = columns2Tree(columns)
-        for column in tree_columns.root.childs:
+        for column in tree_columns.root.children:
             # Get child model is column is dotted notation
             ma_sqla_fields_override[column.name] = self._column2field(
                 _datamodel, column, nested, parent_schema_name=parent_schema_name
