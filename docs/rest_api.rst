@@ -1499,6 +1499,4 @@ on a specific way::
         personal_celphone = Column(String(20))
         contact_group_id = Column(Integer, ForeignKey('contact_group.id'), nullable=False)
         contact_group = relationship("ContactGroup")
-        gender = Column(Enum(GenderEnum), nullable=False, info={"enum_class": GenderEnum})
-
-Notice the ``info={"enum_class": GenderEnum}``
+        gender = Column(Enum(GenderEnum), nullable=False)

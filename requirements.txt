@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-apispec[yaml]==5.2.2
+apispec[yaml]==6.3.0
     # via Flask-AppBuilder (setup.py)
 attrs==21.4.0
     # via jsonschema
@@ -66,13 +66,11 @@ markupsafe==2.1.1
     #   jinja2
     #   werkzeug
     #   wtforms
-marshmallow==3.15.0
+marshmallow==3.19.0
     # via
     #   Flask-AppBuilder (setup.py)
     #   marshmallow-enum
     #   marshmallow-sqlalchemy
-marshmallow-enum==1.5.1
-    # via Flask-AppBuilder (setup.py)
 marshmallow-sqlalchemy==0.26.1
     # via Flask-AppBuilder (setup.py)
 ordered-set==4.1.0

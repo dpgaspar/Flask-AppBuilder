@@ -45,7 +45,7 @@ setup(
     zip_safe=False,
     platforms="any",
     install_requires=[
-        "apispec[yaml]>=3.3, <6",
+        "apispec[yaml]>=6.0.0, <7",
         "colorama>=0.3.9, <1",
         "click>=8, <9",
         "email_validator>=1.0.5, <2",
@@ -58,7 +58,6 @@ setup(
         "Flask-JWT-Extended>=4.0.0, <5.0.0",
         "jsonschema>=3, <5",
         "marshmallow>=3, <4",
-        "marshmallow-enum>=1.5.1, <2",
         "marshmallow-sqlalchemy>=0.22.0, <0.27.0",
         "python-dateutil>=2.3, <3",
         "prison>=0.2.1, <1.0.0",

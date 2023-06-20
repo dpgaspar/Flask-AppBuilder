@@ -1184,14 +1184,12 @@ class ModelRestApi(BaseModelApi):
             self.add_model_schema = self.model2schemaconverter.convert(
                 self.add_columns,
                 nested=False,
-                enum_dump_by_name=True,
                 parent_schema_name=self.add_model_schema_name,
             )
         if self.edit_model_schema is None:
             self.edit_model_schema = self.model2schemaconverter.convert(
                 self.edit_columns,
                 nested=False,
-                enum_dump_by_name=True,
                 parent_schema_name=self.edit_model_schema_name,
             )
         if self.show_model_schema is None:

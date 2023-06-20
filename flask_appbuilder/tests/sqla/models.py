@@ -112,8 +112,8 @@ class TmpEnum(enum.Enum):
 
 class ModelWithEnums(Model):
     id = Column(Integer, primary_key=True)
-    enum1 = Column(Enum("e1", "e2", "e3", name="enum1"))
-    enum2 = Column(Enum(TmpEnum), info={"enum_class": TmpEnum})
+    enum1 = Column(Enum("e1", "e2", "e3", "e4", name="enum1"))
+    enum2 = Column(Enum(TmpEnum))
 
 
 assoc_parent_child = Table(
@@ -266,20 +266,6 @@ def insert_model_mm_parent(session, i=0, children=None):
     return model
 
 
-def insert_model_with_enums(session, i=0):
-    add_flag = False
-    model = session.query(ModelWithEnums).filter_by(id=i + 1).one_or_none()
-    if not model:
-        model = ModelWithEnums()
-        add_flag = True
-    model.enum1 = "e1"
-    model.enum2 = TmpEnum.e2
-    if add_flag:
-        session.add(model)
-    session.commit()
-    return model
-
-
 def insert_data(session, count):
     model1_collection = list()
     # Fill model1
@@ -291,12 +277,13 @@ def insert_data(session, count):
         insert_model2(session, i=i, model1_collection=model1_collection)
     insert_model3(session)
 
-    for i in range(count):
-        model = ModelWithEnums()
-        model.enum1 = "e1"
-        model.enum2 = TmpEnum.e2
-        session.add(model)
-        session.commit()
+    # One is enough for the following tests
+    model = ModelWithEnums()
+    model.enum1 = "e1"
+    model.enum2 = TmpEnum.e2
+    session.add(model)
+    session.commit()
+
     # Fill Model4
     for i in range(count):
         model = Model4()
