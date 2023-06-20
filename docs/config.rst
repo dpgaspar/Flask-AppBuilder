@@ -343,7 +343,7 @@ Next you only have to import them to the Flask app object, like this
     app = Flask(__name__)
     app.config.from_object('config')
 
-Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py>`_
+Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py.tpl>`_
 
 
 .. _jmespath-examples:

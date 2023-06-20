@@ -92,7 +92,7 @@ msgstr "Existem dados associados, por favor exclua-os primeiro"
 
 #: flask_appbuilder/models/base.py:25 flask_appbuilder/models/base.py:26
 msgid "Integrity error, probably unique constraint"
-msgstr "Erro de integridade, valor deve ser único"
+msgstr "Erro de integridade, provavelmente uma restrição exclusiva"
 
 #: flask_appbuilder/models/base.py:27
 msgid "General Error"
@@ -213,7 +213,7 @@ msgstr "Senha"
 msgid ""
 "Please use a good password policy, this application does not check this "
 "for you"
-msgstr "Favor usar uma boa política de senhas, esta aplicação não checa isso "
+msgstr "Use uma boa política de senha, pois esse aplicativo não verifica isso "
 
 #: flask_appbuilder/security/forms.py:26 flask_appbuilder/security/forms.py:42
 #: flask_appbuilder/security/views.py:212
@@ -263,7 +263,7 @@ msgstr "Estatísticas do Usuário"
 
 #: flask_appbuilder/security/manager.py:434
 msgid "User Registrations"
-msgstr "Sua informação de usuário"
+msgstr "Registros de usuários"
 
 #: flask_appbuilder/security/manager.py:440
 msgid "Base Permissions"
@@ -279,7 +279,7 @@ msgstr "Permissões em Visões/Menus"
 
 #: flask_appbuilder/security/registerviews.py:55
 msgid "Account activation"
-msgstr "Ativação do usuário"
+msgstr "Ativação da conta"
 
 #: flask_appbuilder/security/registerviews.py:59
 msgid "Registration sent to your email"
@@ -320,35 +320,35 @@ msgstr "Nome"
 
 #: flask_appbuilder/security/views.py:40
 msgid "List View Menus"
-msgstr "Lista Visões Menus"
+msgstr "Menus de exibição de lista"
 
 #: flask_appbuilder/security/views.py:41
 msgid "Show View Menu"
-msgstr "Mostrar Visão Menu"
+msgstr "Mostrar menu Exibir"
 
 #: flask_appbuilder/security/views.py:42
 msgid "Add View Menu"
-msgstr "Incluir Visão Menu"
+msgstr "Adicionar menu Exibir"
 
 #: flask_appbuilder/security/views.py:43
 msgid "Edit View Menu"
-msgstr "Editar Visão Menu"
+msgstr "Editar menu Exibir"
 
 #: flask_appbuilder/security/views.py:52
 msgid "List Permissions on Views/Menus"
-msgstr "Lista Permissões nas Visões/Menus"
+msgstr "Lista Permissões em Visões/Menus"
 
 #: flask_appbuilder/security/views.py:53
 msgid "Show Permission on Views/Menus"
-msgstr "Mostrar Permissão nas Visões/Menus"
+msgstr "Mostrar Permissão em Visões/Menus"
 
 #: flask_appbuilder/security/views.py:54
 msgid "Add Permission on Views/Menus"
-msgstr "Incluir Permissão nas Visões/Menus"
+msgstr "Incluir Permissão em Visões/Menus"
 
 #: flask_appbuilder/security/views.py:55
 msgid "Edit Permission on Views/Menus"
-msgstr "Editar Permissão nas Visões/Menus"
+msgstr "Editar Permissão em Visões/Menus"
 
 #: flask_appbuilder/security/views.py:57
 msgid "Permission"
@@ -360,11 +360,11 @@ msgstr "Visão/Menu"
 
 #: flask_appbuilder/security/views.py:67 flask_appbuilder/security/views.py:82
 msgid "Reset Password Form"
-msgstr "Formulário Refazer Senha"
+msgstr "Formulário de redefinição de senha"
 
 #: flask_appbuilder/security/views.py:69 flask_appbuilder/security/views.py:84
 msgid "Password Changed"
-msgstr "Senha modificada"
+msgstr "Senha alterada"
 
 #: flask_appbuilder/security/views.py:96
 msgid "Show User"
@@ -503,7 +503,7 @@ msgstr "Permissões"
 
 #: flask_appbuilder/security/views.py:302
 msgid "Copy Role"
-msgstr "Copia Papel"
+msgstr "Copiar Papel"
 
 #: flask_appbuilder/security/views.py:302
 msgid "Copy the selected roles?"
@@ -511,15 +511,15 @@ msgstr "Copiar os papeis selecionados"
 
 #: flask_appbuilder/security/views.py:317
 msgid "List of Registration Requests"
-msgstr "Lista de pedidos de incrição"
+msgstr "Lista de solicitações de registro"
 
 #: flask_appbuilder/security/views.py:318
 msgid "Show Registration"
-msgstr "Mostrar Incrição"
+msgstr "Mostrar Registro"
 
 #: flask_appbuilder/security/views.py:327
 msgid "Invalid login. Please try again."
-msgstr "Conexão inválida. Favor tentar novamente."
+msgstr "Login inválido. Por favor, tente novamente."
 
 #: flask_appbuilder/security/views.py:329
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:46
@@ -527,7 +527,7 @@ msgstr "Conexão inválida. Favor tentar novamente."
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:56
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:118
 msgid "Sign In"
-msgstr "Registrar"
+msgstr "Entrar"
 
 #: flask_appbuilder/templates/appbuilder/baselib.html:115
 #: flask_appbuilder/templates/appbuilder/navbar_right.html:37
@@ -537,12 +537,12 @@ msgstr "Perfil"
 #: flask_appbuilder/templates/appbuilder/baselib.html:116
 #: flask_appbuilder/templates/appbuilder/navbar_right.html:38
 msgid "Logout"
-msgstr "Desconectar"
+msgstr "Sair"
 
 #: flask_appbuilder/templates/appbuilder/baselib.html:122
 #: flask_appbuilder/templates/appbuilder/navbar_right.html:43
 msgid "Login"
-msgstr "Conectar"
+msgstr "Iniciar sessão"
 
 #: flask_appbuilder/templates/appbuilder/general/security/activation.html:5
 #: flask_appbuilder/templates/appbuilder/index.html:4
@@ -552,7 +552,7 @@ msgstr "Bem Vindo"
 #: flask_appbuilder/templates/appbuilder/general/confirm.html:6
 #, fuzzy
 msgid "User confirmation needed"
-msgstr "Confirmação do utilizador"
+msgstr "É necessária a confirmação do usuário"
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:40
 msgid "Actions"
@@ -568,7 +568,7 @@ msgstr ""
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:282
 msgid "Record Count"
-msgstr "Quantidade Registros"
+msgstr "Quantidade de Registros"
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:320
 msgid "Add a new record"
@@ -596,7 +596,7 @@ msgstr "Agrupado por campos"
 
 #: flask_appbuilder/templates/appbuilder/general/security/activation.html:7
 msgid "Your user is activated you can now proceed to login"
-msgstr ""
+msgstr "Seu usuário está ativado e agora você pode prosseguir com o login"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:19
 #: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:16
@@ -638,11 +638,11 @@ msgstr "Por favor, escolha um dos seguintes"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:107
 msgid "Enter your OpenID Username"
-msgstr "Ou entre com sua OpenID aqui"
+msgstr "Digite seu nome de usuário OpenID"
 
 #: flask_appbuilder/templates/appbuilder/general/security/register_oauth.html:15
 msgid "Sign in using:"
-msgstr ""
+msgstr "Entrar usando:"
 
 #: flask_appbuilder/templates/appbuilder/general/widgets/search.html:7
 msgid "Add Filter"
