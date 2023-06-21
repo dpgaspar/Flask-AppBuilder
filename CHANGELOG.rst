@@ -1,6 +1,20 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.3
+-----------------------------------
+
+- fix: marshmallow enum by value keep compatibility (#2067) [Daniel Vaz Gaspar]
+- fix: marshmallow new min version to 3.18 (#2066) [Daniel Vaz Gaspar]
+- fix: select2-ajax-widget (#2052) [Nadir Can Kavkas]
+- chore: remove marshmallow-enum dependency (#2064) [Daniel Vaz Gaspar]
+- fix: Double escaping for next param in login with oauth (#2053) [Aleksandr Musorin]
+- chore: remove RemovedInMarshmallow4 warnings (#2024) [Sebastian Liebscher]
+- docs: Update docs/security.rst with Windows LDAP working Example (#2026) [verschlimmbesserer]
+- fix(translations):  better translation of the pt_BR language (#2061) [Lucas Gonzalez de Queiroz]
+- fix: broken link to config.py template (#2056) [Alex Gordienko]
+- fix: user registration menu name (#2051) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.3.2
 -----------------------------------
 
