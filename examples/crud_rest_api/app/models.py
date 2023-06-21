@@ -17,8 +17,8 @@ class ContactGroup(Model):
 
 
 class Gender(enum.Enum):
-    Female = "Female"
-    Male = "Male"
+    Female = 1
+    Male = 2
 
 
 class Contact(Model):
@@ -30,7 +30,7 @@ class Contact(Model):
     personal_celphone = Column(String(20))
     contact_group_id = Column(Integer, ForeignKey("contact_group.id"), nullable=False)
     contact_group = relationship("ContactGroup")
-    gender = Column(Enum(Gender))
+    gender = Column(Enum(Gender), info={"marshmallow_by_value": False})
 
     def __repr__(self):
         return self.name

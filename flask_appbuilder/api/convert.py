@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any, Callable, Dict, List, Optional, Type, TypedDict, Union
 
 from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -6,6 +6,10 @@ from marshmallow import fields, Schema
 from marshmallow.fields import Field
 from marshmallow_sqlalchemy import field_for
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+
+
+class MarshmallowFieldOptions(TypedDict):
+    marshmallow_by_value: Union[bool, Field]
 
 
 class TreeNode:
@@ -50,7 +54,8 @@ def columns2Tree(columns: List[str]) -> Tree:
     tree = Tree()
     for column in columns:
         if "." in column:
-            tree.add_child(column.split(".")[0], column.split(".")[1])
+            parent, child = column.split(".")
+            tree.add_child(parent, child)
         else:
             tree.add(column)
     return tree
@@ -142,12 +147,18 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
 
     def _column2enum(self, datamodel: SQLAInterface, column: TreeNode) -> Field:
         required = not datamodel.is_nullable(column.name)
+        sqla_column = datamodel.list_columns[column.name]
+        # get SQLAlchemy column user info, we use it to get the marshmallow enum options
+        column_info: MarshmallowFieldOptions = sqla_column.info
+        # TODO: Default should be False, but keeping this to True to keep compatibility
+        # Turn this to False in the next major release
+        by_value = column_info.get("marshmallow_by_value", True)
         # Get the original enum class from SQLAlchemy Enum field
-        enum_class = datamodel.list_columns[column.name].type.enum_class
+        enum_class = sqla_column.type.enum_class
         if not enum_class:
             field = field_for(datamodel.obj, column.name)
         else:
-            field = fields.Enum(enum_class, required=required)
+            field = fields.Enum(enum_class, required=required, by_value=by_value)
         field.unique = datamodel.is_unique(column.name)
         return field
 
@@ -182,10 +193,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         if datamodel.is_relation_many_to_many(
             column.name
         ) or datamodel.is_relation_one_to_many(column.name):
-            if datamodel.get_info(column.name).get("required", False):
-                required = True
-            else:
-                required = False
+            required = datamodel.get_info(column.name).get("required", False)
         else:
             required = not datamodel.is_nullable(column.name)
         field = field_for(datamodel.obj, column.name)
@@ -213,7 +221,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                 datamodel, column, nested=nested, parent_schema_name=parent_schema_name
             )
         # Handle Enums
-        elif datamodel.is_enum(column.name):
+        if datamodel.is_enum(column.name):
             return self._column2enum(datamodel, column)
         # is custom property method field?
         if hasattr(getattr(datamodel.obj, column.name), "fget"):

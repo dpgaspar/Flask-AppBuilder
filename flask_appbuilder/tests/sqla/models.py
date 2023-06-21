@@ -105,7 +105,7 @@ class ModelWithProperty(Model):
 
 
 class TmpEnum(enum.Enum):
-    e1 = "a"
+    e1 = 1
     e2 = 2
     e3 = 3
 
@@ -114,6 +114,7 @@ class ModelWithEnums(Model):
     id = Column(Integer, primary_key=True)
     enum1 = Column(Enum("e1", "e2", "e3", "e4", name="enum1"))
     enum2 = Column(Enum(TmpEnum))
+    enum3 = Column(Enum(TmpEnum), info={"marshmallow_by_value": False})
 
 
 assoc_parent_child = Table(
@@ -281,6 +282,7 @@ def insert_data(session, count):
     model = ModelWithEnums()
     model.enum1 = "e1"
     model.enum2 = TmpEnum.e2
+    model.enum3 = TmpEnum.e3.name
     session.add(model)
     session.commit()
 
