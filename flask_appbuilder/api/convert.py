@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Optional, Type, TypedDict, Union
+from typing import Any, Callable, Dict, List, Optional, Type, Union
 
 from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -6,10 +6,6 @@ from marshmallow import fields, Schema
 from marshmallow.fields import Field
 from marshmallow_sqlalchemy import field_for
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-
-
-class MarshmallowFieldOptions(TypedDict):
-    marshmallow_by_value: Union[bool, Field]
 
 
 class TreeNode:
@@ -149,7 +145,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         required = not datamodel.is_nullable(column.name)
         sqla_column = datamodel.list_columns[column.name]
         # get SQLAlchemy column user info, we use it to get the marshmallow enum options
-        column_info: MarshmallowFieldOptions = sqla_column.info
+        column_info = sqla_column.info
         # TODO: Default should be False, but keeping this to True to keep compatibility
         # Turn this to False in the next major release
         by_value = column_info.get("marshmallow_by_value", True)
