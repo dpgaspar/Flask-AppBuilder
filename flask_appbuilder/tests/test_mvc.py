@@ -1013,7 +1013,7 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        data = {"enum1": "e3", "enum2": "e3"}
+        data = {"enum1": "e3", "enum2": "e3", "enum3": "e3"}
         rv = client.post("/modelwithenumsview/add", data=data, follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
 
@@ -1041,7 +1041,7 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        data = {"enum1": "e3", "enum2": "e3"}
+        data = {"enum1": "e3", "enum2": "e3", "enum3": "e3"}
         pk = 1
         rv = client.post(
             f"/modelwithenumsview/edit/{pk}", data=data, follow_redirects=True

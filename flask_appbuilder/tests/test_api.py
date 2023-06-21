@@ -2639,7 +2639,7 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 200)
-        self.assertEqual(data["result"], [{"enum1": "e1", "enum2": "e2"}])
+        self.assertEqual(data["result"], [{"enum1": "e1", "enum2": 2, "enum3": "e3"}])
         self.assertEqual(data["count"], 1)
 
     def test_get_item_with_enums(self):
@@ -2658,7 +2658,7 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 200)
-        self.assertEqual(data["result"], {"enum1": "e1", "enum2": "e2"})
+        self.assertEqual(data["result"], {"enum1": "e1", "enum2": 2, "enum3": "e3"})
 
     def test_model_with_enum_oas(self):
         """
@@ -2677,7 +2677,8 @@ class APITestCase(FABTestCase):
                     "maxLength": 2,
                     "nullable": True,
                 },
-                "enum2": {"enum": ["e1", "e2", "e3"], "type": "string"},
+                "enum2": {"enum": [1, 2, 3]},
+                "enum3": {"enum": ["e1", "e2", "e3"], "type": "string"},
             },
             "type": "object",
         }
@@ -2695,7 +2696,7 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        item = dict(enum1="e1", enum2="e1")
+        item = dict(enum1="e1", enum2=1)
         uri = "api/v1/modelwithenumsapi/"
         rv = self.auth_client_post(client, token, uri, item)
         data = json.loads(rv.data.decode("utf-8"))
@@ -2721,7 +2722,7 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, item)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 422)
-        self.assertEqual(data, {"message": {"enum2": ["Must be one of: e1, e2, e3."]}})
+        self.assertEqual(data, {"message": {"enum2": ["Must be one of: 1, 2, 3."]}})
 
     def test_create_item_with_enum_inline_validation(self):
         """
