@@ -648,7 +648,9 @@ class SecurityManager(BaseSecurityManager):
         if roles_pvs:
             log.warning(
                 c.LOGMSG_WAR_SEC_DEL_PERMVIEW,
-                view_menu_name, permission_name, roles_pvs
+                view_menu_name,
+                permission_name,
+                roles_pvs,
             )
             return
         try:
@@ -664,9 +666,7 @@ class SecurityManager(BaseSecurityManager):
                 .all()
             ):
                 self.del_permission(pv.permission.name)
-            log.info(
-                c.LOGMSG_INF_SEC_DEL_PERMVIEW, permission_name, view_menu_name
-            )
+            log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW, permission_name, view_menu_name)
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW, e)
             self.get_session.rollback()
@@ -697,9 +697,7 @@ class SecurityManager(BaseSecurityManager):
                 role.permissions.append(perm_view)
                 self.get_session.merge(role)
                 self.get_session.commit()
-                log.info(
-                    c.LOGMSG_INF_SEC_ADD_PERMROLE, perm_view, role.name
-                )
+                log.info(c.LOGMSG_INF_SEC_ADD_PERMROLE, perm_view, role.name)
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE, e)
                 self.get_session.rollback()
@@ -718,9 +716,7 @@ class SecurityManager(BaseSecurityManager):
                 role.permissions.remove(perm_view)
                 self.get_session.merge(role)
                 self.get_session.commit()
-                log.info(
-                    c.LOGMSG_INF_SEC_DEL_PERMROLE, perm_view, role.name
-                )
+                log.info(c.LOGMSG_INF_SEC_DEL_PERMROLE, perm_view, role.name)
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE, e)
                 self.get_session.rollback()

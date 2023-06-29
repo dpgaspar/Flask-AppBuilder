@@ -92,9 +92,7 @@ LOGMSG_INF_FAB_ADDON_ADDED = "Registered AddOn: %s"
 """ Addon imported and registered """
 LOGMSG_ERR_FAB_ADDON_IMPORT = "An error occurred when importing declared addon %s: %s"
 """ Error on addon import, format with addon class path and error message """
-LOGMSG_ERR_FAB_ADDON_PROCESS = (
-    "An error occurred when processing declared addon %s: %s"
-)
+LOGMSG_ERR_FAB_ADDON_PROCESS = "An error occurred when processing declared addon %s: %s"
 """ Error on addon processing (pre, register, post),
 format with addon class path and error message """
 

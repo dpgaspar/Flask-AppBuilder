@@ -619,7 +619,9 @@ class BaseApi(AbstractViewApi):
                 for url, methods in attr._urls:
                     log.info(
                         "Registering route %s%s %s",
-                        self.blueprint.url_prefix, url, methods
+                        self.blueprint.url_prefix,
+                        url,
+                        methods,
                     )
                     route_handler = wrap_route_handler_with_hooks(
                         attr_name, attr, before_request_hooks

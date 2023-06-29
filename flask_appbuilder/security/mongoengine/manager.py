@@ -352,9 +352,7 @@ class SecurityManager(BaseSecurityManager):
             pv = self.permissionview_model.objects(permission=pv.permission)
             if not pv:
                 self.del_permission(pv.permission.name)
-            log.info(
-                c.LOGMSG_INF_SEC_DEL_PERMVIEW, permission_name, view_menu_name
-            )
+            log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW, permission_name, view_menu_name)
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW, e)
 
@@ -383,9 +381,7 @@ class SecurityManager(BaseSecurityManager):
             try:
                 role.permissions.append(perm_view)
                 role.save()
-                log.info(
-                    c.LOGMSG_INF_SEC_ADD_PERMROLE, perm_view, role.name
-                )
+                log.info(c.LOGMSG_INF_SEC_ADD_PERMROLE, perm_view, role.name)
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE, e)
 
@@ -402,9 +398,7 @@ class SecurityManager(BaseSecurityManager):
             try:
                 role.permissions.remove(perm_view)
                 role.save()
-                log.info(
-                    c.LOGMSG_INF_SEC_DEL_PERMROLE, perm_view, role.name
-                )
+                log.info(c.LOGMSG_INF_SEC_DEL_PERMROLE, perm_view, role.name)
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE, e)
 

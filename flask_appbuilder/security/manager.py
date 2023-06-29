@@ -346,7 +346,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     else:
                         log.warning(
                             "Can't find role specified in AUTH_ROLES_MAPPING: %s",
-                            fab_role_name
+                            fab_role_name,
                         )
         return _roles
 
@@ -542,7 +542,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             if not type(ret) == dict:
                 log.error(
                     "OAuth user info decorated function "
-                    "did not returned a dict, but: %s", type(ret)
+                    "did not returned a dict, but: %s",
+                    type(ret),
                 )
                 return {}
             return ret
@@ -956,7 +957,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         # preform the LDAP search
         log.debug(
             "LDAP search for '%s' with fields %s in scope '%s'",
-            filter_str, request_fields, self.auth_ldap_search
+            filter_str,
+            request_fields,
+            self.auth_ldap_search,
         )
         raw_search_result = con.search_s(
             self.auth_ldap_search, ldap.SCOPE_SUBTREE, filter_str, request_fields
@@ -974,7 +977,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         if len(search_result) > 1:
             log.error(
                 "LDAP search for '%s' in scope '%s' returned multiple results",
-                filter_str, self.auth_ldap_search
+                filter_str,
+                self.auth_ldap_search,
             )
             return None, None
 
@@ -1010,8 +1014,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 user_role_objects.add(fab_role)
             else:
                 log.warning(
-                    "Can't find AUTH_USER_REGISTRATION role: %s",
-                    registration_role_name
+                    "Can't find AUTH_USER_REGISTRATION role: %s", registration_role_name
                 )
 
         return list(user_role_objects)
@@ -1028,13 +1031,12 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         try:
             log.debug(
-                "LDAP bind indirect TRY with username: '%s'",
-                self.auth_ldap_bind_user
+                "LDAP bind indirect TRY with username: '%s'", self.auth_ldap_bind_user
             )
             con.simple_bind_s(self.auth_ldap_bind_user, self.auth_ldap_bind_password)
             log.debug(
                 "LDAP bind indirect SUCCESS with username: '%s'",
-                self.auth_ldap_bind_user
+                self.auth_ldap_bind_user,
             )
         except ldap.INVALID_CREDENTIALS as ex:
             log.error(
@@ -1127,9 +1129,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 try:
                     con.start_tls_s()
                 except Exception:
-                    log.error(
-                        LOGMSG_ERR_SEC_AUTH_LDAP_TLS, self.auth_ldap_server
-                    )
+                    log.error(LOGMSG_ERR_SEC_AUTH_LDAP_TLS, self.auth_ldap_server)
                     return None
 
             # Define variables, so we can check if they are set in later steps
@@ -1220,8 +1220,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             if user and user_attributes and self.auth_roles_sync_at_login:
                 user.roles = self._ldap_calculate_user_roles(user_attributes)
                 log.debug(
-                    "Calculated new roles for user='%s' as: %s",
-                    user_dn, user.roles
+                    "Calculated new roles for user='%s' as: %s", user_dn, user.roles
                 )
 
             # If the user is new, register them
@@ -1338,8 +1337,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 user_role_objects.add(fab_role)
             else:
                 log.warning(
-                    "Can't find AUTH_USER_REGISTRATION role: %s",
-                    registration_role_name
+                    "Can't find AUTH_USER_REGISTRATION role: %s", registration_role_name
                 )
 
         return list(user_role_objects)
@@ -1357,9 +1355,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         elif "email" in userinfo:
             username = userinfo["email"]
         else:
-            log.error(
-                "OAUTH userinfo does not have username or email %s", userinfo
-            )
+            log.error("OAUTH userinfo does not have username or email %s", userinfo)
             return None
 
         # If username is empty, go away
@@ -1380,10 +1376,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Sync the user's roles
         if user and self.auth_roles_sync_at_login:
             user.roles = self._oauth_calculate_user_roles(userinfo)
-            log.debug(
-                "Calculated new roles for user='%s' as: %s",
-                username, user.roles
-            )
+            log.debug("Calculated new roles for user='%s' as: %s", username, user.roles)
 
         # If the user is new, register them
         if (not user) and self.auth_user_registration:
