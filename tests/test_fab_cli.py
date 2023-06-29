@@ -128,7 +128,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
     def test_export_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
-            app.config.from_object("flask_appbuilder.tests.config_security")
+            app.config.from_object("tests.config_security")
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
@@ -147,9 +147,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                 resulting_roles = json.loads(fd.read())
 
             for expected_role in self.expected_roles:
-                match = [
-                    r for r in resulting_roles if r["name"] == expected_role["name"]
-                ]
+                match = [r for r in resulting_roles if r["name"] == expected_role["name"]]
                 self.assertTrue(match)
                 resulting_role = match[0]
                 resulting_role_permission_view_menus = {
@@ -168,7 +166,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
     def test_export_roles_filename(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
-            app.config.from_object("flask_appbuilder.tests.config_security")
+            app.config.from_object("tests.config_security")
 
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
@@ -183,16 +181,14 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             os.chdir(owd)
 
             self.assertEqual(export_result.exit_code, 0)
-            self.assertGreater(
-                len(glob.glob(os.path.join(tmp_dir, "roles_export_*"))), 0
-            )
+            self.assertGreater(len(glob.glob(os.path.join(tmp_dir, "roles_export_*"))), 0)
 
     @patch("json.dumps")
     def test_export_roles_indent(self, mock_json_dumps):
         """Test that json.dumps is called with the correct argument passed from CLI."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
-            app.config.from_object("flask_appbuilder.tests.config_security")
+            app.config.from_object("tests.config_security")
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"

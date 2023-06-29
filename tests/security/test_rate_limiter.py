@@ -2,7 +2,7 @@ import logging
 
 from flask import Flask
 from flask_appbuilder import AppBuilder, BaseView, SQLA
-from flask_appbuilder.tests.base import FABTestCase
+from tests.base import FABTestCase
 import hiro
 import jinja2
 
@@ -15,7 +15,7 @@ class LimiterTestCase(FABTestCase):
     def setUp(self):
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.app.config["RATELIMIT_ENABLED"] = True
         self.app.config["AUTH_RATE_LIMITED"] = True
         self.app.config["AUTH_RATE_LIMIT"] = "2 per 5 second"

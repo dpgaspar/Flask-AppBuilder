@@ -71,9 +71,7 @@ class FlaskTestCase(FABTestCase):
                 "field_method",
                 "group.field_string",
             ]
-            edit_form_query_rel_fields = {
-                "group": [["field_string", FilterEqual, "G2"]]
-            }
+            edit_form_query_rel_fields = {"group": [["field_string", FilterEqual, "G2"]]}
             add_form_query_rel_fields = {"group": [["field_string", FilterEqual, "G1"]]}
             add_exclude_columns = ["excluded_string"]
 
@@ -361,9 +359,7 @@ class FlaskTestCase(FABTestCase):
         eq_(model.field_string, "test2")
         eq_(model.field_integer, 2)
 
-        rv = client.get(
-            "/model1view/delete/{0}".format(model.id), follow_redirects=True
-        )
+        rv = client.get("/model1view/delete/{0}".format(model.id), follow_redirects=True)
         eq_(rv.status_code, 200)
         model = Model1.objects
         eq_(len(model), 0)
@@ -586,7 +582,7 @@ class MongoImportExportTestCase(unittest.TestCase):
     def test_export_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask(__name__)
-            app.config.from_object("flask_appbuilder.tests.config_security")
+            app.config.from_object("tests.config_security")
             app.config["MONGODB_SETTINGS"] = {
                 "db": "app",
                 "host": "localhost",
@@ -608,9 +604,7 @@ class MongoImportExportTestCase(unittest.TestCase):
                 resulting_roles = json.loads(fd.read())
 
             for expected_role in self.expected_roles:
-                match = [
-                    r for r in resulting_roles if r["name"] == expected_role["name"]
-                ]
+                match = [r for r in resulting_roles if r["name"] == expected_role["name"]]
                 self.assertTrue(match)
                 resulting_role = match[0]
                 resulting_role_permission_view_menus = {

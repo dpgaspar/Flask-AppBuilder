@@ -2,7 +2,7 @@ from urllib.parse import quote
 
 from flask_appbuilder import SQLA
 from flask_appbuilder.security.sqla.models import User
-from flask_appbuilder.tests.base import FABTestCase
+from tests.base import FABTestCase
 from flask_login import current_user
 import jwt
 
@@ -33,7 +33,7 @@ class APICSRFTestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
 
         self.app = Flask(__name__)
-        self.app.config.from_object("flask_appbuilder.tests.config_oauth")
+        self.app.config.from_object("tests.config_oauth")
         self.app.config["WTF_CSRF_ENABLED"] = True
 
         self.csrf = CSRFProtect(self.app)
