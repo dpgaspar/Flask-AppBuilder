@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from datetime import datetime
 
 from flask_appbuilder import ModelRestApi, SQLA
 from flask_appbuilder.const import (
@@ -33,6 +34,7 @@ from flask_appbuilder.const import (
 from flask_appbuilder.hooks import before_request
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from hiro import Timeline
 import prison
 from sqlalchemy.sql.expression import func
 
@@ -47,6 +49,7 @@ from .const import (
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
+from .fixtures.model1 import model1_data, model2_data
 from .sqla.models import (
     insert_model1,
     insert_model2,
@@ -75,12 +78,26 @@ class APICSRFTestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
 
         self.app = Flask(__name__)
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.app.config["WTF_CSRF_ENABLED"] = True
 
         self.csrf = CSRFProtect(self.app)
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
+            self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
+            self.create_user(
+                self.appbuilder,
+                USERNAME_READONLY,
+                PASSWORD_READONLY,
+                "ReadOnly",
+                first_name="readonly",
+                last_name="readonly",
+                email="readonly@fab.org",
+            )
 
     def test_auth_login(self):
         """
@@ -112,7 +129,7 @@ class APIDisableSecViewTestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
 
         self.app = Flask(__name__)
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_VIEWS"] = False
 
         self.db = SQLA(self.app)
@@ -135,7 +152,7 @@ class APIDisableOpenApiViewTestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
 
         self.app = Flask(__name__)
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_OPENAPI_VIEWS"] = False
 
         self.db = SQLA(self.app)
@@ -166,7 +183,7 @@ class APITestCase(FABTestCase):
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
 
         self.db = SQLA(self.app)
@@ -177,6 +194,20 @@ class APITestCase(FABTestCase):
             "required": ["number"],
             "properties": {"number": {"type": "number"}},
         }
+
+        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
+            self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
+            self.create_user(
+                self.appbuilder,
+                USERNAME_READONLY,
+                PASSWORD_READONLY,
+                "ReadOnly",
+                first_name="readonly",
+                last_name="readonly",
+                email="readonly@fab.org",
+            )
 
         class Base1Api(BaseApi):
             @expose("/test1")
@@ -817,16 +848,14 @@ class APITestCase(FABTestCase):
         self.assertIsNone(pvm)
 
     def test_get_item(self):
-        """
-        REST Api: Test get item
-        """
-        client = self.app.test_client()
-        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        for i in range(1, MODEL1_DATA_SIZE):
-            rv = self.auth_client_get(client, token, "api/v1/model1api/{}".format(i))
+        with model1_data(self.appbuilder.session, 1) as models:
+            client = self.app.test_client()
+            model_id = models[0].id
+            token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+            rv = self.auth_client_get(client, token, f"api/v1/model1api/{model_id}")
             data = json.loads(rv.data.decode("utf-8"))
             self.assertEqual(rv.status_code, 200)
-            self.assert_get_item(rv, data, i - 1)
+            self.assert_get_item(rv, data, 0)
 
     def assert_get_item(self, rv, data, value):
         self.assertEqual(
@@ -860,14 +889,15 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        for i in range(1, MODEL1_DATA_SIZE):
-            uri = "api/v1/model1api/{}?q=({}:!(field_integer))".format(
-                i, API_SELECT_COLUMNS_RIS_KEY
+        with model1_data(self.appbuilder.session, 1) as models:
+            model_id = models[0].id
+            uri = (
+                f"api/v1/model1api/{model_id}?"
+                f"q=({API_SELECT_COLUMNS_RIS_KEY}:!(field_integer))"
             )
             rv = self.auth_client_get(client, token, uri)
             data = json.loads(rv.data.decode("utf-8"))
-            self.assertEqual(data[API_RESULT_RES_KEY], {"field_integer": i - 1})
+            self.assertEqual(data[API_RESULT_RES_KEY], {"field_integer": 0})
             self.assertEqual(
                 data[API_DESCRIPTION_COLUMNS_RES_KEY],
                 {"field_integer": "Field Integer"},
@@ -883,20 +913,17 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        model2 = (
-            self.appbuilder.get_session.query(Model2)
-            .filter_by(field_string="test0")
-            .one_or_none()
-        )
-        pk = model2.id
-        uri = f"api/v1/model2dottednotationapi/{pk}"
-        rv = self.auth_client_get(client, token, uri)
-        data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(
-            data[API_RESULT_RES_KEY],
-            {"field_string": "test0", "group": {"field_string": "test0"}},
-        )
-        self.assertEqual(rv.status_code, 200)
+        with model2_data(self.appbuilder.session, 1) as models:
+
+            model2_id = models[0].id
+            uri = f"api/v1/model2dottednotationapi/{model2_id}"
+            rv = self.auth_client_get(client, token, uri)
+            data = json.loads(rv.data.decode("utf-8"))
+            self.assertEqual(
+                data[API_RESULT_RES_KEY],
+                {"field_string": "test0", "group": {"field_string": "test0"}},
+            )
+            self.assertEqual(rv.status_code, 200)
 
     def test_get_item_select_meta_data(self):
         """
@@ -911,16 +938,17 @@ class APITestCase(FABTestCase):
             API_SHOW_COLUMNS_RIS_KEY,
             API_SHOW_TITLE_RIS_KEY,
         ]
-        for selectable_key in selectable_keys:
-            argument = {API_SELECT_KEYS_RIS_KEY: [selectable_key]}
-            uri = "api/v1/model1api/1?{}={}".format(
-                API_URI_RIS_KEY, prison.dumps(argument)
-            )
-            rv = self.auth_client_get(client, token, uri)
-            data = json.loads(rv.data.decode("utf-8"))
-            self.assertEqual(len(data.keys()), 1 + 2)  # always exist id, result
-            # We assume that rison meta key equals result meta key
-            assert selectable_key in data
+        with model1_data(self.appbuilder.session, 1):
+            for selectable_key in selectable_keys:
+                argument = {API_SELECT_KEYS_RIS_KEY: [selectable_key]}
+                uri = "api/v1/model1api/1?{}={}".format(
+                    API_URI_RIS_KEY, prison.dumps(argument)
+                )
+                rv = self.auth_client_get(client, token, uri)
+                data = json.loads(rv.data.decode("utf-8"))
+                self.assertEqual(len(data.keys()), 1 + 2)  # always exist id, result
+                # We assume that rison meta key equals result meta key
+                assert selectable_key in data
 
     def test_get_item_excluded_cols(self):
         """
@@ -929,13 +957,14 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        pk = 1
-        rv = self.auth_client_get(
-            client, token, "api/v1/model1apiexcludecols/{}".format(pk)
-        )
-        data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data[API_RESULT_RES_KEY], {"field_string": "test0"})
-        self.assertEqual(rv.status_code, 200)
+        with model1_data(self.appbuilder.session, 1) as models:
+            model_id = models[0].id
+            rv = self.auth_client_get(
+                client, token, f"api/v1/model1apiexcludecols/{model_id}"
+            )
+            data = json.loads(rv.data.decode("utf-8"))
+            self.assertEqual(data[API_RESULT_RES_KEY], {"field_string": "test0"})
+            self.assertEqual(rv.status_code, 200)
 
     def test_get_item_not_found(self):
         """
@@ -943,10 +972,10 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        pk = MODEL1_DATA_SIZE + 1
-        rv = self.auth_client_get(client, token, "api/v1/model1api/{}".format(pk))
-        self.assertEqual(rv.status_code, 404)
+        with model1_data(self.appbuilder.session, 1):
+            pk = MODEL1_DATA_SIZE + 1
+            rv = self.auth_client_get(client, token, "api/v1/model1api/{}".format(pk))
+            self.assertEqual(rv.status_code, 404)
 
     def test_get_item_base_filters(self):
         """
@@ -955,16 +984,16 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        # We can't get a base filtered item
-        pk = 1
-        rv = self.auth_client_get(
-            client, token, "api/v1/model1apifiltered/{}".format(pk)
-        )
-        self.assertEqual(rv.status_code, 404)
-        # This one is ok pk=4 field_integer=3 2>3<4
-        pk = 4
-        rv = self.auth_client_get(client, token, f"api/v1/model1apifiltered/{pk}")
-        self.assertEqual(rv.status_code, 200)
+        with model1_data(self.appbuilder.session, 4) as models:
+            # We can't get a base filtered item
+            model_id = models[0].id
+            rv = self.auth_client_get(
+                client, token, f"api/v1/model1apifiltered/{model_id}"
+            )
+            self.assertEqual(rv.status_code, 404)
+            # This one is ok pk=4 field_integer=3 2>3<4
+            rv = self.auth_client_get(client, token, f"api/v1/model1apifiltered/{4}")
+            self.assertEqual(rv.status_code, 200)
 
     def test_get_item_mo_field(self):
         """
@@ -973,26 +1002,21 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        # We can't get a base filtered item
-        model2 = (
-            self.appbuilder.get_session.query(Model2)
-            .filter_by(field_string="test0")
-            .one_or_none()
-        )
-        pk = model2.id
-        rv = self.auth_client_get(client, token, f"api/v1/model2api/{pk}")
-        data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(rv.status_code, 200)
-        expected_rel_field = {
-            "group": {
-                "field_date": None,
-                "field_float": 0.0,
-                "field_integer": 0,
-                "field_string": "test0",
-                "id": 1,
+        with model2_data(self.appbuilder.session, 1) as models:
+            pk = models[0].id
+            rv = self.auth_client_get(client, token, f"api/v1/model2api/{pk}")
+            data = json.loads(rv.data.decode("utf-8"))
+            self.assertEqual(rv.status_code, 200)
+            expected_rel_field = {
+                "group": {
+                    "field_date": None,
+                    "field_float": 0.0,
+                    "field_integer": 0,
+                    "field_string": "test0",
+                    "id": 1,
+                }
             }
-        }
-        self.assertEqual(data[API_RESULT_RES_KEY], expected_rel_field)
+            self.assertEqual(data[API_RESULT_RES_KEY], expected_rel_field)
 
     def test_get_item_mm_field(self):
         """

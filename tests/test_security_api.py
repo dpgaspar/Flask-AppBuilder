@@ -540,8 +540,7 @@ class RolePermissionAPITestCase(FABTestCase):
         self.appbuilder.sm.del_permission(permission_name)
 
     def test_list_view_api(self):
-        """REST Api: Test view apis
-        """
+        """REST Api: Test view apis"""
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -654,8 +653,7 @@ class RolePermissionAPITestCase(FABTestCase):
         assert new_view_menu is None
 
     def test_list_permission_view_api(self):
-        """REST Api: Test permission view apis
-        """
+        """REST Api: Test permission view apis"""
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -761,8 +759,7 @@ class RolePermissionAPITestCase(FABTestCase):
         assert pvm is None
 
     def test_list_role_api(self):
-        """REST Api: Test role apis
-        """
+        """REST Api: Test role apis"""
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
