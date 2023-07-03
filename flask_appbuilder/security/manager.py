@@ -637,15 +637,28 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.debug(str(id_token))
             me = self._azure_jwt_token_parse(id_token)
             log.debug("Parse JWT token : {0}".format(me))
-            return {
-                "name": me.get("name", ""),
-                "email": me["upn"],
-                "first_name": me.get("given_name", ""),
-                "last_name": me.get("family_name", ""),
-                "id": me["oid"],
-                "username": me["oid"],
-                "role_keys": me.get("roles", []),
-            }
+            user_info_map = self.oauth_remotes[provider].client_kwargs.get(
+                "user_info_mapping"
+            )
+
+            user_info_data = {}
+            if user_info_map:
+                for user_info_field, aad_user_info_field in user_info_map.items():
+                    user_info_data[user_info_field] = me.get(
+                        aad_user_info_field[0], aad_user_info_field[1]
+                    )
+            else:
+                user_info_data = {
+                    "name": me.get("name", ""),
+                    "email": me["upn"],
+                    "first_name": me.get("given_name", ""),
+                    "last_name": me.get("family_name", ""),
+                    "id": me["oid"],
+                    "username": me["oid"],
+                    "role_keys": me.get("roles", []),
+                }
+
+            return user_info_data
         # for OpenShift
         if provider == "openshift":
             me = self.appbuilder.sm.oauth_remotes[provider].get(
