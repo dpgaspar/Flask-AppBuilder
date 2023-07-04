@@ -6,9 +6,8 @@ from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.const import AUTH_OAUTH
 import jinja2
-
-from tests.fixtures.users import create_default_users
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
+from tests.fixtures.users import create_default_users
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)

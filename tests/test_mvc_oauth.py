@@ -2,9 +2,9 @@ from urllib.parse import quote
 
 from flask_appbuilder import SQLA
 from flask_appbuilder.security.sqla.models import User
-from tests.base import FABTestCase
 from flask_login import current_user
 import jwt
+from tests.base import FABTestCase
 
 
 class UserInfoReponseMock:

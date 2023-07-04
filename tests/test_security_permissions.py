@@ -1,6 +1,6 @@
 from flask_appbuilder import SQLA
-from tests.base import FABTestCase
 from flask_login import AnonymousUserMixin
+from tests.base import FABTestCase
 
 
 class SecurityPermissionsTestCase(FABTestCase):

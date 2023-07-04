@@ -7,9 +7,9 @@ from flask import Flask
 from flask_appbuilder import AppBuilder
 from flask_appbuilder import SQLA
 from flask_appbuilder.security.sqla.models import Permission, Role, User, ViewMenu
+import prison
 from tests.base import FABTestCase
 from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
-import prison
 from werkzeug.security import generate_password_hash
 
 
@@ -628,7 +628,9 @@ class RolePermissionAPITestCase(FABTestCase):
         rv = self.auth_client_put(client, token, uri, {"name": new_view_name})
         put_permission_response = json.loads(rv.data)
         self.assertEqual(rv.status_code, 200)
-        self.assertEqual(put_permission_response["result"].get("name", ""), new_view_name)
+        self.assertEqual(
+            put_permission_response["result"].get("name", ""), new_view_name
+        )
 
         new_view = self.appbuilder.sm.find_view_menu(new_view_name)
         assert new_view
@@ -705,7 +707,9 @@ class RolePermissionAPITestCase(FABTestCase):
         assert "id" and "result" in add_permission_response
         self.assertEqual(create_permission_payload, add_permission_response["result"])
 
-        self.appbuilder.sm.del_permission_view_menu(permission_name, view_menu_name, True)
+        self.appbuilder.sm.del_permission_view_menu(
+            permission_name, view_menu_name, True
+        )
 
     def test_edit_permission_view_api(self):
         client = self.app.test_client()
@@ -722,7 +726,9 @@ class RolePermissionAPITestCase(FABTestCase):
         new_view_menu_id = new_view_menu.id
 
         uri = f"api/v1/security/permissions-resources/{permission_view_menu.id}"
-        rv = self.auth_client_put(client, token, uri, {"view_menu_id": new_view_menu.id})
+        rv = self.auth_client_put(
+            client, token, uri, {"view_menu_id": new_view_menu.id}
+        )
         put_permission_response = json.loads(rv.data)
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(
@@ -731,7 +737,9 @@ class RolePermissionAPITestCase(FABTestCase):
         )
 
         self.appbuilder.sm.del_view_menu(view_name)
-        self.appbuilder.sm.del_permission_view_menu(permission_name, new_view_name, True)
+        self.appbuilder.sm.del_permission_view_menu(
+            permission_name, new_view_name, True
+        )
 
     def test_delete_permission_view_api(self):
         client = self.app.test_client()

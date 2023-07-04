@@ -1,4 +1,3 @@
-from datetime import datetime
 import logging
 import os
 from typing import List
@@ -11,7 +10,6 @@ from flask_appbuilder.security.manager import AUTH_LDAP
 from flask_appbuilder.security.sqla.models import User
 import jinja2
 import ldap
-
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
 from tests.fixtures.users import create_default_users
 
@@ -204,7 +202,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         """
         LDAP: test login flow for - inactive user
         """
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
@@ -238,7 +238,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         """
         LDAP: test login flow for - inactive user
         """
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
@@ -276,7 +278,9 @@ class LDAPSearchTestCase(unittest.TestCase):
             "cn=staff,ou=groups,dc=example,dc=org": ["Admin"],
             "cn=readers,ou=groups,dc=example,dc=org": ["User"],
         }
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
@@ -312,7 +316,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         LDAP: test login flow for - direct bind - unregistered user
         """
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -344,7 +350,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         LDAP: test login flow for - direct bind - unregistered user - no self-registration
         """
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = False
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
@@ -367,7 +375,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         LDAP: test login flow for - direct bind - unregistered user - no ldap search
         """
         self.app.config["AUTH_LDAP_SEARCH"] = None
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
@@ -387,7 +397,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         LDAP: test login flow for - direct bind - registered user
         """
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
         create_default_users(self.appbuilder.session)
@@ -418,7 +430,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         LDAP: test login flow for - direct bind - registered user - no ldap search
         """
         self.app.config["AUTH_LDAP_SEARCH"] = None
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
         create_default_users(self.appbuilder.session)
@@ -597,7 +611,9 @@ class LDAPSearchTestCase(unittest.TestCase):
             "cn=staff,ou=groups,dc=example,dc=org": ["Admin"]
         }
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -635,7 +651,9 @@ class LDAPSearchTestCase(unittest.TestCase):
             "cn=staff,ou=groups,dc=example,dc=org": ["Admin", "User"]
         }
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -673,7 +691,9 @@ class LDAPSearchTestCase(unittest.TestCase):
             "cn=staff,ou=groups,dc=example,dc=org": ["Admin", "User"]
         }
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = False
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
@@ -714,7 +734,9 @@ class LDAPSearchTestCase(unittest.TestCase):
             "cn=staff,ou=groups,dc=example,dc=org": ["Admin", "User"]
         }
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
@@ -914,7 +936,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         LDAP: Keeping next url after failed login attempt
         """
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = "cn=%s,ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_USERNAME_FORMAT"
+        ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.app.config["WTF_CSRF_ENABLED"] = False

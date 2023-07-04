@@ -4,9 +4,9 @@ from flask import Flask
 from flask_appbuilder import AppBuilder, BaseView, SQLA
 from flask_appbuilder.api import BaseApi, expose
 from flask_appbuilder.security.decorators import limit
-from tests.base import FABTestCase
 import hiro
 import jinja2
+from tests.base import FABTestCase
 
 from ..const import INVALID_LOGIN_STRING, PASSWORD_ADMIN, USERNAME_ADMIN
 

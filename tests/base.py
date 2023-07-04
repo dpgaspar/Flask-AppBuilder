@@ -16,7 +16,13 @@ from flask_appbuilder.const import (
 )
 from hiro import Timeline
 import jinja2
-from tests.const import PASSWORD_ADMIN, PASSWORD_READONLY, USERNAME_ADMIN, USERNAME_READONLY
+from tests.const import (
+    PASSWORD_ADMIN,
+    PASSWORD_READONLY,
+    USERNAME_ADMIN,
+    USERNAME_READONLY,
+)
+
 
 class FABTestCase(unittest.TestCase):
     @staticmethod
@@ -125,6 +131,10 @@ class FABTestCase(unittest.TestCase):
         email="admin@fab.org",
         role_names=None,
     ):
+        user = appbuilder.sm.find_user(username=username)
+        if user:
+            appbuilder.session.delete(user)
+            appbuilder.session.commit()
         roles = (
             [appbuilder.sm.find_role(role_name) for role_name in role_names]
             if role_names

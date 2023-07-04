@@ -4,8 +4,6 @@ import logging
 from typing import Set
 
 from flask import Flask, make_response, redirect, session
-
-from fixtures.model1 import model1_data, model2_data, model_with_enums_data
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import expose
@@ -29,18 +27,16 @@ from flask_appbuilder.models.sqla.filters import (
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView, ModelView
 from flask_wtf import CSRFProtect
-
-from .base import BaseMVCTestCase, FABTestCase
-from .const import (
+from tests.base import BaseMVCTestCase, FABTestCase
+from tests.const import (
     MODEL1_DATA_SIZE,
     PASSWORD_ADMIN,
     PASSWORD_READONLY,
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
-from .sqla.models import (
-    insert_model1,
-    insert_model2,
+from tests.fixtures.model1 import model1_data, model2_data, model_with_enums_data
+from tests.sqla.models import (
     insert_model3,
     Model1,
     Model2,
@@ -573,7 +569,9 @@ class MVCTestCase(BaseMVCTestCase):
 
         def get_model1_by_name(datamodel, name):
             model = (
-                datamodel.session.query(Model1).filter_by(field_string=name).one_or_none()
+                datamodel.session.query(Model1)
+                .filter_by(field_string=name)
+                .one_or_none()
             )
             return model
 
@@ -879,7 +877,6 @@ class MVCTestCase(BaseMVCTestCase):
             self.assertEqual(model.field_string, "test_edit")
             self.assertEqual(model.field_integer, 200)
 
-
     def test_model_crud_delete(self):
         """
         Test Model CRUD delete
@@ -945,7 +942,9 @@ class MVCTestCase(BaseMVCTestCase):
         )
 
         self.assertEqual(rv.status_code, 200)
-        model = self.appbuilder.get_session.query(Model3).filter_by(pk1="1").one_or_none()
+        model = (
+            self.appbuilder.get_session.query(Model3).filter_by(pk1="1").one_or_none()
+        )
         self.assertEqual(model.pk1, 1)
         self.assertEqual(model.pk2, datetime.datetime(2017, 1, 1))
         self.assertEqual(model.field_string, "foo2")
@@ -1012,7 +1011,9 @@ class MVCTestCase(BaseMVCTestCase):
 
         with model_with_enums_data(self.appbuilder.session, 1):
             data = {"enum1": "e3", "enum2": "e3", "enum3": "e3"}
-            rv = client.post("/modelwithenumsview/add", data=data, follow_redirects=True)
+            rv = client.post(
+                "/modelwithenumsview/add", data=data, follow_redirects=True
+            )
             self.assertEqual(rv.status_code, 200)
 
             model = (
@@ -1106,7 +1107,10 @@ class MVCTestCase(BaseMVCTestCase):
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model1_data(self.appbuilder.session, 3):
             model_id = (
-                self.db.session.query(Model1).filter_by(field_string="test0").one_or_none().id
+                self.db.session.query(Model1)
+                .filter_by(field_string="test0")
+                .one_or_none()
+                .id
             )
             rv = client.post(
                 f"/model1viewwithredirects/edit/{model_id}",
@@ -1514,9 +1518,11 @@ class MVCTestCase(BaseMVCTestCase):
                 follow_redirects=True,
             )
             self.assertEqual(rv.status_code, 200)
-            model1 = self.db.session.query(
-                Model1
-            ).filter_by(field_string="zzz").one_or_none()
+            model1 = (
+                self.db.session.query(Model1)
+                .filter_by(field_string="zzz")
+                .one_or_none()
+            )
             self.assertIsNotNone(model1)
 
         # Revert data changes

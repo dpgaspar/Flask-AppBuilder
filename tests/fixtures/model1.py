@@ -1,26 +1,24 @@
-from datetime import datetime
-from typing import List
 from contextlib import contextmanager
-
+from datetime import datetime
 from random import randint
-from sqlalchemy.orm import Session
+from typing import List
 
+from sqlalchemy.orm import Session
+from tests.const import MODEL1_DATA_SIZE, MODEL2_DATA_SIZE
 from tests.sqla.models import (
     Model1,
     Model2,
-    Model3,
     Model4,
-    ModelMMParent,
     ModelMMChild,
-    ModelOMParent,
+    ModelMMParent,
     ModelOMChild,
-    ModelOOParent,
+    ModelOMParent,
     ModelOOChild,
+    ModelOOParent,
     ModelWithEnums,
-    TmpEnum,
     ModelWithProperty,
+    TmpEnum,
 )
-from tests.const import MODEL1_DATA_SIZE, MODEL2_DATA_SIZE
 
 
 def insert_model1_data(session: Session, count: int) -> List[Model1]:
@@ -41,13 +39,15 @@ def insert_model1_data(session: Session, count: int) -> List[Model1]:
 def model1_data(session: Session, count: int = MODEL1_DATA_SIZE) -> List[Model1]:
     model1_collection = insert_model1_data(session, count)
     model_ids = [model.id for model in model1_collection]
-    yield model1_collection
 
-    for model_id in model_ids:
-        model = session.query(Model1).get(model_id)
-        if model:
-            session.delete(model)
-    session.commit()
+    try:
+        yield model1_collection
+    finally:
+        for model_id in model_ids:
+            model = session.query(Model1).get(model_id)
+            if model:
+                session.delete(model)
+        session.commit()
 
 
 def insert_model2_data(session: Session, count: int) -> List[Model2]:
@@ -74,16 +74,19 @@ def insert_model2_data(session: Session, count: int) -> List[Model2]:
 def model2_data(session: Session, count: int = MODEL2_DATA_SIZE) -> List[Model2]:
     model2_collection = insert_model2_data(session, count)
     model2_ids = [model.id for model in model2_collection]
-    yield model2_collection
 
-    for model_id in model2_ids:
-        model = session.query(Model2).get(model_id)
-        if model:
-            session.delete(model)
-    # kill all Orphans
-    session.query(Model1).delete()
+    try:
+        yield model2_collection
 
-    session.commit()
+    finally:
+        for model_id in model2_ids:
+            model = session.query(Model2).get(model_id)
+            if model:
+                session.delete(model)
+        # kill all Orphans
+        session.query(Model1).delete()
+
+        session.commit()
 
 
 def insert_model4_data(session: Session, count: int = 1) -> List[Model4]:
@@ -107,16 +110,18 @@ def insert_model4_data(session: Session, count: int = 1) -> List[Model4]:
 def model4_data(session: Session, count: int = 1) -> List[Model4]:
     models = insert_model4_data(session, count)
     model_ids = [model.id for model in models]
-    yield models
 
-    for model_id in model_ids:
-        model = session.query(Model4).get(model_id)
-        model1_1 = session.query(Model1).get(model.model1_1.id)
-        model1_2 = session.query(Model1).get(model.model1_2.id)
-        session.delete(model1_1)
-        session.delete(model1_2)
-        session.delete(model)
-    session.commit()
+    try:
+        yield models
+    finally:
+        for model_id in model_ids:
+            model = session.query(Model4).get(model_id)
+            model1_1 = session.query(Model1).get(model.model1_1.id)
+            model1_2 = session.query(Model1).get(model.model1_2.id)
+            session.delete(model1_1)
+            session.delete(model1_2)
+            session.delete(model)
+        session.commit()
 
 
 def insert_model_mm_children(session: Session, count: int = 1) -> List[ModelMMChild]:
@@ -153,20 +158,21 @@ def model_mm_parent_data(
     models = insert_model_mm_parent(session, count, children_count)
     model_ids = [model.id for model in models]
 
-    yield models
-
-    child_ids = set()
-    for model_id in model_ids:
-        model = session.query(ModelMMParent).get(model_id)
-        child_ids.update([child.id for child in model.children])
-        model.children = []
+    try:
+        yield models
+    finally:
+        child_ids = set()
+        for model_id in model_ids:
+            model = session.query(ModelMMParent).get(model_id)
+            child_ids.update([child.id for child in model.children])
+            model.children = []
+            session.commit()
+            session.delete(model)
+            session.commit()
+        for child_id in child_ids:
+            child = session.query(ModelMMChild).get(child_id)
+            session.delete(child)
         session.commit()
-        session.delete(model)
-        session.commit()
-    for child_id in child_ids:
-        child = session.query(ModelMMChild).get(child_id)
-        session.delete(child)
-    session.commit()
 
 
 def insert_model_om_children(
@@ -203,18 +209,22 @@ def model_om_parent_data(
 ) -> List[ModelOMParent]:
     models = insert_model_om_parent(session, count, children_count)
     model_ids = [model.id for model in models]
-    yield models
 
-    for model_id in model_ids:
-        model = session.query(ModelOMParent).get(model_id)
-        childs = (
-            session.query(ModelOMChild).filter(ModelOMChild.parent_id == model.id).all()
-        )
-        for child in childs:
-            session.delete(child)
-            session.commit()
-        session.delete(model)
-    session.commit()
+    try:
+        yield models
+    finally:
+        for model_id in model_ids:
+            model = session.query(ModelOMParent).get(model_id)
+            childs = (
+                session.query(ModelOMChild)
+                .filter(ModelOMChild.parent_id == model.id)
+                .all()
+            )
+            for child in childs:
+                session.delete(child)
+                session.commit()
+            session.delete(model)
+        session.commit()
 
 
 def insert_model_oo_parent(session: Session, count: int = 1) -> List[ModelOOParent]:
@@ -234,13 +244,14 @@ def model_oo_parent_data(session: Session, count: int = 1) -> List[ModelOOParent
     models = insert_model_oo_parent(session, count)
     model_ids = [model.id for model in models]
 
-    yield models
-
-    for model_id in model_ids:
-        model = session.query(ModelOOParent).get(model_id)
-        session.delete(model.child)
-        session.delete(model)
-    session.commit()
+    try:
+        yield models
+    finally:
+        for model_id in model_ids:
+            model = session.query(ModelOOParent).get(model_id)
+            session.delete(model.child)
+            session.delete(model)
+        session.commit()
 
 
 def insert_model_with_enums(session: Session, count: int = 1) -> List[ModelWithEnums]:
@@ -261,12 +272,13 @@ def model_with_enums_data(session: Session, count: int = 1) -> List[ModelWithEnu
     models = insert_model_with_enums(session, count)
     model_ids = [model.id for model in models]
 
-    yield models
-
-    for model_id in model_ids:
-        model = session.query(ModelWithEnums).get(model_id)
-        session.delete(model)
-    session.commit()
+    try:
+        yield models
+    finally:
+        for model_id in model_ids:
+            model = session.query(ModelWithEnums).get(model_id)
+            session.delete(model)
+        session.commit()
 
 
 def insert_model_with_property(
@@ -283,13 +295,16 @@ def insert_model_with_property(
 
 
 @contextmanager
-def model_with_property_data(session: Session, count: int = 1) -> List[ModelWithProperty]:
+def model_with_property_data(
+    session: Session, count: int = 1
+) -> List[ModelWithProperty]:
     models = insert_model_with_property(session, count)
     model_ids = [model.id for model in models]
 
-    yield models
-
-    for model_id in model_ids:
-        model = session.query(ModelWithProperty).get(model_id)
-        session.delete(model)
-    session.commit()
+    try:
+        yield models
+    finally:
+        for model_id in model_ids:
+            model = session.query(ModelWithProperty).get(model_id)
+            session.delete(model)
+        session.commit()

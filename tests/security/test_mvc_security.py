@@ -5,17 +5,16 @@ from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.sqla.models import User
-
-from ..base import BaseMVCTestCase
-from ..const import (
+from tests.base import BaseMVCTestCase
+from tests.const import (
     INVALID_LOGIN_STRING,
     PASSWORD_ADMIN,
     PASSWORD_READONLY,
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
-from tests.sqla.models import Model1, Model2
 from tests.fixtures.model1 import model1_data
+from tests.sqla.models import Model1, Model2
 
 PASSWORD_COMPLEXITY_ERROR = (
     "Must have at least two capital letters, "
