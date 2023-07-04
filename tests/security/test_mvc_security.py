@@ -260,9 +260,11 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         Test Security reset password
         """
         client = self.app.test_client()
-
+        admin_user = self.appbuilder.sm.find_user(username=USERNAME_ADMIN)
         # Try Reset My password
-        rv = client.get("/users/action/resetmypassword/1", follow_redirects=True)
+        rv = client.get(
+            f"/users/action/resetmypassword/{admin_user.id}", follow_redirects=True
+        )
         # Werkzeug update to 0.15.X sends this action to wrong redirect
         # Old test was:
         # data = rv.data.decode("utf-8")
@@ -271,7 +273,9 @@ class MVCSecurityTestCase(BaseMVCTestCase):
 
         # Reset My password
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/users/action/resetmypassword/1", follow_redirects=True)
+        rv = client.get(
+            f"/users/action/resetmypassword/{admin_user.id}", follow_redirects=True
+        )
         data = rv.data.decode("utf-8")
         self.assertIn("Reset Password Form", data)
         rv = client.post(
@@ -290,7 +294,9 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         self.assertEqual(rv.status_code, 200)
 
         # Reset Password Admin
-        rv = client.get("/users/action/resetpasswords/1", follow_redirects=True)
+        rv = client.get(
+            f"/users/action/resetpasswords/{admin_user.id}", follow_redirects=True
+        )
         data = rv.data.decode("utf-8")
         self.assertIn("Reset Password Form", data)
         rv = client.post(
