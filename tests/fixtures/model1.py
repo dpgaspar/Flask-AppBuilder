@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, TypeVar
+from typing import List
 from contextlib import contextmanager
 
 from random import randint
@@ -45,7 +45,8 @@ def model1_data(session: Session, count: int = MODEL1_DATA_SIZE) -> List[Model1]
 
     for model_id in model_ids:
         model = session.query(Model1).get(model_id)
-        session.delete(model)
+        if model:
+            session.delete(model)
     session.commit()
 
 

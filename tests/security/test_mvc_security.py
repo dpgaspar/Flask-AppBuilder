@@ -14,7 +14,8 @@ from ..const import (
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
-from ..sqla.models import Model1, Model2
+from tests.sqla.models import Model1, Model2
+from tests.fixtures.model1 import model1_data
 
 PASSWORD_COMPLEXITY_ERROR = (
     "Must have at least two capital letters, "
@@ -241,18 +242,19 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
-        # Test authorized GET
-        rv = client.get("/model1view/list/")
-        self.assertEqual(rv.status_code, 200)
-        # Test authorized SHOW
-        rv = client.get("/model1view/show/1")
-        self.assertEqual(rv.status_code, 200)
-        # Test unauthorized EDIT
-        rv = client.get("/model1view/edit/1")
-        self.assertEqual(rv.status_code, 302)
-        # Test unauthorized DELETE
-        rv = client.get("/model1view/delete/1")
-        self.assertEqual(rv.status_code, 302)
+        with model1_data(self.appbuilder.session, 1):
+            # Test authorized GET
+            rv = client.get("/model1view/list/")
+            self.assertEqual(rv.status_code, 200)
+            # Test authorized SHOW
+            rv = client.get("/model1view/show/1")
+            self.assertEqual(rv.status_code, 200)
+            # Test unauthorized EDIT
+            rv = client.get("/model1view/edit/1")
+            self.assertEqual(rv.status_code, 302)
+            # Test unauthorized DELETE
+            rv = client.get("/model1view/delete/1")
+            self.assertEqual(rv.status_code, 302)
 
     def test_sec_reset_password(self):
         """

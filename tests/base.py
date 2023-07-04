@@ -96,20 +96,20 @@ class FABTestCase(unittest.TestCase):
     def browser_logout(client):
         return client.get("/logout/")
 
-def create_default_users(self) -> None:
-    with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
-        self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
+    def create_default_users(self, appbuilder) -> None:
+        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
+            self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-    with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
-        self.create_user(
-            self.appbuilder,
-            USERNAME_READONLY,
-            PASSWORD_READONLY,
-            "ReadOnly",
-            first_name="readonly",
-            last_name="readonly",
-            email="readonly@fab.org",
-        )
+        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
+            self.create_user(
+                self.appbuilder,
+                USERNAME_READONLY,
+                PASSWORD_READONLY,
+                "ReadOnly",
+                first_name="readonly",
+                last_name="readonly",
+                email="readonly@fab.org",
+            )
 
     def create_admin_user(self, appbuilder, username, password):
         self.create_user(appbuilder, username, password, "Admin")
@@ -144,6 +144,7 @@ class BaseMVCTestCase(FABTestCase):
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.create_default_users(self.appbuilder)
 
     @property
     def registered_endpoints(self) -> Set:

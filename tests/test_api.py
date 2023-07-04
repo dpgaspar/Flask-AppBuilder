@@ -60,8 +60,6 @@ from .fixtures.model1 import (
     model_with_property_data,
 )
 from .sqla.models import (
-    insert_model1,
-    insert_model2,
     Model1,
     Model2,
     Model4,
@@ -94,19 +92,7 @@ class APICSRFTestCase(FABTestCase):
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
-        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
-            self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
-            self.create_user(
-                self.appbuilder,
-                USERNAME_READONLY,
-                PASSWORD_READONLY,
-                "ReadOnly",
-                first_name="readonly",
-                last_name="readonly",
-                email="readonly@fab.org",
-            )
+        self.create_default_users(self.appbuilder)
 
     def test_auth_login(self):
         """
@@ -204,19 +190,7 @@ class APITestCase(FABTestCase):
             "properties": {"number": {"type": "number"}},
         }
 
-        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
-            self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
-            self.create_user(
-                self.appbuilder,
-                USERNAME_READONLY,
-                PASSWORD_READONLY,
-                "ReadOnly",
-                first_name="readonly",
-                last_name="readonly",
-                email="readonly@fab.org",
-            )
+        self.create_default_users(self.appbuilder)
 
         class Base1Api(BaseApi):
             @expose("/test1")
