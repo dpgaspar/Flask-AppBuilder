@@ -16,6 +16,9 @@ from tests.sqla.models import (
     ModelOMChild,
     ModelOOParent,
     ModelOOChild,
+    ModelWithEnums,
+    TmpEnum,
+    ModelWithProperty,
 )
 from tests.const import MODEL1_DATA_SIZE, MODEL2_DATA_SIZE
 
@@ -37,10 +40,11 @@ def insert_model1_data(session: Session, count: int) -> List[Model1]:
 @contextmanager
 def model1_data(session: Session, count: int = MODEL1_DATA_SIZE) -> List[Model1]:
     model1_collection = insert_model1_data(session, count)
-
+    model_ids = [model.id for model in model1_collection]
     yield model1_collection
 
-    for model in model1_collection:
+    for model_id in model_ids:
+        model = session.query(Model1).get(model_id)
         session.delete(model)
     session.commit()
 
@@ -73,8 +77,11 @@ def model2_data(session: Session, count: int = MODEL2_DATA_SIZE) -> List[Model2]
 
     for model_id in model2_ids:
         model = session.query(Model2).get(model_id)
-        session.query(Model1).filter(Model1.id == model.group_id).delete()
-        session.delete(model)
+        if model:
+            session.delete(model)
+    # kill all Orphans
+    session.query(Model1).delete()
+
     session.commit()
 
 
@@ -231,5 +238,57 @@ def model_oo_parent_data(session: Session, count: int = 1) -> List[ModelOOParent
     for model_id in model_ids:
         model = session.query(ModelOOParent).get(model_id)
         session.delete(model.child)
+        session.delete(model)
+    session.commit()
+
+
+def insert_model_with_enums(session: Session, count: int = 1) -> List[ModelWithEnums]:
+    models = []
+    for i in range(count):
+        model = ModelWithEnums()
+        model.enum1 = "e1"
+        model.enum2 = TmpEnum.e2
+        model.enum3 = TmpEnum.e3.name
+        models.append(model)
+        session.add(model)
+    session.commit()
+    return models
+
+
+@contextmanager
+def model_with_enums_data(session: Session, count: int = 1) -> List[ModelWithEnums]:
+    models = insert_model_with_enums(session, count)
+    model_ids = [model.id for model in models]
+
+    yield models
+
+    for model_id in model_ids:
+        model = session.query(ModelWithEnums).get(model_id)
+        session.delete(model)
+    session.commit()
+
+
+def insert_model_with_property(
+    session: Session, count: int = 1
+) -> List[ModelWithProperty]:
+    models = []
+    for i in range(count):
+        model = ModelWithProperty()
+        model.field_string = str(i)
+        session.add(model)
+        models.append(model)
+    session.commit()
+    return models
+
+
+@contextmanager
+def model_with_property_data(session: Session, count: int = 1) -> List[ModelWithProperty]:
+    models = insert_model_with_property(session, count)
+    model_ids = [model.id for model in models]
+
+    yield models
+
+    for model_id in model_ids:
+        model = session.query(ModelWithProperty).get(model_id)
         session.delete(model)
     session.commit()
