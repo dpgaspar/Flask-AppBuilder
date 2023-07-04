@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import logging
 from typing import Any, Dict, List, Optional, Set
@@ -13,8 +14,9 @@ from flask_appbuilder.const import (
     API_SECURITY_USERNAME_KEY,
     API_SECURITY_VERSION,
 )
+from hiro import Timeline
 import jinja2
-
+from tests.const import PASSWORD_ADMIN, PASSWORD_READONLY, USERNAME_ADMIN, USERNAME_READONLY
 
 class FABTestCase(unittest.TestCase):
     @staticmethod
@@ -93,6 +95,21 @@ class FABTestCase(unittest.TestCase):
     @staticmethod
     def browser_logout(client):
         return client.get("/logout/")
+
+def create_default_users(self) -> None:
+    with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
+        self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+    with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
+        self.create_user(
+            self.appbuilder,
+            USERNAME_READONLY,
+            PASSWORD_READONLY,
+            "ReadOnly",
+            first_name="readonly",
+            last_name="readonly",
+            email="readonly@fab.org",
+        )
 
     def create_admin_user(self, appbuilder, username, password):
         self.create_user(appbuilder, username, password, "Admin")
