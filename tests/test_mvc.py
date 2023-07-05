@@ -35,15 +35,13 @@ from tests.const import (
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
-from tests.fixtures.model1 import model1_data, model2_data, model_with_enums_data
-from tests.sqla.models import (
-    insert_model3,
-    Model1,
-    Model2,
-    Model3,
-    ModelWithEnums,
-    TmpEnum,
+from tests.fixtures.data_models import (
+    model1_data,
+    model2_data,
+    model3_data,
+    model_with_enums_data,
 )
+from tests.sqla.models import Model1, Model2, Model3, ModelWithEnums, TmpEnum
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
@@ -1387,7 +1385,6 @@ class MVCTestCase(BaseMVCTestCase):
         """
         Test CompactCRUD Mixin view with composite keys
         """
-        return
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/model1compactview/list/")
@@ -1400,22 +1397,22 @@ class MVCTestCase(BaseMVCTestCase):
             from urllib.parse import quote
 
         pk = '[3, {"_type": "datetime", "value": "2017-03-03T00:00:00"}]'
-        rv = client.post(
-            "/model3compactview/edit/" + quote(pk),
-            data=dict(field_string="bar"),
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 200)
-        model = self.db.session.query(Model3).first()
-        self.assertEqual(model.field_string, "bar")
+        with model3_data(self.appbuilder.session):
+            rv = client.post(
+                "/model3compactview/edit/" + quote(pk),
+                data=dict(field_string="bar"),
+                follow_redirects=True,
+            )
+            self.assertEqual(rv.status_code, 200)
+            model = self.db.session.query(Model3).first()
+            self.assertEqual(model.field_string, "bar")
 
-        rv = client.get("/model3compactview/delete/" + quote(pk), follow_redirects=True)
-        self.assertEqual(rv.status_code, 200)
-        model = self.db.session.query(Model3).first()
-        self.assertEqual(model, None)
-
-        # Revert data changes
-        insert_model3(self.appbuilder.session)
+            rv = client.get(
+                "/model3compactview/delete/" + quote(pk), follow_redirects=True
+            )
+            self.assertEqual(rv.status_code, 200)
+            model = self.db.session.query(Model3).first()
+            self.assertEqual(model, None)
 
     def test_edit_add_form_action_prefix_for_compactCRUDMixin(self):
         """

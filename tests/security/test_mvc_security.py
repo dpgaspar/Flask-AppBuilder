@@ -13,7 +13,7 @@ from tests.const import (
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
-from tests.fixtures.model1 import model1_data
+from tests.fixtures.data_models import model1_data
 from tests.sqla.models import Model1, Model2
 
 PASSWORD_COMPLEXITY_ERROR = (

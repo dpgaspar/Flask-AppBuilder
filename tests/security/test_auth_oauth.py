@@ -50,8 +50,8 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()
-        user_names = [user.username for user in users]
-        self.assertEqual(user_names, [USERNAME_ADMIN, USERNAME_READONLY])
+        user_names = sorted([user.username for user in users])
+        self.assertEqual(user_names, [USERNAME_READONLY, USERNAME_ADMIN])
 
     # ----------------
     # Userinfo Objects

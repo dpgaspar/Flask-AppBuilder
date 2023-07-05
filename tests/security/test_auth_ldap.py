@@ -61,8 +61,8 @@ class LDAPSearchTestCase(unittest.TestCase):
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()
-        user_names = [user.username for user in users]
-        self.assertEqual(user_names, [USERNAME_ADMIN, USERNAME_READONLY])
+        user_names = sorted([user.username for user in users])
+        self.assertEqual(user_names, [USERNAME_READONLY, USERNAME_ADMIN])
 
     def assertUserContainsRoles(self, user: User, role_names: List[str]):
         user_role_names = sorted([role.name for role in user.roles])
@@ -200,7 +200,7 @@ class LDAPSearchTestCase(unittest.TestCase):
 
     def test__active_user(self):
         """
-        LDAP: test login flow for - inactive user
+        LDAP: test login flow for - active user
         """
         self.app.config[
             "AUTH_LDAP_USERNAME_FORMAT"

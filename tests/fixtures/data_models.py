@@ -8,6 +8,7 @@ from tests.const import MODEL1_DATA_SIZE, MODEL2_DATA_SIZE
 from tests.sqla.models import (
     Model1,
     Model2,
+    Model3,
     Model4,
     ModelMMChild,
     ModelMMParent,
@@ -308,3 +309,24 @@ def model_with_property_data(
             model = session.query(ModelWithProperty).get(model_id)
             session.delete(model)
         session.commit()
+
+
+def insert_model3(session: Session) -> Model3:
+    model3 = Model3(pk1=3, pk2=datetime(2017, 3, 3), field_string="foo")
+    session.add(model3)
+    session.commit()
+
+    return model3
+
+
+@contextmanager
+def model3_data(session: Session) -> Model3:
+    model3 = insert_model3(session)
+    model3_id = model3.pk1
+    try:
+        yield model3
+    finally:
+        model3 = session.query(Model3).filter_by(pk1=model3_id).first()
+        if model3:
+            session.delete(model3)
+            session.commit()

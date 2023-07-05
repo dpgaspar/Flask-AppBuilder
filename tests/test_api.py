@@ -46,7 +46,7 @@ from tests.const import (
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
-from tests.fixtures.model1 import (
+from tests.fixtures.data_models import (
     model1_data,
     model2_data,
     model4_data,
