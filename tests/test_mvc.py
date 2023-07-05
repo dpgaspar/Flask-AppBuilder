@@ -138,17 +138,18 @@ class ListFilterTestCase(BaseMVCTestCase):
         with self.app.test_client() as client:
             self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
             # test filter ends with
-            rv = client.get(
-                "/model1view/list?_flt_1_field_string=0", follow_redirects=True
-            )
-            data = rv.data.decode("utf-8")
-            self.assertIn("test0", data)
+            with model1_data(self.appbuilder.session, 2):
+                rv = client.get(
+                    "/model1view/list?_flt_1_field_string=0", follow_redirects=True
+                )
+                data = rv.data.decode("utf-8")
+                self.assertIn("test0", data)
 
-            rv = client.get(
-                "/model1view/list?_flt_1_field_string=1", follow_redirects=True
-            )
-            data = rv.data.decode("utf-8")
-            self.assertNotIn("test0", data)
+                rv = client.get(
+                    "/model1view/list?_flt_1_field_string=1", follow_redirects=True
+                )
+                data = rv.data.decode("utf-8")
+                self.assertNotIn("test0", data)
 
     def test_list_filter_invalid_object(self):
         """
@@ -285,21 +286,22 @@ class MVCCSRFTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model = (
-            self.appbuilder.get_session.query(Model2)
-            .filter_by(field_string="test0")
-            .one_or_none()
-        )
-        pk = model.id
-        rv = client.get(f"/model2view/delete/{pk}")
+        with model2_data(self.appbuilder.session, 1):
+            model = (
+                self.appbuilder.get_session.query(Model2)
+                .filter_by(field_string="test0")
+                .one_or_none()
+            )
+            pk = model.id
+            rv = client.get(f"/model2view/delete/{pk}")
 
-        self.assertEqual(rv.status_code, 302)
-        model = (
-            self.appbuilder.get_session.query(Model2)
-            .filter_by(field_string="test0")
-            .one_or_none()
-        )
-        self.assertIsNotNone(model)
+            self.assertEqual(rv.status_code, 302)
+            model = (
+                self.appbuilder.get_session.query(Model2)
+                .filter_by(field_string="test0")
+                .one_or_none()
+            )
+            self.assertIsNotNone(model)
 
     def test_a_csrf_delete_protected(self):
         """
@@ -307,16 +309,16 @@ class MVCCSRFTestCase(BaseMVCTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        model = (
-            self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string="test0")
-            .one_or_none()
-        )
-        pk = model.id
-        rv = client.post(f"/model2view/delete/{pk}")
-        # Missing CSRF token
-        self.assertEqual(rv.status_code, 400)
+        with model2_data(self.appbuilder.session, 1):
+            model = (
+                self.appbuilder.get_session.query(Model1)
+                .filter_by(field_string="test0")
+                .one_or_none()
+            )
+            pk = model.id
+            rv = client.post(f"/model2view/delete/{pk}")
+            # Missing CSRF token
+            self.assertEqual(rv.status_code, 400)
 
 
 class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
@@ -777,14 +779,15 @@ class MVCTestCase(BaseMVCTestCase):
         """
         with self.app.test_client() as client:
             self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-            with model2_data(self.appbuilder.session, 3):
+            with model2_data(self.appbuilder.session, 3) as models:
+                model_id = models[0].id
                 # Test excluded search field will not impact related view
-                rv = client.get("/model2view/edit/1?_flt_0_group=1")
+                rv = client.get(f"/model2view/edit/{model_id}?_flt_0_group=1")
                 data = rv.data.decode("utf-8")
                 self.assertNotIn('<label for="group"', data)
 
                 # Test direct edit view includes related field
-                rv = client.get("/model2view/edit/2")
+                rv = client.get(f"/model2view/edit/{model_id}")
                 data = rv.data.decode("utf-8")
                 self.assertIn('<label for="group"', data)
 
@@ -909,7 +912,7 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        with model1_data(self.appbuilder.session, 2):
+        with model2_data(self.appbuilder.session, 2):
             model1 = (
                 self.appbuilder.get_session.query(Model1)
                 .filter_by(field_string="test1")
@@ -929,7 +932,7 @@ class MVCTestCase(BaseMVCTestCase):
         """
         try:
             from urllib import quote
-        except Exception:
+        except ImportError:
             from urllib.parse import quote
 
         client = self.app.test_client()
@@ -1040,11 +1043,11 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        with model_with_enums_data(self.appbuilder.session, 1):
+        with model_with_enums_data(self.appbuilder.session, 1) as models:
+            model_id = models[0].id
             data = {"enum1": "e3", "enum2": "e3", "enum3": "e3"}
-            pk = 1
             rv = client.post(
-                f"/modelwithenumsview/edit/{pk}", data=data, follow_redirects=True
+                f"/modelwithenumsview/edit/{model_id}", data=data, follow_redirects=True
             )
             self.assertEqual(rv.status_code, 200)
 
@@ -1066,12 +1069,13 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        with model1_data(self.appbuilder.session, 1):
+        with model1_data(self.appbuilder.session, 1) as models:
+            model_id = models[0].id
             rv = client.get("/model1formattedview/list/")
             self.assertEqual(rv.status_code, 200)
             data = rv.data.decode("utf-8")
             self.assertIn("FORMATTED_STRING", data)
-            rv = client.get("/model1formattedview/show/1")
+            rv = client.get(f"/model1formattedview/show/{model_id}")
             self.assertEqual(rv.status_code, 200)
             data = rv.data.decode("utf-8")
             self.assertIn("FORMATTED_STRING", data)
@@ -1300,9 +1304,10 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        with model1_data(self.appbuilder.session, 3):
+        with model1_data(self.appbuilder.session, 3) as models:
+            model_id = models[0].id
             rv = client.post(
-                "/model1view/edit/1",
+                f"/model1view/edit/{model_id}",
                 data=dict(field_string="test2", field_integer="2"),
                 follow_redirects=True,
             )
@@ -1317,9 +1322,10 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        with model1_data(self.appbuilder.session, 3):
+        with model1_data(self.appbuilder.session, 3) as models:
+            model_id = models[0].id
             rv = client.post(
-                "/model1view/edit/1",
+                f"/model1view/edit/{model_id}",
                 data=dict(field_string="", field_integer="2"),
                 follow_redirects=True,
             )
@@ -1423,15 +1429,16 @@ class MVCTestCase(BaseMVCTestCase):
         base_url = "http://localhost" + prefix
         session_form_action_key = "Model1CompactView__session_form_action"
 
-        with model1_data(self.appbuilder.session, 1):
+        with model1_data(self.appbuilder.session, 1) as models:
+            model_id = models[0].id
             with client as c:
                 expected_form_action = prefix + "/model1compactview/add/?"
 
                 c.get("/model1compactview/add/", base_url=base_url)
                 self.assertEqual(session[session_form_action_key], expected_form_action)
 
-                expected_form_action = prefix + "/model1compactview/edit/1?"
-                c.get("/model1compactview/edit/1", base_url=base_url)
+                expected_form_action = f"{prefix}/model1compactview/edit/{model_id}?"
+                c.get(f"/model1compactview/edit/{model_id}", base_url=base_url)
 
                 self.assertEqual(session[session_form_action_key], expected_form_action)
 
@@ -1457,15 +1464,16 @@ class MVCTestCase(BaseMVCTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        with model1_data(self.appbuilder.session, 1):
+        with model1_data(self.appbuilder.session, 1) as models:
+            model_id = models[0].id
             rv = client.get("/model1masterview/list/")
             self.assertEqual(rv.status_code, 200)
-            rv = client.get("/model1masterview/list/1")
+            rv = client.get(f"/model1masterview/list/{model_id}")
             self.assertEqual(rv.status_code, 200)
 
             rv = client.get("/model1masterchartview/list/")
             self.assertEqual(rv.status_code, 200)
-            rv = client.get("/model1masterchartview/list/1")
+            rv = client.get(f"/model1masterchartview/list/{model_id}")
             self.assertEqual(rv.status_code, 200)
 
     def test_api_read(self):
@@ -1536,16 +1544,17 @@ class MVCTestCase(BaseMVCTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        with model1_data(self.appbuilder.session, 1):
-            item = self.db.session.query(Model1).filter_by(id=1).one()
+        with model1_data(self.appbuilder.session, 1) as models:
+            model_id = models[0].id
+            item = self.db.session.query(Model1).get(model_id)
             field_integer_before = item.field_integer
             rv = client.put(
-                "/model1view/api/update/1",
+                f"/model1view/api/update/{model_id}",
                 data=dict(field_string="zzz"),
                 follow_redirects=True,
             )
             self.assertEqual(rv.status_code, 200)
-            item = self.db.session.query(Model1).filter_by(id=1).one()
+            item = self.db.session.query(Model1).get(model_id)
             self.assertEqual(item.field_string, "zzz")
             self.assertEqual(item.field_integer, field_integer_before)
 
@@ -1611,6 +1620,7 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(model.field_integer, 1)
 
         # Cleanup
+        self.db.session.delete(model)
         self.db.session.delete(user)
         self.db.session.commit()
 
@@ -1664,7 +1674,7 @@ class MVCTestCase(BaseMVCTestCase):
         rv = client.post(
             "/model1permoverride/add",
             data=dict(
-                field_string=f"test{MODEL1_DATA_SIZE+1}",
+                field_string="tmp_test",
                 field_integer="1",
                 field_float="0.12",
                 field_date="2014-01-01",
@@ -1674,7 +1684,7 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(rv.status_code, 200)
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string=f"test{MODEL1_DATA_SIZE+1}")
+            .filter_by(field_string="tmp_test")
             .one_or_none()
         )
         self.assertIsNotNone(model1)
@@ -1683,47 +1693,49 @@ class MVCTestCase(BaseMVCTestCase):
         self.appbuilder.get_session.delete(model1)
         self.appbuilder.get_session.commit()
 
-        # Verify write links are on the UI
-        rv = client.get("/model1permoverride/list/")
-        self.assertEqual(rv.status_code, 200)
-        data = rv.data.decode("utf-8")
-        self.assertIn("/model1permoverride/delete/1", data)
-        self.assertIn("/model1permoverride/add", data)
-        self.assertIn("/model1permoverride/edit/1", data)
-        self.assertIn("/model1permoverride/show/1", data)
+        with model1_data(self.appbuilder.session, 2) as models:
+            model_id = models[0].id
+            # Verify write links are on the UI
+            rv = client.get("/model1permoverride/list/")
+            self.assertEqual(rv.status_code, 200)
+            data = rv.data.decode("utf-8")
+            self.assertIn(f"/model1permoverride/delete/{model_id}", data)
+            self.assertIn("/model1permoverride/add", data)
+            self.assertIn(f"/model1permoverride/edit/{model_id}", data)
+            self.assertIn(f"/model1permoverride/show/{model_id}", data)
 
-        # Delete write permission from Test Role
-        role = self.appbuilder.sm.find_role("Test")
-        pvm_write = self.appbuilder.sm.find_permission_view_menu(
-            "can_write", "Model1PermOverride"
-        )
-        self.appbuilder.sm.del_permission_role(role, pvm_write)
+            # Delete write permission from Test Role
+            role = self.appbuilder.sm.find_role("Test")
+            pvm_write = self.appbuilder.sm.find_permission_view_menu(
+                "can_write", "Model1PermOverride"
+            )
+            self.appbuilder.sm.del_permission_role(role, pvm_write)
 
-        # Unauthorized delete
-        model1 = (
-            self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string="test1")
-            .one_or_none()
-        )
-        pk = model1.id
-        rv = client.get(f"/model1permoverride/delete/{pk}")
-        self.assertEqual(rv.status_code, 302)
-        model = self.db.session.query(Model1).filter_by(id=pk).one_or_none()
-        self.assertEqual(model.field_string, "test1")
+            # Unauthorized delete
+            model1 = (
+                self.appbuilder.get_session.query(Model1)
+                .filter_by(field_string="test1")
+                .one_or_none()
+            )
+            pk = model1.id
+            rv = client.get(f"/model1permoverride/delete/{pk}")
+            self.assertEqual(rv.status_code, 302)
+            model = self.db.session.query(Model1).filter_by(id=pk).one_or_none()
+            self.assertEqual(model.field_string, "test1")
 
-        # Verify write links are gone from UI
-        rv = client.get("/model1permoverride/list/")
-        self.assertEqual(rv.status_code, 200)
-        data = rv.data.decode("utf-8")
-        self.assertNotIn("/model1permoverride/delete/1", data)
-        self.assertNotIn("/model1permoverride/add/", data)
-        self.assertNotIn("/model1permoverride/edit/1", data)
-        self.assertIn("/model1permoverride/show/1", data)
+            # Verify write links are gone from UI
+            rv = client.get("/model1permoverride/list/")
+            self.assertEqual(rv.status_code, 200)
+            data = rv.data.decode("utf-8")
+            self.assertNotIn(f"/model1permoverride/delete/{model_id}", data)
+            self.assertNotIn("/model1permoverride/add/", data)
+            self.assertNotIn(f"/model1permoverride/edit/{model_id}", data)
+            self.assertIn(f"/model1permoverride/show/{model_id}", data)
 
-        # Revert data changes
-        self.db.session.delete(self.appbuilder.sm.find_role("Test"))
-        self.db.session.delete(user)
-        self.db.session.commit()
+            # Revert data changes
+            self.db.session.delete(self.appbuilder.sm.find_role("Test"))
+            self.db.session.delete(user)
+            self.db.session.commit()
 
     def test_action_permission_override(self):
         """
@@ -1797,9 +1809,9 @@ class MVCTestCase(BaseMVCTestCase):
             rv = client.get("/model1permoverride/action/action1/1")
             self.assertEqual(rv.status_code, 302)
 
-            # cleanup
-            self.db.session.delete(user)
-            self.db.session.commit()
+        # cleanup
+        self.db.session.delete(user)
+        self.db.session.commit()
 
     def test_permission_converge_compress(self):
         """
@@ -1843,8 +1855,8 @@ class MVCTestCase(BaseMVCTestCase):
         # Remove previous class, Hack to test code change
         for i, baseview in enumerate(self.appbuilder.baseviews):
             if baseview.__class__.__name__ == "Model1View":
+                self.appbuilder.baseviews.pop(i)
                 break
-        self.appbuilder.baseviews.pop(i)
 
         target_state_transitions = {
             "add": {
@@ -1886,51 +1898,59 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        rv = client.get("/modelbeforerequest/enabled")
-        self.assertEqual(rv.status_code, 404)
+        with model1_data(self.appbuilder.session, 1) as models:
+            model_id = models[0].id
 
-        rv = client.get("/modelbeforerequest/list/")
-        self.assertEqual(rv.status_code, 404)
+            rv = client.get("/modelbeforerequest/enabled")
+            self.assertEqual(rv.status_code, 404)
 
-        rv = client.get("/modelbeforerequest/show/1")
-        self.assertEqual(rv.status_code, 404)
+            rv = client.get("/modelbeforerequest/list/")
+            self.assertEqual(rv.status_code, 404)
 
-        # /enable is available, but not others
-        self._before_request_enabled = True
+            rv = client.get(f"/modelbeforerequest/show/{model_id}")
+            self.assertEqual(rv.status_code, 404)
 
-        rv = client.get("/modelbeforerequest/enabled")
-        self.assertEqual(rv.status_code, 200)
+            # /enable is available, but not others
+            self._before_request_enabled = True
 
-        rv = client.get("/modelbeforerequest/list/")
-        self.assertEqual(rv.status_code, 404)
+            rv = client.get("/modelbeforerequest/enabled")
+            self.assertEqual(rv.status_code, 200)
 
-        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
-        self.assertEqual(rv.status_code, 404)
+            rv = client.get("/modelbeforerequest/list/")
+            self.assertEqual(rv.status_code, 404)
 
-        # Now list is available, but not show
-        self._before_request_enabled = True
-        self._before_request_can_list = True
+            rv = client.get(
+                f"/modelbeforerequest/show/{model_id}", follow_redirects=True
+            )
+            self.assertEqual(rv.status_code, 404)
 
-        rv = client.get("/modelbeforerequest/enabled")
-        self.assertEqual(rv.status_code, 200)
+            # Now list is available, but not show
+            self._before_request_enabled = True
+            self._before_request_can_list = True
 
-        rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
-        self.assertEqual(rv.status_code, 200)
-
-        rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
-        self.assertEqual(rv.status_code, 404)
-
-        # Everything is available
-        self._before_request_enabled = True
-        self._before_request_can_list = True
-        self._before_request_can_show = True
-
-        with model1_data(self.appbuilder.session, 1):
             rv = client.get("/modelbeforerequest/enabled")
             self.assertEqual(rv.status_code, 200)
 
             rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
 
-            rv = client.get("/modelbeforerequest/show/1", follow_redirects=True)
+            rv = client.get(
+                f"/modelbeforerequest/show/{model_id}", follow_redirects=True
+            )
+            self.assertEqual(rv.status_code, 404)
+
+            # Everything is available
+            self._before_request_enabled = True
+            self._before_request_can_list = True
+            self._before_request_can_show = True
+
+            rv = client.get("/modelbeforerequest/enabled")
+            self.assertEqual(rv.status_code, 200)
+
+            rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
+            self.assertEqual(rv.status_code, 200)
+
+            rv = client.get(
+                f"/modelbeforerequest/show/{model_id}", follow_redirects=True
+            )
             self.assertEqual(rv.status_code, 200)
