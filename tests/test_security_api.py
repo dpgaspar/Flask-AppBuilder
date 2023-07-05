@@ -155,7 +155,10 @@ class UserAPITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        query = {"filters": [{"col": "roles", "opr": "rel_m_m", "value": 2}]}
+        admin_role_id = self.appbuilder.sm.find_role("Admin").id
+        query = {
+            "filters": [{"col": "roles", "opr": "rel_m_m", "value": admin_role_id}]
+        }
         uri = f"api/v1/security/users/?q={prison.dumps(query)}"
         rv = self.auth_client_get(client, token, uri)
         response = json.loads(rv.data)
@@ -170,7 +173,7 @@ class UserAPITestCase(FABTestCase):
                 "email": "admin@fab.org",
                 "first_name": "admin",
                 "last_name": "user",
-                "roles": [{"id": 2, "name": "Admin"}],
+                "roles": [{"id": admin_role_id, "name": "Admin"}],
                 "username": "testadmin",
             }
         ]
