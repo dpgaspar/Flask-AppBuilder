@@ -580,7 +580,9 @@ class FlaskTestCase(FABTestCase):
 
 class MongoImportExportTestCase(unittest.TestCase):
     def setUp(self):
-        with open("flask_appbuilder/tests/data/roles.json", "r") as fd:
+        basedir = os.path.abspath(os.path.dirname(__file__))
+
+        with open(os.path.join(basedir, "data/roles.json"), "r") as fd:
             self.expected_roles = json.loads(fd.read())
 
     def test_export_roles(self):
