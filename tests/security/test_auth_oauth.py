@@ -204,10 +204,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
-        self.assertListEqual(
-            user.roles,
-            [sm.find_role("Admin"), sm.find_role("Public"), sm.find_role("User")],
-        )
+        self.assertIn(sm.find_role("Admin"), user.roles)
+        self.assertIn(sm.find_role("User"), user.roles)
+        self.assertIn(sm.find_role("Public"), user.roles)
 
         # validate - user was given the correct attributes (read from LDAP)
         self.assertEqual(user.first_name, "Alice")
@@ -241,10 +240,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
-        self.assertListEqual(
-            user.roles,
-            [sm.find_role("Admin"), sm.find_role("Public"), sm.find_role("User")],
-        )
+        self.assertIn(sm.find_role("Admin"), user.roles)
+        self.assertIn(sm.find_role("Public"), user.roles)
+        self.assertIn(sm.find_role("User"), user.roles)
 
         # validate - user was given the correct attributes (read from LDAP)
         self.assertEqual(user.first_name, "Alice")

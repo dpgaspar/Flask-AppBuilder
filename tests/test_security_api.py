@@ -127,6 +127,7 @@ class UserAPITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
+        readonly_role_id = self.appbuilder.sm.find_role("ReadOnly").id
         query = {"filters": [{"col": "username", "opr": "eq", "value": "readonly"}]}
         uri = f"api/v1/security/users/?q={prison.dumps(query)}"
         rv = self.auth_client_get(client, token, uri)
@@ -142,7 +143,7 @@ class UserAPITestCase(FABTestCase):
                 "email": "readonly@fab.org",
                 "first_name": "readonly",
                 "last_name": "readonly",
-                "roles": [{"id": 1, "name": "ReadOnly"}],
+                "roles": [{"id": readonly_role_id, "name": "ReadOnly"}],
                 "username": "readonly",
             }
         ]
