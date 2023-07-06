@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import logging
 from typing import Any, Dict, List, Optional, Set
@@ -13,7 +14,14 @@ from flask_appbuilder.const import (
     API_SECURITY_USERNAME_KEY,
     API_SECURITY_VERSION,
 )
+from hiro import Timeline
 import jinja2
+from tests.const import (
+    PASSWORD_ADMIN,
+    PASSWORD_READONLY,
+    USERNAME_ADMIN,
+    USERNAME_READONLY,
+)
 
 
 class FABTestCase(unittest.TestCase):
@@ -94,6 +102,21 @@ class FABTestCase(unittest.TestCase):
     def browser_logout(client):
         return client.get("/logout/")
 
+    def create_default_users(self, appbuilder) -> None:
+        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
+            self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
+            self.create_user(
+                self.appbuilder,
+                USERNAME_READONLY,
+                PASSWORD_READONLY,
+                "ReadOnly",
+                first_name="readonly",
+                last_name="readonly",
+                email="readonly@fab.org",
+            )
+
     def create_admin_user(self, appbuilder, username, password):
         self.create_user(appbuilder, username, password, "Admin")
 
@@ -108,6 +131,10 @@ class FABTestCase(unittest.TestCase):
         email="admin@fab.org",
         role_names=None,
     ):
+        user = appbuilder.sm.find_user(username=username)
+        if user:
+            appbuilder.session.delete(user)
+            appbuilder.session.commit()
         roles = (
             [appbuilder.sm.find_role(role_name) for role_name in role_names]
             if role_names
@@ -122,11 +149,12 @@ class BaseMVCTestCase(FABTestCase):
     def setUp(self):
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         logging.basicConfig(level=logging.ERROR)
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.create_default_users(self.appbuilder)
 
     @property
     def registered_endpoints(self) -> Set:

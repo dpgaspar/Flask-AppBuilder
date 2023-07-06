@@ -8,10 +8,10 @@ from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.security.manager import AUTH_LDAP
 from flask_appbuilder.security.sqla.models import User
-from flask_appbuilder.tests.const import USERNAME_ADMIN, USERNAME_READONLY
 import jinja2
 import ldap
-
+from tests.const import USERNAME_ADMIN, USERNAME_READONLY
+from tests.fixtures.users import create_default_users
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
@@ -25,7 +25,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
         self.app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-            "SQLALCHEMY_DATABASE_URI"
+            "SQLALCHEMY_DATABASE_URI", "sqlite:///"
         )
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["AUTH_TYPE"] = AUTH_LDAP
@@ -61,8 +61,8 @@ class LDAPSearchTestCase(unittest.TestCase):
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()
-        user_names = [user.username for user in users]
-        self.assertEqual(user_names, [USERNAME_ADMIN, USERNAME_READONLY])
+        user_names = sorted([user.username for user in users])
+        self.assertEqual(user_names, [USERNAME_READONLY, USERNAME_ADMIN])
 
     def assertUserContainsRoles(self, user: User, role_names: List[str]):
         user_role_names = sorted([role.name for role in user.roles])
@@ -80,6 +80,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # prepare `con` object
         con = ldap.initialize("ldap://localhost:1389/")
@@ -109,6 +110,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "(memberOf=cn=staff,ou=groups,dc=example,dc=org)"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # prepare `con` object
         con = ldap.initialize("ldap://localhost:1389/")
@@ -132,6 +134,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         user_alice = (
             "cn=alice,ou=users,dc=example,dc=org",
@@ -173,6 +176,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         """
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -196,7 +200,7 @@ class LDAPSearchTestCase(unittest.TestCase):
 
     def test__active_user(self):
         """
-        LDAP: test login flow for - inactive user
+        LDAP: test login flow for - active user
         """
         self.app.config[
             "AUTH_LDAP_USERNAME_FORMAT"
@@ -204,6 +208,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -239,6 +244,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -280,6 +286,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -316,6 +323,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -348,6 +356,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = False
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -372,6 +381,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -392,6 +402,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -424,6 +435,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -457,6 +469,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -488,6 +501,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = False
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -512,6 +526,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -532,6 +547,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -563,6 +579,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -601,6 +618,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -640,6 +658,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -678,6 +697,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -720,6 +740,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -762,6 +783,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -800,6 +822,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -837,6 +860,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -878,6 +902,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")

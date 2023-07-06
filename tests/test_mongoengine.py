@@ -222,13 +222,13 @@ class FlaskTestCase(FABTestCase):
 
     def test_fab_views(self):
         """
-            Test views creation and registration
+        Test views creation and registration
         """
         eq_(len(self.appbuilder.baseviews), 26)  # current minimal views are 26
 
     def test_index(self):
         """
-            Test initial access and index message
+        Test initial access and index message
         """
         client = self.app.test_client()
 
@@ -239,7 +239,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_sec_login(self):
         """
-            Test Security Login, Logout, invalid login, invalid access
+        Test Security Login, Logout, invalid login, invalid access
         """
         client = self.app.test_client()
 
@@ -270,7 +270,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_sec_reset_password(self):
         """
-            Test Security reset password
+        Test Security reset password
         """
         from flask_appbuilder.security.mongoengine.models import User
 
@@ -328,7 +328,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_model_crud(self):
         """
-            Test Model add, delete, edit
+        Test Model add, delete, edit
         """
         client = self.app.test_client()
         rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
@@ -371,7 +371,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_excluded_cols(self):
         """
-            Test add_exclude_columns, edit_exclude_columns, show_exclude_columns
+        Test add_exclude_columns, edit_exclude_columns, show_exclude_columns
         """
         client = self.app.test_client()
         rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
@@ -405,7 +405,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_query_rel_fields(self):
         """
-            Test add and edit form related fields filter
+        Test add and edit form related fields filter
         """
         client = self.app.test_client()
         rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
@@ -427,7 +427,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_model_list_order(self):
         """
-            Test Model order on lists
+        Test Model order on lists
         """
         self.insert_data()
 
@@ -456,7 +456,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_model_add_validation(self):
         """
-            Test Model add validations
+        Test Model add validations
         """
         client = self.app.test_client()
         self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
@@ -495,7 +495,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_model_edit_validation(self):
         """
-            Test Model edit validations
+        Test Model edit validations
         """
         client = self.app.test_client()
         self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
@@ -532,7 +532,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_model_base_filter(self):
         """
-            Test Model base filtered views
+        Test Model base filtered views
         """
         client = self.app.test_client()
         self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
@@ -555,7 +555,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_model_list_method_field(self):
         """
-            Tests a model's field has a method
+        Tests a model's field has a method
         """
         client = self.app.test_client()
         self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
@@ -568,7 +568,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_compactCRUDMixin(self):
         """
-            Test CompactCRUD Mixin view
+        Test CompactCRUD Mixin view
         """
         client = self.app.test_client()
         self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
@@ -580,13 +580,15 @@ class FlaskTestCase(FABTestCase):
 
 class MongoImportExportTestCase(unittest.TestCase):
     def setUp(self):
-        with open("flask_appbuilder/tests/data/roles.json", "r") as fd:
+        basedir = os.path.abspath(os.path.dirname(__file__))
+
+        with open(os.path.join(basedir, "data/roles.json"), "r") as fd:
             self.expected_roles = json.loads(fd.read())
 
     def test_export_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask(__name__)
-            app.config.from_object("flask_appbuilder.tests.config_security")
+            app.config.from_object("tests.config_security")
             app.config["MONGODB_SETTINGS"] = {
                 "db": "app",
                 "host": "localhost",
