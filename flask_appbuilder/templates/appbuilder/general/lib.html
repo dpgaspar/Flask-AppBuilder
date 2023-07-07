@@ -1,3 +1,5 @@
+{% import 'appbuilder/baselib.html' as baselib %}
+
 {% macro render_additional_links(additional_links, pk) %}
     {% if additional_links %}
         {% for item in additional_links %}
@@ -20,16 +22,27 @@
                 {% endif %}
                 <input type="hidden" id="action" name="action" />
             </form>
-
-            <a href="javascript:void(0)" class="btn btn-sm btn-primary"
-               {% if action.confirmation %}
-               onclick="var a = new AdminActions(); return a.execute_single('{{path}}','{{action.confirmation}}');">
-               {% else %}
-               onclick="var a = new AdminActions(); return a.execute_single('{{path}}',false);">
-               {% endif %}
+            <a
+                id="btn-action-{{ endpoint }}"
+                href="javascript:void(0)"
+                class="btn btn-sm btn-primary"
+            >
                 <i class="fa {{action.icon}}"></i>
-                    {{_(action.text)}}
-                </a>
+                {{_(action.text)}}
+            </a>
+
+            <script nonce={{ baselib.get_nonce() }}>
+                document.getElementById("btn-action-{{ endpoint }}")
+                    .addEventListener("click", function () {
+                        {% if action.confirmation %}
+                            const adminAction = new AdminActions();
+                            return adminAction.execute_single('{{path}}','{{action.confirmation}}');
+                        {% else %}
+                            const adminAction = new AdminActions();
+                            return adminAction.execute_single('{{path}}',false);
+                        {% endif %}
+                    })
+            </script>
         {% endif %}
     {% endfor %}
 {% endmacro %}
@@ -389,9 +402,21 @@
 {% endmacro %}
 
 {% macro lnk_delete(my_href) %}
-    <a href="javascript:void(0)" class="btn btn-sm btn-default confirm" rel="tooltip" title="{{_('Delete record')}}"
-       onclick="var a = new AdminActions(); return a.execute_single_delete('{{my_href}}','{{ _('You sure you want to delete this item?') }}');">
+    <a
+        id="btn-delete-{{ my_href }}"
+        href="javascript:void(0)"
+        class="btn btn-sm btn-default confirm"
+        rel="tooltip"
+        title="{{_('Delete record')}}"
+    >
         <span class="sr-only">{{ _('Delete') }}</span>
         <i class="fa fa-trash"></i>
     </a>
+    <script nonce={{ baselib.get_nonce() }}>
+        document.getElementById("btn-delete-{{ my_href }}")
+            .addEventListener("click", function () {
+                const adminAction = new AdminActions();
+                return adminAction.execute_single_delete('{{my_href}}','{{_('You sure you want to delete this item?')}}');
+            })
+    </script>
 {% endmacro %}

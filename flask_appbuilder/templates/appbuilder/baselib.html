@@ -126,3 +126,10 @@
    </div>
 </div>
 {% endmacro %}
+
+{% macro get_nonce() %}
+    {# Helper method to optionally add nonce to scripts when using flask-talisman for example #}
+    {% if csp_nonce is defined %}
+        {{ csp_nonce() }}
+    {% endif %}
+{% endmacro %}
