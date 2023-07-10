@@ -33,6 +33,10 @@ jobs:
         run: flake8 flask_appbuilder
       - name: mypy
         run: mypy flask_appbuilder
+      - name: black
+        run: black --check tests
+      - name: flake8
+        run: flake8 tests
 
   test-postgres:
     runs-on: ubuntu-22.04
@@ -79,7 +83,7 @@ jobs:
           pip install -r requirements-extra.txt
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder.tests --ignore-files="test_mongoengine\.py"
+          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests --ignore-files="test_mongoengine\.py"
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -130,7 +134,7 @@ jobs:
           pip install -r requirements-extra.txt
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder.tests --ignore-files="test_mongoengine\.py"
+          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests --ignore-files="test_mongoengine\.py"
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -180,7 +184,7 @@ jobs:
           sudo cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder.tests --ignore-files="test_mongoengine\.py"
+          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests --ignore-files="test_mongoengine\.py"
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -224,7 +228,7 @@ jobs:
           pip install -r requirements-mongodb.txt
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder flask_appbuilder/tests/test_mongoengine.py
+          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests/test_mongoengine.py
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python

@@ -19,7 +19,7 @@ class FlaskTestCase(FABTestCase):
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
 
         self.db = SQLA(self.app)
@@ -61,7 +61,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_menu_api(self):
         """
-            REST Api: Test menu data
+        REST Api: Test menu data
         """
         uri = "/api/v1/menu/"
         client = self.app.test_client()
@@ -79,7 +79,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_menu_api_limited(self):
         """
-            REST Api: Test limited menu data
+        REST Api: Test limited menu data
         """
         limited_user = "user1"
         limited_password = "user1"
@@ -134,7 +134,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_menu_api_public(self):
         """
-            REST Api: Test public menu data
+        REST Api: Test public menu data
         """
         role = self.appbuilder.sm.find_role("Public")
         pvm = self.appbuilder.sm.find_permission_view_menu("menu_access", "Model1")
@@ -175,7 +175,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_redirect_after_logout(self):
         """
-            REST Api: Test redirect after logout
+        REST Api: Test redirect after logout
         """
         limited_user = "user1"
         limited_password = "user1"

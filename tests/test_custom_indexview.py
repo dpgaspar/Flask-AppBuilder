@@ -19,10 +19,10 @@ class FlaskTestCase(FABTestCase):
 
         self.app = Flask(__name__, template_folder=".")
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.app.config[
             "FAB_INDEX_VIEW"
-        ] = "flask_appbuilder.tests.test_custom_indexview.CustomIndexView"
+        ] = "tests.test_custom_indexview.CustomIndexView"
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)

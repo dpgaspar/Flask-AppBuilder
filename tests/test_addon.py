@@ -2,7 +2,7 @@ import logging
 import os
 
 from flask_appbuilder import SQLA
-from flask_appbuilder.tests.A_fixture.addon_manager import DummyAddOnManager
+from tests.fixtures.addon_manager import DummyAddOnManager
 
 from .base import FABTestCase
 
@@ -17,9 +17,9 @@ class FlaskTestCase(FABTestCase):
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.app.config["ADDON_MANAGERS"] = [
-            "flask_appbuilder.tests.A_fixture.addon_manager.DummyAddOnManager"
+            "tests.fixtures.addon_manager.DummyAddOnManager"
         ]
 
         self.db = SQLA(self.app)
@@ -33,7 +33,7 @@ class FlaskTestCase(FABTestCase):
     def test_addon_import(self):
         self.assertIsInstance(
             self.appbuilder.addon_managers[
-                "flask_appbuilder.tests.A_fixture.addon_manager.DummyAddOnManager"
+                "tests.fixtures.addon_manager.DummyAddOnManager"
             ],
             DummyAddOnManager,
         )

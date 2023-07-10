@@ -5,16 +5,16 @@ from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.sqla.models import User
-
-from ..base import BaseMVCTestCase
-from ..const import (
+from tests.base import BaseMVCTestCase
+from tests.const import (
     INVALID_LOGIN_STRING,
     PASSWORD_ADMIN,
     PASSWORD_READONLY,
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
-from ..sqla.models import Model1, Model2
+from tests.fixtures.data_models import model1_data
+from tests.sqla.models import Model1, Model2
 
 PASSWORD_COMPLEXITY_ERROR = (
     "Must have at least two capital letters, "
@@ -241,27 +241,30 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
-        # Test authorized GET
-        rv = client.get("/model1view/list/")
-        self.assertEqual(rv.status_code, 200)
-        # Test authorized SHOW
-        rv = client.get("/model1view/show/1")
-        self.assertEqual(rv.status_code, 200)
-        # Test unauthorized EDIT
-        rv = client.get("/model1view/edit/1")
-        self.assertEqual(rv.status_code, 302)
-        # Test unauthorized DELETE
-        rv = client.get("/model1view/delete/1")
-        self.assertEqual(rv.status_code, 302)
+        with model1_data(self.appbuilder.session, 1):
+            # Test authorized GET
+            rv = client.get("/model1view/list/")
+            self.assertEqual(rv.status_code, 200)
+            # Test authorized SHOW
+            rv = client.get("/model1view/show/1")
+            self.assertEqual(rv.status_code, 200)
+            # Test unauthorized EDIT
+            rv = client.get("/model1view/edit/1")
+            self.assertEqual(rv.status_code, 302)
+            # Test unauthorized DELETE
+            rv = client.get("/model1view/delete/1")
+            self.assertEqual(rv.status_code, 302)
 
     def test_sec_reset_password(self):
         """
         Test Security reset password
         """
         client = self.app.test_client()
-
+        admin_user = self.appbuilder.sm.find_user(username=USERNAME_ADMIN)
         # Try Reset My password
-        rv = client.get("/users/action/resetmypassword/1", follow_redirects=True)
+        rv = client.get(
+            f"/users/action/resetmypassword/{admin_user.id}", follow_redirects=True
+        )
         # Werkzeug update to 0.15.X sends this action to wrong redirect
         # Old test was:
         # data = rv.data.decode("utf-8")
@@ -270,7 +273,9 @@ class MVCSecurityTestCase(BaseMVCTestCase):
 
         # Reset My password
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/users/action/resetmypassword/1", follow_redirects=True)
+        rv = client.get(
+            f"/users/action/resetmypassword/{admin_user.id}", follow_redirects=True
+        )
         data = rv.data.decode("utf-8")
         self.assertIn("Reset Password Form", data)
         rv = client.post(
@@ -289,7 +294,9 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         self.assertEqual(rv.status_code, 200)
 
         # Reset Password Admin
-        rv = client.get("/users/action/resetpasswords/1", follow_redirects=True)
+        rv = client.get(
+            f"/users/action/resetpasswords/{admin_user.id}", follow_redirects=True
+        )
         data = rv.data.decode("utf-8")
         self.assertIn("Reset Password Form", data)
         rv = client.post(
