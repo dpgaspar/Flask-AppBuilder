@@ -85,8 +85,8 @@ var AdminFilters = function (element, labels, form, filters, active_filters) {
         );
         // avoids error
         // if (i_option === -1) { $select.select2(); }
-        $select.on('change', function () {
-            changeOperation(this, $el, name);
+        $select.on('select2:select', function (e) {
+            changeOperation(e, $el, name);
         });
         if (activateSelect2) {
             $select.select2({
@@ -140,7 +140,8 @@ var AdminFilters = function (element, labels, form, filters, active_filters) {
     // ----------------------------------------------------------
     function changeOperation(e, $el, name) {
         let $in = $el.find('.filter_val');
-        $in.attr('name', '_flt_' + $(e.target).val() + '_' + name);
+        const data = e.params.data;
+        $in.attr('name', '_flt_' + data.id + '_' + name);
     }
 
     $('a.filter').on('click', function () {
