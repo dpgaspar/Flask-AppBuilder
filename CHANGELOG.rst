@@ -1,6 +1,14 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.4
+-----------------------------------
+
+- fix: select filters spacing, theme and operation select (#2079) [Daniel Vaz Gaspar]
+- refactor: Refactored logging functions to consistently use lazy interpolation (#2071) [Bruce]
+- feat: add optional flask-talisman and use csp nonce on scripts (#2075) [Daniel Vaz Gaspar]
+- chore: improve tests and test data load (#2072) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.3.3
 -----------------------------------
 
