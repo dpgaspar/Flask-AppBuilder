@@ -31,7 +31,7 @@
                 {{_(action.text)}}
             </a>
 
-            <script nonce={{ baselib.get_nonce() }}>
+            <script nonce="{{ baselib.get_nonce() }}">
                 document.getElementById("btn-action-{{ endpoint }}")
                     .addEventListener("click", function () {
                         {% if action.confirmation %}
@@ -87,7 +87,7 @@
                 </li>
         {% endfor %}
     </ul>
-    <script type="text/javascript" nonce={{ baselib.get_nonce() }}>
+    <script nonce="{{ baselib.get_nonce() }}">
     $(document).ready(function() {
     {% for action_key in actions %}
         {% set action = actions.get(action_key) %}
@@ -412,7 +412,7 @@
         <span class="sr-only">{{ _('Delete') }}</span>
         <i class="fa fa-trash"></i>
     </a>
-    <script nonce={{ baselib.get_nonce() }}>
+    <script nonce="{{ baselib.get_nonce() }}">
         document.getElementById("btn-delete-{{ my_href }}")
             .addEventListener("click", function () {
                 const adminAction = new AdminActions();

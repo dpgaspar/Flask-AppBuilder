@@ -2,8 +2,8 @@
 
 <div id="{{ modelview_name }}" style="height: {{height}};">
 </div>
-<script type="text/javascript" src="{{url_for('appbuilder.static',filename='js/google_charts.js')}}" nonce={{ baselib.get_nonce() }}></script>
-<script type="text/javascript" nonce={{ baselib.get_nonce() }}>
+<script src="{{url_for('appbuilder.static',filename='js/google_charts.js')}}" nonce="{{ baselib.get_nonce() }}"></script>
+<script nonce="{{ baselib.get_nonce() }}">
     //load the Google Visualization API and the chart
     google.load('visualization', '1', {'packages': ['corechart']});
 

@@ -29,7 +29,7 @@
 
     {{ lib.action_form(actions, modelview_name) }}
 
-    <script nonce={{ baselib.get_nonce() }}>
+    <script nonce="{{ baselib.get_nonce() }}">
         $(document).ready(function() {
             window.modelActions = new AdminActions();
         });

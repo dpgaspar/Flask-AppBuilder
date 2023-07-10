@@ -27,7 +27,7 @@
     </div>
 </div>
 
-<script nonce={{ baselib.get_nonce() }}>
+<script nonce="{{ baselib.get_nonce() }}">
     var baseLoginUrl = "{{appbuilder.get_url_for_login}}";
     var baseRegisterUrl = "{{appbuilder.get_url_for_login}}";
     var next = "?next=" + "{{request.args.get('next', '') | urlencode}}";
