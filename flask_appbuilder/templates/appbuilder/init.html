@@ -33,9 +33,9 @@
     {% endblock %}
 
     {% block head_js %}
-      <script src="{{url_for('appbuilder.static',filename='js/jquery-latest.js')}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='js/ab_filters.js')}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='js/ab_actions.js')}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/jquery-latest.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/ab_filters.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/ab_actions.js')}}" nonce="{{baselib.get_nonce()}}"></script>
     {% endblock %}
   </head>
   <body >
@@ -43,10 +43,10 @@
     {% endblock %}
 
     {% block tail_js %}
-      <script src="{{url_for('appbuilder.static',filename='js/bootstrap.min.js')}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='datepicker/bootstrap-datepicker.js')}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='select2/select2.js')}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='js/ab.js')}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/bootstrap.min.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='datepicker/bootstrap-datepicker.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='select2/select2.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/ab.js')}}" nonce="{{baselib.get_nonce()}}"></script>
     {% endblock %}
 
     {% block add_tail_js %}

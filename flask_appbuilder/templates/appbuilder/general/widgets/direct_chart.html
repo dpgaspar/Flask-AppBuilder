@@ -1,7 +1,9 @@
+{% import 'appbuilder/baselib.html' as baselib %}
+
 <div id="{{ modelview_name }}" style="height: {{height}};">
 </div>
-<script type="text/javascript" src="{{url_for('appbuilder.static',filename='js/google_charts.js')}}"></script>
-<script type="text/javascript">
+<script src="{{url_for('appbuilder.static',filename='js/google_charts.js')}}" nonce="{{ baselib.get_nonce() }}"></script>
+<script nonce="{{ baselib.get_nonce() }}">
     //load the Google Visualization API and the chart
     google.load('visualization', '1', {'packages': ['corechart']});
 
@@ -10,7 +12,6 @@
     // playground http://code.google.com/apis/ajax/playground/?type=visualization#line_chart
 
     var jsonData{{ modelview_name }} = {{ value_columns | tojson }}
-
 
     //-----------------------------------
     // Attach listener for tab open event
