@@ -9,7 +9,7 @@
         </button>
         <ul class="dropdown-menu">
             {% for col in include_cols %}
-            <li><a href="javascript:void(0)" name="{{col}}" class="filter" onclick="return false;">
+            <li><a href="#" name="{{col}}" class="filter" onclick="return false;">
                 {{ label_columns[col] }}</a>
             </li>
             {% endfor %}

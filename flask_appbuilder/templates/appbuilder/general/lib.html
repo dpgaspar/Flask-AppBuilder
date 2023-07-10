@@ -24,7 +24,7 @@
             </form>
             <a
                 id="btn-action-{{ endpoint }}"
-                href="javascript:void(0)"
+                href="#"
                 class="btn btn-sm btn-primary"
             >
                 <i class="fa {{action.icon}}"></i>
@@ -79,7 +79,7 @@
         {% for action_key in actions %}
             {% set action = actions.get(action_key) %}
                 <li>
-                    <a href="javascript:void(0)"
+                    <a href="#"
                         class="{{action.name}}_menu_item">
                         <i class="fa {{action.icon}}"></i>
                         {{ _(action.text) }}
@@ -87,7 +87,7 @@
                 </li>
         {% endfor %}
     </ul>
-    <script type="text/javascript">
+    <script type="text/javascript" nonce={{ baselib.get_nonce() }}>
     $(document).ready(function() {
     {% for action_key in actions %}
         {% set action = actions.get(action_key) %}
@@ -189,7 +189,7 @@
     </li>
     {% else %}
     <li class="disabled">
-        <a href="javascript:void(0)">&laquo;</a>
+        <a href="#">&laquo;</a>
     </li>
     {% endif %}
     {% if page > 0 %}
@@ -198,14 +198,14 @@
     </li>
     {% else %}
     <li class="disabled">
-        <a href="javascript:void(0)">&lt;</a>
+        <a href="#">&lt;</a>
     </li>
     {% endif %}
 
     {% for p in range(min, max) %}
         {% if page == p %}
         <li class="active">
-            <a href="javascript:void(0)">{{ (p + 1) }}</a>
+            <a href="#">{{ (p + 1) }}</a>
         </li>
         {% else %}
         <li>
@@ -220,7 +220,7 @@
         </li>
     {% else %}
         <li class="disabled">
-            <a href="javascript:void(0)">&gt;</a>
+            <a href="#">&gt;</a>
         </li>
     {% endif %}
     {% if max < pages %}
@@ -229,7 +229,7 @@
         </li>
     {% else %}
         <li class="disabled">
-            <a href="javascript:void(0)">&raquo;</a>
+            <a href="#">&raquo;</a>
         </li>
     {% endif %}
 </ul>
@@ -404,7 +404,7 @@
 {% macro lnk_delete(my_href) %}
     <a
         id="btn-delete-{{ my_href }}"
-        href="javascript:void(0)"
+        href="#"
         class="btn btn-sm btn-default confirm"
         rel="tooltip"
         title="{{_('Delete record')}}"
@@ -416,7 +416,7 @@
         document.getElementById("btn-delete-{{ my_href }}")
             .addEventListener("click", function () {
                 const adminAction = new AdminActions();
-                return adminAction.execute_single_delete('{{my_href}}','{{_('You sure you want to delete this item?')}}');
+                return adminAction.execute_single_delete('{{my_href}}','{{_('Are you sure you want to delete this item?')}}');
             })
     </script>
 {% endmacro %}
