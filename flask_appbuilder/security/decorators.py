@@ -103,9 +103,7 @@ def protect(allow_browser_login=False):
                 ):
                     return f(self, *args, **kwargs)
             log.warning(
-                LOGMSG_ERR_SEC_ACCESS_DENIED.format(
-                    permission_str, class_permission_name
-                )
+                LOGMSG_ERR_SEC_ACCESS_DENIED, permission_str, class_permission_name
             )
             return self.response_403()
 
@@ -139,9 +137,7 @@ def has_access(f):
             return f(self, *args, **kwargs)
         else:
             log.warning(
-                LOGMSG_ERR_SEC_ACCESS_DENIED.format(
-                    permission_str, self.__class__.__name__
-                )
+                LOGMSG_ERR_SEC_ACCESS_DENIED, permission_str, self.__class__.__name__
             )
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
         return redirect(
@@ -181,9 +177,7 @@ def has_access_api(f):
             return f(self, *args, **kwargs)
         else:
             log.warning(
-                LOGMSG_ERR_SEC_ACCESS_DENIED.format(
-                    permission_str, self.__class__.__name__
-                )
+                LOGMSG_ERR_SEC_ACCESS_DENIED, permission_str, self.__class__.__name__
             )
             if not current_user.is_authenticated:
                 return response_unauthorized_mvc(401)

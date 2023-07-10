@@ -566,7 +566,7 @@ class BaseApi(AbstractViewApi):
                     ):
                         continue
                     if attr_name in self.exclude_route_methods:
-                        log.info(f"Not registering api spec for method {attr_name}")
+                        log.info("Not registering api spec for method %s", attr_name)
                         continue
                     operations = {}
                     path = self.path_helper(path=url, operations=operations)
@@ -612,13 +612,16 @@ class BaseApi(AbstractViewApi):
             ):
                 continue
             if attr_name in self.exclude_route_methods:
-                log.info(f"Not registering route for method {attr_name}")
+                log.info("Not registering route for method %s", attr_name)
                 continue
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
                     log.info(
-                        f"Registering route {self.blueprint.url_prefix}{url} {methods}"
+                        "Registering route %s%s %s",
+                        self.blueprint.url_prefix,
+                        url,
+                        methods,
                     )
                     route_handler = wrap_route_handler_with_hooks(
                         attr_name, attr, before_request_hooks
