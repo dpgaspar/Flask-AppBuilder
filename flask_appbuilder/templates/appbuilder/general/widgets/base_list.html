@@ -1,3 +1,4 @@
+{% import 'appbuilder/baselib.html' as baselib %}
 {% import 'appbuilder/general/lib.html' as lib %}
 
 {% set can_add = "can_add" | is_item_visible(modelview_name) %}
@@ -28,7 +29,7 @@
 
     {{ lib.action_form(actions, modelview_name) }}
 
-    <script language="javascript">
+    <script nonce="{{ baselib.get_nonce() }}">
         $(document).ready(function() {
             window.modelActions = new AdminActions();
         });
