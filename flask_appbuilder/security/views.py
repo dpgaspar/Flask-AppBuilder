@@ -606,9 +606,9 @@ class AuthOAuthView(AuthView):
     @expose("/login/<provider>")
     @expose("/login/<provider>/<register>")
     def login(self, provider: Optional[str] = None) -> WerkzeugResponse:
-        log.debug("Provider: {0}".format(provider))
+        log.debug("Provider: %s", provider)
         if g.user is not None and g.user.is_authenticated:
-            log.debug("Already authenticated {0}".format(g.user))
+            log.debug("Already authenticated %s", g.user)
             return redirect(self.appbuilder.get_url_for_index)
 
         if provider is None:
@@ -619,7 +619,7 @@ class AuthOAuthView(AuthView):
                 appbuilder=self.appbuilder,
             )
 
-        log.debug("Going to call authorize for: {0}".format(provider))
+        log.debug("Going to call authorize for: %s", provider)
         random_state = generate_random_string()
         state = jwt.encode(
             request.args.to_dict(flat=False), random_state, algorithm="HS256"
@@ -643,7 +643,7 @@ class AuthOAuthView(AuthView):
                     state=state.decode("ascii") if isinstance(state, bytes) else state,
                 )
         except Exception as e:
-            log.error("Error on OAuth authorize: {0}".format(e))
+            log.error("Error on OAuth authorize: %s", e)
             flash(as_unicode(self.invalid_login_message), "warning")
             return redirect(self.appbuilder.get_url_for_index)
 
@@ -657,22 +657,22 @@ class AuthOAuthView(AuthView):
         try:
             resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token()
         except Exception as e:
-            log.error("Error authorizing OAuth access token: {0}".format(e))
+            log.error("Error authorizing OAuth access token: %s", e)
             flash("The request to sign in was denied.", "error")
             return redirect(self.appbuilder.get_url_for_login)
         if resp is None:
             flash("You denied the request to sign in.", "warning")
             return redirect(self.appbuilder.get_url_for_login)
-        log.debug("OAUTH Authorized resp: {0}".format(resp))
+        log.debug("OAUTH Authorized resp: %s", resp)
         # Retrieves specific user info from the provider
         try:
             self.appbuilder.sm.set_oauth_session(provider, resp)
             userinfo = self.appbuilder.sm.oauth_user_info(provider, resp)
         except Exception as e:
-            log.error("Error returning OAuth user info: {0}".format(e))
+            log.error("Error returning OAuth user info: %s", e)
             user = None
         else:
-            log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
+            log.debug("User info retrieved from %s: %s", provider, userinfo)
             # User email is not whitelisted
             if provider in self.appbuilder.sm.oauth_whitelists:
                 whitelist = self.appbuilder.sm.oauth_whitelists[provider]
