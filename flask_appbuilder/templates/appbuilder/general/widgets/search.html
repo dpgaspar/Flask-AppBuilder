@@ -1,3 +1,4 @@
+{% import 'appbuilder/baselib.html' as baselib %}
 {% import 'appbuilder/general/lib.html' as lib %}
 
 <form id="filter_form" class="form-search" method="get">
@@ -9,7 +10,7 @@
         </button>
         <ul class="dropdown-menu">
             {% for col in include_cols %}
-            <li><a href="javascript:void(0)" name="{{col}}" class="filter" onclick="return false;">
+            <li><a href="#" name="{{col}}" class="filter">
                 {{ label_columns[col] }}</a>
             </li>
             {% endfor %}
@@ -25,15 +26,15 @@
 {{ lib.btn_search() }}
 </form>
 
-<script>
+<script nonce="{{ baselib.get_nonce() }}">
 	(function($) {
-	var filter = new AdminFilters(
-                    '#filter_form',
-                    {{ label_columns | tojson }},
-                    {{ form_fields | tojson }},
-                    {{ search_filters | tojson }},
-                    {{ active_filters | tojson }}
-                );
-	})(jQuery);
+        const filter = new AdminFilters(
+            '#filter_form',
+            {{ label_columns | tojson }},
+            {{ form_fields | tojson }},
+            {{ search_filters | tojson }},
+            {{ active_filters | tojson }}
+        );
+    })(jQuery);
 
 </script>

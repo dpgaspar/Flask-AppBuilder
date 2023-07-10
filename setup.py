@@ -71,6 +71,7 @@ setup(
         "jmespath": ["jmespath>=0.9.5"],
         "oauth": ["Authlib>=0.14, <2.0.0"],
         "openid": ["Flask-OpenID>=1.2.5, <2"],
+        "talisman": ["flask-talisman>=1.0.0, <2.0"],
     },
     tests_require=["nose>=1.0", "mockldap>=0.3.0", "hiro>=0.5.1"],
     classifiers=[
