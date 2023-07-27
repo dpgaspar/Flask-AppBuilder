@@ -35,7 +35,7 @@ setup(
     ),
     long_description=desc(),
     long_description_content_type="text/x-rst",
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests*"]),
     package_data={"": ["LICENSE"]},
     entry_points={
         "flask.commands": ["fab=flask_appbuilder.cli:fab"],
