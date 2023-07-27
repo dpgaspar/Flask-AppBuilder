@@ -1,6 +1,14 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.5
+-----------------------------------
+
+- fix: make deletion in quicktemplates example work again (#2088) [Fabian Halkivaha]
+- fix: MVC form action, broken reset my password (#2091) [Daniel Vaz Gaspar]
+- chore: dont add 'tests' package to wheel (#2087) [cwegener]
+- chore(deps): bump pygments from 2.13.0 to 2.15.0 (#2089) [dependabot[bot]]
+
 Improvements and Bug fixes on 4.3.4
 -----------------------------------
 
