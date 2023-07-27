@@ -23,7 +23,7 @@
                 <input type="hidden" id="action" name="action" />
             </form>
             <a
-                id="btn-action-{{ endpoint }}"
+                id="btn-action-{{ endpoint }}-{{ action.name }}"
                 href="#"
                 class="btn btn-sm btn-primary"
             >
@@ -32,7 +32,7 @@
             </a>
 
             <script nonce="{{ baselib.get_nonce() }}">
-                document.getElementById("btn-action-{{ endpoint }}")
+                document.getElementById("btn-action-{{ endpoint }}-{{ action.name }}")
                     .addEventListener("click", function () {
                         {% if action.confirmation %}
                             const adminAction = new AdminActions();
