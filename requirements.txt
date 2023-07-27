@@ -81,7 +81,7 @@ packaging==21.3
     #   marshmallow
 prison==0.2.1
     # via Flask-AppBuilder (setup.py)
-pygments==2.13.0
+pygments==2.15.0
     # via rich
 pyjwt==2.6.0
     # via
