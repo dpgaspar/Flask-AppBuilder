@@ -727,7 +727,7 @@ class SQLAInterface(BaseInterface):
             return True
         except IntegrityError as e:
             self.message = (as_unicode(self.add_integrity_error_message), "warning")
-            log.warning(LOGMSG_WAR_DBI_ADD_INTEGRITY.format(str(e)))
+            log.warning(LOGMSG_WAR_DBI_ADD_INTEGRITY, e)
             self.session.rollback()
             if raise_exception:
                 raise e
@@ -748,7 +748,7 @@ class SQLAInterface(BaseInterface):
             return True
         except IntegrityError as e:
             self.message = (as_unicode(self.edit_integrity_error_message), "warning")
-            log.warning(LOGMSG_WAR_DBI_EDIT_INTEGRITY.format(str(e)))
+            log.warning(LOGMSG_WAR_DBI_EDIT_INTEGRITY, e)
             self.session.rollback()
             if raise_exception:
                 raise e
@@ -770,7 +770,7 @@ class SQLAInterface(BaseInterface):
             return True
         except IntegrityError as e:
             self.message = (as_unicode(self.delete_integrity_error_message), "warning")
-            log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY.format(str(e)))
+            log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY, e)
             self.session.rollback()
             if raise_exception:
                 raise e
@@ -793,12 +793,12 @@ class SQLAInterface(BaseInterface):
             return True
         except IntegrityError as e:
             self.message = (as_unicode(self.delete_integrity_error_message), "warning")
-            log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY.format(str(e)))
+            log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY, e)
             self.session.rollback()
             return False
         except Exception as e:
             self.message = (as_unicode(self.database_error_message), "danger")
-            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC, e)
             self.session.rollback()
             return False
 

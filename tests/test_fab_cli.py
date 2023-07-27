@@ -122,13 +122,15 @@ class FlaskTestCase(FABTestCase):
 
 class SQLAlchemyImportExportTestCase(FABTestCase):
     def setUp(self):
-        with open("flask_appbuilder/tests/data/roles.json", "r") as fd:
+        basedir = os.path.abspath(os.path.dirname(__file__))
+
+        with open(os.path.join(basedir, "data/roles.json"), "r") as fd:
             self.expected_roles = json.loads(fd.read())
 
     def test_export_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
-            app.config.from_object("flask_appbuilder.tests.config_security")
+            app.config.from_object("tests.config_security")
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
@@ -168,7 +170,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
     def test_export_roles_filename(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
-            app.config.from_object("flask_appbuilder.tests.config_security")
+            app.config.from_object("tests.config_security")
 
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
@@ -192,7 +194,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
         """Test that json.dumps is called with the correct argument passed from CLI."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
-            app.config.from_object("flask_appbuilder.tests.config_security")
+            app.config.from_object("tests.config_security")
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"

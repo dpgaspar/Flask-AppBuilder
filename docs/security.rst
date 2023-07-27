@@ -938,3 +938,23 @@ Some images:
 
 .. image:: ./images/security.png
     :width: 100%
+
+Optional dependency Flask-Talisman
+==================================
+
+All javascript code and inline scripts can have a nonce attribute provided by Flask-Talisman.
+This package will not initialize Flask-Talisman for you, but will use `csp_nonce()` on Jinja2 if it exists.
+To initialize Flask-Talisman, you can do the following:
+
+.. code-block:: python
+
+    from flask import Flask
+    from flask_appbuilder import AppBuilder
+    from flask_talisman import Talisman
+
+    app = Flask(__name__)
+    app.config.from_object('config')
+    db = SQLA(app)
+    appbuilder = AppBuilder(app, db.session)
+
+    Talisman(app)

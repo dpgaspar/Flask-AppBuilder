@@ -95,7 +95,7 @@ class BaseRegisterUser(PublicFormView):
         try:
             mail.send(msg)
         except Exception as e:
-            log.error("Send email exception: {0}".format(str(e)))
+            log.error("Send email exception: %s", e)
             return False
         return True
 
@@ -126,7 +126,7 @@ class BaseRegisterUser(PublicFormView):
         """
         reg = self.appbuilder.sm.find_register_user(activation_hash)
         if not reg:
-            log.error(c.LOGMSG_ERR_SEC_NO_REGISTER_HASH.format(activation_hash))
+            log.error(c.LOGMSG_ERR_SEC_NO_REGISTER_HASH, activation_hash)
             flash(as_unicode(self.false_error_message), "danger")
             return redirect(self.appbuilder.get_url_for_index)
         if not self.appbuilder.sm.add_user(

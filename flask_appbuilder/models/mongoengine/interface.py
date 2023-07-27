@@ -79,9 +79,9 @@ class MongoEngineInterface(BaseInterface):
 
         if page_size is None:  # error checking and warnings
             if page is not None:
-                log.error("Attempting to get page %s but page_size is undefined" % page)
+                log.error("Attempting to get page %s but page_size is undefined", page)
             if count > 100:
-                log.warn("Retrieving %s %s items from DB" % (count, str(self.obj)))
+                log.warn("Retrieving %s %s items from DB", count, self.obj)
         else:  # get data segment for paginated page
             offset = (page or 0) * page_size
             objs = objs[offset : offset + page_size]
@@ -207,7 +207,7 @@ class MongoEngineInterface(BaseInterface):
                 as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
                 "danger",
             )
-            log.exception(LOGMSG_ERR_DBI_ADD_GENERIC.format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_ADD_GENERIC, e)
             return False
 
     def edit(self, item):
@@ -220,7 +220,7 @@ class MongoEngineInterface(BaseInterface):
                 as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
                 "danger",
             )
-            log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC.format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC, e)
             return False
 
     def delete(self, item):
@@ -233,7 +233,7 @@ class MongoEngineInterface(BaseInterface):
                 as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
                 "danger",
             )
-            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC, e)
             return False
 
     def get_columns_list(self):
