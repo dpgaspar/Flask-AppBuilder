@@ -309,15 +309,19 @@ class BaseView(AbstractViewApi):
                 continue
             if attr_name in self.exclude_route_methods:
                 log.info(
-                    f"Not registering route for method "
-                    f"{self.__class__.__name__}.{attr_name}"
+                    "Not registering route for method %s.%s",
+                    self.__class__.__name__,
+                    attr_name,
                 )
                 continue
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
                     log.info(
-                        f"Registering route {self.blueprint.url_prefix}{url} {methods}"
+                        "Registering route %s%s %s",
+                        self.blueprint.url_prefix,
+                        url,
+                        methods,
                     )
                     route_handler = wrap_route_handler_with_hooks(
                         attr_name, attr, before_request_hooks
@@ -1010,7 +1014,7 @@ class BaseCRUDView(BaseModelView):
                 name = related_view.__name__
             else:
                 name = related_view.__class__.__name__
-            log.error("Can't find relation on related view {0}".format(name))
+            log.error("Can't find relation on related view %s", name)
             return None
         return related_view._get_view_widget(
             filters=filters,

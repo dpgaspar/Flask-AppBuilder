@@ -1,7 +1,8 @@
 import datetime
+import enum
 
 from flask_appbuilder import Model
-from sqlalchemy import Column, Date, ForeignKey, Integer, String
+from sqlalchemy import Column, Date, ForeignKey, Integer, String, Enum
 from sqlalchemy.orm import relationship, backref
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
@@ -15,12 +16,9 @@ class ContactGroup(Model):
         return self.name
 
 
-class Gender(Model):
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique=True, nullable=False)
-
-    def __repr__(self):
-        return self.name
+class Gender(enum.Enum):
+    Female = 1
+    Male = 2
 
 
 class Contact(Model):
@@ -32,8 +30,7 @@ class Contact(Model):
     personal_celphone = Column(String(20))
     contact_group_id = Column(Integer, ForeignKey("contact_group.id"), nullable=False)
     contact_group = relationship("ContactGroup")
-    gender_id = Column(Integer, ForeignKey("gender.id"), nullable=False)
-    gender = relationship("Gender")
+    gender = Column(Enum(Gender), info={"marshmallow_by_value": False})
 
     def __repr__(self):
         return self.name

@@ -1,6 +1,37 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.5
+-----------------------------------
+
+- fix: release tests exclusion (#2093) [Daniel Vaz Gaspar]
+- fix: make deletion in quicktemplates example work again (#2088) [Fabian Halkivaha]
+- fix: MVC form action, broken reset my password (#2091) [Daniel Vaz Gaspar]
+- chore: dont add 'tests' package to wheel (#2087) [cwegener]
+- chore(deps): bump pygments from 2.13.0 to 2.15.0 (#2089) [dependabot[bot]]
+
+Improvements and Bug fixes on 4.3.4
+-----------------------------------
+
+- fix: select filters spacing, theme and operation select (#2079) [Daniel Vaz Gaspar]
+- refactor: Refactored logging functions to consistently use lazy interpolation (#2071) [Bruce]
+- feat: add optional flask-talisman and use csp nonce on scripts (#2075) [Daniel Vaz Gaspar]
+- chore: improve tests and test data load (#2072) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.3.3
+-----------------------------------
+
+- fix: marshmallow enum by value keep compatibility (#2067) [Daniel Vaz Gaspar]
+- fix: marshmallow new min version to 3.18 (#2066) [Daniel Vaz Gaspar]
+- fix: select2-ajax-widget (#2052) [Nadir Can Kavkas]
+- chore: remove marshmallow-enum dependency (#2064) [Daniel Vaz Gaspar]
+- fix: Double escaping for next param in login with oauth (#2053) [Aleksandr Musorin]
+- chore: remove RemovedInMarshmallow4 warnings (#2024) [Sebastian Liebscher]
+- docs: Update docs/security.rst with Windows LDAP working Example (#2026) [verschlimmbesserer]
+- fix(translations):  better translation of the pt_BR language (#2061) [Lucas Gonzalez de Queiroz]
+- fix: broken link to config.py template (#2056) [Alex Gordienko]
+- fix: user registration menu name (#2051) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.3.2
 -----------------------------------
 

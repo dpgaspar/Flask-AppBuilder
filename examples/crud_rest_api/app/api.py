@@ -5,22 +5,11 @@ from flask_appbuilder.models.filters import BaseFilter
 from sqlalchemy import or_
 
 from . import appbuilder, db
-from .models import Contact, ContactGroup, Gender, ModelOMParent
+from .models import Contact, ContactGroup, ModelOMParent
 from marshmallow import fields, Schema
 
 
-def fill_gender():
-    try:
-        db.session.add(Gender(name="Male"))
-        db.session.add(Gender(name="Female"))
-        db.session.add(Gender(name="Nonbinary"))
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
-
-
 db.create_all()
-fill_gender()
 
 
 class GreetingsResponseSchema(Schema):
@@ -32,14 +21,10 @@ class GreetingApi(BaseApi):
     openapi_spec_component_schemas = (GreetingsResponseSchema,)
 
     openapi_spec_methods = {
-        "greeting": {
-            "get": {
-                "description": "Override description",
-            }
-        }
+        "greeting": {"get": {"description": "Override description"}}
     }
 
-    @expose('/')
+    @expose("/")
     def greeting(self):
         """Send a greeting
         ---
@@ -65,10 +50,7 @@ class CustomFilter(BaseFilter):
 
     def apply(self, query, value):
         return query.filter(
-            or_(
-                Contact.name.like(value + "%"),
-                Contact.address.like(value + "%"),
-            )
+            or_(Contact.name.like(value + "%"), Contact.address.like(value + "%"))
         )
 
 
@@ -79,11 +61,7 @@ class ContactModelApi(ModelRestApi):
 
     search_filters = {"name": [CustomFilter]}
     openapi_spec_methods = {
-        "get_list": {
-            "get": {
-                "description": "Get all contacts, filter and pagination",
-            }
-        }
+        "get_list": {"get": {"description": "Get all contacts, filter and pagination"}}
     }
 
 

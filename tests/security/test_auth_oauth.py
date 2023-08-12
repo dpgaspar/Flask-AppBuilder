@@ -6,8 +6,8 @@ from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.const import AUTH_OAUTH
 import jinja2
-
-from ..const import USERNAME_ADMIN, USERNAME_READONLY
+from tests.const import USERNAME_ADMIN, USERNAME_READONLY
+from tests.fixtures.users import create_default_users
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
@@ -20,7 +20,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
         self.app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-            "SQLALCHEMY_DATABASE_URI"
+            "SQLALCHEMY_DATABASE_URI", "sqlite:///"
         )
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["AUTH_TYPE"] = AUTH_OAUTH
@@ -50,8 +50,8 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()
-        user_names = [user.username for user in users]
-        self.assertEqual(user_names, [USERNAME_ADMIN, USERNAME_READONLY])
+        user_names = sorted([user.username for user in users])
+        self.assertEqual(user_names, [USERNAME_READONLY, USERNAME_ADMIN])
 
     # ----------------
     # Userinfo Objects
@@ -73,7 +73,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         """
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
-
+        create_default_users(self.appbuilder.session)
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
 
@@ -104,6 +104,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         """
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -129,6 +130,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -157,6 +159,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = False
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # validate - no users are registered
         self.assertOnlyDefaultUsers()
@@ -183,6 +186,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -200,10 +204,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
-        self.assertListEqual(
-            user.roles,
-            [sm.find_role("Admin"), sm.find_role("Public"), sm.find_role("User")],
-        )
+        self.assertIn(sm.find_role("Admin"), user.roles)
+        self.assertIn(sm.find_role("User"), user.roles)
+        self.assertIn(sm.find_role("Public"), user.roles)
 
         # validate - user was given the correct attributes (read from LDAP)
         self.assertEqual(user.first_name, "Alice")
@@ -219,6 +222,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -236,10 +240,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertEqual(len(sm.get_all_users()), 3)
 
         # validate - user was given the correct roles
-        self.assertListEqual(
-            user.roles,
-            [sm.find_role("Admin"), sm.find_role("Public"), sm.find_role("User")],
-        )
+        self.assertIn(sm.find_role("Admin"), user.roles)
+        self.assertIn(sm.find_role("Public"), user.roles)
+        self.assertIn(sm.find_role("User"), user.roles)
 
         # validate - user was given the correct attributes (read from LDAP)
         self.assertEqual(user.first_name, "Alice")
@@ -256,6 +259,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         ] = "contains(['alice'], username) && 'User' || 'Public'"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -288,6 +292,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = False
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -324,6 +329,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -363,6 +369,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         ] = "contains(['alice'], username) && 'User' || 'Public'"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")
@@ -402,6 +409,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         ] = "contains(['alice'], username) && 'User' || 'Public'"
         self.appbuilder = AppBuilder(self.app, self.db.session)
         sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
 
         # add User role
         sm.add_role("User")

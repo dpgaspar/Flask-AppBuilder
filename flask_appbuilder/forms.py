@@ -104,7 +104,7 @@ class FieldConverter(object):
                         validators=self.validators,
                         default=self.default,
                     )
-        log.error("Column %s Type not supported" % self.colname)
+        log.error("Column %s Type not supported", self.colname)
 
 
 class GeneralModelConverter(object):
@@ -257,7 +257,7 @@ class GeneralModelConverter(object):
                     form_props,
                 )
             else:
-                log.warning("Relation {0} not supported".format(col_name))
+                log.warning("Relation %s not supported", col_name)
         else:
             return self._convert_simple(
                 col_name, label, description, lst_validators, form_props

@@ -141,6 +141,12 @@ You can give FlaskAppBuilder roles based on LDAP roles (note, this requires AUTH
 
     # a mapping from LDAP DN to a list of FAB roles
     AUTH_ROLES_MAPPING = {
+        "CN=fab_users,OU=groups,DC=example,DC=com": ["User"],
+        "CN=fab_admins,OU=groups,DC=example,DC=com": ["Admin"],
+    }
+
+    # a mapping from OpenLDAP DN to a list of FAB roles
+    AUTH_ROLES_MAPPING = {
         "cn=fab_users,ou=groups,dc=example,dc=com": ["User"],
         "cn=fab_admins,ou=groups,dc=example,dc=com": ["Admin"],
     }
@@ -932,3 +938,23 @@ Some images:
 
 .. image:: ./images/security.png
     :width: 100%
+
+Optional dependency Flask-Talisman
+==================================
+
+All javascript code and inline scripts can have a nonce attribute provided by Flask-Talisman.
+This package will not initialize Flask-Talisman for you, but will use `csp_nonce()` on Jinja2 if it exists.
+To initialize Flask-Talisman, you can do the following:
+
+.. code-block:: python
+
+    from flask import Flask
+    from flask_appbuilder import AppBuilder
+    from flask_talisman import Talisman
+
+    app = Flask(__name__)
+    app.config.from_object('config')
+    db = SQLA(app)
+    appbuilder = AppBuilder(app, db.session)
+
+    Talisman(app)

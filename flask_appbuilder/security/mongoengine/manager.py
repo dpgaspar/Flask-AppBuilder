@@ -87,14 +87,14 @@ class SecurityManager(BaseSecurityManager):
             register_user.save()
             return register_user
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER, e)
             return False
 
     def del_register_user(self, register_user):
         try:
             register_user.delete()
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_DEL_REGISTER_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_DEL_REGISTER_USER, e)
 
     def find_user(self, username=None, email=None):
         if username:
@@ -131,10 +131,10 @@ class SecurityManager(BaseSecurityManager):
             else:
                 user.password = generate_password_hash(password)
             user.save()
-            log.info(c.LOGMSG_INF_SEC_ADD_USER.format(username))
+            log.info(c.LOGMSG_INF_SEC_ADD_USER, username)
             return user
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_ADD_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_USER, e)
             return False
 
     def count_users(self):
@@ -144,7 +144,7 @@ class SecurityManager(BaseSecurityManager):
         try:
             user.save()
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_UPD_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_UPD_USER, e)
             return False
 
     def get_user_by_id(self, pk):
@@ -170,18 +170,18 @@ class SecurityManager(BaseSecurityManager):
             try:
                 role = self.role_model(name=name, permissions=permissions)
                 role.save()
-                log.info(c.LOGMSG_INF_SEC_ADD_ROLE.format(name))
+                log.info(c.LOGMSG_INF_SEC_ADD_ROLE, name)
                 return role
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_ROLE.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_ROLE, e)
         return role
 
     def update_role(self, pk, name: str) -> Optional[Role]:
         try:
             role = self.role_model.objects(id=pk).update(name=name)
-            log.info(c.LOGMSG_INF_SEC_UPD_ROLE.format(role))
+            log.info(c.LOGMSG_INF_SEC_UPD_ROLE, role)
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_UPD_ROLE.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_UPD_ROLE, e)
             return
 
     def find_role(self, name):
@@ -228,7 +228,7 @@ class SecurityManager(BaseSecurityManager):
                 perm.save()
                 return perm
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_PERMISSION.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_PERMISSION, e)
         return perm
 
     def del_permission(self, name):
@@ -243,7 +243,7 @@ class SecurityManager(BaseSecurityManager):
             try:
                 perm.delete()
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION, e)
 
     """
     ----------------------
@@ -273,7 +273,7 @@ class SecurityManager(BaseSecurityManager):
                 view_menu.save()
                 return view_menu
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_VIEWMENU.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_VIEWMENU, e)
         return view_menu
 
     def del_view_menu(self, name):
@@ -288,7 +288,7 @@ class SecurityManager(BaseSecurityManager):
             try:
                 obj.delete()
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION, e)
 
     """
     ----------------------
@@ -336,10 +336,10 @@ class SecurityManager(BaseSecurityManager):
         pv.view_menu, pv.permission = vm, perm
         try:
             pv.save()
-            log.info(c.LOGMSG_INF_SEC_ADD_PERMVIEW.format(str(pv)))
+            log.info(c.LOGMSG_INF_SEC_ADD_PERMVIEW, pv)
             return pv
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW, e)
 
     def del_permission_view_menu(self, permission_name, view_menu_name, cascade=True):
         try:
@@ -352,11 +352,9 @@ class SecurityManager(BaseSecurityManager):
             pv = self.permissionview_model.objects(permission=pv.permission)
             if not pv:
                 self.del_permission(pv.permission.name)
-            log.info(
-                c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(permission_name, view_menu_name)
-            )
+            log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW, permission_name, view_menu_name)
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW, e)
 
     def exist_permission_on_views(self, lst, item):
         for i in lst:
@@ -383,11 +381,9 @@ class SecurityManager(BaseSecurityManager):
             try:
                 role.permissions.append(perm_view)
                 role.save()
-                log.info(
-                    c.LOGMSG_INF_SEC_ADD_PERMROLE.format(str(perm_view), role.name)
-                )
+                log.info(c.LOGMSG_INF_SEC_ADD_PERMROLE, perm_view, role.name)
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE, e)
 
     def del_permission_role(self, role, perm_view):
         """
@@ -402,11 +398,9 @@ class SecurityManager(BaseSecurityManager):
             try:
                 role.permissions.remove(perm_view)
                 role.save()
-                log.info(
-                    c.LOGMSG_INF_SEC_DEL_PERMROLE.format(str(perm_view), role.name)
-                )
+                log.info(c.LOGMSG_INF_SEC_DEL_PERMROLE, perm_view, role.name)
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE, e)
 
     def export_roles(
         self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None

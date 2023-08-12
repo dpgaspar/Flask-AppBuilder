@@ -3,8 +3,8 @@ import os
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.tests.sqla.models import Model1
 from flask_appbuilder.urltools import get_filter_args
+from tests.sqla.models import Model1
 
 from .base import FABTestCase
 
@@ -13,7 +13,7 @@ class FlaskTestCase(FABTestCase):
     def setUp(self):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)

@@ -7,9 +7,9 @@ from flask import Flask
 from flask_appbuilder import AppBuilder
 from flask_appbuilder import SQLA
 from flask_appbuilder.security.sqla.models import Permission, Role, User, ViewMenu
-from flask_appbuilder.tests.base import FABTestCase
-from flask_appbuilder.tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
 import prison
+from tests.base import FABTestCase
+from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
 from werkzeug.security import generate_password_hash
 
 
@@ -20,7 +20,7 @@ class UserAPITestCase(FABTestCase):
     def setUp(self) -> None:
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object("flask_appbuilder.tests.config_security_api")
+        self.app.config.from_object("tests.config_security_api")
         self.db = SQLA(self.app)
 
         self.session = self.db.session
@@ -67,6 +67,8 @@ class UserAPITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
+        admin_role_id = self.appbuilder.sm.find_role("Admin").id
+        readonly_role_id = self.appbuilder.sm.find_role("ReadOnly").id
         query = {"order_column": "username", "order_direction": "desc"}
         uri = f"api/v1/security/users/?q={prison.dumps(query)}"
         rv = self.auth_client_get(client, token, uri)
@@ -85,7 +87,7 @@ class UserAPITestCase(FABTestCase):
                 "email": "admin@fab.org",
                 "first_name": "admin",
                 "last_name": "user",
-                "roles": [{"id": 2, "name": "Admin"}],
+                "roles": [{"id": admin_role_id, "name": "Admin"}],
                 "username": "testadmin",
             },
             {
@@ -96,7 +98,7 @@ class UserAPITestCase(FABTestCase):
                 "email": "readonly@fab.org",
                 "first_name": "readonly",
                 "last_name": "readonly",
-                "roles": [{"id": 1, "name": "ReadOnly"}],
+                "roles": [{"id": readonly_role_id, "name": "ReadOnly"}],
                 "username": "readonly",
             },
         ]
@@ -125,6 +127,7 @@ class UserAPITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
+        readonly_role_id = self.appbuilder.sm.find_role("ReadOnly").id
         query = {"filters": [{"col": "username", "opr": "eq", "value": "readonly"}]}
         uri = f"api/v1/security/users/?q={prison.dumps(query)}"
         rv = self.auth_client_get(client, token, uri)
@@ -140,7 +143,7 @@ class UserAPITestCase(FABTestCase):
                 "email": "readonly@fab.org",
                 "first_name": "readonly",
                 "last_name": "readonly",
-                "roles": [{"id": 1, "name": "ReadOnly"}],
+                "roles": [{"id": readonly_role_id, "name": "ReadOnly"}],
                 "username": "readonly",
             }
         ]
@@ -153,7 +156,10 @@ class UserAPITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        query = {"filters": [{"col": "roles", "opr": "rel_m_m", "value": 2}]}
+        admin_role_id = self.appbuilder.sm.find_role("Admin").id
+        query = {
+            "filters": [{"col": "roles", "opr": "rel_m_m", "value": admin_role_id}]
+        }
         uri = f"api/v1/security/users/?q={prison.dumps(query)}"
         rv = self.auth_client_get(client, token, uri)
         response = json.loads(rv.data)
@@ -168,7 +174,7 @@ class UserAPITestCase(FABTestCase):
                 "email": "admin@fab.org",
                 "first_name": "admin",
                 "last_name": "user",
-                "roles": [{"id": 2, "name": "Admin"}],
+                "roles": [{"id": admin_role_id, "name": "Admin"}],
                 "username": "testadmin",
             }
         ]
@@ -425,7 +431,7 @@ class RolePermissionAPITestCase(FABTestCase):
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_API"] = True
         self.db = SQLA(self.app)
         self.session = self.db.session
@@ -540,8 +546,7 @@ class RolePermissionAPITestCase(FABTestCase):
         self.appbuilder.sm.del_permission(permission_name)
 
     def test_list_view_api(self):
-        """REST Api: Test view apis
-        """
+        """REST Api: Test view apis"""
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -654,8 +659,7 @@ class RolePermissionAPITestCase(FABTestCase):
         assert new_view_menu is None
 
     def test_list_permission_view_api(self):
-        """REST Api: Test permission view apis
-        """
+        """REST Api: Test permission view apis"""
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -761,8 +765,7 @@ class RolePermissionAPITestCase(FABTestCase):
         assert pvm is None
 
     def test_list_role_api(self):
-        """REST Api: Test role apis
-        """
+        """REST Api: Test role apis"""
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -1047,7 +1050,7 @@ class UserRolePermissionDisabledTestCase(FABTestCase):
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
@@ -1097,7 +1100,7 @@ class UserCustomPasswordComplexityValidatorTestCase(FABTestCase):
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_API"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_ENABLED"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_VALIDATOR"] = passwordValidator
@@ -1157,7 +1160,7 @@ class UserDefaultPasswordComplexityValidatorTestCase(FABTestCase):
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_API"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_ENABLED"] = True
         self.db = SQLA(self.app)

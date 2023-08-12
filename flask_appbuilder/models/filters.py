@@ -114,7 +114,7 @@ class BaseFilterConverter:
         for conversion in self.conversion_table:
             if getattr(self.datamodel, conversion[0])(col_name):
                 return [item(col_name, self.datamodel) for item in conversion[1]]
-        log.warning("Filter type not supported for column: %s" % col_name)
+        log.warning("Filter type not supported for column: %s", col_name)
 
 
 class Filters(object):

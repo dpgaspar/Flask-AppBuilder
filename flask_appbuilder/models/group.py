@@ -255,7 +255,7 @@ class BaseProcessData(object):
                 for group_col_data, i in zip(item[0], enumerate(item[0])):
                     row[self.group_bys_cols[i]] = str(group_col_data)
             for col_data, i in zip(item[1:], enumerate(item[1:])):
-                log.debug("{0},{1}".format(col_data, i))
+                log.debug("%s,%s", col_data, i)
                 key = self.aggr_by_cols[i].__name__ + self.aggr_by_cols[i]
                 if isinstance(col_data, datetime.date):
                     row[key] = str(col_data)

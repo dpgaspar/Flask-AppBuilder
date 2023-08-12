@@ -111,7 +111,7 @@ class ContactModelView(ModelView):
             col_name="contact_sub_group",
             widget=Select2SlaveAJAXWidget(
                 master_id="contact_group",
-                endpoint="/contactmodelview/api/column/add/contact_sub_group?_flt_0_contact_group_id={{ID}}",
+                endpoint="/contactmodelview/api/column/add/contact_sub_group?_flt_0_contact_group={{ID}}",
             ),
         ),
         "contact_group2": AJAXSelectField(
@@ -130,7 +130,7 @@ class ContactModelView(ModelView):
             col_name="contact_sub_group2",
             widget=Select2SlaveAJAXWidget(
                 master_id="contact_group2",
-                endpoint="/contactmodelview/api/column/add/contact_sub_group2?_flt_0_contact_group2_id={{ID}}",
+                endpoint="/contactmodelview/api/column/add/contact_sub_group2?_flt_0_contact_group2={{ID}}",
             ),
         ),
     }

@@ -35,7 +35,7 @@ setup(
     ),
     long_description=desc(),
     long_description_content_type="text/x-rst",
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests*"]),
     package_data={"": ["LICENSE"]},
     entry_points={
         "flask.commands": ["fab=flask_appbuilder.cli:fab"],
@@ -45,7 +45,7 @@ setup(
     zip_safe=False,
     platforms="any",
     install_requires=[
-        "apispec[yaml]>=3.3, <6",
+        "apispec[yaml]>=6.0.0, <7",
         "colorama>=0.3.9, <1",
         "click>=8, <9",
         "email_validator>=1.0.5, <2",
@@ -57,8 +57,7 @@ setup(
         "Flask-WTF>=0.14.2, <2",
         "Flask-JWT-Extended>=4.0.0, <5.0.0",
         "jsonschema>=3, <5",
-        "marshmallow>=3, <4",
-        "marshmallow-enum>=1.5.1, <2",
+        "marshmallow>=3.18.0, <4",
         "marshmallow-sqlalchemy>=0.22.0, <0.27.0",
         "python-dateutil>=2.3, <3",
         "prison>=0.2.1, <1.0.0",
@@ -72,6 +71,7 @@ setup(
         "jmespath": ["jmespath>=0.9.5"],
         "oauth": ["Authlib>=0.14, <2.0.0"],
         "openid": ["Flask-OpenID>=1.2.5, <2"],
+        "talisman": ["flask-talisman>=1.0.0, <2.0"],
     },
     tests_require=["nose>=1.0", "mockldap>=0.3.0", "hiro>=0.5.1"],
     classifiers=[

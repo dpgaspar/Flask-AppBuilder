@@ -1,6 +1,6 @@
 from flask_appbuilder import SQLA
-from flask_appbuilder.tests.base import FABTestCase
 from flask_login import AnonymousUserMixin
+from tests.base import FABTestCase
 
 
 class SecurityPermissionsTestCase(FABTestCase):
@@ -9,7 +9,7 @@ class SecurityPermissionsTestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
 
         self.app = Flask(__name__)
-        self.app.config.from_object("flask_appbuilder.tests.config_security")
+        self.app.config.from_object("tests.config_security")
         self.app.config["FAB_ADD_SECURITY_VIEWS"] = False
 
         self.db = SQLA(self.app)
