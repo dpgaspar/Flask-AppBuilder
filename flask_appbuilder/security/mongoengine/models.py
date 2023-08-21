@@ -77,7 +77,7 @@ class User(Document):
     username = StringField(max_length=64, required=True, unique=True)
     password = StringField(max_length=256)
     active = BooleanField()
-    email = StringField(max_length=254, required=True, unique=True)
+    email = StringField(max_length=320, required=True, unique=True)
     last_login = DateTimeField()
     login_count = IntField()
     fail_login_count = IntField()

@@ -99,17 +99,13 @@ class User(Model):
     username = Column(String(64), unique=True, nullable=False)
     password = Column(String(256))
     active = Column(Boolean)
-    email = Column(String(254), unique=True, nullable=False)
+    email = Column(String(320), unique=True, nullable=False)
     last_login = Column(DateTime)
     login_count = Column(Integer)
     fail_login_count = Column(Integer)
     roles = relationship("Role", secondary=assoc_user_role, backref="user")
-    created_on = Column(
-        DateTime, default=lambda: datetime.datetime.now(), nullable=True
-    )
-    changed_on = Column(
-        DateTime, default=lambda: datetime.datetime.now(), nullable=True
-    )
+    created_on = Column(DateTime, default=lambda: datetime.datetime.now(), nullable=True)
+    changed_on = Column(DateTime, default=lambda: datetime.datetime.now(), nullable=True)
 
     @declared_attr
     def created_by_fk(self):
