@@ -77,7 +77,7 @@ class User(Document):
     username = StringField(max_length=64, required=True, unique=True)
     password = StringField(max_length=256)
     active = BooleanField()
-    email = StringField(max_length=64, required=True, unique=True)
+    email = StringField(max_length=320, required=True, unique=True)
     last_login = DateTimeField()
     login_count = IntField()
     fail_login_count = IntField()
@@ -104,7 +104,7 @@ class User(Document):
         return as_unicode(self.id)
 
     def get_full_name(self):
-        return u"{0} {1}".format(self.first_name, self.last_name)
+        return "{0} {1}".format(self.first_name, self.last_name)
 
     def __unicode__(self):
         return self.get_full_name()
