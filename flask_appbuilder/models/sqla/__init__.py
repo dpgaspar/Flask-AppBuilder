@@ -2,27 +2,9 @@ import datetime
 import logging
 import re
 
-try:
-    from flask_sqlalchemy import DefaultMeta, Model as FSQLAlchemyModel
-except ImportError:
-    from flask_sqlalchemy.model import (  # noqa
-        DefaultMeta,
-        Model as FSQLAlchemyModel,
-    )
+from flask_sqlalchemy.model import DefaultMeta, Model
 from flask_sqlalchemy import SQLAlchemy
-
-
-try:
-    from sqlalchemy.ext.declarative import as_declarative, declarative_base
-except ImportError:
-    from sqlalchemy.ext.declarative.api import as_declarative  # noqa
-
-try:
-    from sqlalchemy.orm.util import identity_key  # noqa
-
-    has_identity_key = True
-except ImportError:
-    has_identity_key = False
+from sqlalchemy.orm import declarative_base
 
 log = logging.getLogger(__name__)
 
@@ -66,7 +48,7 @@ class BaseModel:
         return result
 
 
-Model = declarative_base(cls=BaseModel, metaclass=ModelDeclarativeMeta, name="Model")
+Model = declarative_base(cls=Base   Model, metaclass=ModelDeclarativeMeta, name="Model")
 
 
 class SQLA(SQLAlchemy):
