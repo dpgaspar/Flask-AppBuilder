@@ -48,7 +48,7 @@ class BaseModel:
         return result
 
 
-Model = declarative_base(cls=Base   Model, metaclass=ModelDeclarativeMeta, name="Model")
+Model = declarative_base(cls=BaseModel, metaclass=ModelDeclarativeMeta, name="Model")
 
 
 class SQLA(SQLAlchemy):
