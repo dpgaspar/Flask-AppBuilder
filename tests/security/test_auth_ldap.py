@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import Mock
 
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder, SQLA, Model
 from flask_appbuilder.security.manager import AUTH_LDAP
 from flask_appbuilder.security.sqla.models import User
 import jinja2
@@ -36,7 +36,7 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_EMAIL_FIELD"] = "mail"
 
         # start Database
-        self.db = SQLA(self.app)
+        self.db = SQLA(self.app, model_class=Model)
 
     def tearDown(self):
         # Remove test user
