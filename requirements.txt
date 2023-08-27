@@ -109,13 +109,13 @@ six==1.16.0
     #   prison
     #   python-dateutil
     #   sqlalchemy-utils
-sqlalchemy==1.4.29
+sqlalchemy==2.0.20
     # via
     #   Flask-AppBuilder (setup.py)
     #   flask-sqlalchemy
     #   marshmallow-sqlalchemy
     #   sqlalchemy-utils
-sqlalchemy-utils==0.37.8
+sqlalchemy-utils==0.41.1
     # via Flask-AppBuilder (setup.py)
 typing-extensions==4.4.0
     # via
