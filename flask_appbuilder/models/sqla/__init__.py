@@ -37,6 +37,7 @@ class BaseModel:
     """
 
     __table_args__ = {"extend_existing": True}
+    __fsa__: SQLAlchemy
 
     def to_json(self):
         result = dict()
