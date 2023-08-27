@@ -41,10 +41,12 @@ flask-limiter==3.2.0
     # via Flask-AppBuilder (setup.py)
 flask-login==0.6.0
     # via Flask-AppBuilder (setup.py)
-flask-sqlalchemy==2.5.1
+flask-sqlalchemy==3.0.2
     # via Flask-AppBuilder (setup.py)
 flask-wtf==1.0.1
     # via Flask-AppBuilder (setup.py)
+greenlet==1.1.2
+    # via sqlalchemy
 idna==3.3
     # via email-validator
 importlib-metadata==6.6.0
@@ -97,7 +99,7 @@ pytz==2021.1
     # via
     #   babel
     #   flask-babel
-pyyaml==5.4.1
+pyyaml==5.3.1
     # via apispec
 rich==12.6.0
     # via flask-limiter
