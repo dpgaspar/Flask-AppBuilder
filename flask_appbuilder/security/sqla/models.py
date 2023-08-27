@@ -22,7 +22,7 @@ from sqlalchemy.orm import backref, relationship
 _dont_audit = False
 
 
-class Permission(db.Model):
+class Permission(Model):
     __tablename__ = "ab_permission"
     id = Column(Integer, Sequence("ab_permission_id_seq"), primary_key=True)
     name = Column(String(100), unique=True, nullable=False)

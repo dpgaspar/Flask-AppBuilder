@@ -41,7 +41,7 @@ flask-limiter==3.2.0
     # via Flask-AppBuilder (setup.py)
 flask-login==0.6.0
     # via Flask-AppBuilder (setup.py)
-flask-sqlalchemy==3.0.2
+flask-sqlalchemy==3.0.5
     # via Flask-AppBuilder (setup.py)
 flask-wtf==1.0.1
     # via Flask-AppBuilder (setup.py)
