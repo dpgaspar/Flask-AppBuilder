@@ -24,6 +24,7 @@ class FlaskTestCase(FABTestCase):
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.create_default_users(self.appbuilder)
 
         class Model1View(ModelView):
             datamodel = SQLAInterface(Model1)

@@ -19,7 +19,6 @@ from marshmallow import ValidationError
 
 
 class SecurityApi(BaseApi):
-
     resource_name = "security"
     version = API_SECURITY_VERSION
     openapi_spec_tag = "Security"

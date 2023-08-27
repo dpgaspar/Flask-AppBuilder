@@ -1,10 +1,82 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.4.1
+-----------------------------------
+
+- fix: user search list on stats (#2211) [Daniel Vaz Gaspar]
+- fix: performance issues on user and roles list (#2209) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.4.0
+-----------------------------------
+
+- chore(deps): bump the github-actions group with 4 updates (#2201) [dependabot[bot]]
+- fix: python versions setup.py (#2204) [Daniel Vaz Gaspar]
+- ci: refactor requirements structure and improve dependabot config (#2198) [Daniel Vaz Gaspar]
+- chore(deps): bump jinja2 from 3.0.3 to 3.1.3 (#2180) [dependabot[bot]]
+- fix: authentik test (#2199) [Daniel Vaz Gaspar]
+- feat: Added authentik as new identity provider (#2168) [Jasper Schoenmaker]
+- chore(deps): bump requests from 2.26.0 to 2.31.0 (#2050) [dependabot[bot]]
+- docs: updated Flask-Babel link and fix typo (#2166) [Gughanathan M]
+- chore: bump several non base dependencies (#2197) [Daniel Vaz Gaspar]
+- fix: Increase upper bound on marshmallow-sqlalchemy (#2191) [spike77453]
+- chore: remove email_validator constraint (#2167) [Marcus Lim]
+- chore: Upgrade to Pillow 10.0.1 (#2136) [Dosenpfand]
+- chore(docs): Update i18n.rst for Turkish (#2187) [coteli]
+- chore: upgrade werkzeug and Flask, deprecate OpenID and MongoEngine (#2196) [Daniel Vaz Gaspar]
+- feat: Turkish translations (#2185) [coteli]
+- feat: AUTH_REMOTE_USER_ENV_VAR config key for auth REMOTE_USER type (#2193) [Daniel Vaz Gaspar]
+- fix: don't load inactive users with sessions (#2192) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.3.11
+-----------------------------------
+
+- fix: openID provider validation flow (#2186) [Daniel Vaz Gaspar]
+- feat: support Auth0 OAuth2 (#2171) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.3.10
+-----------------------------------
+
+- fix: azure keep using upn if exists (#2163) [Daniel Vaz Gaspar]
+- docs: Update shield of supported Python versions (#2156) [Dosenpfand]
+- docs: update security policy (#2155) [Daniel Vaz Gaspar]
+- docs: improve LDAP auth auth_roles_mapping (#2149) [Daniel Vaz Gaspar]
+- docs: Update security docs to reflect LDAP casing issues (#2098) [Anders Bogsnes]
+- fix: old API api column edit (#2134) [Daniel Vaz Gaspar]
+- chore: add bootstrap min map (#2148) [Daniel Vaz Gaspar]
+- chore: Add support for Python 3.10, 3.11, 3.12 and drop 3.7 (#2147) [Dosenpfand]
+- chore: use npm for all frontend dependencies (#2144) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.3.9
+-----------------------------------
+
+- ci: create release script (#2142) [Daniel Vaz Gaspar]
+- fix: wtforms compat on 3.1.0 (#2138) [Daniel Vaz Gaspar]
+- docs: fix RTD config requirements (#2140) [Daniel Vaz Gaspar]
+- docs: fix RTD config (#2139) [Daniel Vaz Gaspar]
+- docs: add RTD required config (#2135) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.3.8
+-----------------------------------
+
+- fix: filter list UI spacing between elements (#2128) [Daniel Vaz Gaspar]
+- fix: add github sponsor (#2130) [Daniel Vaz Gaspar]
+- docs: add github sponsor (#2129) [Daniel Vaz Gaspar]
+- fix: swagger include js and css on static (#2127) [Daniel Vaz Gaspar]
+- fix: Remove erroring endpoint "/login/<provider>/<register>" from AuthOAuthView (#2120) [David Kalamarides]
+- fix: azure user info claims and JWT decode (#2121) [Daniel Vaz Gaspar]
+- fix: Validate Azure JWTs using `authlib` (#2112) [Daniel Wolf]
+- docs(typo): "preform" -> "perform" x4 (#2123) [Sam Firke]
+
+Improvements and Bug fixes on 4.3.7
+-----------------------------------
+
+- fix: swagger missing nonce (#2116) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.3.6
 -----------------------------------
 
-fix: increase email field length (#2102) [Daniel Vaz Gaspar]
+- fix: increase email field length (#2102) [Daniel Vaz Gaspar]
 
 Improvements and Bug fixes on 4.3.5
 -----------------------------------

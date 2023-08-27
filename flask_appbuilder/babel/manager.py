@@ -7,7 +7,6 @@ from flask_babel import Babel
 
 
 class BabelManager(BaseManager):
-
     babel = None
     locale_view = None
 

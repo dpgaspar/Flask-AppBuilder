@@ -78,8 +78,8 @@ class FilterStartsWith(BaseFilter):
 
 class GenericFilterConverter(BaseFilterConverter):
     """
-        Class for converting columns into a supported list of filters
-        specific for SQLAlchemy.
+    Class for converting columns into a supported list of filters
+    specific for SQLAlchemy.
 
     """
 

@@ -1,12 +1,12 @@
-.f16 .flag{display:inline-block;height:16px;width:16px;vertical-align:text-top;line-height:16px;background:url(../../img/flags/flags16.png) no-repeat;}
-.f16 ._African_Union(OAS){background-position:0 -16px;}
+.f16 .flag{display:inline-block;height:16px;width:16px;vertical-align:text-top;line-height:16px;background:url(../images/flags16.png) no-repeat;}
+.f16 ._African_Union{background-position:0 -16px;}
 .f16 ._Arab_League{background-position:0 -32px;}
 .f16 ._ASEAN{background-position:0 -48px;}
 .f16 ._CARICOM{background-position:0 -64px;}
 .f16 ._CIS{background-position:0 -80px;}
 .f16 ._Commonwealth{background-position:0 -96px;}
 .f16 ._England{background-position:0 -112px;}
-.f16 ._European_Union{background-position:0 -128px;}
+.f16 ._European_Union, .f16 .eu{background-position:0 -128px;}
 .f16 ._Islamic_Conference{background-position:0 -144px;}
 .f16 ._Kosovo{background-position:0 -160px;}
 .f16 ._NATO{background-position:0 -176px;}
@@ -27,14 +27,14 @@
 .f16 .ai{background-position:0 -416px;}
 .f16 .al{background-position:0 -432px;}
 .f16 .am{background-position:0 -448px;}
-.f16 .an{background-position:0 -464px;}
-.f16 .ao{background-position:0 -480px;}
-.f16 .aq{background-position:0 -496px;}
-.f16 .ar{background-position:0 -512px;}
-.f16 .as{background-position:0 -528px;}
-.f16 .at{background-position:0 -544px;}
-.f16 .au{background-position:0 -560px;}
-.f16 .aw{background-position:0 -576px;}
+.f16 .ao{background-position:0 -464px;}
+.f16 .aq{background-position:0 -480px;}
+.f16 .ar{background-position:0 -496px;}
+.f16 .as{background-position:0 -512px;}
+.f16 .at{background-position:0 -528px;}
+.f16 .au{background-position:0 -544px;}
+.f16 .aw{background-position:0 -560px;}
+.f16 .ax{background-position:0 -576px;}
 .f16 .az{background-position:0 -592px;}
 .f16 .ba{background-position:0 -608px;}
 .f16 .bb{background-position:0 -624px;}
@@ -87,9 +87,9 @@
 .f16 .fj{background-position:0 -1376px;}
 .f16 .fm{background-position:0 -1392px;}
 .f16 .fo{background-position:0 -1408px;}
-.f16 .fr{background-position:0 -1424px;}
+.f16 .fr{background-position:0 -1424px;}  .f16 .bl, .f16 .cp, .f16 .mf, .f16 .yt{background-position:0 -1424px;}
 .f16 .ga{background-position:0 -1440px;}
-.f16 .gb{background-position:0 -1456px;}
+.f16 .gb{background-position:0 -1456px;}  .f16 .sh{background-position:0 -1456px;}
 .f16 .gd{background-position:0 -1472px;}
 .f16 .ge{background-position:0 -1488px;}
 .f16 .gg{background-position:0 -1504px;}
@@ -171,8 +171,8 @@
 .f16 .ne{background-position:0 -2704px;}
 .f16 .ng{background-position:0 -2720px;}
 .f16 .ni{background-position:0 -2736px;}
-.f16 .nl{background-position:0 -2752px;}
-.f16 .no{background-position:0 -2768px;}
+.f16 .nl{background-position:0 -2752px;}  .f16 .bq{background-position:0 -2752px;}
+.f16 .no{background-position:0 -2768px;}  .f16 .bv, .f16 .nq, .f16 .sj{background-position:0 -2768px;}
 .f16 .np{background-position:0 -2784px;}
 .f16 .nr{background-position:0 -2800px;}
 .f16 .nz{background-position:0 -2816px;}
@@ -242,4 +242,8 @@
 .f16 .ye{background-position:0 -3840px;}
 .f16 .za{background-position:0 -3856px;}
 .f16 .zm{background-position:0 -3872px;}
-.f16 .zw{background-position:0 -3872px;}
+.f16 .zw{background-position:0 -3888px;}
+.f16 .sx{background-position:0 -3904px;}
+.f16 .cw{background-position:0 -3920px;}
+.f16 .ss{background-position:0 -3936px;}
+.f16 .nu{background-position:0 -3952px;}
