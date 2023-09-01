@@ -4,7 +4,7 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
-from authlib.jose import jwt, JsonWebKey
+from authlib.jose import JsonWebKey, jwt
 from flask import Flask, g, session, url_for
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
