@@ -686,7 +686,9 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def _decode_and_validate_azure_jwt(self, id_token):
         keyset = KeySet.import_key_set(
-            requests.get("https://login.microsoftonline.com/common/discovery/keys").json()
+            requests.get(
+                "https://login.microsoftonline.com/common/discovery/keys"
+            ).json()
         )
         claims = jwt.decode(id_token, keyset).claims
         claims_requests = jwt.JWTClaimsRegistry()
