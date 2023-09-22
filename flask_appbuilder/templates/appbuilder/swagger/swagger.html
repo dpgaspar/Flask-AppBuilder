@@ -3,17 +3,17 @@
 {% block head_css %}
     {{ super() }}
     <link type="text/css" rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css">
-    <link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+          href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css"
+          nonce="{{ baselib.get_nonce() }}">
 {% endblock %}
 
 {% block content %}
     <div id="swagger-ui">
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui-bundle.js" nonce="{{ baselib.get_nonce() }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"
+            nonce="{{ baselib.get_nonce() }}"></script>
     <!-- `SwaggerUIBundle` is now available on the page -->
-    <script>
-
+    <script nonce="{{ baselib.get_nonce() }}">
         const ui = SwaggerUIBundle({
             url: '{{openapi_uri}}',
             dom_id: '#swagger-ui',
@@ -22,7 +22,6 @@
                 SwaggerUIBundle.SwaggerUIStandalonePreset
             ],
             layout: "BaseLayout"
-
         })
     </script>
 {% endblock %}
