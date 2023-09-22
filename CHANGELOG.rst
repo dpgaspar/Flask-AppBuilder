@@ -1,10 +1,15 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.7
+-----------------------------------
+
+- fix: fix: swagger missing nonce (#2116) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.3.6
 -----------------------------------
 
-fix: increase email field length (#2102) [Daniel Vaz Gaspar]
+- fix: increase email field length (#2102) [Daniel Vaz Gaspar]
 
 Improvements and Bug fixes on 4.3.5
 -----------------------------------
