@@ -2,7 +2,7 @@ version: "3.7"
 services:
   postgres:
     container_name: fab-postgres
-    image: postgres:10
+    image: postgres:14
     restart: unless-stopped
     env_file: .env
     command: postgres -c 'max_connections=500'
@@ -20,3 +20,18 @@ services:
       MONGO_INITDB_DATABASE: app
     ports:
       - 27017:27017
+  ldap:
+    container_name: fab-ldap
+    image: bitnami/openldap:2.6.4
+    environment:
+      LDAP_URI: ldap://openldap:1389
+      LDAP_BASE: dc=example,dc=org
+      LDAP_ADMIN_USERNAME: admin
+      LDAP_ADMIN_PASSWORD: admin_password
+      LDAP_CUSTOM_LDIF_DIR: /ldifs
+      LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,memberof
+    volumes:
+      - './docker/openldap/ldifs:/ldifs'
+      - './docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
+    ports:
+      - 1389:1389

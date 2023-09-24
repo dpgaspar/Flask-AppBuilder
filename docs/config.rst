@@ -13,6 +13,11 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +========================================+============================================+===========+
 | SQLALCHEMY_DATABASE_URI                | DB connection string (flask-sqlalchemy)    |   Cond.   |
 +----------------------------------------+--------------------------------------------+-----------+
+| SECRET_KEY                             | Flask secret key used for securely signing |           |
+|                                        | the session cookie Set the secret_key on   |           |
+|                                        | the application to something unique and    |           |
+|                                        | secret.                                    |   Yes     |
++----------------------------------------+--------------------------------------------+-----------+
 | MONGODB_SETTINGS                       | DB connection string (flask-mongoengine)   |   Cond.   |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_TYPE = 0 | 1 | 2 | 3 | 4          | This is the authentication type            |   Yes     |
@@ -56,6 +61,12 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | AUTH_TYPE = 2                              |           |
 |                                        |                                            |           |
 |                                        | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                        |                                            |           |
+|                                        | For using LDAP over TLS, set the protocol  |           |
+|                                        | scheme to "ldaps" and set                  |           |
+|                                        | "AUTH_LDAP_USE_TLS = False"                |           |
++----------------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_USE_TLS                      | Require the use of STARTTLS                |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_BIND_USER                    | Define the DN for the user that will be    |   No      |
 |                                        | used for the initial LDAP BIND.            |           |
@@ -72,10 +83,11 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | (Bool)                                     |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_CACERTDIR                | CA Certificate directory to check peer     |   No      |
-|                                        | certificate                                |           |
+|                                        | certificate. Certificate files must be     |           |
+|                                        | PEM-encoded                                |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_CACERTFILE               | CA Certificate file to check peer          |   No      |
-|                                        | certificate                                |           |
+|                                        | certificate. File must be PEM-encoded      |           |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_CERTFILE                 | Certificate file for client auth           |   No      |
 |                                        | use with AUTH_LDAP_TLS_KEYFILE             |           |
@@ -202,11 +214,6 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | AUTH_ROLE_PUBLIC                       | Special Role that holds the public         |   No      |
 |                                        | permissions, no authentication needed.     |           |
 +----------------------------------------+--------------------------------------------+-----------+
-| AUTH_STRICT_RESPONSE_CODES             | When True, protected endpoints will return |   No      |
-|                                        | HTTP 403 instead of 401. This option will  |           |
-|                                        | be removed and default to True on the next |           |
-|                                        | major release. defaults to False           |           |
-+----------------------------------------+--------------------------------------------+-----------+
 | AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS| Allow REST API login with alternative auth |   No      |
 | True|False                             | providers (default False)                  |           |
 +----------------------------------------+--------------------------------------------+-----------+
@@ -262,6 +269,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | FAB_SECURITY_MANAGER_CLASS             | Declare a new custom SecurityManager       |           |
 |                                        | class                                      |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
+| FAB_ADD_SECURITY_API                   | [Beta] Adds a CRUD REST API for users,     |           |
+|                                        | roles, permissions, view_menus.            |   No      |
+|                                        | Further details on /swagger/v1             |           |
+|                                        | All endpoints are under /api/v1/sercurity/ |           |
+|                                        | [Note]: This feature is still in beta      |           |
+|                                        | breaking changes are likely to occur       |           |
++----------------------------------------+--------------------------------------------+-----------+
 | FAB_ADD_SECURITY_VIEWS                 | Enables or disables registering all        |           |
 |                                        | security views (boolean default:True)      |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
@@ -307,6 +321,15 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | Default is False.                          |           |
 +----------------------------------------+--------------------------------------------+-----------+
 
+Note
+----
+
+Make sure you set your own `SECRET_KEY` to something unique and secret. This secret key is used by Flask for
+securely signing the session cookie and can be used for any other security related needs by extensions or your application.
+It should be a long random bytes or str. For example, copy the output of this to your config::
+
+    $ python -c 'import secrets; print(secrets.token_hex())'
+    '192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
 
 Using config.py
 ---------------
@@ -320,7 +343,7 @@ Next you only have to import them to the Flask app object, like this
     app = Flask(__name__)
     app.config.from_object('config')
 
-Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py>`_
+Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py.tpl>`_
 
 
 .. _jmespath-examples:

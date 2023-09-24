@@ -243,7 +243,7 @@ def get_file_original_name(name):
     """
         Use this function to get the user's original filename.
         Filename is concatenated with <UUID>_sep_<FILE NAME>, to avoid collisions.
-        Use this function on your models on an aditional function
+        Use this function on your models on an additional function
 
         ::
 

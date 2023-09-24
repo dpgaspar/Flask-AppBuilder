@@ -9,6 +9,16 @@ from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.charts.views import DirectByChartView
 from flask_appbuilder.fieldwidgets import BS3PasswordFieldWidget
+from flask_appbuilder.security.decorators import has_access
+from flask_appbuilder.security.forms import (
+    DynamicForm,
+    LoginForm_db,
+    LoginForm_oid,
+    ResetPasswordForm,
+    SelectDataRequired,
+    UserInfoEdit,
+)
+from flask_appbuilder.security.utils import generate_random_string
 from flask_appbuilder.utils.base import get_safe_redirect, lazy_formatter_gettext
 from flask_appbuilder.validators import PasswordComplexityValidator
 from flask_appbuilder.views import expose, ModelView, SimpleFormView
@@ -21,15 +31,6 @@ from werkzeug.wrappers import Response as WerkzeugResponse
 from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
 
-from .decorators import has_access
-from .forms import (
-    DynamicForm,
-    LoginForm_db,
-    LoginForm_oid,
-    ResetPasswordForm,
-    SelectDataRequired,
-    UserInfoEdit,
-)
 
 log = logging.getLogger(__name__)
 
@@ -407,7 +408,7 @@ class UserStatsChartView(DirectByChartView):
         "fail_login_count": lazy_gettext("Failed login count"),
     }
 
-    search_columns = UserModelView.search_columns
+    search_exclude_columns = UserModelView.search_exclude_columns
 
     definitions = [
         {"label": "Login Count", "group": "username", "series": ["login_count"]},
@@ -513,15 +514,15 @@ class AuthDBView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         if form.validate_on_submit():
+            next_url = get_safe_redirect(request.args.get("next", ""))
             user = self.appbuilder.sm.auth_user_db(
                 form.username.data, form.password.data
             )
             if not user:
                 flash(as_unicode(self.invalid_login_message), "warning")
-                return redirect(self.appbuilder.get_url_for_login)
+                return redirect(self.appbuilder.get_url_for_login_with(next_url))
             login_user(user, remember=False)
-            next_url = request.args.get("next", "")
-            return redirect(get_safe_redirect(next_url))
+            return redirect(next_url)
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -536,15 +537,15 @@ class AuthLDAPView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         if form.validate_on_submit():
+            next_url = get_safe_redirect(request.args.get("next", ""))
             user = self.appbuilder.sm.auth_user_ldap(
                 form.username.data, form.password.data
             )
             if not user:
                 flash(as_unicode(self.invalid_login_message), "warning")
-                return redirect(self.appbuilder.get_url_for_login)
+                return redirect(self.appbuilder.get_url_for_login_with(next_url))
             login_user(user, remember=False)
-            next_url = request.args.get("next", "")
-            return redirect(get_safe_redirect(next_url))
+            return redirect(next_url)
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -605,9 +606,9 @@ class AuthOAuthView(AuthView):
     @expose("/login/<provider>")
     @expose("/login/<provider>/<register>")
     def login(self, provider: Optional[str] = None) -> WerkzeugResponse:
-        log.debug("Provider: {0}".format(provider))
+        log.debug("Provider: %s", provider)
         if g.user is not None and g.user.is_authenticated:
-            log.debug("Already authenticated {0}".format(g.user))
+            log.debug("Already authenticated %s", g.user)
             return redirect(self.appbuilder.get_url_for_index)
 
         if provider is None:
@@ -618,12 +619,12 @@ class AuthOAuthView(AuthView):
                 appbuilder=self.appbuilder,
             )
 
-        log.debug("Going to call authorize for: {0}".format(provider))
+        log.debug("Going to call authorize for: %s", provider)
+        random_state = generate_random_string()
         state = jwt.encode(
-            request.args.to_dict(flat=False),
-            self.appbuilder.app.config["SECRET_KEY"],
-            algorithm="HS256",
+            request.args.to_dict(flat=False), random_state, algorithm="HS256"
         )
+        session["oauth_state"] = random_state
         try:
             if provider == "twitter":
                 return self.appbuilder.sm.oauth_remotes[provider].authorize_redirect(
@@ -642,7 +643,7 @@ class AuthOAuthView(AuthView):
                     state=state.decode("ascii") if isinstance(state, bytes) else state,
                 )
         except Exception as e:
-            log.error("Error on OAuth authorize: {0}".format(e))
+            log.error("Error on OAuth authorize: %s", e)
             flash(as_unicode(self.invalid_login_message), "warning")
             return redirect(self.appbuilder.get_url_for_index)
 
@@ -650,28 +651,28 @@ class AuthOAuthView(AuthView):
     def oauth_authorized(self, provider: str) -> WerkzeugResponse:
         log.debug("Authorized init")
         if provider not in self.appbuilder.sm.oauth_remotes:
-            flash(u"Provider not supported.", "warning")
+            flash("Provider not supported.", "warning")
             log.warning("OAuth authorized got an unknown provider %s", provider)
             return redirect(self.appbuilder.get_url_for_login)
         try:
             resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token()
         except Exception as e:
-            log.error("Error authorizing OAuth access token: {0}".format(e))
+            log.error("Error authorizing OAuth access token: %s", e)
             flash("The request to sign in was denied.", "error")
             return redirect(self.appbuilder.get_url_for_login)
         if resp is None:
             flash("You denied the request to sign in.", "warning")
             return redirect(self.appbuilder.get_url_for_login)
-        log.debug("OAUTH Authorized resp: {0}".format(resp))
+        log.debug("OAUTH Authorized resp: %s", resp)
         # Retrieves specific user info from the provider
         try:
             self.appbuilder.sm.set_oauth_session(provider, resp)
             userinfo = self.appbuilder.sm.oauth_user_info(provider, resp)
         except Exception as e:
-            log.error("Error returning OAuth user info: {0}".format(e))
+            log.error("Error returning OAuth user info: %s", e)
             user = None
         else:
-            log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
+            log.debug("User info retrieved from %s: %s", provider, userinfo)
             # User email is not whitelisted
             if provider in self.appbuilder.sm.oauth_whitelists:
                 whitelist = self.appbuilder.sm.oauth_whitelists[provider]
@@ -681,7 +682,7 @@ class AuthOAuthView(AuthView):
                         allow = True
                         break
                 if not allow:
-                    flash(u"You are not authorized.", "warning")
+                    flash("You are not authorized.", "warning")
                     return redirect(self.appbuilder.get_url_for_login)
             else:
                 log.debug("No whitelist for OAuth provider")
@@ -691,16 +692,15 @@ class AuthOAuthView(AuthView):
             flash(as_unicode(self.invalid_login_message), "warning")
             return redirect(self.appbuilder.get_url_for_login)
         else:
-            login_user(user)
             try:
                 state = jwt.decode(
-                    request.args["state"],
-                    self.appbuilder.app.config["SECRET_KEY"],
-                    algorithms=["HS256"],
+                    request.args["state"], session["oauth_state"], algorithms=["HS256"]
                 )
-            except jwt.InvalidTokenError:
-                raise Exception("State signature is not valid!")
+            except (jwt.InvalidTokenError, KeyError):
+                flash(as_unicode("Invalid state signature"), "warning")
+                return redirect(self.appbuilder.get_url_for_login)
 
+            login_user(user)
             next_url = self.appbuilder.get_url_for_index
             # Check if there is a next url on state
             if "next" in state and len(state["next"]) > 0:
@@ -715,7 +715,8 @@ class AuthRemoteUserView(AuthView):
     def login(self) -> WerkzeugResponse:
         username = request.environ.get("REMOTE_USER")
         if g.user is not None and g.user.is_authenticated:
-            return redirect(self.appbuilder.get_url_for_index)
+            next_url = request.args.get("next", "")
+            return redirect(get_safe_redirect(next_url))
         if username:
             user = self.appbuilder.sm.auth_user_remote_user(username)
             if user is None:
@@ -724,4 +725,5 @@ class AuthRemoteUserView(AuthView):
                 login_user(user)
         else:
             flash(as_unicode(self.invalid_login_message), "warning")
-        return redirect(self.appbuilder.get_url_for_index)
+        next_url = request.args.get("next", "")
+        return redirect(get_safe_redirect(next_url))

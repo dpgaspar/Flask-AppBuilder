@@ -1,6 +1,9 @@
+import logging
 import re
 
 from flask import request
+
+log = logging.getLogger(__name__)
 
 
 class Stack(object):
@@ -91,12 +94,28 @@ def get_order_args():
     return orders
 
 
-def get_filter_args(filters):
+def get_filter_args(filters, disallow_if_not_in_search=True):
+    """
+    Sets filters with the given current request args
+
+    Request arg filters are of the form "_flt_<DECIMAL>_<VIEW_NAME>_<COL_NAME>"
+
+    :param filters: Filter instance to apply the request filters on
+    :param disallow_if_not_in_search: If True, disallow filters that are not in the search
+    :return:
+    """
     filters.clear_filters()
     request_args = set(request.args)
     for arg in request_args:
         re_match = re.findall(r"_flt_(\d)_(.*)", arg)
-        if re_match:
-            filters.add_filter_index(
-                re_match[0][1], int(re_match[0][0]), request.args.getlist(arg)
-            )
+        if not re_match:
+            continue
+        filter_index = int(re_match[0][0])
+        filter_column = re_match[0][1]
+        if (
+            filter_column not in filters.get_search_filters().keys()
+            and disallow_if_not_in_search
+        ):
+            log.warning("Filter column not allowed")
+            continue
+        filters.add_filter_index(filter_column, filter_index, request.args.getlist(arg))

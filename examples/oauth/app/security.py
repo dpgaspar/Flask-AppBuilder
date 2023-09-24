@@ -1,15 +1,14 @@
-from flask import redirect, session
+from flask import session
 from flask_appbuilder import expose
 from flask_appbuilder.security.views import AuthOAuthView
 from flask_appbuilder.security.sqla.manager import SecurityManager
 
 
 class MyAuthOAuthView(AuthOAuthView):
-
     @expose("/logout/")
     def logout(self):
         """Delete access token before logging out."""
-        session.pop('oauth_token', None)
+        session.pop("oauth_token", None)
         return super().logout()
 
 

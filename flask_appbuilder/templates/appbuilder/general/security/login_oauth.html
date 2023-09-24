@@ -3,16 +3,6 @@
 
 {% block content %}
 
-<script type="text/javascript">
-    var baseLoginUrl = "{{appbuilder.get_url_for_login}}";
-    var baseRegisterUrl = "{{appbuilder.get_url_for_login}}";
-    var next = "?next={{request.args.get('next', '')}}"
-
-    function signin(provider) {
-        window.location.href = baseLoginUrl + provider + next;
-    }
-</script>
-
 <div class="container">
     <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
         <div class="panel panel-primary">
@@ -23,7 +13,7 @@
                 <div>
                     {% for provider in providers %}
                     <a
-                        onclick="signin('{{ provider.name }}');"
+                        id="btn-signin-{{provider.name}}"
                         class="btn btn-primary btn-block"
                         type="submit"
                     >
@@ -37,4 +27,19 @@
     </div>
 </div>
 
+<script nonce="{{ baselib.get_nonce() }}">
+    var baseLoginUrl = "{{appbuilder.get_url_for_login}}";
+    var baseRegisterUrl = "{{appbuilder.get_url_for_login}}";
+    var next = "?next=" + "{{request.args.get('next', '') | urlencode}}";
+
+    function signin(provider) {
+        window.location.href = baseLoginUrl + provider + next;
+    }
+
+    {% for provider in providers %}
+        document.getElementById("btn-signin-{{provider.name}}")
+            .addEventListener("click", function () { signin("{{provider.name}}") })
+    {% endfor %}
+
+</script>
 {% endblock %}

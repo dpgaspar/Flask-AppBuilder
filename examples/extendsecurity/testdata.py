@@ -2,8 +2,8 @@ from datetime import datetime
 import logging
 import random
 
-from .app import appbuilder, db, create_app
-from .app.models import ContactGroup, Gender, Contact, Company
+from app import appbuilder, db, create_app
+from app.models import ContactGroup, Gender, Contact, Company
 
 
 log = logging.getLogger(__name__)

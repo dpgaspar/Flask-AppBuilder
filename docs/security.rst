@@ -1,6 +1,12 @@
 Security
 ========
 
+Responsible disclosure
+----------------------
+
+We want to keep Flask-AppBuilder safe for everyone. If you've discovered a security vulnerability
+please report to danielvazgaspar@gmail.com.
+
 Supported Authentication Types
 ------------------------------
 
@@ -135,6 +141,12 @@ You can give FlaskAppBuilder roles based on LDAP roles (note, this requires AUTH
 
     # a mapping from LDAP DN to a list of FAB roles
     AUTH_ROLES_MAPPING = {
+        "CN=fab_users,OU=groups,DC=example,DC=com": ["User"],
+        "CN=fab_admins,OU=groups,DC=example,DC=com": ["Admin"],
+    }
+
+    # a mapping from OpenLDAP DN to a list of FAB roles
+    AUTH_ROLES_MAPPING = {
         "cn=fab_users,ou=groups,dc=example,dc=com": ["User"],
         "cn=fab_admins,ou=groups,dc=example,dc=com": ["Admin"],
     }
@@ -147,6 +159,21 @@ You can give FlaskAppBuilder roles based on LDAP roles (note, this requires AUTH
 
     # force users to re-auth after 30min of inactivity (to keep roles in sync)
     PERMANENT_SESSION_LIFETIME = 1800
+
+TLS
+~~~
+
+For STARTTLS, configure an `ldap://` server and set `AUTH_LDAP_USE_TLS` to `True`::
+
+    AUTH_LDAP_SERVER = "ldap://ldap.example.com"
+    AUTH_LDAP_USE_TLS = True
+
+For LDAP over TLS (ldaps), configure the server with the `ldaps://` scheme and set `AUTH_LDAP_USE_TLS` to `False`::
+
+    AUTH_LDAP_SERVER = "ldaps://ldap.example.com"
+    AUTH_LDAP_USE_TLS = False
+
+Additional LDAP/TLS Options, including CA certificate settings and client authentication, can be found in the :doc:`config`.
 
 Authentication: OAuth
 ---------------------
@@ -165,74 +192,132 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
 
     # the list of providers which the user can choose from
     OAUTH_PROVIDERS = [
-        {'name':'twitter', 'icon':'fa-twitter',
-            'token_key':'oauth_token',
-            'remote_app': {
-                'client_id':'TWITTER_KEY',
-                'client_secret':'TWITTER_SECRET',
-                'api_base_url':'https://api.twitter.com/1.1/',
-                'request_token_url':'https://api.twitter.com/oauth/request_token',
-                'access_token_url':'https://api.twitter.com/oauth/access_token',
-                'authorize_url':'https://api.twitter.com/oauth/authenticate'}
+        {
+            "name": "twitter",
+            "icon": "fa-twitter",
+            "token_key": "oauth_token",
+            "remote_app": {
+                "client_id": "TWITTER_KEY",
+                "client_secret": "TWITTER_SECRET",
+                "api_base_url": "https://api.twitter.com/1.1/",
+                "request_token_url": "https://api.twitter.com/oauth/request_token",
+                "access_token_url": "https://api.twitter.com/oauth/access_token",
+                "authorize_url": "https://api.twitter.com/oauth/authenticate",
+            },
         },
-        {'name':'google', 'icon':'fa-google',
-            'token_key':'access_token',
-            'remote_app': {
-                'client_id':'GOOGLE_KEY',
-                'client_secret':'GOOGLE_SECRET',
-                'api_base_url':'https://www.googleapis.com/oauth2/v2/',
-                'client_kwargs':{
-                  'scope': 'email profile'
-                },
-                'request_token_url':None,
-                'access_token_url':'https://accounts.google.com/o/oauth2/token',
-                'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+        {
+            "name": "google",
+            "icon": "fa-google",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "GOOGLE_KEY",
+                "client_secret": "GOOGLE_SECRET",
+                "api_base_url": "https://www.googleapis.com/oauth2/v2/",
+                "client_kwargs": {"scope": "email profile"},
+                "request_token_url": None,
+                "access_token_url": "https://accounts.google.com/o/oauth2/token",
+                "authorize_url": "https://accounts.google.com/o/oauth2/auth",
+                "jwks_uri": "https://www.googleapis.com/oauth2/v3/certs",
+            },
         },
-        {'name':'openshift', 'icon':'fa-circle-o',
-            'token_key':'access_token',
-            'remote_app': {
-                'client_id':'system:serviceaccount:mynamespace:mysa',
-                'client_secret':'<mysa serviceaccount token here>',
-                'api_base_url':'https://openshift.default.svc.cluster.local:443',
-                'client_kwargs':{
-                  'scope': 'user:info'
-                },
-                'redirect_uri':'https://myapp-mynamespace.apps.<cluster_domain>',
-                'access_token_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/token',
-                'authorize_url':'https://oauth-openshift.apps.<cluster_domain>/oauth/authorize',
-                'token_endpoint_auth_method':'client_secret_post'}
+        {
+            "name": "openshift",
+            "icon": "fa-circle-o",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "system:serviceaccount:mynamespace:mysa",
+                "client_secret": "<mysa serviceaccount token here>",
+                "api_base_url": "https://openshift.default.svc.cluster.local:443",
+                "client_kwargs": {"scope": "user:info"},
+                "redirect_uri": "https://myapp-mynamespace.apps.<cluster_domain>",
+                "access_token_url": "https://oauth-openshift.apps.<cluster_domain>/oauth/token",
+                "authorize_url": "https://oauth-openshift.apps.<cluster_domain>/oauth/authorize",
+                "token_endpoint_auth_method": "client_secret_post",
+            },
         },
-        {'name': 'okta', 'icon': 'fa-circle-o',
-            'token_key': 'access_token',
-            'remote_app': {
-                'client_id': 'OKTA_KEY',
-                'client_secret': 'OKTA_SECRET',
-                'api_base_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/',
-                'client_kwargs': {
-                    'scope': 'openid profile email groups'
-                },
-                'access_token_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/token',
-                'authorize_url': 'https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize',
+        {
+            "name": "okta",
+            "icon": "fa-circle-o",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "OKTA_KEY",
+                "client_secret": "OKTA_SECRET",
+                "api_base_url": "https://OKTA_DOMAIN.okta.com/oauth2/v1/",
+                "client_kwargs": {"scope": "openid profile email groups"},
+                "access_token_url": "https://OKTA_DOMAIN.okta.com/oauth2/v1/token",
+                "authorize_url": "https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize",
+                "server_metadata_url": f"https://OKTA_DOMAIN.okta.com/.well-known/openid-configuration",
+            },
         },
-        {'name': 'aws_cognito', 'icon': 'fa-amazon',
-            'token_key': 'access_token',
-            'remote_app': {
-                'client_id': 'COGNITO_CLIENT_ID',
-                'client_secret': 'COGNITO_CLIENT_SECRET',
-                'api_base_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/',
-                'client_kwargs': {
-                    'scope': 'openid email aws.cognito.signin.user.admin'
+        {
+            "name": "aws_cognito",
+            "icon": "fa-amazon",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "COGNITO_CLIENT_ID",
+                "client_secret": "COGNITO_CLIENT_SECRET",
+                "api_base_url": "https://COGNITO_APP.auth.REGION.amazoncognito.com/",
+                "client_kwargs": {"scope": "openid email aws.cognito.signin.user.admin"},
+                "access_token_url": "https://COGNITO_APP.auth.REGION.amazoncognito.com/token",
+                "authorize_url": "https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize",
+            },
+        },
+        {
+            "name": "keycloak",
+            "icon": "fa-key",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "KEYCLOAK_CLIENT_ID",
+                "client_secret": "KEYCLOAK_CLIENT_SECRET",   
+                "api_base_url": "https://KEYCLOAK_DOMAIN/realms/master/protocol/openid-connect",
+                "client_kwargs": {
+                    "scope": "email profile"
                 },
-                'access_token_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/token',
-                'authorize_url': 'https://COGNITO_APP.auth.REGION.amazoncognito.com/authorize',
-        }
+                "access_token_url": "KEYCLOAK_DOMAIN/realms/master/protocol/openid-connect/token",
+                "authorize_url": "KEYCLOAK_DOMAIN/realms/master/protocol/openid-connect/auth",
+                "request_token_url": None,
+            },
+        },
+        {
+            "name": "keycloak_before_17",
+            "icon": "fa-key",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "KEYCLOAK_CLIENT_ID",
+                "client_secret": "KEYCLOAK_CLIENT_SECRET",   
+                "api_base_url": "https://KEYCLOAK_DOMAIN/auth/realms/master/protocol/openid-connect",
+                "client_kwargs": {
+                    "scope": "email profile"
+                },
+                "access_token_url": "KEYCLOAK_DOMAIN/auth/realms/master/protocol/openid-connect/token",
+                "authorize_url": "KEYCLOAK_DOMAIN/auth/realms/master/protocol/openid-connect/auth",
+                "request_token_url": None,
+            },
+        },
+        {
+            "name": "azure",
+            "icon": "fa-windows",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "AZURE_APPLICATION_ID",
+                "client_secret": "AZURE_SECRET",
+                "api_base_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2",
+                "client_kwargs": {
+                    "scope": "User.read name preferred_username email profile upn",
+                    "resource": "AZURE_APPLICATION_ID",
+                },
+                "request_token_url": None,
+                "access_token_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/token",
+                "authorize_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/authorize",
+            },
+        },
     ]
 
 This needs a small explanation, you basically have five special keys:
 
 :name: the name of the provider:
     you can choose whatever you want, but FAB has builtin logic in `BaseSecurityManager.get_oauth_user_info()` for:
-    'azure', 'github', 'google', 'linkedin', 'okta', 'openshift', 'twitter'
+    'azure', 'github', 'google', 'keycloak', 'keycloak_before_17', 'linkedin', 'okta', 'openshift', 'twitter'
 
 :icon: the font-awesome icon for this provider
 
@@ -309,6 +394,16 @@ You can also use the OAuth provider APIs.
 Therefore, you can send tweets, post on the users Facebook, retrieve the user's LinkedIn profile etc.
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
 to get an idea of a simple use for this.
+
+Authentication: Rate limiting
+-----------------------------
+
+To prevent brute-forcing of credentials, you can apply rate limits to AuthViews in 4.2.0, so that
+only 10 POST requests can be made every 20 seconds. This can be enabled by setting
+``AUTH_RATE_LIMITED`` and ``RATELIMIT_ENABLED`` to ``True``.
+The rate can be changed by adjusting ``AUTH_RATE_LIMIT`` to, for example, ``1 per 10 seconds``. Take a look
+at the `documentation <https://flask-limiter.readthedocs.io/en/stable/>`_ of Flask-Limiter for more options and
+examples.
 
 Role based
 ----------
@@ -843,3 +938,23 @@ Some images:
 
 .. image:: ./images/security.png
     :width: 100%
+
+Optional dependency Flask-Talisman
+==================================
+
+All javascript code and inline scripts can have a nonce attribute provided by Flask-Talisman.
+This package will not initialize Flask-Talisman for you, but will use `csp_nonce()` on Jinja2 if it exists.
+To initialize Flask-Talisman, you can do the following:
+
+.. code-block:: python
+
+    from flask import Flask
+    from flask_appbuilder import AppBuilder
+    from flask_talisman import Talisman
+
+    app = Flask(__name__)
+    app.config.from_object('config')
+    db = SQLA(app)
+    appbuilder = AppBuilder(app, db.session)
+
+    Talisman(app)

@@ -18,7 +18,6 @@ def get_random_name(names_list, size=1):
 
 try:
     db.session.query(Contact).delete()
-    db.session.query(Gender).delete()
     db.session.query(ContactGroup).delete()
     db.session.commit()
 except Exception:
@@ -36,17 +35,6 @@ try:
     db.session.commit()
 except Exception as e:
     log.error("Creating Groups: %s", e)
-    db.session.rollback()
-
-try:
-    genders = list()
-    genders.append(Gender(name="Male"))
-    genders.append(Gender(name="Female"))
-    db.session.add(genders[0])
-    db.session.add(genders[1])
-    db.session.commit()
-except Exception as e:
-    log.error("Creating Genders: %s", e)
     db.session.rollback()
 
 
@@ -81,7 +69,7 @@ for i in range(1, 1000):
     c.personal_phone = random.randrange(1111111, 9999999)
     c.personal_celphone = random.randrange(1111111, 9999999)
     c.contact_group = groups[random.randrange(0, 3)]
-    c.gender = genders[random.randrange(0, 2)]
+    c.gender = random.choice(list(Gender))
     year = random.choice(range(1900, 2012))
     month = random.choice(range(1, 12))
     day = random.choice(range(1, 28))

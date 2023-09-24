@@ -9,7 +9,7 @@ Create an Admin user and insert test data::
 
 Run it::
 
-    $ export FLASK_APP="app:create_app('config')"
+    $ export FLASK_APP="app.app:create_app('config')"
     $ flask fab create-admin
     $ flask run
 

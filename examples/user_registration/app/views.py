@@ -147,5 +147,5 @@ appbuilder.add_view(
     category="Contacts",
 )
 
-log.info("F.A.B. Version: {0}".format(appbuilder.version))
-log.info("User extension class {0}".format(UserExtensionMixin.__subclasses__()[0]))
+log.info("F.A.B. Version: %s", appbuilder.version)
+log.info("User extension class %s", UserExtensionMixin.__subclasses__()[0])

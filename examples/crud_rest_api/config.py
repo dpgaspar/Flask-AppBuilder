@@ -2,6 +2,7 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+FAB_ADD_SECURITY_API = True
 CSRF_ENABLED = True
 SECRET_KEY = "\2\1thisismyscretkey\1\2\e\y\y\h"
 
@@ -68,11 +69,10 @@ APP_THEME = ""  # default
 # APP_THEME = "solar.css"
 # APP_THEME = "superhero.css"
 
-#FAB_ROLES = {
+# FAB_ROLES = {
 #    "ReadOnly": [
 #        [".*", "can_list"],
 #        [".*", "can_show"],
 #        [".*", "menu_access"]
 #    ]
-#}
-
+# }

@@ -1,8 +1,9 @@
 from functools import reduce
 import logging
-from typing import Dict
+from typing import Any, Callable, cast, Dict, List, Optional, Type, TYPE_CHECKING, Union
 
-from flask import Blueprint, current_app, url_for
+from flask import Blueprint, current_app, Flask, url_for
+from sqlalchemy.orm.session import Session as SessionBase
 
 from . import __version__
 from .api.manager import OpenApiManager
@@ -20,14 +21,28 @@ from .filters import TemplateFilters
 from .menu import Menu, MenuApiManager
 from .views import IndexView, UtilView
 
+if TYPE_CHECKING:
+    from flask_appbuilder.basemanager import BaseManager
+    from flask_appbuilder.baseviews import BaseView, AbstractViewApi
+    from flask_appbuilder.security.manager import BaseSecurityManager
+
 log = logging.getLogger(__name__)
 
 
-def dynamic_class_import(class_path):
+DynamicImportType = Union[
+    Type["BaseManager"],
+    Type["BaseView"],
+    Type["BaseSecurityManager"],
+    Type[Menu],
+    Type["AbstractViewApi"],
+]
+
+
+def dynamic_class_import(class_path: str) -> Optional[DynamicImportType]:
     """
-        Will dynamically import a class from a string path
-        :param class_path: string with class path
-        :return: class
+    Will dynamically import a class from a string path
+    :param class_path: string with class path
+    :return: class
     """
     # Split first occurrence of path
     try:
@@ -37,104 +52,84 @@ def dynamic_class_import(class_path):
         return reduce(getattr, tmp[1:], package)
     except Exception as e:
         log.exception(e)
-        log.error(LOGMSG_ERR_FAB_ADDON_IMPORT.format(class_path, e))
+        log.error(LOGMSG_ERR_FAB_ADDON_IMPORT, class_path, e)
+        return None
 
 
-class AppBuilder(object):
+class AppBuilder:
+    """
+    This is the base class for all the framework.
+    This is where you will register all your views and create the menu structure.
+    Will hold your flask app object, all your views, and security classes.
+
+    initialize your application like this for SQLAlchemy::
+
+        from flask import Flask
+        from flask_appbuilder import SQLA, AppBuilder
+
+        app = Flask(__name__)
+        app.config.from_object('config')
+        db = SQLA(app)
+        appbuilder = AppBuilder(app, db.session)
+
+    When using MongoEngine::
+
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+        from flask_appbuilder.security.mongoengine.manager import SecurityManager
+        from flask_mongoengine import MongoEngine
+
+        app = Flask(__name__)
+        app.config.from_object('config')
+        dbmongo = MongoEngine(app)
+        appbuilder = AppBuilder(app, security_manager_class=SecurityManager)
+
+    You can also create everything as an application factory.
     """
 
-
-        This is the base class for all the framework.
-        This is were you will register all your views
-        and create the menu structure.
-        Will hold your flask app object, all your views, and security classes.
-
-        initialize your application like this for SQLAlchemy::
-
-            from flask import Flask
-            from flask_appbuilder import SQLA, AppBuilder
-
-            app = Flask(__name__)
-            app.config.from_object('config')
-            db = SQLA(app)
-            appbuilder = AppBuilder(app, db.session)
-
-        When using MongoEngine::
-
-            from flask import Flask
-            from flask_appbuilder import AppBuilder
-            from flask_appbuilder.security.mongoengine.manager import SecurityManager
-            from flask_mongoengine import MongoEngine
-
-            app = Flask(__name__)
-            app.config.from_object('config')
-            dbmongo = MongoEngine(app)
-            appbuilder = AppBuilder(app, security_manager_class=SecurityManager)
-
-        You can also create everything as an application factory.
-    """
-
-    baseviews = []
     security_manager_class = None
-    # Flask app
-    app = None
-    # Database Session
-    session = None
-    # Security Manager Class
-    sm = None
-    # Babel Manager Class
-    bm = None
-    # OpenAPI Manager Class
-    openapi_manager = None
-    # dict with addon name has key and intantiated class has value
-    addon_managers = None
-    # temporary list that hold addon_managers config key
-    _addon_managers = None
-
-    menu = None
-    indexview = None
-
-    static_folder = None
-    static_url_path = None
 
     template_filters = None
 
     def __init__(
         self,
-        app=None,
-        session=None,
-        menu=None,
-        indexview=None,
-        base_template="appbuilder/baselayout.html",
-        static_folder="static/appbuilder",
-        static_url_path="/appbuilder",
-        security_manager_class=None,
-        update_perms=True,
-    ):
+        app: Optional[Flask] = None,
+        session: Optional[SessionBase] = None,
+        menu: Optional[Menu] = None,
+        indexview: Optional[Type["AbstractViewApi"]] = None,
+        base_template: str = "appbuilder/baselayout.html",
+        static_folder: str = "static/appbuilder",
+        static_url_path: str = "/appbuilder",
+        security_manager_class: Optional[Type["BaseSecurityManager"]] = None,
+        update_perms: bool = True,
+    ) -> None:
         """
-            AppBuilder constructor
+        AppBuilder init
 
-            :param app:
-                The flask app object
-            :param session:
-                The SQLAlchemy session object
-            :param menu:
-                optional, a previous contructed menu
-            :param indexview:
-                optional, your customized indexview
-            :param static_folder:
-                optional, your override for the global static folder
-            :param static_url_path:
-                optional, your override for the global static url path
-            :param security_manager_class:
-                optional, pass your own security manager class
-            :param update_perms:
-                optional, update permissions flag (Boolean) you can use
-                FAB_UPDATE_PERMS config key also
+        :param app:
+            The flask app object
+        :param session:
+            The SQLAlchemy session object
+        :param menu:
+            optional, a previous contructed menu
+        :param indexview:
+            optional, your customized indexview
+        :param static_folder:
+            optional, your override for the global static folder
+        :param static_url_path:
+            optional, your override for the global static url path
+        :param security_manager_class:
+            optional, pass your own security manager class
+        :param update_perms:
+            optional, update permissions flag (Boolean) you can use
+            FAB_UPDATE_PERMS config key also
         """
-        self.baseviews = []
-        self._addon_managers = []
-        self.addon_managers = {}
+        self.baseviews: List[Union[Type["AbstractViewApi"], "AbstractViewApi"]] = []
+
+        # temporary list that hold addon_managers config key
+        self._addon_managers: List[str] = []
+        # dict with addon name has key and instantiated class has value
+        self.addon_managers: Dict[str, Any] = {}
         self.menu = menu
         self.base_template = base_template
         self.security_manager_class = security_manager_class
@@ -144,15 +139,22 @@ class AppBuilder(object):
         self.app = app
         self.update_perms = update_perms
 
+        # Security Manager Class
+        self.sm: BaseSecurityManager = None  # type: ignore
+        # Babel Manager Class
+        self.bm: BabelManager = None  # type: ignore
+        self.openapi_manager: OpenApiManager = None  # type: ignore
+        self.menuapi_manager: MenuApiManager = None  # type: ignore
+
         if app is not None:
             self.init_app(app, session)
 
-    def init_app(self, app, session):
+    def init_app(self, app: Flask, session: SessionBase) -> None:
         """
-            Will initialize the Flask app, supporting the app factory pattern.
+        Will initialize the Flask app, supporting the app factory pattern.
 
-            :param app:
-            :param session: The SQLAlchemy session
+        :param app:
+        :param session: The SQLAlchemy session
 
         """
         app.config.setdefault("APP_NAME", "F.A.B.")
@@ -160,6 +162,7 @@ class AppBuilder(object):
         app.config.setdefault("APP_ICON", "")
         app.config.setdefault("LANGUAGES", {"en": {"flag": "gb", "name": "English"}})
         app.config.setdefault("ADDON_MANAGERS", [])
+        app.config.setdefault("RATELIMIT_ENABLED", False)
         app.config.setdefault("FAB_API_MAX_PAGE_SIZE", 100)
         app.config.setdefault("FAB_BASE_TEMPLATE", self.base_template)
         app.config.setdefault("FAB_STATIC_FOLDER", self.static_folder)
@@ -173,13 +176,18 @@ class AppBuilder(object):
             "FAB_STATIC_URL_PATH", self.static_url_path
         )
         _index_view = app.config.get("FAB_INDEX_VIEW", None)
-        if _index_view is not None:
-            self.indexview = dynamic_class_import(_index_view)
+        if _index_view:
+            self.indexview = dynamic_class_import(_index_view)  # type: ignore
         else:
             self.indexview = self.indexview or IndexView
+
         _menu = app.config.get("FAB_MENU", None)
+
+        # Setup Menu
         if _menu is not None:
-            self.menu = dynamic_class_import(_menu)
+            menu = dynamic_class_import(_menu)
+            if menu is not None and issubclass(menu, Menu):
+                self.menu = menu()
         else:
             self.menu = self.menu or Menu()
 
@@ -189,8 +197,9 @@ class AppBuilder(object):
             "FAB_SECURITY_MANAGER_CLASS", None
         )
         if _security_manager_class_name is not None:
-            self.security_manager_class = dynamic_class_import(
-                _security_manager_class_name
+            security_manager_class = dynamic_class_import(_security_manager_class_name)
+            self.security_manager_class = cast(
+                Type["BaseSecurityManager"], security_manager_class
             )
         if self.security_manager_class is None:
             from flask_appbuilder.security.sqla.manager import SecurityManager
@@ -214,16 +223,16 @@ class AppBuilder(object):
             self.post_init()
         self._init_extension(app)
 
-    def _init_extension(self, app):
+    def _init_extension(self, app: Flask) -> None:
         app.appbuilder = self
         if not hasattr(app, "extensions"):
             app.extensions = {}
         app.extensions["appbuilder"] = self
 
-    def post_init(self):
+    def post_init(self) -> None:
         for baseview in self.baseviews:
             # instantiate the views and add session
-            self._check_and_init(baseview)
+            baseview = self._check_and_init(baseview)
             # Register the views has blueprints
             if baseview.__class__.__name__ not in self.get_app.blueprints.keys():
                 self.register_blueprint(baseview)
@@ -231,11 +240,11 @@ class AppBuilder(object):
         self.add_permissions()
 
     @property
-    def get_app(self):
+    def get_app(self) -> Flask:
         """
-            Get current or configured flask app
+        Get current or configured flask app
 
-            :return: Flask App
+        :return: Flask App
         """
         if self.app:
             return self.app
@@ -243,58 +252,58 @@ class AppBuilder(object):
             return current_app
 
     @property
-    def get_session(self):
+    def get_session(self) -> SessionBase:
         """
-            Get the current sqlalchemy session.
+        Get the current sqlalchemy session.
 
-            :return: SQLAlchemy Session
+        :return: SQLAlchemy Session
         """
         return self.session
 
     @property
-    def app_name(self):
+    def app_name(self) -> str:
         """
-            Get the App name
+        Get the App name
 
-            :return: String with app name
+        :return: String with app name
         """
         return self.get_app.config["APP_NAME"]
 
     @property
-    def app_theme(self):
+    def app_theme(self) -> str:
         """
-            Get the App theme name
+        Get the App theme name
 
-            :return: String app theme name
+        :return: String app theme name
         """
         return self.get_app.config["APP_THEME"]
 
     @property
-    def app_icon(self):
+    def app_icon(self) -> str:
         """
-            Get the App icon location
+        Get the App icon location
 
-            :return: String with relative app icon location
+        :return: String with relative app icon location
         """
         return self.get_app.config["APP_ICON"]
 
     @property
-    def languages(self):
+    def languages(self) -> Dict[str, Any]:
         return self.get_app.config["LANGUAGES"]
 
     @property
-    def version(self):
+    def version(self) -> str:
         """
-            Get the current F.A.B. version
+        Get the current F.A.B. version
 
-            :return: String with the current F.A.B. version
+        :return: String with the current F.A.B. version
         """
         return __version__
 
-    def _add_global_filters(self):
+    def _add_global_filters(self) -> None:
         self.template_filters = TemplateFilters(self.get_app, self.sm)
 
-    def _add_global_static(self):
+    def _add_global_static(self) -> None:
         bp = Blueprint(
             "appbuilder",
             __name__,
@@ -305,59 +314,62 @@ class AppBuilder(object):
         )
         self.get_app.register_blueprint(bp)
 
-    def _add_admin_views(self):
+    def _add_admin_views(self) -> None:
         """
-            Registers indexview, utilview (back function), babel views and Security views.
+        Registers indexview, utilview (back function), babel views and Security views.
         """
-        self.indexview = self._check_and_init(self.indexview)
-        self.add_view_no_menu(self.indexview)
-        self.add_view_no_menu(UtilView())
+        if self.indexview:
+            self._indexview = self.add_view_no_menu(self.indexview)
+        self.add_view_no_menu(UtilView)
         self.bm.register_views()
         self.sm.register_views()
         self.openapi_manager.register_views()
         self.menuapi_manager.register_views()
 
-    def _add_addon_views(self):
+    def _add_addon_views(self) -> None:
         """
-            Registers declared addon's
+        Registers declared addon's
         """
         for addon in self._addon_managers:
-            addon_class = dynamic_class_import(addon)
+            addon_class_ = dynamic_class_import(addon)
+            addon_class = cast(Type["BaseManager"], addon_class_)
             if addon_class:
                 # Instantiate manager with appbuilder (self)
-                addon_class = addon_class(self)
+                inst_addon_class: "BaseManager" = addon_class(self)
                 try:
-                    addon_class.pre_process()
-                    addon_class.register_views()
-                    addon_class.post_process()
-                    self.addon_managers[addon] = addon_class
-                    log.info(LOGMSG_INF_FAB_ADDON_ADDED.format(str(addon)))
+                    inst_addon_class.pre_process()
+                    inst_addon_class.register_views()
+                    inst_addon_class.post_process()
+                    self.addon_managers[addon] = inst_addon_class
+                    log.info(LOGMSG_INF_FAB_ADDON_ADDED, addon)
                 except Exception as e:
                     log.exception(e)
-                    log.error(LOGMSG_ERR_FAB_ADDON_PROCESS.format(addon, e))
+                    log.error(LOGMSG_ERR_FAB_ADDON_PROCESS, addon, e)
 
-    def _check_and_init(self, baseview):
+    def _check_and_init(
+        self, baseview: Union[Type["AbstractViewApi"], "AbstractViewApi"]
+    ) -> "AbstractViewApi":
         # If class if not instantiated, instantiate it
         # and add db session from security models.
         if hasattr(baseview, "datamodel"):
-            if baseview.datamodel.session is None:
-                baseview.datamodel.session = self.session
-        if hasattr(baseview, "__call__"):
+            if getattr(baseview, "datamodel").session is None:
+                getattr(baseview, "datamodel").session = self.session
+        if isinstance(baseview, type):
             baseview = baseview()
         return baseview
 
     def add_view(
         self,
-        baseview,
-        name,
-        href="",
-        icon="",
-        label="",
-        category="",
-        category_icon="",
-        category_label="",
-        menu_cond=None,
-    ):
+        baseview: Union[Type["AbstractViewApi"], "AbstractViewApi"],
+        name: str,
+        href: str = "",
+        icon: str = "",
+        label: str = "",
+        category: str = "",
+        category_icon: str = "",
+        category_label: str = "",
+        menu_cond: Optional[Callable[..., bool]] = None,
+    ) -> "AbstractViewApi":
         """
         Add your views associated with menus using this method.
 
@@ -426,7 +438,7 @@ class AppBuilder(object):
             appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         baseview = self._check_and_init(baseview)
-        log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, name))
+        log.info(LOGMSG_INF_FAB_ADD_VIEW, baseview.__class__.__name__, name)
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self
@@ -435,6 +447,7 @@ class AppBuilder(object):
             if self.app:
                 self.register_blueprint(baseview)
                 self._add_permission(baseview)
+                self.add_limits(baseview)
         self.add_link(
             name=name,
             href=href,
@@ -450,44 +463,47 @@ class AppBuilder(object):
 
     def add_link(
         self,
-        name,
-        href,
-        icon="",
-        label="",
-        category="",
-        category_icon="",
-        category_label="",
-        baseview=None,
-        cond=None,
-    ):
+        name: str,
+        href: str,
+        icon: str = "",
+        label: str = "",
+        category: str = "",
+        category_icon: str = "",
+        category_label: str = "",
+        baseview: Optional["AbstractViewApi"] = None,
+        cond: Optional[Callable[..., bool]] = None,
+    ) -> None:
         """
-            Add your own links to menu using this method
+        Add your own links to menu using this method
 
-            :param name:
-                The string name that identifies the menu.
-            :param href:
-                Override the generated href for the menu.
-                You can use an url string or an endpoint name
-            :param icon:
-                Font-Awesome icon name, optional.
-            :param label:
-                The label that will be displayed on the menu,
-                if absent param name will be used
-            :param category:
-                The menu category where the menu will be included,
-                if non provided the view will be accessible as a top menu.
-            :param category_icon:
-                Font-Awesome icon name for the category, optional.
-            :param category_label:
-                The label that will be displayed on the menu,
-                if absent param name will be used
-            :param cond:
-                If a callable, :code:`cond` will be invoked when
-                constructing the menu items. If it returns :code:`True`,
-                then this link will be a part of the menu. Otherwise, it
-                will not be included in the menu items. Defaults to
-                :code:`None`, meaning the item will always be present.
+        :param baseview:
+        :param name:
+            The string name that identifies the menu.
+        :param href:
+            Override the generated href for the menu.
+            You can use an url string or an endpoint name
+        :param icon:
+            Font-Awesome icon name, optional.
+        :param label:
+            The label that will be displayed on the menu,
+            if absent param name will be used
+        :param category:
+            The menu category where the menu will be included,
+            if non provided the view will be accessible as a top menu.
+        :param category_icon:
+            Font-Awesome icon name for the category, optional.
+        :param category_label:
+            The label that will be displayed on the menu,
+            if absent param name will be used
+        :param cond:
+            If a callable, :code:`cond` will be invoked when
+            constructing the menu items. If it returns :code:`True`,
+            then this link will be a part of the menu. Otherwise, it
+            will not be included in the menu items. Defaults to
+            :code:`None`, meaning the item will always be present.
         """
+        if self.menu is None:
+            return
         self.menu.add_link(
             name=name,
             href=href,
@@ -504,31 +520,42 @@ class AppBuilder(object):
             if category:
                 self._add_permissions_menu(category)
 
-    def add_separator(self, category, cond=None):
+    def add_separator(
+        self, category: str, cond: Optional[Callable[..., bool]] = None
+    ) -> None:
         """
-            Add a separator to the menu, you will sequentially create the menu
+        Add a separator to the menu, you will sequentially create the menu
 
-            :param category:
-                The menu category where the separator will be included.
-            :param cond:
-                If a callable, :code:`cond` will be invoked when
-                constructing the menu items. If it returns :code:`True`,
-                then this separator will be a part of the menu. Otherwise,
-                it will not be included in the menu items. Defaults to
-                :code:`None`, meaning the separator will always be present.
+        :param category:
+            The menu category where the separator will be included.
+        :param cond:
+            If a callable, :code:`cond` will be invoked when
+            constructing the menu items. If it returns :code:`True`,
+            then this separator will be a part of the menu. Otherwise,
+            it will not be included in the menu items. Defaults to
+            :code:`None`, meaning the separator will always be present.
         """
+        if self.menu is None:
+            return
         self.menu.add_separator(category, cond=cond)
 
-    def add_view_no_menu(self, baseview, endpoint=None, static_folder=None):
+    def add_view_no_menu(
+        self,
+        baseview: Union[Type["AbstractViewApi"], "AbstractViewApi"],
+        endpoint: Optional[str] = None,
+        static_folder: Optional[str] = None,
+    ) -> "AbstractViewApi":
         """
-            Add your views without creating a menu.
+        Add your views without creating a menu.
 
         :param baseview:
             A BaseView type class instantiated.
+        :param endpoint: The endpoint path for the Flask blueprint
+        :param static_folder: The static folder for the Flask blueprint
 
         """
         baseview = self._check_and_init(baseview)
-        log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, ""))
+        log.info(LOGMSG_INF_FAB_ADD_VIEW, baseview.__class__.__name__, "")
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self
@@ -539,79 +566,108 @@ class AppBuilder(object):
                     baseview, endpoint=endpoint, static_folder=static_folder
                 )
                 self._add_permission(baseview)
+                self.add_limits(baseview)
         else:
-            log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.__class__.__name__))
+            log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS, baseview.__class__.__name__)
         return baseview
 
-    def add_api(self, baseview):
+    def add_api(self, baseview: Type["AbstractViewApi"]) -> "AbstractViewApi":
         """
-            Add a BaseApi class or child to AppBuilder
+        Add a BaseApi class or child to AppBuilder
 
         :param baseview: A BaseApi type class
         :return: The instantiated base view
         """
         return self.add_view_no_menu(baseview)
 
-    def security_cleanup(self):
+    def security_cleanup(self) -> None:
         """
-            This method is useful if you have changed
-            the name of your menus or classes,
-            changing them will leave behind permissions
-            that are not associated with anything.
+        This method is useful if you have changed
+        the name of your menus or classes,
+        changing them will leave behind permissions
+        that are not associated with anything.
 
-            You can use it always or just sometimes to
-            perform a security cleanup. Warning this will delete any permission
-            that is no longer part of any registered view or menu.
+        You can use it always or just sometimes to
+        perform a security cleanup. Warning this will delete any permission
+        that is no longer part of any registered view or menu.
 
-            Remember invoke ONLY AFTER YOU HAVE REGISTERED ALL VIEWS
+        Remember invoke ONLY AFTER YOU HAVE REGISTERED ALL VIEWS
         """
         self.sm.security_cleanup(self.baseviews, self.menu)
 
-    def security_converge(self, dry=False) -> Dict:
+    def security_converge(self, dry: bool = False) -> Dict[str, Any]:
         """
-            This method is useful when you use:
+        This method is useful when you use:
 
-            - `class_permission_name`
-            - `previous_class_permission_name`
-            - `method_permission_name`
-            - `previous_method_permission_name`
+        - `class_permission_name`
+        - `previous_class_permission_name`
+        - `method_permission_name`
+        - `previous_method_permission_name`
 
-            migrates all permissions to the new names on all the Roles
+        migrates all permissions to the new names on all the Roles
 
         :param dry: If True will not change DB
         :return: Dict with all computed necessary operations
         """
-        return self.sm.security_converge(self.baseviews, self.menu, dry)
+        if self.menu is None:
+            return {}
+        return self.sm.security_converge(self.baseviews, self.menu.menu, dry)
+
+    def get_url_for_login_with(self, next_url: str = None) -> str:
+        if self.sm.auth_view is None:
+            return ""
+        return url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"), next=next_url)
 
     @property
-    def get_url_for_login(self):
+    def get_url_for_login(self) -> str:
+        if self.sm.auth_view is None:
+            return ""
         return url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"))
 
     @property
-    def get_url_for_logout(self):
+    def get_url_for_logout(self) -> str:
+        if self.sm.auth_view is None:
+            return ""
         return url_for("%s.%s" % (self.sm.auth_view.endpoint, "logout"))
 
     @property
-    def get_url_for_index(self):
-        return url_for("%s.%s" % (self.indexview.endpoint, self.indexview.default_view))
+    def get_url_for_index(self) -> str:
+        if self._indexview is None:
+            return ""
+        return url_for(
+            "%s.%s" % (self._indexview.endpoint, self._indexview.default_view)
+        )
 
     @property
-    def get_url_for_userinfo(self):
+    def get_url_for_userinfo(self) -> str:
+        if self.sm.user_view is None:
+            return ""
         return url_for("%s.%s" % (self.sm.user_view.endpoint, "userinfo"))
 
-    def get_url_for_locale(self, lang):
+    def get_url_for_locale(self, lang: str) -> str:
+        if self.bm.locale_view is None:
+            return ""
         return url_for(
             "%s.%s" % (self.bm.locale_view.endpoint, self.bm.locale_view.default_view),
             locale=lang,
         )
 
-    def add_permissions(self, update_perms=False):
+    def add_limits(self, baseview: "AbstractViewApi") -> None:
+        if hasattr(baseview, "limits"):
+            self.sm.add_limit_view(baseview)
+
+    def add_permissions(self, update_perms: bool = False) -> None:
+        from flask_appbuilder.baseviews import AbstractViewApi
+
         if self.update_perms or update_perms:
             for baseview in self.baseviews:
+                baseview = cast(AbstractViewApi, baseview)
                 self._add_permission(baseview, update_perms=update_perms)
             self._add_menu_permissions(update_perms=update_perms)
 
-    def _add_permission(self, baseview, update_perms=False):
+    def _add_permission(
+        self, baseview: "AbstractViewApi", update_perms: bool = False
+    ) -> None:
         if self.update_perms or update_perms:
             try:
                 self.sm.add_permissions_view(
@@ -619,17 +675,19 @@ class AppBuilder(object):
                 )
             except Exception as e:
                 log.exception(e)
-                log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW.format(str(e)))
+                log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW, e)
 
-    def _add_permissions_menu(self, name, update_perms=False):
+    def _add_permissions_menu(self, name: str, update_perms: bool = False) -> None:
         if self.update_perms or update_perms:
             try:
                 self.sm.add_permissions_menu(name)
             except Exception as e:
                 log.exception(e)
-                log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_MENU.format(str(e)))
+                log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_MENU, e)
 
-    def _add_menu_permissions(self, update_perms=False):
+    def _add_menu_permissions(self, update_perms: bool = False) -> None:
+        if self.menu is None:
+            return
         if self.update_perms or update_perms:
             for category in self.menu.get_list():
                 self._add_permissions_menu(category.name, update_perms=update_perms)
@@ -638,21 +696,29 @@ class AppBuilder(object):
                     if item.name != "-":
                         self._add_permissions_menu(item.name, update_perms=update_perms)
 
-    def register_blueprint(self, baseview, endpoint=None, static_folder=None):
+    def register_blueprint(
+        self,
+        baseview: "AbstractViewApi",
+        endpoint: Optional[str] = None,
+        static_folder: Optional[str] = None,
+    ) -> None:
         self.get_app.register_blueprint(
             baseview.create_blueprint(
                 self, endpoint=endpoint, static_folder=static_folder
             )
         )
 
-    def _view_exists(self, view):
+    def _view_exists(self, view: "AbstractViewApi") -> bool:
         for baseview in self.baseviews:
             if baseview.__class__ == view.__class__:
                 return True
         return False
 
-    def _process_inner_views(self):
+    def _process_inner_views(self) -> None:
+        from flask_appbuilder.baseviews import AbstractViewApi
+
         for view in self.baseviews:
+            view = cast(AbstractViewApi, view)
             for inner_class in view.get_uninit_inner_views():
                 for v in self.baseviews:
                     if (

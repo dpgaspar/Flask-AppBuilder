@@ -17,9 +17,11 @@ function loadSelectDataSlave(elem) {
             elem.select2({data: {id: "",text: ""}, placeholder: "Select", allowClear: true});
         }
         $('#' + master_id).on("change", function(e) {
+            var change_master_id = elem.attr('master_id');
+            var change_master_val = $('#' + master_id).val();
             var endpoint = elem.attr('endpoint');
-            if (e.val) {
-                endpoint = endpoint.replace("{{ID}}", e.val);
+            if (change_master_val) {
+                endpoint = endpoint.replace("{{ID}}", change_master_val);
                 $.get( endpoint, function( data ) {
                     elem.select2({data: data, placeholder: "Select", allowClear: true});
                 });
@@ -47,10 +49,12 @@ function loadSelectData() {
 //---------------------------------------
 $(function() {
 
-    $('.appbuilder_datetime').datetimepicker({pickTime: false});
+    $('.appbuilder_datetime').datetimepicker();
     $('.appbuilder_date').datetimepicker({
         pickTime: false });
-    $(".my_select2").select2({placeholder: "Select a State", allowClear: true});
+    $(".my_select2").select2(
+        {placeholder: "Select a State", allowClear: true, theme: "bootstrap"}
+    );
     $(".my_select2.readonly").select2("readonly", true);
     loadSelectData();
     loadSelectDataSlave();
