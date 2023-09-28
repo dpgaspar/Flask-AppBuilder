@@ -17,7 +17,7 @@ class ActionItem(object):
         )
 
 
-def action(name, text, confirmation=None, icon=None, multiple=True, single=True):
+def action(name, text, confirmation="", icon=None, multiple=True, single=True):
     """
         Use this decorator to expose actions
 
@@ -26,7 +26,7 @@ def action(name, text, confirmation=None, icon=None, multiple=True, single=True)
         :param text:
             Action text.
         :param confirmation:
-            Confirmation text. If not provided, action will be executed
+            Confirmation text. If an empty string is provided, action will be executed
             unconditionally.
         :param icon:
             Font Awesome icon name
