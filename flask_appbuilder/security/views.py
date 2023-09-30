@@ -604,7 +604,6 @@ class AuthOAuthView(AuthView):
 
     @expose("/login/")
     @expose("/login/<provider>")
-    @expose("/login/<provider>/<register>")
     def login(self, provider: Optional[str] = None) -> WerkzeugResponse:
         log.debug("Provider: %s", provider)
         if g.user is not None and g.user.is_authenticated:
