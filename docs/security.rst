@@ -350,7 +350,6 @@ To customize the userinfo retrieval, you can create your own method like this::
     def my_user_info_getter(sm, provider, response=None):
         if provider == "okta":
             me = sm.oauth_remotes[provider].get("userinfo")
-            log.debug("User info from Okta: {0}".format(me.data))
             return {
                 "username": "okta_" + me.data.get("sub", ""),
                 "first_name": me.data.get("given_name", ""),
@@ -368,8 +367,7 @@ To customize the userinfo retrieval, you can create your own method like this::
                 "id": me.json().get("sub", ""),
                 "role_keys": ["User"], # set AUTH_ROLES_SYNC_AT_LOGIN = False
             }
-        else:
-            return {}
+        return {}
 
 On Flask-AppBuilder 3.4.0 the login page has changed.
 
