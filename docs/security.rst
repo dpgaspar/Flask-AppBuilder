@@ -90,7 +90,7 @@ This method will authenticate the user's credentials against an LDAP server.
 
 WARNING: To use LDAP you need to install `python-ldap <https://www.python-ldap.org>`_.
 
-For a typical Microsoft AD setup (where all users can preform LDAP searches)::
+For a typical Microsoft AD setup (where all users can perform LDAP searches)::
 
     AUTH_TYPE = AUTH_LDAP
     AUTH_LDAP_SERVER = "ldap://ldap.example.com"
