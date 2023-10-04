@@ -55,8 +55,8 @@ from ..const import (
     LOGMSG_WAR_SEC_LOGIN_FAILED,
     LOGMSG_WAR_SEC_NO_USER,
     LOGMSG_WAR_SEC_NOLDAP_OBJ,
-    PERMISSION_PREFIX,
     MICROSOFT_KEY_SET_URL,
+    PERMISSION_PREFIX,
 )
 
 log = logging.getLogger(__name__)
