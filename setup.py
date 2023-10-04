@@ -46,7 +46,6 @@ setup(
     platforms="any",
     install_requires=[
         "apispec[yaml]>=6.0.0, <7",
-        "authlib>=1.2.1",
         "colorama>=0.3.9, <1",
         "click>=8, <9",
         "email_validator>=1.0.5, <2",
