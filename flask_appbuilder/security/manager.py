@@ -684,9 +684,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             return {}
 
     def _decode_and_validate_azure_jwt(self, id_token):
-        keyset = JsonWebKey.import_key_set(
-            requests.get(MICROSOFT_KEY_SET_URL).json()
-        )
+        keyset = JsonWebKey.import_key_set(requests.get(MICROSOFT_KEY_SET_URL).json())
         claims = jwt.decode(id_token, keyset)
         claims.validate()
         log.debug("Decoded JWT:\n%s", json.dumps(claims, indent=4))

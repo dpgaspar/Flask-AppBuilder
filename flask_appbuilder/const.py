@@ -196,4 +196,4 @@ API_SHOW_TITLE_RIS_KEY = "show_title"
 #  OAuth Provider Constants
 # -----------------------------------
 
-MICROSOFT_KEY_SET_URL="https://login.microsoftonline.com/common/discovery/keys"
+MICROSOFT_KEY_SET_URL = "https://login.microsoftonline.com/common/discovery/keys"
