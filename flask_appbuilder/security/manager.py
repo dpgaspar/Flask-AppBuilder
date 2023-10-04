@@ -56,6 +56,7 @@ from ..const import (
     LOGMSG_WAR_SEC_NO_USER,
     LOGMSG_WAR_SEC_NOLDAP_OBJ,
     PERMISSION_PREFIX,
+    MICROSOFT_KEY_SET_URL,
 )
 
 log = logging.getLogger(__name__)
@@ -684,9 +685,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def _decode_and_validate_azure_jwt(self, id_token):
         keyset = JsonWebKey.import_key_set(
-            requests.get(
-                "https://login.microsoftonline.com/common/discovery/keys"
-            ).json()
+            requests.get(MICROSOFT_KEY_SET_URL).json()
         )
         claims = jwt.decode(id_token, keyset)
         claims.validate()
