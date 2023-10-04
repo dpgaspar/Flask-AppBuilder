@@ -1,8 +1,10 @@
 import datetime
+import json
 import unittest
 from unittest.mock import MagicMock, patch
 
 from flask_appbuilder.security.manager import BaseSecurityManager
+from flask_appbuilder.security.manager import JsonWebKey, jwt
 
 
 @patch.object(BaseSecurityManager, "update_user")
@@ -67,3 +69,15 @@ class BaseSecurityManagerUpdateUserAuthStatTestCase(unittest.TestCase):
         self.assertEqual(user_mock.fail_login_count, 10)
         self.assertEqual(user_mock.last_login, None)
         self.assertTrue(bsm.update_user.called_once)
+
+    def test_azure_jwt_validated(self, mock1, mock2):
+        example_jwt="ExampleAzureJWT"
+
+        JsonWebKey.import_key_set = MagicMock()
+        JWTClaimsMock = MagicMock()
+        jwt.decode = MagicMock(return_value=JWTClaimsMock)
+        json.dumps = MagicMock(return_value=f"Decoded{example_jwt}")
+
+        bsm = BaseSecurityManager()
+        bsm._decode_and_validate_azure_jwt(example_jwt)
+        JWTClaimsMock.validate.assert_called()
