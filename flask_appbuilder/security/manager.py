@@ -689,7 +689,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         claims = jwt.decode(id_token, keyset)
         claims.validate()
-        log.info("Decoded JWT:\n%s", json.dumps(claims, indent=4))
+        log.debug("Decoded JWT:\n%s", json.dumps(claims, indent=4))
 
         return claims
 
