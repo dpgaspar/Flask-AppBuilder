@@ -931,7 +931,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if len(self.auth_roles_mapping) > 0:
             request_fields.append(self.auth_ldap_group_field)
 
-        # preform the LDAP search
+        # perform the LDAP search
         log.debug(
             "LDAP search for '%s' with fields %s in scope '%s'",
             filter_str,
@@ -1114,7 +1114,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             user_attributes = {}
 
             # Flow 1 - (Indirect Search Bind):
-            #  - in this flow, special bind credentials are used to preform the
+            #  - in this flow, special bind credentials are used to perform the
             #    LDAP search
             #  - in this flow, AUTH_LDAP_SEARCH must be set
             if self.auth_ldap_bind_user:
@@ -1150,7 +1150,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
             # Flow 2 - (Direct Search Bind):
             #  - in this flow, the credentials provided by the end-user are used
-            #    to preform the LDAP search
+            #    to perform the LDAP search
             #  - in this flow, we only search LDAP if AUTH_LDAP_SEARCH is set
             #     - features like AUTH_USER_REGISTRATION & AUTH_ROLES_SYNC_AT_LOGIN
             #       will only work if AUTH_LDAP_SEARCH is set

@@ -1,5 +1,5 @@
 __author__ = "Daniel Vaz Gaspar"
-__version__ = "4.3.6"
+__version__ = "4.3.7"
 
 from .actions import action  # noqa: F401
 from .api import ModelRestApi  # noqa: F401
