@@ -6,8 +6,6 @@
 #
 apispec[yaml]==6.3.0
     # via Flask-AppBuilder (setup.py)
-authlib==1.2.1
-    # via Flask-AppBuilder (setup.py)
 attrs==21.4.0
     # via jsonschema
 babel==2.9.1
