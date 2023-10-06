@@ -494,7 +494,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
             },
         )
 
-    def test_oauth_user_info_azure2(self):
+    def test_oauth_user_info_azure_with_jwt_validation(self):
         self.app.config["OAUTH_PROVIDERS"] = [
             {
                 "name": "azure",
