@@ -5,6 +5,7 @@ import unittest
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.const import AUTH_OAUTH
+from flask_appbuilder.exceptions import OAuthProviderUnknown
 import jinja2
 import jwt
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
@@ -458,6 +459,24 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
 
         # validate - user was given the correct roles
         self.assertListEqual(user.roles, [sm.find_role("User")])
+
+    def test_oauth_user_info_getter(self):
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        @self.appbuilder.sm.oauth_user_info_getter
+        def user_info_getter(sm, provider, response):
+            return {"username": "test"}
+
+        self.assertEqual(self.appbuilder.sm.oauth_user_info, user_info_getter)
+        self.assertEqual(
+            self.appbuilder.sm.oauth_user_info("azure", {"claim": 1}),
+            {"username": "test"},
+        )
+
+    def test_oauth_user_info_unknown_provider(self):
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        with self.assertRaises(OAuthProviderUnknown):
+            self.appbuilder.sm.oauth_user_info("unknown", {})
 
     def test_oauth_user_info_azure(self):
         self.appbuilder = AppBuilder(self.app, self.db.session)

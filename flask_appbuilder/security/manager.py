@@ -4,6 +4,7 @@ import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 from flask import Flask, g, session, url_for
+from flask_appbuilder.exceptions import OAuthProviderUnknown
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
@@ -666,7 +667,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "last_name": data.get("family_name", ""),
                 "email": data.get("email", ""),
             }
-        return {}
+        raise OAuthProviderUnknown()
 
     def _get_microsoft_jwks(self) -> List[Dict[str, Any]]:
         import requests
