@@ -460,7 +460,6 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertListEqual(user.roles, [sm.find_role("User")])
 
     def test_oauth_user_info_azure(self):
-
         self.appbuilder = AppBuilder(self.app, self.db.session)
         claims = {
             "aud": "test-aud",
@@ -481,6 +480,108 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
 
         # Create an unsigned JWT
         unsigned_jwt = jwt.encode(claims, key=None, algorithm="none")
+        user_info = self.appbuilder.sm.get_oauth_user_info(
+            "azure", {"access_token": "", "id_token": unsigned_jwt}
+        )
+        self.assertEqual(
+            user_info,
+            {
+                "email": "test@gmail.com",
+                "first_name": "test",
+                "last_name": "user",
+                "role_keys": [],
+                "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+            },
+        )
+
+    def test_oauth_user_info_azure2(self):
+        self.app.config["OAUTH_PROVIDERS"] = [
+            {
+                "name": "azure",
+                "icon": "fa-windows",
+                "token_key": "access_token",
+                "remote_app": {
+                    "client_id": "CLIENT_ID",
+                    "client_secret": "SECRET",
+                    "api_base_url": "https://login.microsoftonline.com/TENANT_ID/oauth2",
+                    "client_kwargs": {
+                        "scope": "User.Read name email profile",
+                        "resource": "AZURE_APPLICATION_ID",
+                        "verify_signature": True,
+                    },
+                    "request_token_url": None,
+                    "access_token_url": "https://login.microsoftonline.com/"
+                    "AZURE_APPLICATION_ID/"
+                    "oauth2/token",
+                    "authorize_url": "https://login.microsoftonline.com/"
+                    "AZURE_APPLICATION_ID/"
+                    "oauth2/authorize",
+                },
+            }
+        ]
+
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        claims = {
+            "aud": "test-aud",
+            "iss": "https://sts.windows.net/test/",
+            "iat": 1696601585,
+            "nbf": 1696601585,
+            "exp": 7282182129,  # 100 years from now ;)
+            "amr": ["pwd"],
+            "email": "test@gmail.com",
+            "family_name": "user",
+            "given_name": "test",
+            "idp": "live.com",
+            "name": "Test user",
+            "oid": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+            "unique_name": "live.com#test@gmail.com",
+            "ver": "1.0",
+        }
+        from unittest.mock import MagicMock
+
+        private_key = """-----BEGIN PRIVATE KEY-----
+MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALeDojEka93XZ/J8
+bDGgn2MIHykafgCx2D6wTZgmmhzpRH7/k7J/WSsqG6eSFg38mGJukPCa4dcG8dCL
+meajEf2g4IoaYiE55yXs0ou/tixBJI8wRY+NfCluxgIcHdKhZISVO6CkR5r7diN/
+SLHPsFnDd0UiMJ5c48UsJwk8T5T7AgMBAAECgYEAqalrVB+mEi1KDud1Z9RmRzqF
+BI1XnPDPSfXZZyeZJ82J5BgJxubx23RMqPnopfm4MJikK64lyZTED9hg6tgskk1X
+J9pc7iyU4PQf+tx4tvElyOL4OSqGss/tQHtHz76hNOR1kxeCcJsJG+WS8P0/Kmj1
+0IoYKLFlb5AHr6KqDGECQQDZ0qKIzxdmZj3gSsNldc4oOQOKJgd1QSDGCOqR9p7f
+oj7nuOPRVgnztqXALhNhpZXYJq8dWmpGYFi+EC1piRUDAkEA162gPgGzUJAIyhUM
+sA6Uy9v64nqBnlygVpofhdvyznSf/KUsmWQZv7gpMMXnIGAQP+rqM1gJvuRtodml
+hUeSqQJAHJH4J6GiHBhE/WpQ/rnY9IWl5TTfvY1xUwhQXBzQ8dxCC/rARvDWFVVb
+oD1q5V/mq5dHWL5HOjvg5+0PR8xnKQJAMOdBik3AZugB1jBnrBPiUUcT3/5/HXVL
+NdfEhgmVSJLRI+wf7LfxzrLnRBPbkE+334ZYjEPOEeahpS1AhrPv4QJAHpap1I+v
+8m+N5G/MppasppHLJmXhnFeQsnBX7XcdYiCqHikuBlIzoQ0Cj5xbkfgMMCVORO64
+r9+EFRsxA5GNYA==
+-----END PRIVATE KEY-----"""
+        public_key = """-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3g6IxJGvd12fyfGwxoJ9jCB8p
+Gn4Asdg+sE2YJpoc6UR+/5Oyf1krKhunkhYN/JhibpDwmuHXBvHQi5nmoxH9oOCK
+GmIhOecl7NKLv7YsQSSPMEWPjXwpbsYCHB3SoWSElTugpEea+3Yjf0ixz7BZw3dF
+IjCeXOPFLCcJPE+U+wIDAQAB
+-----END PUBLIC KEY-----"""
+        # Create an unsigned JWT
+        unsigned_jwt = jwt.encode(
+            claims, key=private_key, algorithm="RS256", headers={"kid": "1"}
+        )
+        self.appbuilder.sm._get_microsoft_jwks = MagicMock(
+            return_value={
+                "keys": [
+                    {
+                        "alg": "RS256",
+                        "e": "AQAB",
+                        "kid": "1",
+                        "kty": "RSA",
+                        "n": "t4OiMSRr3ddn8nxsMaCfYwgfKRp-ALHYPrBNmCaaHOlEfv-Tsn9ZKyobp5IWDfyYYm6Q8Jrh1wbx0IuZ5qMR_aDgihpiITnnJezSi7-2LEEkjzBFj418KW7GAhwd0qFkhJU7oKRHmvt2I39Isc-wWcN3RSIwnlzjxSwnCTxPlPs",
+                        "use": "sig",
+                        "x5c": [
+                            "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3g6IxJGvd12fyfGwxoJ9jCB8pGn4Asdg+sE2YJpoc6UR+/5Oyf1krKhunkhYN/JhibpDwmuHXBvHQi5nmoxH9oOCKGmIhOecl7NKLv7YsQSSPMEWPjXwpbsYCHB3SoWSElTugpEea+3Yjf0ixz7BZw3dFIjCeXOPFLCcJPE+U+wIDAQAB"
+                        ],
+                    }
+                ]
+            }
+        )
         user_info = self.appbuilder.sm.get_oauth_user_info(
             "azure", {"access_token": "", "id_token": unsigned_jwt}
         )

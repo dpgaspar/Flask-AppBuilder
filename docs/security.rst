@@ -348,14 +348,12 @@ You can give FlaskAppBuilder roles based on Oauth groups::
 
 To customize the userinfo retrieval, you can create your own method like this::
 
-    from flask_appbuilder.security.manager import UserInfo
-
     @appbuilder.sm.oauth_user_info_getter
     def my_user_info_getter(
         sm: SecurityManager,
         provider: str,
         response: Dict[str, Any]
-    ) -> UserInfo:
+    ) -> Dict[str, Any]:
         if provider == "okta":
             me = sm.oauth_remotes[provider].get("userinfo")
             return {

@@ -1,7 +1,7 @@
 import datetime
 import logging
 import re
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, TypedDict, Union
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 from flask import Flask, g, session, url_for
 from flask_babel import lazy_gettext as _
@@ -58,14 +58,6 @@ from ..const import (
 )
 
 log = logging.getLogger(__name__)
-
-
-class UserInfo(TypedDict, total=False):
-    username: str
-    first_name: str
-    last_name: str
-    email: str
-    role_keys: List[str]
 
 
 class AbstractSecurityManager(BaseManager):
@@ -526,7 +518,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             return current_user_jwt
 
     def oauth_user_info_getter(
-        self, func: Callable[["BaseSecurityManager", str, Dict[str, Any]], UserInfo]
+        self,
+        func: Callable[["BaseSecurityManager", str, Dict[str, Any]], Dict[str, Any]],
     ):
         """
         Decorator function to be the OAuth user info getter
@@ -545,7 +538,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 return {}
         """
 
-        def wraps(provider: str, response: Dict[str, Any] = None) -> UserInfo:
+        def wraps(provider: str, response: Dict[str, Any] = None) -> Dict[str, Any]:
             return func(self, provider, response)
 
         self.oauth_user_info = wraps
@@ -585,7 +578,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         session["oauth_provider"] = provider
 
-    def get_oauth_user_info(self, provider: str, resp: Dict[str, Any]) -> UserInfo:
+    def get_oauth_user_info(
+        self, provider: str, resp: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Since there are different OAuth APIs with different ways to
         retrieve user info
@@ -673,17 +668,19 @@ class BaseSecurityManager(AbstractSecurityManager):
             }
         return {}
 
+    def _get_microsoft_jwks(self) -> List[Dict[str, Any]]:
+        import requests
+
+        return requests.get(MICROSOFT_KEY_SET_URL).json()
+
     def _decode_and_validate_azure_jwt(self, id_token: str) -> Dict[str, str]:
         verify_signature = self.oauth_remotes["azure"].client_kwargs.get(
             "verify_signature", False
         )
         if verify_signature:
             from authlib.jose import JsonWebKey, jwt as authlib_jwt
-            import requests
 
-            keyset = JsonWebKey.import_key_set(
-                requests.get(MICROSOFT_KEY_SET_URL).json()
-            )
+            keyset = JsonWebKey.import_key_set(self._get_microsoft_jwks())
             claims = authlib_jwt.decode(id_token, keyset)
             claims.validate()
             return claims
