@@ -1,10 +1,8 @@
 import datetime
-import json
 import logging
 import re
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, TypedDict, Union
 
-from authlib.jose import JsonWebKey, jwt
 from flask import Flask, g, session, url_for
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
@@ -12,7 +10,7 @@ from flask_jwt_extended import JWTManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_login import current_user, LoginManager
-import requests
+import jwt
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .api import SecurityApi
@@ -60,6 +58,14 @@ from ..const import (
 )
 
 log = logging.getLogger(__name__)
+
+
+class UserInfo(TypedDict, total=False):
+    username: str
+    first_name: str
+    last_name: str
+    email: str
+    role_keys: List[str]
 
 
 class AbstractSecurityManager(BaseManager):
@@ -271,7 +277,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             from authlib.integrations.flask_client import OAuth
 
             self.oauth = OAuth(app)
-            self.oauth_remotes = dict()
+            self.oauth_remotes = {}
             for _provider in self.oauth_providers:
                 provider_name = _provider["name"]
                 log.debug("OAuth providers init %s", provider_name)
@@ -519,7 +525,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         elif current_user_jwt:
             return current_user_jwt
 
-    def oauth_user_info_getter(self, f):
+    def oauth_user_info_getter(
+        self, func: Callable[["BaseSecurityManager", str, Dict[str, Any]], UserInfo]
+    ):
         """
         Decorator function to be the OAuth user info getter
         for all the providers, receives provider and response
@@ -534,21 +542,11 @@ class BaseSecurityManager(AbstractSecurityManager):
                 if provider == 'github':
                     me = sm.oauth_remotes[provider].get('user')
                     return {'username': me.data.get('login')}
-                else:
-                    return {}
+                return {}
         """
 
-        def wraps(provider, response=None):
-            ret = f(self, provider, response=response)
-            # Checks if decorator is well behaved and returns a dict as supposed.
-            if not type(ret) == dict:
-                log.error(
-                    "OAuth user info decorated function "
-                    "did not returned a dict, but: %s",
-                    type(ret),
-                )
-                return {}
-            return ret
+        def wraps(provider: str, response: Dict[str, Any] = None) -> UserInfo:
+            return func(self, provider, response)
 
         self.oauth_user_info = wraps
         return wraps
@@ -587,9 +585,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         session["oauth_provider"] = provider
 
-    def get_oauth_user_info(self, provider, resp):
+    def get_oauth_user_info(self, provider: str, resp: Dict[str, Any]) -> UserInfo:
         """
-        Since there are different OAuth API's with different ways to
+        Since there are different OAuth APIs with different ways to
         retrieve user info
         """
         # for GITHUB
@@ -629,9 +627,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "email": data.get("email", ""),
             }
         if provider == "azure":
-            log.debug("Azure response received:\n%s", json.dumps(resp, indent=4))
             me = self._decode_and_validate_azure_jwt(resp["id_token"])
-            log.debug("Decoded JWT:\n%s", json.dumps(me, indent=4))
+            log.debug("User info from Azure: %s", me)
             # https://learn.microsoft.com/en-us/azure/active-directory/develop/id-token-claims-reference#payload-claims
             return {
                 "email": me["email"],
@@ -662,7 +659,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             }
         # for Keycloak
         if provider in ["keycloak", "keycloak_before_17"]:
-            me = self.appbuilder.sm.oauth_remotes[provider].get("openid-connect/userinfo")
+            me = self.appbuilder.sm.oauth_remotes[provider].get(
+                "openid-connect/userinfo"
+            )
             me.raise_for_status()
             data = me.json()
             log.debug("User info from Keycloak: %s", data)
@@ -674,13 +673,22 @@ class BaseSecurityManager(AbstractSecurityManager):
             }
         return {}
 
-    def _decode_and_validate_azure_jwt(self, id_token):
-        keyset = JsonWebKey.import_key_set(requests.get(MICROSOFT_KEY_SET_URL).json())
-        claims = jwt.decode(id_token, keyset)
-        claims.validate()
-        log.debug("Decoded JWT:\n%s", json.dumps(claims, indent=4))
+    def _decode_and_validate_azure_jwt(self, id_token: str) -> Dict[str, str]:
+        verify_signature = self.oauth_remotes["azure"].client_kwargs.get(
+            "verify_signature", False
+        )
+        if verify_signature:
+            from authlib.jose import JsonWebKey, jwt as authlib_jwt
+            import requests
 
-        return claims
+            keyset = JsonWebKey.import_key_set(
+                requests.get(MICROSOFT_KEY_SET_URL).json()
+            )
+            claims = authlib_jwt.decode(id_token, keyset)
+            claims.validate()
+            return claims
+
+        return jwt.decode(id_token, options={"verify_signature": False})
 
     def register_views(self):
         if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEWS", True):
@@ -785,7 +793,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                 label=_("Views/Menus"),
                 category="Security",
             )
-        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW", True):
+        if self.appbuilder.app.config.get(
+            "FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW", True
+        ):
             self.appbuilder.add_view(
                 self.permissionviewmodelview,
                 "Permission on Views/Menus",
@@ -958,7 +968,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         except (IndexError, NameError):
             return None, None
 
-    def _ldap_calculate_user_roles(self, user_attributes: Dict[str, bytes]) -> List[str]:
+    def _ldap_calculate_user_roles(
+        self, user_attributes: Dict[str, bytes]
+    ) -> List[str]:
         user_role_objects = set()
 
         # apply AUTH_ROLES_MAPPING
@@ -1023,7 +1035,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             return False
 
     @staticmethod
-    def ldap_extract(ldap_dict: Dict[str, bytes], field_name: str, fallback: str) -> str:
+    def ldap_extract(
+        ldap_dict: Dict[str, bytes], field_name: str, fallback: str
+    ) -> str:
         raw_value = ldap_dict.get(field_name, [bytes()])
         # decode - if empty string, default to fallback, otherwise take first element
         return raw_value[0].decode("utf-8") or fallback
@@ -1070,7 +1084,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             if self.auth_ldap_tls_cacertdir:
                 ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, self.auth_ldap_tls_cacertdir)
             if self.auth_ldap_tls_cacertfile:
-                ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.auth_ldap_tls_cacertfile)
+                ldap.set_option(
+                    ldap.OPT_X_TLS_CACERTFILE, self.auth_ldap_tls_cacertfile
+                )
             if self.auth_ldap_tls_certfile:
                 ldap.set_option(ldap.OPT_X_TLS_CERTFILE, self.auth_ldap_tls_certfile)
             if self.auth_ldap_tls_keyfile:
@@ -1489,7 +1505,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Then check against database-stored roles
         pvms_names = [
             pvm.view_menu.name
-            for pvm in self.find_roles_permission_view_menus(permission_name, db_role_ids)
+            for pvm in self.find_roles_permission_view_menus(
+                permission_name, db_role_ids
+            )
         ]
         result.update(pvms_names)
         return result
@@ -1636,7 +1654,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                 method_name
             )
             # Actions do not get prefix when normally defined
-            if hasattr(baseview, "actions") and baseview.actions.get(old_permission_name):
+            if hasattr(baseview, "actions") and baseview.actions.get(
+                old_permission_name
+            ):
                 permission_prefix = ""
             else:
                 permission_prefix = PERMISSION_PREFIX
@@ -1912,7 +1932,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def find_roles_permission_view_menus(self, permission_name: str, role_ids: List[int]):
+    def find_roles_permission_view_menus(
+        self, permission_name: str, role_ids: List[int]
+    ):
         raise NotImplementedError
 
     def exist_permission_on_roles(
