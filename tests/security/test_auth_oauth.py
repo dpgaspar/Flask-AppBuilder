@@ -555,12 +555,6 @@ NdfEhgmVSJLRI+wf7LfxzrLnRBPbkE+334ZYjEPOEeahpS1AhrPv4QJAHpap1I+v
 8m+N5G/MppasppHLJmXhnFeQsnBX7XcdYiCqHikuBlIzoQ0Cj5xbkfgMMCVORO64
 r9+EFRsxA5GNYA==
 -----END PRIVATE KEY-----"""
-        public_key = """-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3g6IxJGvd12fyfGwxoJ9jCB8p
-Gn4Asdg+sE2YJpoc6UR+/5Oyf1krKhunkhYN/JhibpDwmuHXBvHQi5nmoxH9oOCK
-GmIhOecl7NKLv7YsQSSPMEWPjXwpbsYCHB3SoWSElTugpEea+3Yjf0ixz7BZw3dF
-IjCeXOPFLCcJPE+U+wIDAQAB
------END PUBLIC KEY-----"""
         # Create an unsigned JWT
         unsigned_jwt = jwt.encode(
             claims, key=private_key, algorithm="RS256", headers={"kid": "1"}
@@ -573,10 +567,16 @@ IjCeXOPFLCcJPE+U+wIDAQAB
                         "e": "AQAB",
                         "kid": "1",
                         "kty": "RSA",
-                        "n": "t4OiMSRr3ddn8nxsMaCfYwgfKRp-ALHYPrBNmCaaHOlEfv-Tsn9ZKyobp5IWDfyYYm6Q8Jrh1wbx0IuZ5qMR_aDgihpiITnnJezSi7-2LEEkjzBFj418KW7GAhwd0qFkhJU7oKRHmvt2I39Isc-wWcN3RSIwnlzjxSwnCTxPlPs",
+                        "n": "t4OiMSRr3ddn8nxsMaCfYwgfKRp-ALHYPrBNmCaaHOlEfv-"
+                        "Tsn9ZKyobp5IWDfyYYm6Q8Jrh1wbx0IuZ5qMR_aDgihpiITnnJezSi7-"
+                        "2LEEkjzBFj418KW7GAhwd0qFkhJU7oKRHmvt2I39Isc-wWcN3RSIwnlz"
+                        "jxSwnCTxPlPs",
                         "use": "sig",
                         "x5c": [
-                            "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3g6IxJGvd12fyfGwxoJ9jCB8pGn4Asdg+sE2YJpoc6UR+/5Oyf1krKhunkhYN/JhibpDwmuHXBvHQi5nmoxH9oOCKGmIhOecl7NKLv7YsQSSPMEWPjXwpbsYCHB3SoWSElTugpEea+3Yjf0ixz7BZw3dFIjCeXOPFLCcJPE+U+wIDAQAB"
+                            "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3g6IxJGvd12fyfGwxoJ9"
+                            "jCB8pGn4Asdg+sE2YJpoc6UR+/5Oyf1krKhunkhYN/JhibpDwmuHXBvHQi5n"
+                            "moxH9oOCKGmIhOecl7NKLv7YsQSSPMEWPjXwpbsYCHB3SoWSElTugpEea+3Y"
+                            "jf0ixz7BZw3dFIjCeXOPFLCcJPE+U+wIDAQAB"
                         ],
                     }
                 ]
