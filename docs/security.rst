@@ -305,6 +305,8 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 "client_kwargs": {
                     "scope": "User.read name preferred_username email profile upn",
                     "resource": "AZURE_APPLICATION_ID",
+                    # Optionally enforce signature JWT verification
+                    "verify_signature": False
                 },
                 "request_token_url": None,
                 "access_token_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/token",
@@ -347,10 +349,13 @@ You can give FlaskAppBuilder roles based on Oauth groups::
 To customize the userinfo retrieval, you can create your own method like this::
 
     @appbuilder.sm.oauth_user_info_getter
-    def my_user_info_getter(sm, provider, response=None):
+    def my_user_info_getter(
+        sm: SecurityManager,
+        provider: str,
+        response: Dict[str, Any]
+    ) -> Dict[str, Any]:
         if provider == "okta":
             me = sm.oauth_remotes[provider].get("userinfo")
-            log.debug("User info from Okta: {0}".format(me.data))
             return {
                 "username": "okta_" + me.data.get("sub", ""),
                 "first_name": me.data.get("given_name", ""),
@@ -365,11 +370,9 @@ To customize the userinfo retrieval, you can create your own method like this::
                 "email": me.json().get("email"),
                 "first_name": me.json().get("given_name", ""),
                 "last_name": me.json().get("family_name", ""),
-                "id": me.json().get("sub", ""),
                 "role_keys": ["User"], # set AUTH_ROLES_SYNC_AT_LOGIN = False
             }
-        else:
-            return {}
+        return {}
 
 On Flask-AppBuilder 3.4.0 the login page has changed.
 

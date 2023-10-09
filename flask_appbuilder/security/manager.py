@@ -1,18 +1,17 @@
 import datetime
-import json
 import logging
 import re
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
-from authlib.jose import JsonWebKey, jwt
 from flask import Flask, g, session, url_for
+from flask_appbuilder.exceptions import OAuthProviderUnknown
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_login import current_user, LoginManager
-import requests
+import jwt
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .api import SecurityApi
@@ -271,7 +270,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             from authlib.integrations.flask_client import OAuth
 
             self.oauth = OAuth(app)
-            self.oauth_remotes = dict()
+            self.oauth_remotes = {}
             for _provider in self.oauth_providers:
                 provider_name = _provider["name"]
                 log.debug("OAuth providers init %s", provider_name)
@@ -519,7 +518,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         elif current_user_jwt:
             return current_user_jwt
 
-    def oauth_user_info_getter(self, f):
+    def oauth_user_info_getter(
+        self,
+        func: Callable[["BaseSecurityManager", str, Dict[str, Any]], Dict[str, Any]],
+    ):
         """
         Decorator function to be the OAuth user info getter
         for all the providers, receives provider and response
@@ -534,21 +536,11 @@ class BaseSecurityManager(AbstractSecurityManager):
                 if provider == 'github':
                     me = sm.oauth_remotes[provider].get('user')
                     return {'username': me.data.get('login')}
-                else:
-                    return {}
+                return {}
         """
 
-        def wraps(provider, response=None):
-            ret = f(self, provider, response=response)
-            # Checks if decorator is well behaved and returns a dict as supposed.
-            if not type(ret) == dict:
-                log.error(
-                    "OAuth user info decorated function "
-                    "did not returned a dict, but: %s",
-                    type(ret),
-                )
-                return {}
-            return ret
+        def wraps(provider: str, response: Dict[str, Any] = None) -> Dict[str, Any]:
+            return func(self, provider, response)
 
         self.oauth_user_info = wraps
         return wraps
@@ -587,9 +579,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         session["oauth_provider"] = provider
 
-    def get_oauth_user_info(self, provider, resp):
+    def get_oauth_user_info(
+        self, provider: str, resp: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
-        Since there are different OAuth API's with different ways to
+        Since there are different OAuth APIs with different ways to
         retrieve user info
         """
         # for GITHUB
@@ -628,21 +622,14 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "last_name": data.get("family_name", ""),
                 "email": data.get("email", ""),
             }
-        # for Azure AD Tenant. Azure OAuth response contains
-        # JWT token which has user info.
-        # JWT token needs to be base64 decoded.
-        # https://docs.microsoft.com/en-us/azure/active-directory/develop/
-        # active-directory-protocols-oauth-code
         if provider == "azure":
-            log.debug("Azure response received:\n%s", json.dumps(resp, indent=4))
             me = self._decode_and_validate_azure_jwt(resp["id_token"])
-            log.debug("Decoded JWT:\n%s", json.dumps(me, indent=4))
+            log.debug("User info from Azure: %s", me)
+            # https://learn.microsoft.com/en-us/azure/active-directory/develop/id-token-claims-reference#payload-claims
             return {
-                "name": me.get("name", ""),
-                "email": me["upn"],
+                "email": me["email"],
                 "first_name": me.get("given_name", ""),
                 "last_name": me.get("family_name", ""),
-                "id": me["oid"],
                 "username": me["oid"],
                 "role_keys": me.get("roles", []),
             }
@@ -680,16 +667,26 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "last_name": data.get("family_name", ""),
                 "email": data.get("email", ""),
             }
-        else:
-            return {}
+        raise OAuthProviderUnknown()
 
-    def _decode_and_validate_azure_jwt(self, id_token):
-        keyset = JsonWebKey.import_key_set(requests.get(MICROSOFT_KEY_SET_URL).json())
-        claims = jwt.decode(id_token, keyset)
-        claims.validate()
-        log.debug("Decoded JWT:\n%s", json.dumps(claims, indent=4))
+    def _get_microsoft_jwks(self) -> List[Dict[str, Any]]:
+        import requests
 
-        return claims
+        return requests.get(MICROSOFT_KEY_SET_URL).json()
+
+    def _decode_and_validate_azure_jwt(self, id_token: str) -> Dict[str, str]:
+        verify_signature = self.oauth_remotes["azure"].client_kwargs.get(
+            "verify_signature", False
+        )
+        if verify_signature:
+            from authlib.jose import JsonWebKey, jwt as authlib_jwt
+
+            keyset = JsonWebKey.import_key_set(self._get_microsoft_jwks())
+            claims = authlib_jwt.decode(id_token, keyset)
+            claims.validate()
+            return claims
+
+        return jwt.decode(id_token, options={"verify_signature": False})
 
     def register_views(self):
         if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEWS", True):
