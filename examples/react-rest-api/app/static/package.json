@@ -11,7 +11,7 @@
     "react-dom": "^16.4.1",
     "react-icons": "^3.3.0",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "^2.1.1",
+    "react-scripts": "^5.0.1",
     "react-select": "^3.0.4",
     "react-bootstrap": "^0.32.4"
   },
