@@ -4,6 +4,8 @@ from unittest.mock import MagicMock, patch
 
 from flask_appbuilder.security.manager import BaseSecurityManager
 
+JWTClaimsMock = MagicMock()
+
 
 @patch.object(BaseSecurityManager, "update_user")
 @patch.object(BaseSecurityManager, "__init__", return_value=None)

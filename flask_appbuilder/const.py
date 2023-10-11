@@ -191,3 +191,9 @@ API_LIST_TITLE_RIS_KEY = "list_title"
 API_ADD_TITLE_RIS_KEY = "add_title"
 API_EDIT_TITLE_RIS_KEY = "edit_title"
 API_SHOW_TITLE_RIS_KEY = "show_title"
+
+# -----------------------------------
+#  OAuth Provider Constants
+# -----------------------------------
+
+MICROSOFT_KEY_SET_URL = "https://login.microsoftonline.com/common/discovery/keys"
