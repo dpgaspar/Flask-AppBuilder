@@ -1,7 +1,7 @@
 
 .collapse.in {
-    display:block;
-	overflow: visible;
+    display: block;
+    overflow: visible;
 }
 
 .panel-group .panel {
@@ -10,19 +10,19 @@
 
 /* Wrapper for page content to push down footer */
 .wrap {
-	min-height: 100%;
-	height: auto !important;
-	height: 100%;
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
 }
 
 
-.fixed-footer{
-	background-color: #f5f5f5;
-	bottom:0;
-	left:0;
-	right:0;
-	width:100%;
-	margin:auto;
+.fixed-footer {
+    background-color: #f5f5f5;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: auto;
 }
 
 
@@ -31,7 +31,11 @@ th.action_checkboxes {
 }
 
 select {
-	width: 100%;
+    width: 100%;
+}
+
+td.filter {
+    width: 50%
 }
 
 .cursor-hand {
