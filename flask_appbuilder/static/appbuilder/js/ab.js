@@ -17,7 +17,6 @@ function loadSelectDataSlave(elem) {
             elem.select2({data: {id: "",text: ""}, placeholder: "Select", allowClear: true});
         }
         $('#' + master_id).on("change", function(e) {
-            var change_master_id = elem.attr('master_id');
             var change_master_val = $('#' + master_id).val();
             var endpoint = elem.attr('endpoint');
             if (change_master_val) {
