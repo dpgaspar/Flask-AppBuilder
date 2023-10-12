@@ -30,7 +30,6 @@ var AdminFilters = function (element, labels, form, filters, active_filters) {
     }
 
     function addActiveFilter(name, filter_name, value) {
-        alert("AddActiveFilter");
         let $el = $('<tr />').appendTo($container);
 
         addRemoveFilter($el, name, labels[name]);
@@ -101,7 +100,6 @@ var AdminFilters = function (element, labels, form, filters, active_filters) {
 
 
     function addFilter(name, filter) {
-        alert("AddFilter");
         let $el = $('<tr />').appendTo($container);
 
         addRemoveFilter($el, name, labels[name]);
