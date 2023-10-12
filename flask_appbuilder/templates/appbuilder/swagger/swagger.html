@@ -2,16 +2,19 @@
 
 {% block head_css %}
     {{ super() }}
-    <link type="text/css" rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css"
-          nonce="{{ baselib.get_nonce() }}">
+    <link href="{{ url_for('appbuilder.static',filename='css/swagger/swagger-ui.css') }}"
+          rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    {{ super() }}
+    <script src="{{ url_for('appbuilder.static',filename='js/swagger-ui-bundle.js') }}"
+            nonce="{{ baselib.get_nonce() }}"></script>
 {% endblock %}
 
 {% block content %}
     <div id="swagger-ui">
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"
-            nonce="{{ baselib.get_nonce() }}"></script>
     <!-- `SwaggerUIBundle` is now available on the page -->
     <script nonce="{{ baselib.get_nonce() }}">
         const ui = SwaggerUIBundle({
