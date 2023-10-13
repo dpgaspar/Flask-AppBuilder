@@ -255,9 +255,7 @@ class RestCRUDView(BaseCRUDView):
         log.warning("This API is deprecated and will be removed on 2.3.X")
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(
-                self.__class__.__name__
-            )
+            order_column, order_direction = get_order_args().get(self.__class__.__name__)
         else:
             order_column, order_direction = "", ""
         page = get_page_args().get(self.__class__.__name__)
@@ -472,7 +470,7 @@ class RestCRUDView(BaseCRUDView):
         log.warning("This API is deprecated and will be removed on 2.3.X")
         filter_rel_fields = None
         if self.edit_form_query_rel_fields:
-            filter_rel_fields = self.edit_form_query_rel_fields
+            filter_rel_fields = self.edit_form_query_rel_fields.get(col_name)
         ret_json = self._get_related_column_data(col_name, filter_rel_fields)
         response = make_response(ret_json, 200)
         response.headers["Content-Type"] = "application/json"
@@ -486,9 +484,7 @@ class RestCRUDView(BaseCRUDView):
         log.warning("This API is deprecated and will be removed on 2.3.X")
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(
-                self.__class__.__name__
-            )
+            order_column, order_direction = get_order_args().get(self.__class__.__name__)
         else:
             order_column, order_direction = "", ""
         get_filter_args(self._filters)
