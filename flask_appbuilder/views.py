@@ -255,7 +255,9 @@ class RestCRUDView(BaseCRUDView):
         log.warning("This API is deprecated and will be removed on 2.3.X")
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+            order_column, order_direction = get_order_args().get(
+                self.__class__.__name__
+            )
         else:
             order_column, order_direction = "", ""
         page = get_page_args().get(self.__class__.__name__)
@@ -484,7 +486,9 @@ class RestCRUDView(BaseCRUDView):
         log.warning("This API is deprecated and will be removed on 2.3.X")
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+            order_column, order_direction = get_order_args().get(
+                self.__class__.__name__
+            )
         else:
             order_column, order_direction = "", ""
         get_filter_args(self._filters)
