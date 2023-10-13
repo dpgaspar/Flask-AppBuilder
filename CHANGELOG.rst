@@ -1,6 +1,18 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.8
+-----------------------------------
+
+- fix: filter list UI spacing between elements (#2128) [Daniel Vaz Gaspar]
+- fix: add github sponsor (#2130) [Daniel Vaz Gaspar]
+- docs: add github sponsor (#2129) [Daniel Vaz Gaspar]
+- fix: swagger include js and css on static (#2127) [Daniel Vaz Gaspar]
+- fix: Remove erroring endpoint "/login/<provider>/<register>" from AuthOAuthView (#2120) [David Kalamarides]
+- fix: azure user info claims and JWT decode (#2121) [Daniel Vaz Gaspar]
+- fix: Validate Azure JWTs using `authlib` (#2112) [Daniel Wolf]
+- docs(typo): "preform" -> "perform" x4 (#2123) [Sam Firke]
+
 Improvements and Bug fixes on 4.3.7
 -----------------------------------
 
