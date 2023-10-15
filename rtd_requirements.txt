@@ -35,7 +35,7 @@ flask-sqlalchemy==2.5.1
     # via Flask-AppBuilder (setup.py)
 flask-wtf==0.14.3
     # via Flask-AppBuilder (setup.py)
-greenlet==1.1.2
+greenlet==3.0.0
     # via sqlalchemy
 idna==3.3
     # via email-validator
