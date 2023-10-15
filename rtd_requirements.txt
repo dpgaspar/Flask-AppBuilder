@@ -100,6 +100,7 @@ wtforms==2.3.3
     # via
     #   Flask-AppBuilder (setup.py)
     #   flask-wtf
+flask-limiter==3.2.0
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
