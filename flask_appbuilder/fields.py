@@ -213,7 +213,10 @@ class QuerySelectMultipleField(QuerySelectField):
 
     def iter_choices(self):
         for pk, obj in self._get_object_list():
-            yield (pk, self.get_label(obj), obj in self.data)
+            if IS_WTFORMS_LESS_THEN_3_1_0:
+                yield (pk, self.get_label(obj), obj in self.data)
+            else:
+                yield (pk, self.get_label(obj), obj in self.data, {})
 
     def process_formdata(self, valuelist):
         self._formdata = set(valuelist)
