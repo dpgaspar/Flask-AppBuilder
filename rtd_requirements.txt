@@ -1,4 +1,3 @@
-setuptools
 sphinxcontrib-blockdiag>=1.5.0
 sphinx-rtd-theme>=0.2.4
 apispec[yaml]==3.3.2
@@ -101,6 +100,5 @@ wtforms==2.3.3
     #   Flask-AppBuilder (setup.py)
     #   flask-wtf
 flask-limiter==3.2.0
-
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
