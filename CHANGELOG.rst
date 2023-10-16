@@ -1,6 +1,15 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.9
+-----------------------------------
+
+- ci: create release script (#2142) [Daniel Vaz Gaspar]
+- fix: wtforms compat on 3.1.0 (#2138) [Daniel Vaz Gaspar]
+- docs: fix RTD config requirements (#2140) [Daniel Vaz Gaspar]
+- docs: fix RTD config (#2139) [Daniel Vaz Gaspar]
+- docs: add RTD required config (#2135) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.3.8
 -----------------------------------
 
