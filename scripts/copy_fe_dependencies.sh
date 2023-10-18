@@ -1,3 +1,4 @@
+#!/bin/bash
 
 SOURCE_BASE_PATH="node_modules"
 TARGET_BASE_PATH="flask_appbuilder/static/appbuilder"
