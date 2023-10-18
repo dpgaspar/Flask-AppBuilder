@@ -25,9 +25,9 @@
       {% if appbuilder.app_theme %}
         <link href="{{url_for('appbuilder.static',filename='css/themes/'+ appbuilder.app_theme )}}" rel="stylesheet">
       {% endif %}
-      <link href="{{url_for('appbuilder.static',filename='datepicker/bootstrap-datepicker.css')}}" rel="stylesheet">
-      <link href="{{url_for('appbuilder.static',filename='select2/select2.css')}}" rel="stylesheet">
-      <link href="{{url_for('appbuilder.static',filename='select2/select2-bootstrap-theme.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/bootstrap-datepicker/bootstrap-datepicker3.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/select2/select2.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/select2/select2-bootstrap.min.css')}}" rel="stylesheet">
       <link href="{{url_for('appbuilder.static',filename='css/flags/flags16.css')}}" rel="stylesheet">
       <link href="{{url_for('appbuilder.static',filename='css/ab.css')}}" rel="stylesheet">
     {% endblock %}
@@ -44,8 +44,8 @@
 
     {% block tail_js %}
       <script src="{{url_for('appbuilder.static',filename='js/bootstrap.min.js')}}" nonce="{{baselib.get_nonce()}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='datepicker/bootstrap-datepicker.js')}}" nonce="{{baselib.get_nonce()}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='select2/select2.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/bootstrap-datepicker/bootstrap-datepicker.min.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/select2/select2.min.js')}}" nonce="{{baselib.get_nonce()}}"></script>
       <script src="{{url_for('appbuilder.static',filename='js/ab.js')}}" nonce="{{baselib.get_nonce()}}"></script>
     {% endblock %}
 
