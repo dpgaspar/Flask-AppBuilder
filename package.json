@@ -1,0 +1,17 @@
+{
+  "name": "flask_appbuilder",
+  "version": "1.0.0",
+  "description": "Flask-AppBuilder",
+  "scripts": {
+    "copy-files": "scripts/copy_fe_dependencies.sh"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "6.2.1",
+    "bootstrap": "3.4.1",
+    "jquery": "3.6.0",
+    "select2": "4.0.13",
+    "select2-bootstrap-theme": "0.1.0-beta.10",
+    "world-flags-sprite": "0.0.2",
+    "bootstrap-datepicker": "1.10.0"
+  }
+}
