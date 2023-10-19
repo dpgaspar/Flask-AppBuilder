@@ -43,12 +43,12 @@ class Menu(object):
     def __init__(self, reverse=True, extra_classes=""):
         self.menu = []
         if reverse:
-            extra_classes = extra_classes + "navbar-inverse"
+            extra_classes = extra_classes + "navbar-dark bg-dark"
         self.extra_classes = extra_classes
 
     @property
     def reverse(self):
-        return "navbar-inverse" in self.extra_classes
+        return "navbar-dark bg-dark" in self.extra_classes
 
     def get_list(self):
         return self.menu
@@ -100,10 +100,10 @@ class Menu(object):
 
     def find(self, name, menu=None):
         """
-            Finds a menu item by name and returns it.
+        Finds a menu item by name and returns it.
 
-            :param name:
-                The menu item name.
+        :param name:
+            The menu item name.
         """
         menu = menu or self.menu
         for i in menu:
