@@ -44,6 +44,8 @@ log = logging.getLogger(__name__)
 
 
 class FlaskTestCase(FABTestCase):
+    mongo = True
+
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
@@ -223,7 +225,9 @@ class FlaskTestCase(FABTestCase):
         """
         Test views creation and registration
         """
-        self.assertEqual(len(self.appbuilder.baseviews), 26)  # current minimal views are 26
+        self.assertEqual(
+            len(self.appbuilder.baseviews), 26
+        )  # current minimal views are 26
 
     def test_index(self):
         """
@@ -577,7 +581,9 @@ class FlaskTestCase(FABTestCase):
         self.clean_data()
 
 
-class MongoImportExportTestCase(unittest.TestCase):
+class MongoImportExportTestCase(unittest.TestCase):  #
+    mongo = True
+
     def setUp(self):
         basedir = os.path.abspath(os.path.dirname(__file__))
 
