@@ -21,7 +21,6 @@ from flask_appbuilder.security.mongoengine.manager import SecurityManager
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView
 from flask_mongoengine import MongoEngine
 import jinja2
-from nose.tools import eq_, ok_
 
 from .base import FABTestCase
 from .mongoengine.models import Model1, Model2
@@ -224,7 +223,7 @@ class FlaskTestCase(FABTestCase):
         """
         Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 26)  # current minimal views are 26
+        self.assertEqual(len(self.appbuilder.baseviews), 26)  # current minimal views are 26
 
     def test_index(self):
         """
@@ -235,7 +234,7 @@ class FlaskTestCase(FABTestCase):
         # Check for Welcome Message
         rv = client.get("/")
         data = rv.data.decode("utf-8")
-        ok_(DEFAULT_INDEX_STRING in data)
+        self.assertTrue(DEFAULT_INDEX_STRING in data)
 
     def test_sec_login(self):
         """
@@ -245,28 +244,28 @@ class FlaskTestCase(FABTestCase):
 
         # Try to List and Redirect to Login
         rv = client.get("/model1view/list/")
-        eq_(rv.status_code, 302)
+        self.assertEqual(rv.status_code, 302)
         rv = client.get("/model2view/list/")
-        eq_(rv.status_code, 302)
+        self.assertEqual(rv.status_code, 302)
 
         # Login and list with admin
         self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         rv = client.get("/model1view/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         rv = client.get("/model2view/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
         # Logout and and try to list
         self.browser_logout(client)
         rv = client.get("/model1view/list/")
-        eq_(rv.status_code, 302)
+        self.assertEqual(rv.status_code, 302)
         rv = client.get("/model2view/list/")
-        eq_(rv.status_code, 302)
+        self.assertEqual(rv.status_code, 302)
 
         # Invalid Login
         rv = self.browser_login(client, DEFAULT_ADMIN_USER, "password")
         data = rv.data.decode("utf-8")
-        ok_(INVALID_LOGIN_STRING in data)
+        self.assertTrue(INVALID_LOGIN_STRING in data)
 
     def test_sec_reset_password(self):
         """
@@ -284,7 +283,7 @@ class FlaskTestCase(FABTestCase):
         # Werkzeug update to 0.15.X sends this action to wrong redirect
         # Old test was:
         # data = rv.data.decode("utf-8")
-        # ok_(ACCESS_IS_DENIED in data)
+        # self.assertTrue(ACCESS_IS_DENIED in data)
         self.assertEqual(rv.status_code, 404)
 
         # Reset My password
@@ -343,11 +342,11 @@ class FlaskTestCase(FABTestCase):
             ),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
         model = Model1.objects[0]
-        eq_(model.field_string, "test1")
-        eq_(model.field_integer, 1)
+        self.assertEqual(model.field_string, "test1")
+        self.assertEqual(model.field_integer, 1)
 
         model1 = Model1.objects(field_string="test1")[0]
         rv = client.post(
@@ -355,18 +354,18 @@ class FlaskTestCase(FABTestCase):
             data=dict(field_string="test2", field_integer="2"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
         model = Model1.objects[0]
-        eq_(model.field_string, "test2")
-        eq_(model.field_integer, 2)
+        self.assertEqual(model.field_string, "test2")
+        self.assertEqual(model.field_integer, 2)
 
         rv = client.get(
             "/model1view/delete/{0}".format(model.id), follow_redirects=True
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         model = Model1.objects
-        eq_(len(model), 0)
+        self.assertEqual(len(model), 0)
         self.clean_data()
 
     def test_excluded_cols(self):
@@ -376,31 +375,31 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         rv = client.get("/model22view/add")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("field_string" in data)
-        ok_("field_integer" in data)
-        ok_("field_float" in data)
-        ok_("field_date" in data)
-        ok_("excluded_string" not in data)
+        self.assertTrue("field_string" in data)
+        self.assertTrue("field_integer" in data)
+        self.assertTrue("field_float" in data)
+        self.assertTrue("field_date" in data)
+        self.assertTrue("excluded_string" not in data)
         self.insert_data2()
         model2 = Model2.objects[0]
         rv = client.get("/model22view/edit/{0}".format(model2.id))
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("field_string" in data)
-        ok_("field_integer" in data)
-        ok_("field_float" in data)
-        ok_("field_date" in data)
-        ok_("excluded_string" not in data)
+        self.assertTrue("field_string" in data)
+        self.assertTrue("field_integer" in data)
+        self.assertTrue("field_float" in data)
+        self.assertTrue("field_date" in data)
+        self.assertTrue("excluded_string" not in data)
         rv = client.get("/model22view/show/{0}".format(model2.id))
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("Field String" in data)
-        ok_("Field Integer" in data)
-        ok_("Field Float" in data)
-        ok_("Field Date" in data)
-        ok_("Excluded String" not in data)
+        self.assertTrue("Field String" in data)
+        self.assertTrue("Field Integer" in data)
+        self.assertTrue("Field Float" in data)
+        self.assertTrue("Field Date" in data)
+        self.assertTrue("Excluded String" not in data)
         self.clean_data()
 
     def test_query_rel_fields(self):
@@ -414,15 +413,15 @@ class FlaskTestCase(FABTestCase):
         # Base filter string starts with
         rv = client.get("/model2view/add")
         data = rv.data.decode("utf-8")
-        ok_("G1" in data)
-        ok_("G2" not in data)
+        self.assertTrue("G1" in data)
+        self.assertTrue("G2" not in data)
 
         model2 = Model2.objects[0]
         # Base filter string starts with
         rv = client.get("/model2view/edit/{0}".format(model2.id))
         data = rv.data.decode("utf-8")
-        ok_("G2" in data)
-        ok_("G1" not in data)
+        self.assertTrue("G2" in data)
+        self.assertTrue("G1" not in data)
         self.clean_data()
 
     def test_model_list_order(self):
@@ -439,7 +438,7 @@ class FlaskTestCase(FABTestCase):
             follow_redirects=True,
         )
         # TODO: fix this 405 Method not allowed error
-        # eq_(rv.status_code, 200)
+        # self.assertEqual(rv.status_code, 200)
         rv.data.decode("utf-8")
         # TODO
         # VALIDATE LIST IS ORDERED
@@ -448,7 +447,7 @@ class FlaskTestCase(FABTestCase):
             follow_redirects=True,
         )
         # TODO: fix this 405 Method not allowed error
-        # eq_(rv.status_code, 200)
+        # self.assertEqual(rv.status_code, 200)
         rv.data.decode("utf-8")
         # TODO
         # VALIDATE LIST IS ORDERED
@@ -466,31 +465,31 @@ class FlaskTestCase(FABTestCase):
             data=dict(field_string="test1", field_integer="1"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
         rv = client.post(
             "/model1view/add",
             data=dict(field_string="test1", field_integer="2"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_(UNIQUE_VALIDATION_STRING in data)
+        self.assertTrue(UNIQUE_VALIDATION_STRING in data)
 
         model = Model1.objects()
-        eq_(len(model), 1)
+        self.assertEqual(len(model), 1)
 
         rv = client.post(
             "/model1view/add",
             data=dict(field_string="", field_integer="1"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_(NOTNULL_VALIDATION_STRING in data)
+        self.assertTrue(NOTNULL_VALIDATION_STRING in data)
 
         model = Model1.objects()
-        eq_(len(model), 1)
+        self.assertEqual(len(model), 1)
         self.clean_data()
 
     def test_model_edit_validation(self):
@@ -516,18 +515,18 @@ class FlaskTestCase(FABTestCase):
             data=dict(field_string="test2", field_integer="2"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_(UNIQUE_VALIDATION_STRING in data)
+        self.assertTrue(UNIQUE_VALIDATION_STRING in data)
 
         rv = client.post(
             "/model1view/edit/{0}".format(model1.id),
             data=dict(field_string="", field_integer="2"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_(NOTNULL_VALIDATION_STRING in data)
+        self.assertTrue(NOTNULL_VALIDATION_STRING in data)
         self.clean_data()
 
     def test_model_base_filter(self):
@@ -538,19 +537,19 @@ class FlaskTestCase(FABTestCase):
         self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data()
         models = Model1.objects()
-        eq_(len(models), 23)
+        self.assertEqual(len(models), 23)
 
         # Base filter string starts with
         rv = client.get("/model1filtered1view/list/")
         data = rv.data.decode("utf-8")
-        ok_("atest" in data)
-        ok_("btest" not in data)
+        self.assertTrue("atest" in data)
+        self.assertTrue("btest" not in data)
 
         # Base filter integer equals
         rv = client.get("/model1filtered2view/list/")
         data = rv.data.decode("utf-8")
-        ok_("atest" in data)
-        ok_("btest" not in data)
+        self.assertTrue("atest" in data)
+        self.assertTrue("btest" not in data)
         self.clean_data()
 
     def test_model_list_method_field(self):
@@ -561,9 +560,9 @@ class FlaskTestCase(FABTestCase):
         self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data2()
         rv = client.get("/model2view/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("field_method_value" in data)
+        self.assertTrue("field_method_value" in data)
         self.clean_data()
 
     def test_compactCRUDMixin(self):
@@ -574,7 +573,7 @@ class FlaskTestCase(FABTestCase):
         self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data2()
         rv = client.get("/model1compactview/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         self.clean_data()
 
 

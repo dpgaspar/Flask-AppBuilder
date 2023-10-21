@@ -32,7 +32,7 @@ can run a subset of tests targeting only Postgres.
 
 .. code-block:: bash
 
-    $ nosetests -v
+    $ nose2 -v
 
 You can also use tox
 
@@ -69,7 +69,7 @@ Using Postgres
 
 .. code-block:: bash
 
-    $ nosetests -v tests.test_api:APITestCase.test_get_item_dotted_mo_notation
+    $ nose2 -v tests.test_api.APITestCase.test_get_item_dotted_mo_notation
 
 .. note::
 

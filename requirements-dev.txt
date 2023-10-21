@@ -1,4 +1,4 @@
-black==19.3b0
+black==23.10.0
 coverage==5.5
 flake8-import-order==0.18.1
 flake8==3.9.2
@@ -6,7 +6,7 @@ hiro==0.5.1
 jmespath==0.9.5
 mypy==0.910
 mypy-extensions==0.4.3
-nose==1.3.7
+nose2[coverage_plugin]==0.14.0
 parameterized==0.8.1
 pip-tools==6.8.0
 tox==3.24.3
