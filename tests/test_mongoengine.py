@@ -17,9 +17,7 @@ from flask_appbuilder.charts.views import (
 from flask_appbuilder.cli import export_roles, import_roles
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 from flask_appbuilder.models.mongoengine.filters import FilterEqual, FilterStartsWith
-from flask_appbuilder.security.mongoengine.manager import SecurityManager
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView
-from flask_mongoengine import MongoEngine
 import jinja2
 
 from .base import FABTestCase
@@ -50,7 +48,9 @@ class FlaskTestCase(FABTestCase):
         from flask import Flask
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
+        from flask_appbuilder.security.mongoengine.manager import SecurityManager
         from flask_appbuilder import ModelView
+        from flask_mongoengine import MongoEngine
 
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined

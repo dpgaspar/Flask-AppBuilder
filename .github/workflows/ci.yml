@@ -228,7 +228,7 @@ jobs:
           pip install -r requirements-mongodb.txt
       - name: Run tests
         run: |
-          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder tests/test_mongoengine.py
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A 'mongo' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
