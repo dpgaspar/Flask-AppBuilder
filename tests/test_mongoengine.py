@@ -21,7 +21,6 @@ from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView
 import jinja2
 
 from .base import FABTestCase
-from .mongoengine.models import Model1, Model2
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
@@ -51,6 +50,8 @@ class FlaskTestCase(FABTestCase):
         from flask_appbuilder.security.mongoengine.manager import SecurityManager
         from flask_appbuilder import ModelView
         from flask_mongoengine import MongoEngine
+
+        from .mongoengine.models import Model1, Model2
 
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
