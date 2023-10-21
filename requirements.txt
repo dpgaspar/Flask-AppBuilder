@@ -139,8 +139,9 @@ typing-extensions==4.8.0
     #   flask-limiter
     #   limits
     #   rich
-werkzeug==3.0.0
+werkzeug==2.3.7
     # via
+    #   Flask-AppBuilder (setup.py)
     #   flask
     #   flask-jwt-extended
     #   flask-login
