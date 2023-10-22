@@ -2,7 +2,7 @@ Pillow~=9.1
 cython==0.29.17
 mysqlclient==2.0.1
 psycopg2-binary==2.9.6
-pyodbc==4.0.35
+pyodbc==5.0.1
 requests==2.26.0
 Authlib==1.2.1
 python-ldap==3.4.3
