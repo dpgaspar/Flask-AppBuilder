@@ -29,6 +29,7 @@ log = logging.getLogger(__name__)
 try:
     from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
     from flask_appbuilder.security.mongoengine.manager import SecurityManager
+    from mongoengine.connection import disconnect_all
     from flask_mongoengine import MongoEngine
     from .mongoengine.models import Model1, Model2
 except ImportError:
@@ -179,6 +180,10 @@ class FlaskTestCase(FABTestCase):
         self.app = None
         self.db = None
         log.debug("TEAR DOWN")
+
+    @classmethod
+    def tearDownClass(cls):
+        disconnect_all()
 
     """ ---------------------------------
             TEST HELPER FUNCTIONS
@@ -579,7 +584,7 @@ class FlaskTestCase(FABTestCase):
         self.clean_data()
 
 
-class MongoImportExportTestCase(unittest.TestCase):  #
+class MongoImportExportTestCase(unittest.TestCase):
     mongo = True
 
     def setUp(self):
@@ -588,23 +593,34 @@ class MongoImportExportTestCase(unittest.TestCase):  #
         with open(os.path.join(basedir, "data/roles.json"), "r") as fd:
             self.expected_roles = json.loads(fd.read())
 
+        self.app = Flask(__name__)
+        self.app.config.from_object("tests.config_security")
+        self.app.config["MONGODB_SETTINGS"] = {
+            "db": "app",
+            "host": "localhost",
+            "port": 27017,
+        }
+        self.db = MongoEngine(self.app)  # noqa: F841
+        self.app_builder = AppBuilder(  # noqa: F841
+            self.app, security_manager_class=SecurityManager
+        )
+        self.cli_runner = self.app.test_cli_runner()
+
+    def tearDown(self):
+        self.appbuilder = None
+        self.app = None
+        self.db = None
+        self.cli_runner = None
+        log.debug("TEAR DOWN")
+
+    @classmethod
+    def tearDownClass(cls):
+        disconnect_all()
+
     def test_export_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
-            app = Flask(__name__)
-            app.config.from_object("tests.config_security")
-            app.config["MONGODB_SETTINGS"] = {
-                "db": "app",
-                "host": "localhost",
-                "port": 27017,
-            }
-            db_mongo = MongoEngine(app)  # noqa: F841
-            app_builder = AppBuilder(  # noqa: F841
-                app, security_manager_class=SecurityManager
-            )
-            cli_runner = app.test_cli_runner()
-
             path = os.path.join(tmp_dir, "roles.json")
-            export_result = cli_runner.invoke(export_roles, [f"--path={path}"])
+            export_result = self.cli_runner.invoke(export_roles, [f"--path={path}"])
 
             self.assertEqual(export_result.exit_code, 0)
             self.assertTrue(os.path.exists(path))
@@ -637,22 +653,10 @@ class MongoImportExportTestCase(unittest.TestCase):  #
 
     def test_import_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
-            app = Flask(__name__)
-            app.config["MONGODB_SETTINGS"] = {
-                "db": "app",
-                "host": "localhost",
-                "port": 27017,
-            }
-            db_mongo = MongoEngine(app)  # noqa: F841
-            app_builder = AppBuilder(  # noqa: F841
-                app, security_manager_class=SecurityManager
-            )
-            cli_runner = app.test_cli_runner()
-
-            app_builder.sm.role_model.objects(
+            self.app_builder.sm.role_model.objects(
                 name__nin=[
-                    app_builder.sm.auth_role_public,
-                    app_builder.sm.auth_role_admin,
+                    self.app_builder.sm.auth_role_public,
+                    self.app_builder.sm.auth_role_admin,
                 ]
             ).delete()
 
@@ -662,12 +666,12 @@ class MongoImportExportTestCase(unittest.TestCase):  #
                 fd.write(json.dumps(self.expected_roles))
 
             # before import roles on dst app include only Admin and Public
-            self.assertEqual(len(app_builder.sm.get_all_roles()), 2)
+            self.assertEqual(len(self.app_builder.sm.get_all_roles()), 2)
 
-            import_result = cli_runner.invoke(import_roles, [f"--path={path}"])
+            import_result = self.cli_runner.invoke(import_roles, [f"--path={path}"])
             self.assertEqual(import_result.exit_code, 0)
 
-            resulting_roles = app_builder.sm.get_all_roles()
+            resulting_roles = self.app_builder.sm.get_all_roles()
 
             for expected_role in self.expected_roles:
                 match = [r for r in resulting_roles if r.name == expected_role["name"]]
