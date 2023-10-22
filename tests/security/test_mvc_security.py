@@ -241,18 +241,19 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
-        with model1_data(self.appbuilder.session, 1):
+        with model1_data(self.appbuilder.session, 1) as model_data:
+            model_id = model_data[0].id
             # Test authorized GET
             rv = client.get("/model1view/list/")
             self.assertEqual(rv.status_code, 200)
             # Test authorized SHOW
-            rv = client.get("/model1view/show/1")
+            rv = client.get(f"/model1view/show/{model_id}")
             self.assertEqual(rv.status_code, 200)
             # Test unauthorized EDIT
-            rv = client.get("/model1view/edit/1")
+            rv = client.get(f"/model1view/edit/{model_id}")
             self.assertEqual(rv.status_code, 302)
             # Test unauthorized DELETE
-            rv = client.get("/model1view/delete/1")
+            rv = client.get(f"/model1view/delete/{model_id}")
             self.assertEqual(rv.status_code, 302)
 
     def test_sec_reset_password(self):
