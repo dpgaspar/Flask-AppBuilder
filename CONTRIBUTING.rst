@@ -44,8 +44,8 @@ You can also use tox
 
 .. code-block:: bash
 
-    $ black flask_appbuilder
-    $ flake8 flask_appbuilder
+    $ black flask_appbuilder tests
+    $ flake8 flask_appbuilder tests
 
 Run a single test
 -----------------

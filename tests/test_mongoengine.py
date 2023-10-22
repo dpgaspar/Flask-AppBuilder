@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 from flask import Flask
-from flask_appbuilder import AppBuilder
+from flask_appbuilder import AppBuilder, ModelView
 from flask_appbuilder.charts.views import (
     DirectByChartView,
     DirectChartView,
@@ -24,7 +24,15 @@ from .base import FABTestCase
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
+log = logging.getLogger(__name__)
 
+try:
+    from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
+    from flask_appbuilder.security.mongoengine.manager import SecurityManager
+    from flask_mongoengine import MongoEngine
+    from .mongoengine.models import Model1, Model2
+except ImportError:
+    log.error("Import failed. Required dependencies are in requirements-mongo.txt")
 
 """
     Constant english display string from framework
@@ -37,22 +45,11 @@ NOTNULL_VALIDATION_STRING = "This field is required"
 DEFAULT_ADMIN_USER = "admin"
 DEFAULT_ADMIN_PASSWORD = "general"
 
-log = logging.getLogger(__name__)
-
 
 class FlaskTestCase(FABTestCase):
     mongo = True
 
     def setUp(self):
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-        from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
-        from flask_appbuilder.security.mongoengine.manager import SecurityManager
-        from flask_appbuilder import ModelView
-        from flask_mongoengine import MongoEngine
-
-        from .mongoengine.models import Model1, Model2
-
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
         self.basedir = os.path.abspath(os.path.dirname(__file__))
