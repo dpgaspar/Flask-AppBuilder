@@ -378,7 +378,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.assertIsInstance(user, sm.user_model)
 
         # validate - user was given the correct roles
-        self.assertSetEqual(set(user.roles), {sm.find_role("Admin"), sm.find_role("User")})
+        self.assertSetEqual(
+            set(user.roles), {sm.find_role("Admin"), sm.find_role("User")}
+        )
 
     def test__registered__jmespath_role__no_role_sync(self):
         """
