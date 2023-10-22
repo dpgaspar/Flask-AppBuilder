@@ -49,7 +49,7 @@ setup(
         "colorama>=0.3.9, <1",
         "click>=8, <9",
         "email_validator>=1.0.5, <2",
-        "Flask>=2, <2.3.0", # Otherwise breaks flask-mongoengine 1.0.0 (Should be fixed in 1.0.1)
+        "Flask>=2, <2.3.0",  # Otherwise breaks flask-mongoengine 1.0.0 (Should be fixed in 1.0.1)
         "Flask-Babel>=1, <3",
         "Flask-Limiter>3,<4",
         "Flask-Login>=0.3, <0.7",
