@@ -396,7 +396,7 @@ class PSModel(GenericModel):
 
 class PSSession(GenericSession):
     regexp = (
-        "(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n"
+        r"(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n"
     )
 
     def add_object(self, line):

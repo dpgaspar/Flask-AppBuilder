@@ -23,7 +23,7 @@ class BaseSecurityManagerUpdateUserAuthStatTestCase(unittest.TestCase):
         self.assertEqual(user_mock.login_count, 1)
         self.assertEqual(user_mock.fail_login_count, 0)
         self.assertEqual(type(user_mock.last_login), datetime.datetime)
-        self.assertTrue(bsm.update_user.called_once)
+        bsm.update_user.assert_called_once()
 
     def test_first_unsuccessful_auth(self, mock1, mock2):
         bsm = BaseSecurityManager()
@@ -38,7 +38,7 @@ class BaseSecurityManagerUpdateUserAuthStatTestCase(unittest.TestCase):
         self.assertEqual(user_mock.login_count, 0)
         self.assertEqual(user_mock.fail_login_count, 1)
         self.assertEqual(user_mock.last_login, None)
-        self.assertTrue(bsm.update_user.called_once)
+        bsm.update_user.assert_called_once()
 
     def test_subsequent_successful_auth(self, mock1, mock2):
         bsm = BaseSecurityManager()
@@ -53,7 +53,7 @@ class BaseSecurityManagerUpdateUserAuthStatTestCase(unittest.TestCase):
         self.assertEqual(user_mock.login_count, 6)
         self.assertEqual(user_mock.fail_login_count, 0)
         self.assertEqual(type(user_mock.last_login), datetime.datetime)
-        self.assertTrue(bsm.update_user.called_once)
+        bsm.update_user.assert_called_once()
 
     def test_subsequent_unsuccessful_auth(self, mock1, mock2):
         bsm = BaseSecurityManager()
@@ -68,4 +68,4 @@ class BaseSecurityManagerUpdateUserAuthStatTestCase(unittest.TestCase):
         self.assertEqual(user_mock.login_count, 5)
         self.assertEqual(user_mock.fail_login_count, 10)
         self.assertEqual(user_mock.last_login, None)
-        self.assertTrue(bsm.update_user.called_once)
+        bsm.update_user.assert_called_once()
