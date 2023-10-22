@@ -32,7 +32,7 @@ can run a subset of tests targeting only Postgres.
 
 .. code-block:: bash
 
-    $ nose2 -v
+    $ nose2 -c setup.cfg -A '!mongo' tests
 
 You can also use tox
 
