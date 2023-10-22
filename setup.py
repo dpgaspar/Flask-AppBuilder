@@ -66,7 +66,7 @@ setup(
         "SQLAlchemy<1.5",
         "sqlalchemy-utils>=0.32.21, <1",
         "WTForms<4",
-        "werkzeug<3" # Otherwise breaks Flask-Login
+        "werkzeug<3",  # Otherwise breaks Flask-Login
     ],
     extras_require={
         "jmespath": ["jmespath>=0.9.5"],

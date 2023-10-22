@@ -368,7 +368,6 @@ class RestCRUDView(BaseCRUDView):
         form._id = pk
         http_return_code = 500
         if form.validate():
-
             # Deleting form fields not specified as keys in POST data
             # this allows for other Model columns to be left untouched when
             # unspecified.
