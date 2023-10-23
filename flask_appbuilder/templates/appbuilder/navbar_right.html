@@ -5,13 +5,13 @@
     {% set locale = 'en' %}
 {% endif %}
 {% if languages.keys()|length > 1 %}
-<li class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" href="#">
        <div class="f16"><i class="flag {{languages[locale].get('flag')}}"></i><b class="caret"></b>
        </div>
     </a>
-    <ul class="dropdown-menu">
-    <li class="dropdown">
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+    <li class="dropdown-item">
         {% for lang in languages %}
             {% if lang != locale %}
                 <a tabindex="-1" href="{{appbuilder.get_url_for_locale(lang)}}">
@@ -29,11 +29,11 @@
 
 {{ locale_menu(languages) }}
 {% if not current_user.is_anonymous %}
-    <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" href="#">
            <span class="fa fa-user"></span> {{g.user.get_full_name()}}<b class="caret"></b>
         </a>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li><a href="{{appbuilder.get_url_for_userinfo}}"><span class="fa fa-fw fa-user"></span>{{_("Profile")}}</a></li>
             <li><a href="{{appbuilder.get_url_for_logout}}"><span class="fa fa-fw fa-sign-out"></span>{{_("Logout")}}</a></li>
         </ul>
