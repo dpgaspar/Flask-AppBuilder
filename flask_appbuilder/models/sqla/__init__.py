@@ -71,13 +71,13 @@ Model = declarative_base(cls=BaseModel, metaclass=ModelDeclarativeMeta, name="Mo
 
 class SQLA(SQLAlchemy):
     """
-        This is a child class of flask_SQLAlchemy
-        It's purpose is to override the declarative base of the original
-        package. So that it is bound to F.A.B. Model class allowing the dev
-        to be in the same namespace of the security tables (and others)
-        and can use AuditMixin class alike.
+    This is a child class of flask_SQLAlchemy
+    It's purpose is to override the declarative base of the original
+    package. So that it is bound to F.A.B. Model class allowing the dev
+    to be in the same namespace of the security tables (and others)
+    and can use AuditMixin class alike.
 
-        Use it and configure it just like flask_SQLAlchemy
+    Use it and configure it just like flask_SQLAlchemy
     """
 
     def __init__(self, *args, **kwargs):
