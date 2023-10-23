@@ -8,6 +8,7 @@ cp ${SOURCE_BASE_PATH}/jquery/dist/jquery.min.js ${TARGET_BASE_PATH}/js/jquery-l
 
 echo - Copying bootstrap
 cp ${SOURCE_BASE_PATH}/bootstrap/dist/js/bootstrap.min.js ${TARGET_BASE_PATH}/js/bootstrap.min.js
+cp ${SOURCE_BASE_PATH}/bootstrap/dist/css/bootstrap.min.css.map ${TARGET_BASE_PATH}/css/bootstrap.min.css.map
 cp ${SOURCE_BASE_PATH}/bootstrap/dist/css/bootstrap.min.css ${TARGET_BASE_PATH}/css/bootstrap.min.css
 
 echo - Copying select2
