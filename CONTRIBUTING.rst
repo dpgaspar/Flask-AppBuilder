@@ -32,7 +32,7 @@ can run a subset of tests targeting only Postgres.
 
 .. code-block:: bash
 
-    $ nosetests -v
+    $ nose2 -c setup.cfg -A '!mongo' tests
 
 You can also use tox
 
@@ -44,8 +44,8 @@ You can also use tox
 
 .. code-block:: bash
 
-    $ black flask_appbuilder
-    $ flake8 flask_appbuilder
+    $ black flask_appbuilder tests
+    $ flake8 flask_appbuilder tests
 
 Run a single test
 -----------------
@@ -69,7 +69,7 @@ Using Postgres
 
 .. code-block:: bash
 
-    $ nosetests -v tests.test_api:APITestCase.test_get_item_dotted_mo_notation
+    $ nose2 -v tests.test_api.APITestCase.test_get_item_dotted_mo_notation
 
 .. note::
 

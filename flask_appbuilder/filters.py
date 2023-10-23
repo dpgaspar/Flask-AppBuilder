@@ -13,11 +13,9 @@ def app_template_filter(filter_name=""):
 
 
 class TemplateFilters(object):
-
     security_manager = None
 
     def __init__(self, app, security_manager):
-
         self.security_manager = security_manager
         for attr_name in dir(self):
             if hasattr(getattr(self, attr_name), "_filter"):
@@ -52,8 +50,8 @@ class TemplateFilters(object):
     @app_template_filter("link_order")
     def link_order_filter(self, column, modelview_name):
         """
-            Arguments are passed like:
-                _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
+        Arguments are passed like:
+            _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
         """
         new_args = request.view_args.copy()
         args = request.args.copy()
@@ -74,7 +72,7 @@ class TemplateFilters(object):
     @app_template_filter("link_page")
     def link_page_filter(self, page, modelview_name):
         """
-            Arguments are passed like: page_<VIEW_NAME>=<PAGE_NUMBER>
+        Arguments are passed like: page_<VIEW_NAME>=<PAGE_NUMBER>
         """
         new_args = request.view_args.copy()
         args = request.args.copy()
@@ -144,14 +142,14 @@ class TemplateFilters(object):
     @app_template_filter("is_item_visible")
     def is_item_visible(self, permission: str, item: str) -> bool:
         """
-            Check if an item is visible on the template
-            this changed with permission mapping feature.
-            This is a best effort to deliver the feature
-            and not break compatibility
+        Check if an item is visible on the template
+        this changed with permission mapping feature.
+        This is a best effort to deliver the feature
+        and not break compatibility
 
-            permission is:
-             - 'can_' + <METHOD_NAME>: On normal routes
-             - <METHOD_NAME>: when it's an action
+        permission is:
+         - 'can_' + <METHOD_NAME>: On normal routes
+         - <METHOD_NAME>: when it's an action
 
         """
         _view = self.find_views_by_name(item)

@@ -1,6 +1,6 @@
 class BaseManager(object):
     """
-        The parent class for all Managers
+    The parent class for all Managers
     """
 
     def __init__(self, appbuilder):

@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 class FileColumn(types.TypeDecorator):
     """
-        Extends SQLAlchemy to support and mostly identify a File Column
+    Extends SQLAlchemy to support and mostly identify a File Column
     """
 
     impl = types.Text
@@ -21,7 +21,7 @@ class FileColumn(types.TypeDecorator):
 
 class ImageColumn(types.TypeDecorator):
     """
-        Extends SQLAlchemy to support and mostly identify an Image Column
+    Extends SQLAlchemy to support and mostly identify an Image Column
 
     """
 
@@ -35,15 +35,15 @@ class ImageColumn(types.TypeDecorator):
 
 class AuditMixin(object):
     """
-        AuditMixin
-        Mixin for models, adds 4 columns to stamp,
-        time and user on creation and modification
-        will create the following columns:
+    AuditMixin
+    Mixin for models, adds 4 columns to stamp,
+    time and user on creation and modification
+    will create the following columns:
 
-        :created on:
-        :changed on:
-        :created by:
-        :changed by:
+    :created on:
+    :changed on:
+    :created by:
+    :changed by:
     """
 
     created_on = Column(DateTime, default=lambda: datetime.now(), nullable=False)
