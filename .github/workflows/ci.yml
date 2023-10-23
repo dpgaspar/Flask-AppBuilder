@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     env:
       SQLALCHEMY_DATABASE_URI:
         postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
@@ -83,7 +83,7 @@ jobs:
           pip install -r requirements-extra.txt
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests --ignore-files="test_mongoengine\.py"
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -134,7 +134,7 @@ jobs:
           pip install -r requirements-extra.txt
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests --ignore-files="test_mongoengine\.py"
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -184,7 +184,7 @@ jobs:
           sudo cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests --ignore-files="test_mongoengine\.py"
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -193,7 +193,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     services:
       mongo:
         image: mongo:4.4.1-bionic
@@ -228,7 +228,7 @@ jobs:
           pip install -r requirements-mongodb.txt
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests/test_mongoengine.py
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A 'mongo' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python

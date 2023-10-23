@@ -59,13 +59,13 @@ class CustomSignallingSession(SignallingSession):
 
 class SQLA(SQLAlchemy):
     """
-        This is a child class of flask_SQLAlchemy
-        It's purpose is to override the declarative base of the original
-        package. So that it is bound to F.A.B. Model class allowing the dev
-        to be in the same namespace of the security tables (and others)
-        and can use AuditMixin class alike.
+    This is a child class of flask_SQLAlchemy
+    It's purpose is to override the declarative base of the original
+    package. So that it is bound to F.A.B. Model class allowing the dev
+    to be in the same namespace of the security tables (and others)
+    and can use AuditMixin class alike.
 
-        Use it and configure it just like flask_SQLAlchemy
+    Use it and configure it just like flask_SQLAlchemy
     """
 
     def make_declarative_base(self, model, metadata=None):
@@ -96,27 +96,27 @@ class SQLA(SQLAlchemy):
 
 class ModelDeclarativeMeta(DefaultMeta):
     """
-        Base Model declarative meta for all Models definitions.
-        Setups bind_keys to support multiple databases.
-        Setup the table name based on the class camelcase name.
+    Base Model declarative meta for all Models definitions.
+    Setups bind_keys to support multiple databases.
+    Setup the table name based on the class camelcase name.
     """
 
 
 @as_declarative(name="Model", metaclass=ModelDeclarativeMeta)
 class Model(object):
     """
-        Use this class has the base for your models,
-        it will define your table names automatically
-        MyModel will be called my_model on the database.
+    Use this class has the base for your models,
+    it will define your table names automatically
+    MyModel will be called my_model on the database.
 
-        ::
+    ::
 
-            from sqlalchemy import Integer, String
-            from flask_appbuilder import Model
+        from sqlalchemy import Integer, String
+        from flask_appbuilder import Model
 
-            class MyModel(Model):
-                id = Column(Integer, primary_key=True)
-                name = Column(String(50), unique = True, nullable=False)
+        class MyModel(Model):
+            id = Column(Integer, primary_key=True)
+            name = Column(String(50), unique = True, nullable=False)
 
     """
 

@@ -18,7 +18,7 @@ def is_empty(file_object):
 
 class MongoFileField(fields.FileField):
     """
-        GridFS file field.
+    GridFS file field.
     """
 
     widget = BS3FileUploadFieldWidget()
@@ -59,7 +59,7 @@ class MongoFileField(fields.FileField):
 
 class MongoImageField(MongoFileField):
     """
-        GridFS file field.
+    GridFS file field.
     """
 
     widget = BS3ImageUploadFieldWidget()

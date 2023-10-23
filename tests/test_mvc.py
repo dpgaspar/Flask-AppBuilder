@@ -263,7 +263,6 @@ class ListFilterTestCase(BaseMVCTestCase):
 
 class MVCCSRFTestCase(BaseMVCTestCase):
     def setUp(self):
-
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_api")
         self.app.config["WTF_CSRF_ENABLED"] = True
