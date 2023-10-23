@@ -5,17 +5,17 @@ from flask_appbuilder._compat import as_unicode
 
 def dict_to_json(xcol, ycols, labels, value_columns):  # pragma: no cover
     """
-        Converts a list of dicts from datamodel query results
-        to google chart json data.
+    Converts a list of dicts from datamodel query results
+    to google chart json data.
 
-        :param xcol:
-            The name of a string column to be used has X axis on chart
-        :param ycols:
-            A list with the names of series cols, that can be used as numeric
-        :param labels:
-            A dict with the columns labels.
-        :param value_columns:
-            A list of dicts with the values to convert
+    :param xcol:
+        The name of a string column to be used has X axis on chart
+    :param ycols:
+        A list with the names of series cols, that can be used as numeric
+    :param labels:
+        A dict with the columns labels.
+    :param value_columns:
+        A list of dicts with the values to convert
     """
     json_data = dict()
 

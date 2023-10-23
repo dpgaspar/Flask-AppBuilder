@@ -16,11 +16,11 @@ log = logging.getLogger(__name__)
 
 class SecurityManager(BaseSecurityManager):
     """
-        Responsible for authentication, registering security views,
-        role and permission auto management
+    Responsible for authentication, registering security views,
+    role and permission auto management
 
-        If you want to change anything just inherit and override, then
-        pass your own security manager to AppBuilder.
+    If you want to change anything just inherit and override, then
+    pass your own security manager to AppBuilder.
     """
 
     user_model = User
@@ -34,9 +34,9 @@ class SecurityManager(BaseSecurityManager):
 
     def __init__(self, appbuilder):
         """
-            SecurityManager contructor
-            param appbuilder:
-                F.A.B AppBuilder main object
+        SecurityManager contructor
+        param appbuilder:
+            F.A.B AppBuilder main object
         """
         super(SecurityManager, self).__init__(appbuilder)
         user_datamodel = MongoEngineInterface(self.user_model)
@@ -87,14 +87,14 @@ class SecurityManager(BaseSecurityManager):
             register_user.save()
             return register_user
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER, e)
             return False
 
     def del_register_user(self, register_user):
         try:
             register_user.delete()
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_DEL_REGISTER_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_DEL_REGISTER_USER, e)
 
     def find_user(self, username=None, email=None):
         if username:
@@ -116,7 +116,7 @@ class SecurityManager(BaseSecurityManager):
         hashed_password="",
     ):
         """
-            Generic function to create user
+        Generic function to create user
         """
         try:
             user = self.user_model()
@@ -131,10 +131,10 @@ class SecurityManager(BaseSecurityManager):
             else:
                 user.password = generate_password_hash(password)
             user.save()
-            log.info(c.LOGMSG_INF_SEC_ADD_USER.format(username))
+            log.info(c.LOGMSG_INF_SEC_ADD_USER, username)
             return user
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_ADD_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_USER, e)
             return False
 
     def count_users(self):
@@ -144,7 +144,7 @@ class SecurityManager(BaseSecurityManager):
         try:
             user.save()
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_UPD_USER.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_UPD_USER, e)
             return False
 
     def get_user_by_id(self, pk):
@@ -170,18 +170,18 @@ class SecurityManager(BaseSecurityManager):
             try:
                 role = self.role_model(name=name, permissions=permissions)
                 role.save()
-                log.info(c.LOGMSG_INF_SEC_ADD_ROLE.format(name))
+                log.info(c.LOGMSG_INF_SEC_ADD_ROLE, name)
                 return role
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_ROLE.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_ROLE, e)
         return role
 
     def update_role(self, pk, name: str) -> Optional[Role]:
         try:
             role = self.role_model.objects(id=pk).update(name=name)
-            log.info(c.LOGMSG_INF_SEC_UPD_ROLE.format(role))
+            log.info(c.LOGMSG_INF_SEC_UPD_ROLE, role)
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_UPD_ROLE.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_UPD_ROLE, e)
             return
 
     def find_role(self, name):
@@ -196,7 +196,7 @@ class SecurityManager(BaseSecurityManager):
 
     def find_permission(self, name):
         """
-            Finds and returns a Permission by name
+        Finds and returns a Permission by name
         """
         return self.permission_model.objects(name=name).first()
 
@@ -216,10 +216,10 @@ class SecurityManager(BaseSecurityManager):
 
     def add_permission(self, name):
         """
-            Adds a permission to the backend, model permission
+        Adds a permission to the backend, model permission
 
-            :param name:
-                name of the permission: 'can_add','can_edit' etc...
+        :param name:
+            name of the permission: 'can_add','can_edit' etc...
         """
         perm = self.find_permission(name)
         if perm is None:
@@ -228,22 +228,22 @@ class SecurityManager(BaseSecurityManager):
                 perm.save()
                 return perm
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_PERMISSION.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_PERMISSION, e)
         return perm
 
     def del_permission(self, name):
         """
-            Deletes a permission from the backend, model permission
+        Deletes a permission from the backend, model permission
 
-            :param name:
-                name of the permission: 'can_add','can_edit' etc...
+        :param name:
+            name of the permission: 'can_add','can_edit' etc...
         """
         perm = self.find_permission(name)
         if perm:
             try:
                 perm.delete()
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION, e)
 
     """
     ----------------------
@@ -253,7 +253,7 @@ class SecurityManager(BaseSecurityManager):
 
     def find_view_menu(self, name):
         """
-            Finds and returns a ViewMenu by name
+        Finds and returns a ViewMenu by name
         """
         return self.viewmenu_model.objects(name=name).first()
 
@@ -262,9 +262,9 @@ class SecurityManager(BaseSecurityManager):
 
     def add_view_menu(self, name):
         """
-            Adds a view or menu to the backend, model view_menu
-            param name:
-                name of the view menu to add
+        Adds a view or menu to the backend, model view_menu
+        param name:
+            name of the view menu to add
         """
         view_menu = self.find_view_menu(name)
         if view_menu is None:
@@ -273,22 +273,22 @@ class SecurityManager(BaseSecurityManager):
                 view_menu.save()
                 return view_menu
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_VIEWMENU.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_VIEWMENU, e)
         return view_menu
 
     def del_view_menu(self, name):
         """
-            Deletes a ViewMenu from the backend
+        Deletes a ViewMenu from the backend
 
-            :param name:
-                name of the ViewMenu
+        :param name:
+            name of the ViewMenu
         """
         obj = self.find_view_menu(name)
         if obj:
             try:
                 obj.delete()
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION, e)
 
     """
     ----------------------
@@ -298,7 +298,7 @@ class SecurityManager(BaseSecurityManager):
 
     def find_permission_view_menu(self, permission_name, view_menu_name):
         """
-            Finds and returns a PermissionView by names
+        Finds and returns a PermissionView by names
         """
         permission = self.find_permission(permission_name)
         view_menu = self.find_view_menu(view_menu_name)
@@ -309,21 +309,21 @@ class SecurityManager(BaseSecurityManager):
 
     def find_permissions_view_menu(self, view_menu):
         """
-            Finds all permissions from ViewMenu, returns list of PermissionView
+        Finds all permissions from ViewMenu, returns list of PermissionView
 
-            :param view_menu: ViewMenu object
-            :return: list of PermissionView objects
+        :param view_menu: ViewMenu object
+        :return: list of PermissionView objects
         """
         return self.permissionview_model.objects(view_menu=view_menu)
 
     def add_permission_view_menu(self, permission_name, view_menu_name):
         """
-            Adds a permission on a view or menu to the backend
+        Adds a permission on a view or menu to the backend
 
-            :param permission_name:
-                name of the permission to add: 'can_add','can_edit' etc...
-            :param view_menu_name:
-                name of the view menu to add
+        :param permission_name:
+            name of the permission to add: 'can_add','can_edit' etc...
+        :param view_menu_name:
+            name of the view menu to add
         """
         if not (permission_name and view_menu_name):
             return None
@@ -336,10 +336,10 @@ class SecurityManager(BaseSecurityManager):
         pv.view_menu, pv.permission = vm, perm
         try:
             pv.save()
-            log.info(c.LOGMSG_INF_SEC_ADD_PERMVIEW.format(str(pv)))
+            log.info(c.LOGMSG_INF_SEC_ADD_PERMVIEW, pv)
             return pv
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW, e)
 
     def del_permission_view_menu(self, permission_name, view_menu_name, cascade=True):
         try:
@@ -352,11 +352,9 @@ class SecurityManager(BaseSecurityManager):
             pv = self.permissionview_model.objects(permission=pv.permission)
             if not pv:
                 self.del_permission(pv.permission.name)
-            log.info(
-                c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(permission_name, view_menu_name)
-            )
+            log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW, permission_name, view_menu_name)
         except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW, e)
 
     def exist_permission_on_views(self, lst, item):
         for i in lst:
@@ -372,41 +370,37 @@ class SecurityManager(BaseSecurityManager):
 
     def add_permission_role(self, role, perm_view):
         """
-            Add permission-ViewMenu object to Role
+        Add permission-ViewMenu object to Role
 
-            :param role:
-                The role object
-            :param perm_view:
-                The PermissionViewMenu object
+        :param role:
+            The role object
+        :param perm_view:
+            The PermissionViewMenu object
         """
         if perm_view and perm_view not in role.permissions:
             try:
                 role.permissions.append(perm_view)
                 role.save()
-                log.info(
-                    c.LOGMSG_INF_SEC_ADD_PERMROLE.format(str(perm_view), role.name)
-                )
+                log.info(c.LOGMSG_INF_SEC_ADD_PERMROLE, perm_view, role.name)
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE, e)
 
     def del_permission_role(self, role, perm_view):
         """
-            Remove permission-ViewMenu object to Role
+        Remove permission-ViewMenu object to Role
 
-            :param role:
-                The role object
-            :param perm_view:
-                The PermissionViewMenu object
+        :param role:
+            The role object
+        :param perm_view:
+            The PermissionViewMenu object
         """
         if perm_view in role.permissions:
             try:
                 role.permissions.remove(perm_view)
                 role.save()
-                log.info(
-                    c.LOGMSG_INF_SEC_DEL_PERMROLE.format(str(perm_view), role.name)
-                )
+                log.info(c.LOGMSG_INF_SEC_DEL_PERMROLE, perm_view, role.name)
             except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE, e)
 
     def export_roles(
         self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
@@ -435,7 +429,7 @@ class SecurityManager(BaseSecurityManager):
             fd.write(json.dumps(serialized_roles, indent=indent))
 
     def import_roles(self, path: str) -> None:
-        """ Imports roles from JSON file. """
+        """Imports roles from JSON file."""
         with open(path, "r") as fd:
             serialized_roles = json.loads(fd.read())
 

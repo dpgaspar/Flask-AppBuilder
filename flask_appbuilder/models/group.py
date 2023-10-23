@@ -16,10 +16,10 @@ log = logging.getLogger(__name__)
 
 def aggregate(label=""):
     """
-        Use this decorator to set a label for your aggregation functions on charts.
+    Use this decorator to set a label for your aggregation functions on charts.
 
-        :param label:
-            The label to complement with the column
+    :param label:
+        The label to complement with the column
     """
 
     def wrap(f):
@@ -32,8 +32,8 @@ def aggregate(label=""):
 @aggregate(_("Count of"))
 def aggregate_count(items, col):
     """
-        Function to use on Group by Charts.
-        accepts a list and returns the count of the list's items
+    Function to use on Group by Charts.
+    accepts a list and returns the count of the list's items
     """
     return len(list(items))
 
@@ -41,8 +41,8 @@ def aggregate_count(items, col):
 @aggregate(_("Sum of"))
 def aggregate_sum(items, col):
     """
-        Function to use on Group by Charts.
-        accepts a list and returns the sum of the list's items
+    Function to use on Group by Charts.
+    accepts a list and returns the sum of the list's items
     """
     return sum(getattr(item, col) for item in items)
 
@@ -50,8 +50,8 @@ def aggregate_sum(items, col):
 @aggregate(_("Avg. of"))
 def aggregate_avg(items, col):
     """
-        Function to use on Group by Charts.
-        accepts a list and returns the average of the list's items
+    Function to use on Group by Charts.
+    accepts a list and returns the average of the list's items
     """
     try:
         return aggregate_sum(items, col) / aggregate_count(items, col)
@@ -70,12 +70,12 @@ class BaseGroupBy(object):
         self, column_name, name, aggregate_func=aggregate_count, aggregate_col=""
     ):
         """
-            Constructor.
+        Constructor.
 
-            :param column_name:
-                Model field name
-            :param name:
-                The group by name
+        :param column_name:
+            Model field name
+        :param name:
+            The group by name
 
         """
         self.column_name = column_name
@@ -85,7 +85,7 @@ class BaseGroupBy(object):
 
     def apply(self, data):
         """
-            Override this to implement you own new filters
+        Override this to implement you own new filters
         """
         pass
 
@@ -118,7 +118,7 @@ class GroupByCol(BaseGroupBy):
             },
         ]
         json_data["rows"] = []
-        for (grouped, items) in groupby(data, self.get_group_col):
+        for grouped, items in groupby(data, self.get_group_col):
             aggregate_value = self.aggregate_func(items, self.aggregate_col)
             json_data["rows"].append(
                 {
@@ -181,13 +181,13 @@ class GroupByDateMonth(BaseGroupBy):
 
 class BaseProcessData(object):
     """
-        Base class to process data.
-        It will group data by one or many columns or functions.
-        The aggregation is made by an already defined function, or by a custom function
+    Base class to process data.
+    It will group data by one or many columns or functions.
+    The aggregation is made by an already defined function, or by a custom function
 
-        :group_bys_cols: A list of columns or functions to group data.
-        :aggr_by_cols: A list of tuples [(<AGGR FUNC>,'<COLNAME>'),...].
-        :formatter_by_cols: A dict.
+    :group_bys_cols: A list of columns or functions to group data.
+    :aggr_by_cols: A list of tuples [(<AGGR FUNC>,'<COLNAME>'),...].
+    :formatter_by_cols: A dict.
     """
 
     group_bys_cols = None
@@ -255,7 +255,7 @@ class BaseProcessData(object):
                 for group_col_data, i in zip(item[0], enumerate(item[0])):
                     row[self.group_bys_cols[i]] = str(group_col_data)
             for col_data, i in zip(item[1:], enumerate(item[1:])):
-                log.debug("{0},{1}".format(col_data, i))
+                log.debug("%s,%s", col_data, i)
                 key = self.aggr_by_cols[i].__name__ + self.aggr_by_cols[i]
                 if isinstance(col_data, datetime.date):
                     row[key] = str(col_data)
@@ -266,18 +266,18 @@ class BaseProcessData(object):
 
     def to_json(self, data, labels=None):
         """
-            Will return a dict with Google JSON structure for charts
+        Will return a dict with Google JSON structure for charts
 
-            The Google structure::
+        The Google structure::
 
-                {
-                    cols: [{id:<COL_NAME>, label:<LABEL FOR COL>, type: <COL TYPE>}, ...]
-                    rows: [{c: [{v: <COL VALUE}, ...], ... ]
-                }
+            {
+                cols: [{id:<COL_NAME>, label:<LABEL FOR COL>, type: <COL TYPE>}, ...]
+                rows: [{c: [{v: <COL VALUE}, ...], ... ]
+            }
 
-            :param data:
-            :param labels: dict with labels to include on Google JSON strcut
-            :return: dict with Google JSON structure
+        :param data:
+        :param labels: dict with labels to include on Google JSON strcut
+        :return: dict with Google JSON structure
         """
         labels = labels or dict()
         json_data = dict()
@@ -331,20 +331,18 @@ class DirectProcessData(BaseProcessData):
 
 class GroupByProcessData(BaseProcessData):
     """
-        Groups by data by chosen columns (property group_bys_cols).
+    Groups by data by chosen columns (property group_bys_cols).
 
-        :data: A list of objects
-        :sort: boolean, if true python will sort the data
-        :return: A List of lists with group column and aggregation
+    :data: A list of objects
+    :sort: boolean, if true python will sort the data
+    :return: A List of lists with group column and aggregation
     """
 
     def apply(self, data, sort=True):
         if sort:
             data = sorted(data, key=self.attrgetter(*self.group_bys_cols))
         result = []
-        for (grouped, items) in groupby(
-            data, key=self.attrgetter(*self.group_bys_cols)
-        ):
+        for grouped, items in groupby(data, key=self.attrgetter(*self.group_bys_cols)):
             items = list(items)
             result_item = [self.format_columns(grouped)]
             for aggr_by_col in self.aggr_by_cols:

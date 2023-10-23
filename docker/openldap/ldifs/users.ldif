@@ -1,0 +1,68 @@
+# extended LDIF
+#
+# LDAPv3
+# base <dc=example,dc=org> with scope subtree
+# filter: (objectclass=*)
+# requesting: ALL
+#
+
+# example.org
+dn: dc=example,dc=org
+objectClass: dcObject
+objectClass: organization
+dc: example
+o: example
+
+# users, example.org
+dn: ou=users,dc=example,dc=org
+objectClass: organizationalUnit
+ou: users
+
+# users, example.org
+dn: ou=groups,dc=example,dc=org
+objectClass: organizationalUnit
+ou: groups
+
+# alice, users, example.org
+dn: cn=alice,ou=users,dc=example,dc=org
+cn: alice
+sn: Doe
+givenName: Alice
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+userPassword: alice_password
+uid: alice
+uidNumber: 1000
+gidNumber: 1000
+mail: alice@example.org
+homeDirectory: /home/alice
+
+# natalie, users, example.org
+dn: cn=natalie,ou=users,dc=example,dc=org
+cn: natalie
+sn: Smith
+givenName: Natalie
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+userPassword: natalie_password
+uid: natalie
+uidNumber: 1001
+gidNumber: 1001
+mail: natalie@example.org
+homeDirectory: /home/natalie
+
+# readers, users, example.org
+dn: cn=readers,ou=groups,dc=example,dc=org
+cn: readers
+objectClass: groupOfNames
+objectClass: top
+member: cn=alice,ou=users,dc=example,dc=org
+member: cn=natalie,ou=users,dc=example,dc=org
+
+dn: cn=staff,ou=groups,dc=example,dc=org
+cn: staff
+objectClass: groupOfNames
+objectClass: top
+member: cn=alice,ou=users,dc=example,dc=org

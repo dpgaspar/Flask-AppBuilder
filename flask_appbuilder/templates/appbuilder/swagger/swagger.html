@@ -1,27 +1,30 @@
 {% extends "appbuilder/base.html" %}
 
 {% block head_css %}
-{{ super() }}
-<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css">
-<link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+    {{ super() }}
+    <link href="{{ url_for('appbuilder.static',filename='css/swagger/swagger-ui.css') }}"
+          rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    {{ super() }}
+    <script src="{{ url_for('appbuilder.static',filename='js/swagger-ui-bundle.js') }}"
+            nonce="{{ baselib.get_nonce() }}"></script>
 {% endblock %}
 
 {% block content %}
-<div id="swagger-ui">
-</div>
-<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui-bundle.js"></script>
-<!-- `SwaggerUIBundle` is now available on the page -->
-<script>
-
-    const ui = SwaggerUIBundle({
-        url: '{{openapi_uri}}',
-        dom_id: '#swagger-ui',
-        presets: [
-        SwaggerUIBundle.presets.apis,
-        SwaggerUIBundle.SwaggerUIStandalonePreset
-        ],
-        layout: "BaseLayout"
-
-    })
+    <div id="swagger-ui">
+    </div>
+    <!-- `SwaggerUIBundle` is now available on the page -->
+    <script nonce="{{ baselib.get_nonce() }}">
+        const ui = SwaggerUIBundle({
+            url: '{{openapi_uri}}',
+            dom_id: '#swagger-ui',
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIBundle.SwaggerUIStandalonePreset
+            ],
+            layout: "BaseLayout"
+        })
     </script>
 {% endblock %}

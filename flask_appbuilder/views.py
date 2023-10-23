@@ -30,7 +30,7 @@ log = logging.getLogger(__name__)
 
 class IndexView(BaseView):
     """
-        A simple view that implements the index for the site
+    A simple view that implements the index for the site
     """
 
     route_base = ""
@@ -45,8 +45,8 @@ class IndexView(BaseView):
 
 class UtilView(BaseView):
     """
-        A simple view that implements special util routes.
-        At the moment it only supports the back special endpoint.
+    A simple view that implements special util routes.
+    At the moment it only supports the back special endpoint.
     """
 
     route_base = ""
@@ -59,15 +59,15 @@ class UtilView(BaseView):
 
 class SimpleFormView(BaseFormView):
     """
-        View for presenting your own forms
-        Inherit from this view to provide some base processing
-        for your customized form views.
+    View for presenting your own forms
+    Inherit from this view to provide some base processing
+    for your customized form views.
 
-        Notice that this class inherits from BaseView so all properties
-        from the parent class can be overridden also.
+    Notice that this class inherits from BaseView so all properties
+    from the parent class can be overridden also.
 
-        Implement form_get and form_post to implement your
-        form pre-processing and post-processing
+    Implement form_get and form_post to implement your
+    form pre-processing and post-processing
     """
 
     @expose("/form", methods=["GET"])
@@ -109,15 +109,15 @@ class SimpleFormView(BaseFormView):
 
 class PublicFormView(BaseFormView):
     """
-        View for presenting your own forms
-        Inherit from this view to provide some base
-        processing for your customized form views.
+    View for presenting your own forms
+    Inherit from this view to provide some base
+    processing for your customized form views.
 
-        Notice that this class inherits from BaseView
-        so all properties from the parent class can be overridden also.
+    Notice that this class inherits from BaseView
+    so all properties from the parent class can be overridden also.
 
-        Implement form_get and form_post to implement
-        your form pre-processing and post-processing
+    Implement form_get and form_post to implement
+    your form pre-processing and post-processing
     """
 
     @expose("/form", methods=["GET"])
@@ -155,7 +155,7 @@ class PublicFormView(BaseFormView):
 
 class RestCRUDView(BaseCRUDView):
     """
-        This class view exposes REST method for CRUD operations on you models
+    This class view exposes REST method for CRUD operations on you models
     """
 
     disable_api_route_methods: bool = False
@@ -251,8 +251,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name("list")
     def api_read(self):
-        """
-        """
+        """ """
         log.warning("This API is deprecated and will be removed on 2.3.X")
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
@@ -303,8 +302,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name("show")
     def api_get(self, pk):
-        """
-        """
+        """ """
         log.warning("This API is deprecated and will be removed on 2.3.X")
         # Get arguments for ordering
         item = self.datamodel.get(pk, self._base_filters)
@@ -370,7 +368,6 @@ class RestCRUDView(BaseCRUDView):
         form._id = pk
         http_return_code = 500
         if form.validate():
-
             # Deleting form fields not specified as keys in POST data
             # this allows for other Model columns to be left untouched when
             # unspecified.
@@ -474,7 +471,7 @@ class RestCRUDView(BaseCRUDView):
         log.warning("This API is deprecated and will be removed on 2.3.X")
         filter_rel_fields = None
         if self.edit_form_query_rel_fields:
-            filter_rel_fields = self.edit_form_query_rel_fields
+            filter_rel_fields = self.edit_form_query_rel_fields.get(col_name)
         ret_json = self._get_related_column_data(col_name, filter_rel_fields)
         response = make_response(ret_json, 200)
         response.headers["Content-Type"] = "application/json"
@@ -484,8 +481,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name("list")
     def api_readvalues(self):
-        """
-        """
+        """ """
         log.warning("This API is deprecated and will be removed on 2.3.X")
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
@@ -513,13 +509,13 @@ class RestCRUDView(BaseCRUDView):
 
 class ModelView(RestCRUDView):
     """
-        This is the CRUD generic view.
-        If you want to automatically implement create, edit,
-        delete, show, and list from your database tables,
-        inherit your views from this class.
+    This is the CRUD generic view.
+    If you want to automatically implement create, edit,
+    delete, show, and list from your database tables,
+    inherit your views from this class.
 
-        Notice that this class inherits from BaseCRUDView and BaseModelView
-        so all properties from the parent class can be overridden.
+    Notice that this class inherits from BaseCRUDView and BaseModelView
+    so all properties from the parent class can be overridden.
     """
 
     def __init__(self, **kwargs):
@@ -640,13 +636,13 @@ class ModelView(RestCRUDView):
     def download(self, filename):
         return send_file(
             op.join(self.appbuilder.app.config["UPLOAD_FOLDER"], filename),
-            attachment_filename=uuid_originalname(filename),
+            download_name=uuid_originalname(filename),
             as_attachment=True,
         )
 
     def get_action_permission_name(self, name: str) -> str:
         """
-            Get the permission name of an action name
+        Get the permission name of an action name
         """
         _permission_name = self.method_permission_name.get(
             self.actions.get(name).func.__name__
@@ -659,7 +655,7 @@ class ModelView(RestCRUDView):
     @expose("/action/<string:name>/<pk>", methods=["GET", "POST"])
     def action(self, name, pk):
         """
-            Action method to handle actions from a show view
+        Action method to handle actions from a show view
         """
         # Maintains compatibility but refuses to proceed if CSRF is enabled
         if not self.is_get_mutation_allowed():
@@ -680,7 +676,7 @@ class ModelView(RestCRUDView):
     @expose("/action_post", methods=["POST"])
     def action_post(self):
         """
-            Action method to handle multiple records selected from a list view
+        Action method to handle multiple records selected from a list view
         """
         name = request.form["action"]
         pks = request.form.getlist("rowid")
@@ -699,18 +695,18 @@ class ModelView(RestCRUDView):
 
 class MasterDetailView(BaseCRUDView):
     """
-        Implements behaviour for controlling two CRUD views
-        linked by PK and FK, in a master/detail type with
-        two lists.
+    Implements behaviour for controlling two CRUD views
+    linked by PK and FK, in a master/detail type with
+    two lists.
 
-        Master view will behave like a left menu::
+    Master view will behave like a left menu::
 
-            class DetailView(ModelView):
-                datamodel = SQLAInterface(DetailTable, db.session)
+        class DetailView(ModelView):
+            datamodel = SQLAInterface(DetailTable, db.session)
 
-            class MasterView(MasterDetailView):
-                datamodel = SQLAInterface(MasterTable, db.session)
-                related_views = [DetailView]
+        class MasterView(MasterDetailView):
+            datamodel = SQLAInterface(MasterTable, db.session)
+            related_views = [DetailView]
 
     """
 
@@ -750,13 +746,13 @@ class MasterDetailView(BaseCRUDView):
 
 class MultipleView(BaseView):
     """
-        Use this view to render multiple views on the same page,
-        exposed on the list endpoint.
+    Use this view to render multiple views on the same page,
+    exposed on the list endpoint.
 
-        example (after defining GroupModelView and ContactModelView)::
+    example (after defining GroupModelView and ContactModelView)::
 
-            class MultipleViewsExp(MultipleView):
-                views = [GroupModelView, ContactModelView]
+        class MultipleViewsExp(MultipleView):
+            views = [GroupModelView, ContactModelView]
 
     """
 
@@ -809,7 +805,7 @@ class MultipleView(BaseView):
 
 class CompactCRUDMixin(BaseCRUDView):
     """
-        Mix with ModelView to implement a list with add and edit on the same page.
+    Mix with ModelView to implement a list with add and edit on the same page.
     """
 
     @classmethod
@@ -822,8 +818,7 @@ class CompactCRUDMixin(BaseCRUDView):
 
     @classmethod
     def get_key(cls, k, default=None):
-        """Matching get method for ``set_key``
-        """
+        """Matching get method for ``set_key``"""
         k = cls.__name__ + "__" + k
         if k in session:
             return session[k]
@@ -832,13 +827,12 @@ class CompactCRUDMixin(BaseCRUDView):
 
     @classmethod
     def del_key(cls, k):
-        """Matching get method for ``set_key``
-        """
+        """Matching get method for ``set_key``"""
         k = cls.__name__ + "__" + k
         session.pop(k)
 
     def _get_list_widget(self, **args):
-        """ get joined base filter and current active filter for query """
+        """get joined base filter and current active filter for query"""
         widgets = super(CompactCRUDMixin, self)._get_list_widget(**args)
         session_form_widget = self.get_key("session_form_widget", None)
 

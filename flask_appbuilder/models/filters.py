@@ -16,8 +16,8 @@ map_args_filter = {}
 
 class BaseFilter(object):
     """
-        Base class for all data filters.
-        Sub class to implement your own custom filters
+    Base class for all data filters.
+    Sub class to implement your own custom filters
     """
 
     column_name = ""
@@ -39,14 +39,14 @@ class BaseFilter(object):
 
     def __init__(self, column_name, datamodel, is_related_view=False):
         """
-            Constructor.
+        Constructor.
 
-            :param column_name:
-                Model field name
-            :param datamodel:
-                The datamodel access class
-            :param is_related_view:
-                Optional internal parameter to filter related views
+        :param column_name:
+            Model field name
+        :param datamodel:
+            The datamodel access class
+        :param is_related_view:
+            Optional internal parameter to filter related views
         """
         self.column_name = column_name
         self.datamodel = datamodel
@@ -57,7 +57,7 @@ class BaseFilter(object):
 
     def apply(self, query, value):
         """
-            Override this to implement your own new filters
+        Override this to implement your own new filters
         """
         raise NotImplementedError
 
@@ -67,21 +67,21 @@ class BaseFilter(object):
 
 class FilterRelation(BaseFilter):
     """
-        Base class for all filters for relations
+    Base class for all filters for relations
     """
 
     def apply(self, query, value):
         """
-            Override this to implement your own new filters
+        Override this to implement your own new filters
         """
         raise NotImplementedError
 
 
 class BaseFilterConverter:
     """
-        Base Filter Converter, all classes responsible
-        for the association of columns and possible filters
-        will inherit from this and override the conversion_table property.
+    Base Filter Converter, all classes responsible
+    for the association of columns and possible filters
+    will inherit from this and override the conversion_table property.
 
     """
 
@@ -114,7 +114,7 @@ class BaseFilterConverter:
         for conversion in self.conversion_table:
             if getattr(self.datamodel, conversion[0])(col_name):
                 return [item(col_name, self.datamodel) for item in conversion[1]]
-        log.warning("Filter type not supported for column: %s" % col_name)
+        log.warning("Filter type not supported for column: %s", col_name)
 
 
 class Filters(object):
@@ -135,11 +135,11 @@ class Filters(object):
     ):
         """
 
-            :param filter_converter: Accepts BaseFilterConverter class
-            :param search_columns: restricts possible columns,
-                    accepts a list of column names
-            :param search_filters: Add custom defined filters to specific columns
-            :param datamodel: Accepts BaseInterface class
+        :param filter_converter: Accepts BaseFilterConverter class
+        :param search_columns: restricts possible columns,
+                accepts a list of column names
+        :param search_filters: Add custom defined filters to specific columns
+        :param datamodel: Accepts BaseInterface class
         """
         self.search_columns = search_columns or []
         self.filter_converter = filter_converter
@@ -240,9 +240,9 @@ class Filters(object):
             self._add_filter(filter_class(column_name, self.datamodel), value)
         return self
 
-    def get_joined_filters(self, filters):
+    def get_joined_filters(self, filters) -> "Filters":
         """
-            Creates a new filters class with active filters joined
+        Creates a new filters class with active filters joined
         """
         ret_filters = Filters(self.filter_converter, self.datamodel)
         ret_filters.filters = self.filters + filters.filters
@@ -251,9 +251,9 @@ class Filters(object):
 
     def copy(self):
         """
-            Returns a copy of this object
+        Returns a copy of this object
 
-            :return: A copy of self
+        :return: A copy of self
         """
         retfilters = Filters(self.filter_converter, self.datamodel)
         retfilters.filters = copy.copy(self.filters)
@@ -262,7 +262,7 @@ class Filters(object):
 
     def get_relation_cols(self):
         """
-            Returns the filter active FilterRelation cols
+        Returns the filter active FilterRelation cols
         """
         retlst = []
         for flt, value in zip(self.filters, self.values):
@@ -272,16 +272,16 @@ class Filters(object):
 
     def get_filters_values(self) -> List[Tuple[BaseFilter, Any]]:
         """
-            Returns a list of tuples [(FILTER, value),(...,...),....]
+        Returns a list of tuples [(FILTER, value),(...,...),....]
         """
         return [(flt, value) for flt, value in zip(self.filters, self.values)]
 
     def get_filter_value(self, column_name: str) -> Any:
         """
-            Returns the filtered value for a certain column
+        Returns the filtered value for a certain column
 
-            :param column_name: The name of the column that we want the value from
-            :return: the filter value of the column
+        :param column_name: The name of the column that we want the value from
+        :return: the filter value of the column
         """
         for flt, value in zip(self.filters, self.values):
             if flt.column_name == column_name:

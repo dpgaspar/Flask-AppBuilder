@@ -519,7 +519,7 @@ msgstr "Показать Регистрация"
 
 #: flask_appbuilder/security/views.py:327
 msgid "Invalid login. Please try again."
-msgstr "Попытка аторизации не удалась."
+msgstr "Попытка аутентификации не удалась."
 
 #: flask_appbuilder/security/views.py:329
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:46

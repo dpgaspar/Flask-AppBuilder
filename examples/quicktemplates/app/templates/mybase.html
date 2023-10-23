@@ -8,6 +8,8 @@
 {% endblock %}
 
 {% block body %}
+    {% include 'appbuilder/general/confirm.html' %}
+    {% include 'appbuilder/general/alert.html' %}
     {% set languages = appbuilder.languages %}
     {% set menu = appbuilder.menu %}
 

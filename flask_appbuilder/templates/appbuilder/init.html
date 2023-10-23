@@ -17,20 +17,25 @@
 
     {% block head_css %}
       <link href="{{url_for('appbuilder.static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
-      <link href="{{url_for('appbuilder.static',filename='css/font-awesome.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/fontawesome/fontawesome.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/fontawesome/regular.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/fontawesome/solid.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/fontawesome/brands.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/fontawesome/v4-shims.min.css')}}" rel="stylesheet">
       {% if appbuilder.app_theme %}
         <link href="{{url_for('appbuilder.static',filename='css/themes/'+ appbuilder.app_theme )}}" rel="stylesheet">
       {% endif %}
-      <link href="{{url_for('appbuilder.static',filename='datepicker/bootstrap-datepicker.css')}}" rel="stylesheet">
-      <link href="{{url_for('appbuilder.static',filename='select2/select2.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/bootstrap-datepicker/bootstrap-datepicker3.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/select2/select2.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('appbuilder.static',filename='css/select2/select2-bootstrap.min.css')}}" rel="stylesheet">
       <link href="{{url_for('appbuilder.static',filename='css/flags/flags16.css')}}" rel="stylesheet">
       <link href="{{url_for('appbuilder.static',filename='css/ab.css')}}" rel="stylesheet">
     {% endblock %}
 
     {% block head_js %}
-      <script src="{{url_for('appbuilder.static',filename='js/jquery-latest.js')}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='js/ab_filters.js')}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='js/ab_actions.js')}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/jquery-latest.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/ab_filters.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/ab_actions.js')}}" nonce="{{baselib.get_nonce()}}"></script>
     {% endblock %}
   </head>
   <body >
@@ -38,10 +43,10 @@
     {% endblock %}
 
     {% block tail_js %}
-      <script src="{{url_for('appbuilder.static',filename='js/bootstrap.min.js')}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='datepicker/bootstrap-datepicker.js')}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='select2/select2.js')}}"></script>
-      <script src="{{url_for('appbuilder.static',filename='js/ab.js')}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/bootstrap.min.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/bootstrap-datepicker/bootstrap-datepicker.min.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/select2/select2.min.js')}}" nonce="{{baselib.get_nonce()}}"></script>
+      <script src="{{url_for('appbuilder.static',filename='js/ab.js')}}" nonce="{{baselib.get_nonce()}}"></script>
     {% endblock %}
 
     {% block add_tail_js %}

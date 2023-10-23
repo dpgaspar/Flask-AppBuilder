@@ -90,7 +90,7 @@ This method will authenticate the user's credentials against an LDAP server.
 
 WARNING: To use LDAP you need to install `python-ldap <https://www.python-ldap.org>`_.
 
-For a typical Microsoft AD setup (where all users can preform LDAP searches)::
+For a typical Microsoft AD setup (where all users can perform LDAP searches)::
 
     AUTH_TYPE = AUTH_LDAP
     AUTH_LDAP_SERVER = "ldap://ldap.example.com"
@@ -141,6 +141,12 @@ You can give FlaskAppBuilder roles based on LDAP roles (note, this requires AUTH
 
     # a mapping from LDAP DN to a list of FAB roles
     AUTH_ROLES_MAPPING = {
+        "CN=fab_users,OU=groups,DC=example,DC=com": ["User"],
+        "CN=fab_admins,OU=groups,DC=example,DC=com": ["Admin"],
+    }
+
+    # a mapping from OpenLDAP DN to a list of FAB roles
+    AUTH_ROLES_MAPPING = {
         "cn=fab_users,ou=groups,dc=example,dc=com": ["User"],
         "cn=fab_admins,ou=groups,dc=example,dc=com": ["Admin"],
     }
@@ -153,6 +159,21 @@ You can give FlaskAppBuilder roles based on LDAP roles (note, this requires AUTH
 
     # force users to re-auth after 30min of inactivity (to keep roles in sync)
     PERMANENT_SESSION_LIFETIME = 1800
+
+TLS
+~~~
+
+For STARTTLS, configure an `ldap://` server and set `AUTH_LDAP_USE_TLS` to `True`::
+
+    AUTH_LDAP_SERVER = "ldap://ldap.example.com"
+    AUTH_LDAP_USE_TLS = True
+
+For LDAP over TLS (ldaps), configure the server with the `ldaps://` scheme and set `AUTH_LDAP_USE_TLS` to `False`::
+
+    AUTH_LDAP_SERVER = "ldaps://ldap.example.com"
+    AUTH_LDAP_USE_TLS = False
+
+Additional LDAP/TLS Options, including CA certificate settings and client authentication, can be found in the :doc:`config`.
 
 Authentication: OAuth
 ---------------------
@@ -284,6 +305,8 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 "client_kwargs": {
                     "scope": "User.read name preferred_username email profile upn",
                     "resource": "AZURE_APPLICATION_ID",
+                    # Optionally enforce signature JWT verification
+                    "verify_signature": False
                 },
                 "request_token_url": None,
                 "access_token_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/token",
@@ -326,10 +349,13 @@ You can give FlaskAppBuilder roles based on Oauth groups::
 To customize the userinfo retrieval, you can create your own method like this::
 
     @appbuilder.sm.oauth_user_info_getter
-    def my_user_info_getter(sm, provider, response=None):
+    def my_user_info_getter(
+        sm: SecurityManager,
+        provider: str,
+        response: Dict[str, Any]
+    ) -> Dict[str, Any]:
         if provider == "okta":
             me = sm.oauth_remotes[provider].get("userinfo")
-            log.debug("User info from Okta: {0}".format(me.data))
             return {
                 "username": "okta_" + me.data.get("sub", ""),
                 "first_name": me.data.get("given_name", ""),
@@ -344,11 +370,9 @@ To customize the userinfo retrieval, you can create your own method like this::
                 "email": me.json().get("email"),
                 "first_name": me.json().get("given_name", ""),
                 "last_name": me.json().get("family_name", ""),
-                "id": me.json().get("sub", ""),
                 "role_keys": ["User"], # set AUTH_ROLES_SYNC_AT_LOGIN = False
             }
-        else:
-            return {}
+        return {}
 
 On Flask-AppBuilder 3.4.0 the login page has changed.
 
@@ -373,6 +397,16 @@ You can also use the OAuth provider APIs.
 Therefore, you can send tweets, post on the users Facebook, retrieve the user's LinkedIn profile etc.
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
 to get an idea of a simple use for this.
+
+Authentication: Rate limiting
+-----------------------------
+
+To prevent brute-forcing of credentials, you can apply rate limits to AuthViews in 4.2.0, so that
+only 10 POST requests can be made every 20 seconds. This can be enabled by setting
+``AUTH_RATE_LIMITED`` and ``RATELIMIT_ENABLED`` to ``True``.
+The rate can be changed by adjusting ``AUTH_RATE_LIMIT`` to, for example, ``1 per 10 seconds``. Take a look
+at the `documentation <https://flask-limiter.readthedocs.io/en/stable/>`_ of Flask-Limiter for more options and
+examples.
 
 Role based
 ----------
@@ -907,3 +941,23 @@ Some images:
 
 .. image:: ./images/security.png
     :width: 100%
+
+Optional dependency Flask-Talisman
+==================================
+
+All javascript code and inline scripts can have a nonce attribute provided by Flask-Talisman.
+This package will not initialize Flask-Talisman for you, but will use `csp_nonce()` on Jinja2 if it exists.
+To initialize Flask-Talisman, you can do the following:
+
+.. code-block:: python
+
+    from flask import Flask
+    from flask_appbuilder import AppBuilder
+    from flask_talisman import Talisman
+
+    app = Flask(__name__)
+    app.config.from_object('config')
+    db = SQLA(app)
+    appbuilder = AppBuilder(app, db.session)
+
+    Talisman(app)

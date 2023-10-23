@@ -32,7 +32,7 @@ can run a subset of tests targeting only Postgres.
 
 .. code-block:: bash
 
-    $ nosetests flask_appbuilder.tests
+    $ nose2 -c setup.cfg -A '!mongo' tests
 
 You can also use tox
 
@@ -44,8 +44,8 @@ You can also use tox
 
 .. code-block:: bash
 
-    $ black flask_appbuilder
-    $ flake8 flask_appbuilder
+    $ black flask_appbuilder tests
+    $ flake8 flask_appbuilder tests
 
 Run a single test
 -----------------
@@ -65,22 +65,16 @@ Using Postgres
 
    $ export SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://pguser:pguserpassword@0.0.0.0/app
 
-3 - Run the fixtures
+4 - To run a single test
 
 .. code-block:: bash
 
-    $ nosetests -v flask_appbuilder.tests.A_fixture
-
-4 - Run a single test
-
-.. code-block:: bash
-
-    $ nosetests -v flask_appbuilder.tests.test_api:APITestCase.test_get_item_dotted_mo_notation
+    $ nose2 -v tests.test_api.APITestCase.test_get_item_dotted_mo_notation
 
 .. note::
 
-    If your using SQLite3, the location of the db is: ./flask_appbuilder/tests/app.db
-    You can safely delete it, if you need to delete the fixtures for example.
+    If your using SQLite3, the location of the db is: ./tests/app.db
+    You can safely delete it, if you need to delete test data for example.
 
 
 Responsible disclosure of Security Vulnerabilities

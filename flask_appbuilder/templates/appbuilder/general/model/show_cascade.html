@@ -24,5 +24,5 @@
 {% endblock %}
 
 {% block add_tail_js %}
-<script src="{{url_for('appbuilder.static',filename='js/ab_keep_tab.js')}}"></script>
+<script src="{{url_for('appbuilder.static',filename='js/ab_keep_tab.js')}}" nonce="{{ baselib.get_nonce() }}"></script>
 {% endblock %}

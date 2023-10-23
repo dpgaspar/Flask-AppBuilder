@@ -33,7 +33,6 @@ def _include_filters(obj):
 
 
 class MongoEngineInterface(BaseInterface):
-
     filter_converter_class = filters.MongoEngineFilterConverter
 
     def __init__(self, obj, session=None):
@@ -44,8 +43,8 @@ class MongoEngineInterface(BaseInterface):
     @property
     def model_name(self):
         """
-            Returns the models class name
-            useful for auto title on views
+        Returns the models class name
+        useful for auto title on views
         """
         return self.obj.__name__
 
@@ -57,7 +56,6 @@ class MongoEngineInterface(BaseInterface):
         page=None,
         page_size=None,
     ):
-
         # base query : all objects
         objs = self.obj.objects
 
@@ -79,9 +77,9 @@ class MongoEngineInterface(BaseInterface):
 
         if page_size is None:  # error checking and warnings
             if page is not None:
-                log.error("Attempting to get page %s but page_size is undefined" % page)
+                log.error("Attempting to get page %s but page_size is undefined", page)
             if count > 100:
-                log.warn("Retrieving %s %s items from DB" % (count, str(self.obj)))
+                log.warn("Retrieving %s %s items from DB", count, self.obj)
         else:  # get data segment for paginated page
             offset = (page or 0) * page_size
             objs = objs[offset : offset + page_size]
@@ -207,7 +205,7 @@ class MongoEngineInterface(BaseInterface):
                 as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
                 "danger",
             )
-            log.exception(LOGMSG_ERR_DBI_ADD_GENERIC.format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_ADD_GENERIC, e)
             return False
 
     def edit(self, item):
@@ -220,7 +218,7 @@ class MongoEngineInterface(BaseInterface):
                 as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
                 "danger",
             )
-            log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC.format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC, e)
             return False
 
     def delete(self, item):
@@ -233,7 +231,7 @@ class MongoEngineInterface(BaseInterface):
                 as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
                 "danger",
             )
-            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC, e)
             return False
 
     def get_columns_list(self):
@@ -266,7 +264,7 @@ class MongoEngineInterface(BaseInterface):
 
     def get_user_columns_list(self):
         """
-            Returns all model's columns except pk
+        Returns all model's columns except pk
         """
         return [
             col_name for col_name in self.get_columns_list() if not self.is_pk(col_name)
@@ -274,10 +272,10 @@ class MongoEngineInterface(BaseInterface):
 
     def get_order_columns_list(self, list_columns=None):
         """
-            Returns the columns that can be ordered
+        Returns the columns that can be ordered
 
-            :param list_columns: optional list of columns name, if provided will
-                use this list only.
+        :param list_columns: optional list of columns name, if provided will
+            use this list only.
         """
         ret_lst = list()
         list_columns = list_columns or self.get_columns_list()
@@ -305,7 +303,7 @@ class MongoEngineInterface(BaseInterface):
 
     def get_keys(self, lst):
         """
-            return a list of pk values from object list
+        return a list of pk values from object list
         """
         pk_name = self.get_pk_name()
         return [getattr(item, pk_name) for item in lst]

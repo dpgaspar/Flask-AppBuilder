@@ -1,14 +1,12 @@
 import os
 
 from flask import has_request_context, request, session
+from flask_appbuilder.babel.views import LocaleView
+from flask_appbuilder.basemanager import BaseManager
 from flask_babel import Babel
-
-from .views import LocaleView
-from ..basemanager import BaseManager
 
 
 class BabelManager(BaseManager):
-
     babel = None
     locale_view = None
 

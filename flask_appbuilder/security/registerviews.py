@@ -24,29 +24,29 @@ def get_first_last_name(fullname):
 
 class BaseRegisterUser(PublicFormView):
     """
-        Make your own user registration view and inherit from this class if you
-        want to implement a completely different registration process. If not,
-        just inherit from RegisterUserDBView or RegisterUserOIDView depending on
-        your authentication method.
-        then override SecurityManager property that defines the class to use::
+    Make your own user registration view and inherit from this class if you
+    want to implement a completely different registration process. If not,
+    just inherit from RegisterUserDBView or RegisterUserOIDView depending on
+    your authentication method.
+    then override SecurityManager property that defines the class to use::
 
-            from flask_appbuilder.security.registerviews import RegisterUserDBView
+        from flask_appbuilder.security.registerviews import RegisterUserDBView
 
-            class MyRegisterUserDBView(BaseRegisterUser):
-                email_template = 'register_mail.html'
-                ...
+        class MyRegisterUserDBView(BaseRegisterUser):
+            email_template = 'register_mail.html'
+            ...
 
 
-            class MySecurityManager(SecurityManager):
-                registeruserdbview = MyRegisterUserDBView
+        class MySecurityManager(SecurityManager):
+            registeruserdbview = MyRegisterUserDBView
 
-        When instantiating AppBuilder set your own SecurityManager class::
+    When instantiating AppBuilder set your own SecurityManager class::
 
-            appbuilder = AppBuilder(
-                app,
-                db.session,
-                 security_manager_class=MySecurityManager
-            )
+        appbuilder = AppBuilder(
+            app,
+            db.session,
+             security_manager_class=MySecurityManager
+        )
     """
 
     route_base = "/register"
@@ -69,7 +69,7 @@ class BaseRegisterUser(PublicFormView):
 
     def send_email(self, register_user):
         """
-            Method for sending the registration Email to the user
+        Method for sending the registration Email to the user
         """
         try:
             from flask_mail import Mail, Message
@@ -95,7 +95,7 @@ class BaseRegisterUser(PublicFormView):
         try:
             mail.send(msg)
         except Exception as e:
-            log.error("Send email exception: {0}".format(str(e)))
+            log.error("Send email exception: %s", e)
             return False
         return True
 
@@ -120,13 +120,13 @@ class BaseRegisterUser(PublicFormView):
     @expose("/activation/<string:activation_hash>")
     def activation(self, activation_hash):
         """
-            Endpoint to expose an activation url, this url
-            is sent to the user by email, when accessed the user is inserted
-            and activated
+        Endpoint to expose an activation url, this url
+        is sent to the user by email, when accessed the user is inserted
+        and activated
         """
         reg = self.appbuilder.sm.find_register_user(activation_hash)
         if not reg:
-            log.error(c.LOGMSG_ERR_SEC_NO_REGISTER_HASH.format(activation_hash))
+            log.error(c.LOGMSG_ERR_SEC_NO_REGISTER_HASH, activation_hash)
             flash(as_unicode(self.false_error_message), "danger")
             return redirect(self.appbuilder.get_url_for_index)
         if not self.appbuilder.sm.add_user(
@@ -164,7 +164,7 @@ class BaseRegisterUser(PublicFormView):
 
 class RegisterUserDBView(BaseRegisterUser):
     """
-        View for Registering a new user, auth db mode
+    View for Registering a new user, auth db mode
     """
 
     form = RegisterUserDBForm
@@ -187,7 +187,7 @@ class RegisterUserDBView(BaseRegisterUser):
 
 class RegisterUserOIDView(BaseRegisterUser):
     """
-        View for Registering a new user, auth OID mode
+    View for Registering a new user, auth OID mode
     """
 
     route_base = "/register"
@@ -230,12 +230,12 @@ class RegisterUserOIDView(BaseRegisterUser):
 
     def oid_login_handler(self, f, oid):
         """
-            Hackish method to make use of oid.login_handler decorator.
+        Hackish method to make use of oid.login_handler decorator.
         """
         from flask_openid import OpenIDResponse, SessionWrapper
         from openid.consumer.consumer import CANCEL, Consumer, SUCCESS
 
-        if request.args.get("openid_complete") != u"yes":
+        if request.args.get("openid_complete") != "yes":
             return f(False)
         consumer = Consumer(SessionWrapper(self), oid.store_factory())
         openid_response = consumer.complete(
@@ -244,15 +244,15 @@ class RegisterUserOIDView(BaseRegisterUser):
         if openid_response.status == SUCCESS:
             return self.after_login(OpenIDResponse(openid_response, []))
         elif openid_response.status == CANCEL:
-            oid.signal_error(u"The request was cancelled")
+            oid.signal_error("The request was cancelled")
             return redirect(oid.get_current_url())
-        oid.signal_error(u"OpenID authentication error")
+        oid.signal_error("OpenID authentication error")
         return redirect(oid.get_current_url())
 
     def after_login(self, resp):
         """
-            Method that adds the return OpenID response object on the session
-            this session key will be deleted
+        Method that adds the return OpenID response object on the session
+        this session key will be deleted
         """
         session["oid_resp"] = resp
 
@@ -270,7 +270,7 @@ class RegisterUserOIDView(BaseRegisterUser):
 
 class RegisterUserOAuthView(BaseRegisterUser):
     """
-        View for Registering a new user, auth OID mode
+    View for Registering a new user, auth OID mode
     """
 
     form = RegisterUserOIDForm

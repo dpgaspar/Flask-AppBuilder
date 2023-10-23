@@ -31,26 +31,26 @@ _camelcase_re = re.compile(r"([A-Z]+)(?=[a-z0-9])")
 
 class ModelDeclarativeMeta(DefaultMeta):
     """
-        Base Model declarative meta for all Models definitions.
-        Setups bind_keys to support multiple databases.
-        Setup the table name based on the class camelcase name.
+    Base Model declarative meta for all Models definitions.
+    Setups bind_keys to support multiple databases.
+    Setup the table name based on the class camelcase name.
     """
 
 
 class BaseModel:
     """
-        Use this class has the base for your models,
-        it will define your table names automatically
-        MyModel will be called my_model on the database.
+    Use this class has the base for your models,
+    it will define your table names automatically
+    MyModel will be called my_model on the database.
 
-        ::
+    ::
 
-            from sqlalchemy import Integer, String
-            from flask_appbuilder import Model
+        from sqlalchemy import Integer, String
+        from flask_appbuilder import Model
 
-            class MyModel(Model):
-                id = Column(Integer, primary_key=True)
-                name = Column(String(50), unique = True, nullable=False)
+        class MyModel(Model):
+            id = Column(Integer, primary_key=True)
+            name = Column(String(50), unique = True, nullable=False)
 
     """
 

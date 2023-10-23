@@ -26,7 +26,7 @@ def fill_data():
             db.session.add(c)
             db.session.commit()
         except Exception as e:
-            log.error("Update ViewMenu error: {0}".format(str(e)))
+            log.error("Update ViewMenu error: %s", e)
             db.session.rollback()
     for political in politicals:
         c = PoliticalType(name=political)
@@ -34,7 +34,7 @@ def fill_data():
             db.session.add(c)
             db.session.commit()
         except Exception as e:
-            log.error("Update ViewMenu error: {0}".format(str(e)))
+            log.error("Update ViewMenu error: %s", e)
             db.session.rollback()
     try:
         for x in range(1, 20):
@@ -51,5 +51,5 @@ def fill_data():
             db.session.add(cs)
             db.session.commit()
     except Exception as e:
-        log.error("Update ViewMenu error: {0}".format(str(e)))
+        log.error("Update ViewMenu error: %s", e)
         db.session.rollback()

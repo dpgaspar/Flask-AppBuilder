@@ -72,17 +72,17 @@ OAUTH_PROVIDERS = [
         "remote_app": {
             "client_id": os.environ.get("AZURE_APPLICATION_ID"),
             "client_secret": os.environ.get("AZURE_SECRET"),
-            "api_base_url": "https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2",
+            "api_base_url": f"https://login.microsoftonline.com/{os.environ.get('AZURE_TENANT_ID')}/oauth2",
             "client_kwargs": {
                 "scope": "User.read name preferred_username email profile upn",
                 "resource": os.environ.get("AZURE_APPLICATION_ID"),
             },
             "request_token_url": None,
             "access_token_url": f"https://login.microsoftonline.com/"
-            f"{os.environ.get('AZURE_APPLICATION_ID')}/"
+            f"{os.environ.get('AZURE_TENANT_ID')}/"
             "oauth2/token",
             "authorize_url": f"https://login.microsoftonline.com/"
-            f"{os.environ.get('AZURE_APPLICATION_ID')}/"
+            f"{os.environ.get('AZURE_TENANT_ID')}/"
             f"oauth2/authorize",
         },
     },

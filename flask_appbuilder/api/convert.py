@@ -1,21 +1,20 @@
-from typing import List, Optional, Type
+from typing import Any, Callable, Dict, List, Optional, Type
 
 from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from marshmallow import fields
+from marshmallow import fields, Schema
 from marshmallow.fields import Field
-from marshmallow_enum import EnumField
 from marshmallow_sqlalchemy import field_for
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 
 class TreeNode:
-    def __init__(self, data):
-        self.data = data
-        self.childs = list()
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.children: List["TreeNode"] = []
 
-    def __repr__(self):
-        return f"{self.data}.{str(self.childs)}"
+    def __repr__(self) -> str:
+        return f"{self.name}.{str(self.children)}"
 
 
 class Tree:
@@ -23,26 +22,26 @@ class Tree:
     Simplistic one level Tree
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.root = TreeNode("+")
 
-    def add(self, data):
-        node = TreeNode(data)
-        self.root.childs.append(node)
+    def add(self, name: str) -> None:
+        node = TreeNode(name)
+        self.root.children.append(node)
 
-    def add_child(self, parent, data):
-        node = TreeNode(data)
-        for n in self.root.childs:
-            if n.data == parent:
-                n.childs.append(node)
+    def add_child(self, parent: str, name: str) -> None:
+        node = TreeNode(name)
+        for child in self.root.children:
+            if child.name == parent:
+                child.children.append(node)
                 return
         root = TreeNode(parent)
-        self.root.childs.append(root)
-        root.childs.append(node)
+        self.root.children.append(root)
+        root.children.append(node)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         ret = ""
-        for node in self.root.childs:
+        for node in self.root.children:
             ret += str(node)
         return ret
 
@@ -51,43 +50,62 @@ def columns2Tree(columns: List[str]) -> Tree:
     tree = Tree()
     for column in columns:
         if "." in column:
-            tree.add_child(column.split(".")[0], column.split(".")[1])
+            parent, child = column.split(".")
+            tree.add_child(parent, child)
         else:
             tree.add(column)
     return tree
 
 
 class BaseModel2SchemaConverter(object):
-    def __init__(self, datamodel: SQLAInterface, validators_columns):
+    def __init__(
+        self,
+        datamodel: SQLAInterface,
+        validators_columns: Dict[str, Callable[[Any], Any]],
+    ):
         """
         :param datamodel: SQLAInterface
         """
         self.datamodel = datamodel
         self.validators_columns = validators_columns
 
-    def convert(self, columns, **kwargs):
+    def convert(
+        self,
+        columns: List[str],
+        model: Optional[Type[Model]] = None,
+        nested: bool = True,
+        parent_schema_name: Optional[str] = None,
+    ) -> SQLAlchemyAutoSchema:
         pass
 
 
 class Model2SchemaConverter(BaseModel2SchemaConverter):
     """
-        Class that converts Models to marshmallow Schemas
+    Class that converts Models to marshmallow Schemas
     """
 
-    def __init__(self, datamodel: SQLAInterface, validators_columns):
+    def __init__(
+        self,
+        datamodel: SQLAInterface,
+        validators_columns: Dict[str, Callable[[Any], Any]],
+    ):
         """
         :param datamodel: SQLAInterface
         """
         super(Model2SchemaConverter, self).__init__(datamodel, validators_columns)
 
     @staticmethod
-    def _debug_schema(schema):
+    def _debug_schema(schema: SQLAlchemyAutoSchema) -> None:
         for k, v in schema._declared_fields.items():
             print(k, v)
 
     def _meta_schema_factory(
-        self, columns: List[str], model: Model, class_mixin, parent_schema_name=None
-    ):
+        self,
+        columns: List[str],
+        model: Optional[Type[Model]],
+        class_mixin: Type[Schema],
+        parent_schema_name: Optional[str] = None,
+    ) -> Type[SQLAlchemyAutoSchema]:
         """
         Creates ModelSchema marshmallow-sqlalchemy
 
@@ -100,7 +118,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         _parent_schema_name = parent_schema_name
         if columns:
 
-            class MetaSchema(SQLAlchemyAutoSchema, class_mixin):
+            class MetaSchema(SQLAlchemyAutoSchema, class_mixin):  # type: ignore
                 class Meta:
                     model = _model
                     fields = columns
@@ -110,35 +128,34 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                     # This name comes from ModelRestApi
                     parent_schema_name = _parent_schema_name
 
-        else:
+            return MetaSchema
 
-            class MetaSchema(SQLAlchemyAutoSchema, class_mixin):
-                class Meta:
-                    model = _model
-                    load_instance = True
-                    sqla_session = self.datamodel.session
-                    # The parent_schema_name is useful to humanize nested schema names
-                    # This name comes from ModelRestApi
-                    parent_schema_name = _parent_schema_name
+        class MetaSchema(SQLAlchemyAutoSchema, class_mixin):  # type: ignore
+            class Meta:
+                model = _model
+                load_instance = True
+                sqla_session = self.datamodel.session
+                # The parent_schema_name is useful to humanize nested schema names
+                # This name comes from ModelRestApi
+                parent_schema_name = _parent_schema_name
 
         return MetaSchema
 
-    def _column2enum(
-        self,
-        datamodel: SQLAInterface,
-        column: TreeNode,
-        enum_dump_by_name: bool = False,
-    ):
-        required = not datamodel.is_nullable(column.data)
-        enum_class = datamodel.list_columns[column.data].info.get(
-            "enum_class", datamodel.list_columns[column.data].type
-        )
-        if enum_dump_by_name:
-            enum_dump_by = EnumField.NAME
+    def _column2enum(self, datamodel: SQLAInterface, column: TreeNode) -> Field:
+        required = not datamodel.is_nullable(column.name)
+        sqla_column = datamodel.list_columns[column.name]
+        # get SQLAlchemy column user info, we use it to get the marshmallow enum options
+        column_info = sqla_column.info
+        # TODO: Default should be False, but keeping this to True to keep compatibility
+        # Turn this to False in the next major release
+        by_value = column_info.get("marshmallow_by_value", True)
+        # Get the original enum class from SQLAlchemy Enum field
+        enum_class = sqla_column.type.enum_class
+        if not enum_class:
+            field = field_for(datamodel.obj, column.name)
         else:
-            enum_dump_by = EnumField.VALUE
-        field = EnumField(enum_class, dump_by=enum_dump_by, required=required)
-        field.unique = datamodel.is_unique(column.data)
+            field = fields.Enum(enum_class, required=required, by_value=by_value)
+        field.unique = datamodel.is_unique(column.name)
         return field
 
     def _column2relation(
@@ -147,40 +164,37 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         column: TreeNode,
         nested: bool = False,
         parent_schema_name: Optional[str] = None,
-    ):
+    ) -> Field:
         if nested:
-            required = not datamodel.is_nullable(column.data)
-            nested_model = datamodel.get_related_model(column.data)
-            lst = [item.data for item in column.childs]
+            required = not datamodel.is_nullable(column.name)
+            nested_model = datamodel.get_related_model(column.name)
+            lst = [item.name for item in column.children]
             nested_schema = self.convert(
                 lst, nested_model, nested=False, parent_schema_name=parent_schema_name
             )
-            if datamodel.is_relation_many_to_one(column.data):
+            if datamodel.is_relation_many_to_one(column.name):
                 many = False
-            elif datamodel.is_relation_many_to_many(column.data):
+            elif datamodel.is_relation_many_to_many(column.name):
                 many = True
                 required = False
-            elif datamodel.is_relation_one_to_many(column.data):
+            elif datamodel.is_relation_one_to_many(column.name):
                 many = True
             else:
                 many = False
             field = fields.Nested(nested_schema, many=many, required=required)
-            field.unique = datamodel.is_unique(column.data)
+            field.unique = datamodel.is_unique(column.name)
             return field
         # Handle bug on marshmallow-sqlalchemy
         # https://github.com/marshmallow-code/marshmallow-sqlalchemy/issues/163
         if datamodel.is_relation_many_to_many(
-            column.data
-        ) or datamodel.is_relation_one_to_many(column.data):
-            if datamodel.get_info(column.data).get("required", False):
-                required = True
-            else:
-                required = False
+            column.name
+        ) or datamodel.is_relation_one_to_many(column.name):
+            required = datamodel.get_info(column.name).get("required", False)
         else:
-            required = not datamodel.is_nullable(column.data)
-        field = field_for(datamodel.obj, column.data)
+            required = not datamodel.is_nullable(column.name)
+        field = field_for(datamodel.obj, column.name)
         field.required = required
-        field.unique = datamodel.is_unique(column.data)
+        field.unique = datamodel.is_unique(column.name)
         return field
 
     def _column2field(
@@ -188,7 +202,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         datamodel: SQLAInterface,
         column: TreeNode,
         nested: bool = True,
-        enum_dump_by_name: bool = False,
         parent_schema_name: Optional[str] = None,
     ) -> Field:
         """
@@ -196,34 +209,31 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         :param datamodel: SQLAInterface
         :param column: TreeNode column (childs are dotted columns)
         :param nested: Boolean if will create nested fields
-        :param enum_dump_by_name:
         :return: Schema.field
         """
         # Handle relations
-        if datamodel.is_relation(column.data):
+        if datamodel.is_relation(column.name):
             return self._column2relation(
                 datamodel, column, nested=nested, parent_schema_name=parent_schema_name
             )
         # Handle Enums
-        elif datamodel.is_enum(column.data):
-            return self._column2enum(
-                datamodel, column, enum_dump_by_name=enum_dump_by_name
-            )
+        if datamodel.is_enum(column.name):
+            return self._column2enum(datamodel, column)
         # is custom property method field?
-        if hasattr(getattr(datamodel.obj, column.data), "fget"):
+        if hasattr(getattr(datamodel.obj, column.name), "fget"):
             return fields.Raw(dump_only=True)
         # its a model function
-        if hasattr(getattr(datamodel.obj, column.data), "__call__"):
-            return fields.Function(getattr(datamodel.obj, column.data), dump_only=True)
+        if hasattr(getattr(datamodel.obj, column.name), "__call__"):
+            return fields.Function(getattr(datamodel.obj, column.name), dump_only=True)
         # is a normal model field not a function?
-        if not hasattr(getattr(datamodel.obj, column.data), "__call__"):
-            field = field_for(datamodel.obj, column.data)
-            field.unique = datamodel.is_unique(column.data)
-            if column.data in self.validators_columns:
+        if not hasattr(getattr(datamodel.obj, column.name), "__call__"):
+            field = field_for(datamodel.obj, column.name)
+            field.unique = datamodel.is_unique(column.name)
+            if column.name in self.validators_columns:
                 if field.validate is None:
                     field.validate = []
-                field.validate.append(self.validators_columns[column.data])
-                field.validators.append(self.validators_columns[column.data])
+                field.validate.append(self.validators_columns[column.name])
+                field.validators.append(self.validators_columns[column.name])
             return field
 
     def convert(
@@ -231,9 +241,8 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         columns: List[str],
         model: Optional[Type[Model]] = None,
         nested: bool = True,
-        enum_dump_by_name: bool = False,
         parent_schema_name: Optional[str] = None,
-    ):
+    ) -> SQLAlchemyAutoSchema:
         """
             Creates a Marshmallow ModelSchema class
 
@@ -257,16 +266,12 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
 
         _columns = list()
         tree_columns = columns2Tree(columns)
-        for column in tree_columns.root.childs:
+        for column in tree_columns.root.children:
             # Get child model is column is dotted notation
-            ma_sqla_fields_override[column.data] = self._column2field(
-                _datamodel,
-                column,
-                nested,
-                enum_dump_by_name,
-                parent_schema_name=parent_schema_name,
+            ma_sqla_fields_override[column.name] = self._column2field(
+                _datamodel, column, nested, parent_schema_name=parent_schema_name
             )
-            _columns.append(column.data)
+            _columns.append(column.name)
         for k, v in ma_sqla_fields_override.items():
             setattr(SchemaMixin, k, v)
         return self._meta_schema_factory(

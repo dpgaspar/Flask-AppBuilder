@@ -39,12 +39,12 @@ log = logging.getLogger(__name__)
 
 def expose(url="/", methods=("GET",)):
     """
-        Use this decorator to expose views on your view classes.
+    Use this decorator to expose views on your view classes.
 
-        :param url:
-            Relative URL for the view
-        :param methods:
-            Allowed HTTP methods. By default only GET is allowed.
+    :param url:
+        Relative URL for the view
+    :param methods:
+        Allowed HTTP methods. By default only GET is allowed.
     """
 
     def wrap(f):
@@ -71,7 +71,6 @@ def expose_api(name="", url="", methods=("GET",), description=""):
 
 
 class AbstractViewApi:
-
     appbuilder: "AppBuilder"
     base_permissions: Optional[List[str]]
     class_permission_name: str
@@ -88,8 +87,8 @@ class AbstractViewApi:
 
     def get_uninit_inner_views(self):
         """
-            Will return a list with views that need to be initialized.
-            Normally related_views from ModelView
+        Will return a list with views that need to be initialized.
+        Normally related_views from ModelView
         """
         ...
 
@@ -102,12 +101,12 @@ class AbstractViewApi:
 
 class BaseView(AbstractViewApi):
     """
-        All views inherit from this class.
-        it's constructor will register your exposed urls on flask as a Blueprint.
+    All views inherit from this class.
+    it's constructor will register your exposed urls on flask as a Blueprint.
 
-        This class does not expose any urls, but provides a common base for all views.
+    This class does not expose any urls, but provides a common base for all views.
 
-        Extend this class if you want to expose methods for your own templates
+    Extend this class if you want to expose methods for your own templates
     """
 
     appbuilder = None
@@ -181,16 +180,28 @@ class BaseView(AbstractViewApi):
     default_view = "list"
     """ the default view for this BaseView, to be used with url_for (method name) """
     extra_args = None
-
     """ dictionary for injecting extra arguments into template """
+
+    limits = None
+    """
+        List of limits for this view.
+
+        Use it like this if you want to restrict the rate of requests to a view:
+
+            class MyView(ModelView):
+                limits = [Limit("2 per 5 second")]
+
+        or use the decorator @limit.
+    """
+
     _apis = None
 
     def __init__(self):
         """
-            Initialization of base permissions
-            based on exposed methods and actions
+        Initialization of base permissions
+        based on exposed methods and actions
 
-            Initialization of extra args
+        Initialization of extra args
         """
         # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
@@ -211,6 +222,9 @@ class BaseView(AbstractViewApi):
         if self.base_permissions is None:
             self.base_permissions = set()
             is_add_base_permissions = True
+
+        if self.limits is None:
+            self.limits = []
 
         for attr_name in dir(self):
             # If include_route_methods is not None white list
@@ -239,19 +253,21 @@ class BaseView(AbstractViewApi):
                 _extra = getattr(getattr(self, attr_name), "_extra")
                 for key in _extra:
                     self._apis[key] = _extra[key]
+            if hasattr(getattr(self, attr_name), "_limit"):
+                self.limits.append(getattr(getattr(self, attr_name), "_limit"))
 
     def create_blueprint(self, appbuilder, endpoint=None, static_folder=None):
         """
-            Create Flask blueprint. You will generally not use it
+        Create Flask blueprint. You will generally not use it
 
-            :param appbuilder:
-               the AppBuilder object
-            :param endpoint:
-               endpoint override for this blueprint,
-               will assume class name if not provided
-            :param static_folder:
-               the relative override for static folder,
-               if omitted application will use the appbuilder static
+        :param appbuilder:
+           the AppBuilder object
+        :param endpoint:
+           endpoint override for this blueprint,
+           will assume class name if not provided
+        :param static_folder:
+           the relative override for static folder,
+           if omitted application will use the appbuilder static
         """
         # Store appbuilder instance
         self.appbuilder = appbuilder
@@ -292,15 +308,19 @@ class BaseView(AbstractViewApi):
                 continue
             if attr_name in self.exclude_route_methods:
                 log.info(
-                    f"Not registering route for method "
-                    f"{self.__class__.__name__}.{attr_name}"
+                    "Not registering route for method %s.%s",
+                    self.__class__.__name__,
+                    attr_name,
                 )
                 continue
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
                     log.info(
-                        f"Registering route {self.blueprint.url_prefix}{url} {methods}"
+                        "Registering route %s%s %s",
+                        self.blueprint.url_prefix,
+                        url,
+                        methods,
                     )
                     route_handler = wrap_route_handler_with_hooks(
                         attr_name, attr, before_request_hooks
@@ -311,11 +331,11 @@ class BaseView(AbstractViewApi):
 
     def render_template(self, template, **kwargs):
         """
-            Use this method on your own endpoints, will pass the extra_args
-            to the templates.
+        Use this method on your own endpoints, will pass the extra_args
+        to the templates.
 
-            :param template: The template relative path
-            :param kwargs: arguments to be passed to the template
+        :param template: The template relative path
+        :param kwargs: arguments to be passed to the template
         """
         kwargs["base_template"] = self.appbuilder.base_template
         kwargs["appbuilder"] = self.appbuilder
@@ -325,30 +345,30 @@ class BaseView(AbstractViewApi):
 
     def _prettify_name(self, name):
         """
-            Prettify pythonic variable name.
+        Prettify pythonic variable name.
 
-            For example, 'HelloWorld' will be converted to 'Hello World'
+        For example, 'HelloWorld' will be converted to 'Hello World'
 
-            :param name:
-                Name to prettify.
+        :param name:
+            Name to prettify.
         """
         return re.sub(r"(?<=.)([A-Z])", r" \1", name)
 
     def _prettify_column(self, name):
         """
-            Prettify pythonic variable name.
+        Prettify pythonic variable name.
 
-            For example, 'hello_world' will be converted to 'Hello World'
+        For example, 'hello_world' will be converted to 'Hello World'
 
-            :param name:
-                Name to prettify.
+        :param name:
+            Name to prettify.
         """
         return re.sub("[._]", " ", name).title()
 
     def update_redirect(self):
         """
-            Call it on your own endpoint's to update the back history navigation.
-            If you bypass it, the next submit or back will go over it.
+        Call it on your own endpoint's to update the back history navigation.
+        If you bypass it, the next submit or back will go over it.
         """
         page_history = Stack(session.get("page_history", []))
         page_history.push(request.url)
@@ -356,7 +376,7 @@ class BaseView(AbstractViewApi):
 
     def get_redirect(self):
         """
-            Returns the previous url.
+        Returns the previous url.
         """
         index_url = self.appbuilder.get_url_for_index
         page_history = Stack(session.get("page_history", []))
@@ -370,14 +390,14 @@ class BaseView(AbstractViewApi):
     @classmethod
     def get_default_url(cls, **kwargs):
         """
-            Returns the url for this class default endpoint
+        Returns the url for this class default endpoint
         """
         return url_for(cls.__name__ + "." + cls.default_view, **kwargs)
 
     def get_uninit_inner_views(self):
         """
-            Will return a list with views that need to be initialized.
-            Normally related_views from ModelView
+        Will return a list with views that need to be initialized.
+        Normally related_views from ModelView
         """
         return []
 
@@ -385,11 +405,10 @@ class BaseView(AbstractViewApi):
         """
         Sets initialized inner views
         """
-        pass
 
     def get_method_permission(self, method_name: str) -> str:
         """
-            Returns the permission name for a method
+        Returns the permission name for a method
         """
         permission = self.method_permission_name.get(method_name)
         if permission:
@@ -400,7 +419,7 @@ class BaseView(AbstractViewApi):
 
 class BaseFormView(BaseView):
     """
-        Base class FormView's
+    Base class FormView's
     """
 
     form_template = "appbuilder/general/model/edit.html"
@@ -434,20 +453,18 @@ class BaseFormView(BaseView):
 
     def form_get(self, form):
         """
-            Override this method to implement your form processing
+        Override this method to implement your form processing
         """
-        pass
 
     def form_post(self, form):
         """
-            Override this method to implement your form processing
+        Override this method to implement your form processing
 
-            :param form: WTForm form
+        :param form: WTForm form
 
-            Return None or a flask response to render
-            a custom template or redirect the user
+        Return None or a flask response to render
+        a custom template or redirect the user
         """
-        pass
 
     def _get_edit_widget(self, form=None, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
@@ -464,10 +481,10 @@ class BaseFormView(BaseView):
 
 class BaseModelView(BaseView):
     """
-        The base class of ModelView and ChartView, all properties are inherited
-        Customize ModelView and ChartView overriding this properties
+    The base class of ModelView and ChartView, all properties are inherited
+    Customize ModelView and ChartView overriding this properties
 
-        This class supports all the basics for query
+    This class supports all the basics for query
     """
 
     datamodel = None
@@ -572,7 +589,7 @@ class BaseModelView(BaseView):
 
     def __init__(self, **kwargs):
         """
-            Constructor
+        Constructor
         """
         datamodel = kwargs.get("datamodel", None)
         if datamodel:
@@ -584,7 +601,7 @@ class BaseModelView(BaseView):
 
     def _gen_labels_columns(self, list_columns):
         """
-            Auto generates pretty label_columns from list of columns
+        Auto generates pretty label_columns from list of columns
         """
         for col in list_columns:
             if not self.label_columns.get(col):
@@ -636,7 +653,7 @@ class BaseModelView(BaseView):
 
     def _label_columns_json(self):
         """
-            Prepares dict with labels to be JSON serializable
+        Prepares dict with labels to be JSON serializable
         """
         ret = {}
         for key, value in list(self.label_columns.items()):
@@ -646,8 +663,8 @@ class BaseModelView(BaseView):
 
 class BaseCRUDView(BaseModelView):
     """
-        The base class for ModelView, all properties are inherited
-        Customize ModelView overriding this properties
+    The base class for ModelView, all properties are inherited
+    Customize ModelView overriding this properties
     """
 
     related_views = None
@@ -863,7 +880,7 @@ class BaseCRUDView(BaseModelView):
 
     def _init_forms(self):
         """
-            Init forms for Add and Edit
+        Init forms for Add and Edit
         """
         super(BaseCRUDView, self)._init_forms()
         conv = GeneralModelConverter(self.datamodel)
@@ -888,7 +905,7 @@ class BaseCRUDView(BaseModelView):
 
     def _init_titles(self):
         """
-            Init Titles if not defined
+        Init Titles if not defined
         """
         super(BaseCRUDView, self)._init_titles()
         class_name = self.datamodel.model_name
@@ -904,7 +921,7 @@ class BaseCRUDView(BaseModelView):
 
     def _init_properties(self):
         """
-            Init Properties
+        Init Properties
         """
         super(BaseCRUDView, self)._init_properties()
         # Reset init props
@@ -975,7 +992,6 @@ class BaseCRUDView(BaseModelView):
         page=None,
         page_size=None,
     ):
-
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
         filters = related_view.datamodel.get_filters()
         # Check if it's a many to one model relation
@@ -997,7 +1013,7 @@ class BaseCRUDView(BaseModelView):
                 name = related_view.__name__
             else:
                 name = related_view.__class__.__name__
-            log.error("Can't find relation on related view {0}".format(name))
+            log.error("Can't find relation on related view %s", name)
             return None
         return related_view._get_view_widget(
             filters=filters,
@@ -1011,9 +1027,9 @@ class BaseCRUDView(BaseModelView):
         self, item, orders=None, pages=None, page_sizes=None, widgets=None, **args
     ):
         """
-            :return:
-                Returns a dict with 'related_views' key with a list of
-                Model View widgets
+        :return:
+            Returns a dict with 'related_views' key with a list of
+            Model View widgets
         """
         widgets = widgets or {}
         widgets["related_views"] = []
@@ -1036,8 +1052,8 @@ class BaseCRUDView(BaseModelView):
 
     def _get_view_widget(self, **kwargs):
         """
-            :return:
-                Returns a Model View widget
+        :return:
+            Returns a Model View widget
         """
         return self._get_list_widget(**kwargs).get("list")
 
@@ -1052,8 +1068,7 @@ class BaseCRUDView(BaseModelView):
         widgets=None,
         **args,
     ):
-
-        """ get joined base filter and current active filter for query """
+        """get joined base filter and current active filter for query"""
         widgets = widgets or {}
         actions = actions or self.actions
         page_size = page_size or self.page_size
@@ -1130,14 +1145,14 @@ class BaseCRUDView(BaseModelView):
 
     def get_uninit_inner_views(self):
         """
-            Will return a list with views that need to be initialized.
-            Normally related_views from ModelView
+        Will return a list with views that need to be initialized.
+        Normally related_views from ModelView
         """
         return self.related_views
 
     def get_init_inner_views(self):
         """
-            Get the list of related ModelViews after they have been initialized
+        Get the list of related ModelViews after they have been initialized
         """
         return self._related_views
 
@@ -1149,8 +1164,8 @@ class BaseCRUDView(BaseModelView):
 
     def _list(self):
         """
-            list function logic, override to implement different logic
-            returns list and search widget
+        list function logic, override to implement different logic
+        returns list and search widget
         """
         if get_order_args().get(self.__class__.__name__):
             order_column, order_direction = get_order_args().get(
@@ -1174,8 +1189,8 @@ class BaseCRUDView(BaseModelView):
 
     def _show(self, pk):
         """
-            show function logic, override to implement different logic
-            returns show and related list widget
+        show function logic, override to implement different logic
+        returns show and related list widget
         """
         pages = get_page_args()
         page_sizes = get_page_size_args()
@@ -1192,8 +1207,8 @@ class BaseCRUDView(BaseModelView):
 
     def _add(self):
         """
-            Add function logic, override to implement different logic
-            returns add widget or None
+        Add function logic, override to implement different logic
+        returns add widget or None
         """
         is_valid_form = True
         get_filter_args(self._filters, disallow_if_not_in_search=False)
@@ -1225,8 +1240,8 @@ class BaseCRUDView(BaseModelView):
 
     def _edit(self, pk):
         """
-            Edit function logic, override to implement different logic
-            returns Edit widget and related list or None
+        Edit function logic, override to implement different logic
+        returns Edit widget and related list or None
         """
         is_valid_form = True
         pages = get_page_args()
@@ -1284,11 +1299,11 @@ class BaseCRUDView(BaseModelView):
 
     def _delete(self, pk):
         """
-            Delete function logic, override to implement different logic
-            deletes the record with primary_key = pk
+        Delete function logic, override to implement different logic
+        deletes the record with primary_key = pk
 
-            :param pk:
-                record primary key to delete
+        :param pk:
+            record primary key to delete
         """
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
@@ -1345,7 +1360,7 @@ class BaseCRUDView(BaseModelView):
 
     def _fill_form_exclude_cols(self, exclude_cols, form):
         """
-            fill the form with the suppressed cols, generated from exclude_cols
+        fill the form with the suppressed cols, generated from exclude_cols
         """
         for filter_key in exclude_cols:
             filter_value = self._filters.get_filter_value(filter_key)
@@ -1356,8 +1371,8 @@ class BaseCRUDView(BaseModelView):
 
     def is_get_mutation_allowed(self) -> bool:
         """
-            Check is mutations on HTTP GET methods are allowed.
-            Always called on a request
+        Check is mutations on HTTP GET methods are allowed.
+        Always called on a request
         """
         if current_app.config.get("FAB_ALLOW_GET_UNSAFE_MUTATIONS", False):
             return True
@@ -1367,82 +1382,74 @@ class BaseCRUDView(BaseModelView):
 
     def prefill_form(self, form, pk):
         """
-            Override this, will be called only if the current action is rendering
-            an edit form (a GET request), and is used to perform additional action to
-            prefill the form.
+        Override this, will be called only if the current action is rendering
+        an edit form (a GET request), and is used to perform additional action to
+        prefill the form.
 
-            This is useful when you have added custom fields that depend on the
-            database contents. Fields that were added by name of a normal column
-            or relationship should work out of the box.
+        This is useful when you have added custom fields that depend on the
+        database contents. Fields that were added by name of a normal column
+        or relationship should work out of the box.
 
-            example::
+        example::
 
-                def prefill_form(self, form, pk):
-                    if form.email.data:
-                        form.email_confirmation.data = form.email.data
+            def prefill_form(self, form, pk):
+                if form.email.data:
+                    form.email_confirmation.data = form.email.data
         """
-        pass
 
     def process_form(self, form, is_created):
         """
-            Override this, will be called only if the current action is submitting
-            a create/edit form (a POST request), and is used to perform additional
-            action before the form is used to populate the item.
+        Override this, will be called only if the current action is submitting
+        a create/edit form (a POST request), and is used to perform additional
+        action before the form is used to populate the item.
 
-            By default does nothing.
+        By default does nothing.
 
-            example::
+        example::
 
-                def process_form(self, form, is_created):
-                    if not form.owner:
-                        form.owner.data = 'n/a'
+            def process_form(self, form, is_created):
+                if not form.owner:
+                    form.owner.data = 'n/a'
         """
-        pass
 
     def pre_update(self, item):
         """
-            Override this, this method is called before the update takes place.
-            If an exception is raised by this method,
-            the message is shown to the user and the update operation is
-            aborted. Because of this behavior, it can be used as a way to
-            implement more complex logic around updates. For instance
-            allowing only the original creator of the object to update it.
+        Override this, this method is called before the update takes place.
+        If an exception is raised by this method,
+        the message is shown to the user and the update operation is
+        aborted. Because of this behavior, it can be used as a way to
+        implement more complex logic around updates. For instance
+        allowing only the original creator of the object to update it.
         """
-        pass
 
     def post_update(self, item):
         """
-            Override this, will be called after update
+        Override this, will be called after update
         """
-        pass
 
     def pre_add(self, item):
         """
-            Override this, will be called before add.
-            If an exception is raised by this method,
-            the message is shown to the user and the add operation is aborted.
+        Override this, will be called before add.
+        If an exception is raised by this method,
+        the message is shown to the user and the add operation is aborted.
         """
-        pass
 
     def post_add(self, item):
         """
-            Override this, will be called after update
+        Override this, will be called after update
         """
-        pass
 
     def pre_delete(self, item):
         """
-            Override this, will be called before delete
-            If an exception is raised by this method,
-            the message is shown to the user and the delete operation is
-            aborted. Because of this behavior, it can be used as a way to
-            implement more complex logic around deletes. For instance
-            allowing only the original creator of the object to delete it.
+        Override this, will be called before delete
+        If an exception is raised by this method,
+        the message is shown to the user and the delete operation is
+        aborted. Because of this behavior, it can be used as a way to
+        implement more complex logic around deletes. For instance
+        allowing only the original creator of the object to delete it.
         """
-        pass
 
     def post_delete(self, item):
         """
-            Override this, will be called after delete
+        Override this, will be called after delete
         """
-        pass

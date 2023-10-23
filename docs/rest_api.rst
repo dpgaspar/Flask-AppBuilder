@@ -1485,20 +1485,22 @@ Enum Fields
 ``ModelRestApi`` offers support for **Enum** fields, you have to declare them
 on a specific way::
 
-    class GenderEnum(enum.Enum):
-        male = 'Male'
-        female = 'Female'
+    class BookType(enum.Enum):
+        HARDCOVER = 1
+        PAPERBACK = 2
+        EBOOK = 3
 
 
-    class Contact(Model):
+    class Book(Model):
         id = Column(Integer, primary_key=True)
-        name = Column(String(150), unique=True, nullable=False)
-        address = Column(String(564))
-        birthday = Column(Date, nullable=True)
-        personal_phone = Column(String(20))
-        personal_celphone = Column(String(20))
-        contact_group_id = Column(Integer, ForeignKey('contact_group.id'), nullable=False)
-        contact_group = relationship("ContactGroup")
-        gender = Column(Enum(GenderEnum), nullable=False, info={"enum_class": GenderEnum})
+        title = Column(String(150), unique=True, nullable=False)
+        type = Column(Enum(BookType), nullable=False)
 
-Notice the ``info={"enum_class": GenderEnum}``
+Default marshmallow behaviour for enums is to return the value of the enum, in this case an integer.
+If you want to return the string representation of the enum you can set this behaviour at the Model definition::
+
+    class Book(Model):
+        id = Column(Integer, primary_key=True)
+        title = Column(String(150), unique=True, nullable=False)
+        type = Column(Enum(BookType), nullable=False, info={"marshmallow_enum": {"by_value": False}})
+

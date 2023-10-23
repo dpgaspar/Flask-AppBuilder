@@ -50,3 +50,11 @@ class ApplyFilterException(FABException):
     """When executing an apply filter a SQLAlchemy exception happens"""
 
     ...
+
+
+class OAuthProviderUnknown(FABException):
+    """
+    When an OAuth provider is not supported/unknown
+    """
+
+    ...

@@ -5,7 +5,7 @@ rm -Rf ./dist
 echo #
 echo Generating dist
 echo #
-python setup.py sdist bdist_wheel
+python setup.py clean --all sdist bdist_wheel
 echo #
 echo Upload to Pypi
 echo #

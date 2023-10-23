@@ -19,21 +19,21 @@ class ActionItem(object):
 
 def action(name, text, confirmation=None, icon=None, multiple=True, single=True):
     """
-        Use this decorator to expose actions
+    Use this decorator to expose actions
 
-        :param name:
-            Action name
-        :param text:
-            Action text.
-        :param confirmation:
-            Confirmation text. If not provided, action will be executed
-            unconditionally.
-        :param icon:
-            Font Awesome icon name
-        :param multiple:
-            If true will display action on list view
-        :param single:
-            If true will display action on show view
+    :param name:
+        Action name
+    :param text:
+        Action text.
+    :param confirmation:
+        Confirmation text. If not provided, action will be executed
+        unconditionally.
+    :param icon:
+        Font Awesome icon name
+    :param multiple:
+        If true will display action on list view
+    :param single:
+        If true will display action on show view
     """
 
     def wrap(f):
