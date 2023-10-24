@@ -26,7 +26,6 @@ if not PY2:
             return s.decode("utf-8")
         return str(s)
 
-
 else:
     text_type = unicode  # noqa
     string_types = (str, unicode)  # noqa

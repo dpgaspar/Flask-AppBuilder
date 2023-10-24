@@ -19,7 +19,6 @@ from flask_appbuilder.cli import (
     list_views,
     reset_password,
 )
-from nose.plugins.attrib import attr
 
 from .base import FABTestCase
 
@@ -37,7 +36,6 @@ class FlaskTestCase(FABTestCase):
     def tearDown(self):
         log.debug("TEAR DOWN")
 
-    @attr("needs_inet")
     def test_create_app_invalid_secret_key(self):
         os.environ["FLASK_APP"] = "app:app"
         runner = CliRunner()
@@ -52,7 +50,8 @@ class FlaskTestCase(FABTestCase):
             )
             self.assertIn("Invalid value for '--secret-key'", result.output)
 
-    @attr("needs_inet")
+    test_create_app_invalid_secret_key.needs_inet = True
+
     def test_create_app(self):
         """
         Test create app, create-user
@@ -91,7 +90,8 @@ class FlaskTestCase(FABTestCase):
 
             runner.invoke(reset_password, ["--username=bob", "--password=bar"])
 
-    @attr("needs_inet")
+    test_create_app.needs_inet = True
+
     def test_list_views(self):
         """
         CLI: Test list views
@@ -102,6 +102,8 @@ class FlaskTestCase(FABTestCase):
             result = runner.invoke(list_views, [])
             self.assertIn("List of registered views", result.output)
             self.assertIn(" Route:/api/v1/security", result.output)
+
+    test_list_views.needs_inet = True
 
     def test_cast_int_like_to_int(self):
         scenarii = {

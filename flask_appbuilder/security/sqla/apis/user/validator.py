@@ -6,8 +6,7 @@ from marshmallow.validate import Validator
 
 
 class PasswordComplexityValidator(Validator):
-    """Validator for password.
-    """
+    """Validator for password."""
 
     def __call__(self, value: str) -> str:
         if current_app.config.get("FAB_PASSWORD_COMPLEXITY_ENABLED", False):

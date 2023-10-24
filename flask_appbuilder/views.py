@@ -368,7 +368,6 @@ class RestCRUDView(BaseCRUDView):
         form._id = pk
         http_return_code = 500
         if form.validate():
-
             # Deleting form fields not specified as keys in POST data
             # this allows for other Model columns to be left untouched when
             # unspecified.
@@ -472,7 +471,7 @@ class RestCRUDView(BaseCRUDView):
         log.warning("This API is deprecated and will be removed on 2.3.X")
         filter_rel_fields = None
         if self.edit_form_query_rel_fields:
-            filter_rel_fields = self.edit_form_query_rel_fields
+            filter_rel_fields = self.edit_form_query_rel_fields.get(col_name)
         ret_json = self._get_related_column_data(col_name, filter_rel_fields)
         response = make_response(ret_json, 200)
         response.headers["Content-Type"] = "application/json"

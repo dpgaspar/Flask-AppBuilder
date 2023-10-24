@@ -100,10 +100,10 @@ class Menu(object):
 
     def find(self, name, menu=None):
         """
-            Finds a menu item by name and returns it.
+        Finds a menu item by name and returns it.
 
-            :param name:
-                The menu item name.
+        :param name:
+            The menu item name.
         """
         menu = menu or self.menu
         for i in menu:

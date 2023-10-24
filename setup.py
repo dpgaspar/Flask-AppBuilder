@@ -49,7 +49,7 @@ setup(
         "colorama>=0.3.9, <1",
         "click>=8, <9",
         "email_validator>=1.0.5, <2",
-        "Flask>=2, <3",
+        "Flask>=2, <2.3.0",  # Otherwise breaks flask-mongoengine 1.0.0 (Should be fixed in 1.0.1)
         "Flask-Babel>=1, <3",
         "Flask-Limiter>3,<4",
         "Flask-Login>=0.3, <0.7",
@@ -66,6 +66,7 @@ setup(
         "SQLAlchemy<1.5",
         "sqlalchemy-utils>=0.32.21, <1",
         "WTForms<4",
+        "werkzeug<3",  # Otherwise breaks Flask-Login 0.6.2
     ],
     extras_require={
         "jmespath": ["jmespath>=0.9.5"],
@@ -73,7 +74,7 @@ setup(
         "openid": ["Flask-OpenID>=1.2.5, <2"],
         "talisman": ["flask-talisman>=1.0.0, <2.0"],
     },
-    tests_require=["nose>=1.0", "mockldap>=0.3.0", "hiro>=0.5.1"],
+    tests_require=["nose2==0.14.0", "mockldap>=0.3.0", "hiro>=0.5.1"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",

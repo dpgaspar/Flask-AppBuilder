@@ -34,7 +34,7 @@ flask-sqlalchemy==2.5.1
     # via Flask-AppBuilder (setup.py)
 flask-wtf==0.14.3
     # via Flask-AppBuilder (setup.py)
-greenlet==1.1.2
+greenlet==3.0.0
     # via sqlalchemy
 idna==3.3
     # via email-validator
@@ -75,7 +75,7 @@ pytz==2021.1
     # via
     #   babel
     #   flask-babel
-pyyaml==5.4.1
+pyyaml==6.0.1
     # via apispec
 six==1.16.0
     # via
@@ -99,6 +99,6 @@ wtforms==2.3.3
     # via
     #   Flask-AppBuilder (setup.py)
     #   flask-wtf
-
+flask-limiter==3.2.0
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

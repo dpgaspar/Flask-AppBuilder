@@ -99,7 +99,7 @@ class User(Model):
     username = Column(String(64), unique=True, nullable=False)
     password = Column(String(256))
     active = Column(Boolean)
-    email = Column(String(64), unique=True, nullable=False)
+    email = Column(String(320), unique=True, nullable=False)
     last_login = Column(DateTime)
     login_count = Column(Integer)
     fail_login_count = Column(Integer)
@@ -161,7 +161,7 @@ class User(Model):
         return as_unicode(self.id)
 
     def get_full_name(self):
-        return u"{0} {1}".format(self.first_name, self.last_name)
+        return "{0} {1}".format(self.first_name, self.last_name)
 
     def __repr__(self):
         return self.get_full_name()
