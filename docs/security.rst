@@ -137,7 +137,8 @@ You can limit the LDAP search scope by configuring::
     # only allow users with memberOf="cn=myTeam,ou=teams,dc=example,dc=com"
     AUTH_LDAP_SEARCH_FILTER = "(memberOf=cn=myTeam,ou=teams,dc=example,dc=com)"
 
-You can give FlaskAppBuilder roles based on LDAP roles (note, this requires AUTH_LDAP_SEARCH to be set)::
+You can give FlaskAppBuilder roles based on LDAP roles. (note, this requires AUTH_LDAP_SEARCH to be set)
+While LDAP is not case-sensitive, FlaskAppBuilder is, so the cases need to match::
 
     # a mapping from LDAP DN to a list of FAB roles
     AUTH_ROLES_MAPPING = {
