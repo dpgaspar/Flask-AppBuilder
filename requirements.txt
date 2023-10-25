@@ -137,7 +137,7 @@ typing-extensions==4.8.0
     #   flask-limiter
     #   limits
     #   rich
-werkzeug==2.3.7
+werkzeug==3.0.1
     # via
     #   Flask-AppBuilder (setup.py)
     #   flask
