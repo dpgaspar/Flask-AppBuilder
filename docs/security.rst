@@ -93,7 +93,7 @@ WARNING: To use LDAP you need to install `python-ldap <https://www.python-ldap.o
 For a typical Microsoft AD setup (where all users can perform LDAP searches)::
 
     AUTH_TYPE = AUTH_LDAP
-    AUTH_LDAP_SERVER = "ldap://ldap.example.com"
+    AUTH_LDAP_SERVER = "ldap://ldap.example.org" # Use "ldap://localhost:1389/" when using the provided LDAP on docker-compose
     AUTH_LDAP_USE_TLS = False
 
     # registration configs
@@ -104,18 +104,18 @@ For a typical Microsoft AD setup (where all users can perform LDAP searches)::
     AUTH_LDAP_EMAIL_FIELD = "mail"  # if null in LDAP, email is set to: "{username}@email.notfound"
 
     # bind username (for password validation)
-    AUTH_LDAP_USERNAME_FORMAT = "uid=%s,ou=users,dc=example,dc=com"  # %s is replaced with the provided username
-    # AUTH_LDAP_APPEND_DOMAIN = "example.com"  # bind usernames will look like: {USERNAME}@example.com
+    # AUTH_LDAP_USERNAME_FORMAT = "uid=%s,ou=users,dc=example,dc=org"  # %s is replaced with the provided username
+    # AUTH_LDAP_APPEND_DOMAIN = "example.org"  # bind usernames will look like: {USERNAME}@example.com
 
     # search configs
-    AUTH_LDAP_SEARCH = "ou=users,dc=example,dc=com"  # the LDAP search base (if non-empty, a search will ALWAYS happen)
+    AUTH_LDAP_SEARCH = "ou=users,dc=example,dc=org"  # the LDAP search base (if non-empty, a search will ALWAYS happen)
     AUTH_LDAP_UID_FIELD = "uid"  # the username field
 
 
 For a typical OpenLDAP setup (where LDAP searches require a special account)::
 
     AUTH_TYPE = AUTH_LDAP
-    AUTH_LDAP_SERVER = "ldap://ldap.example.com"
+    AUTH_LDAP_SERVER = "ldap://ldap.example.org"
     AUTH_LDAP_USE_TLS = False
 
     # registration configs
@@ -126,33 +126,48 @@ For a typical OpenLDAP setup (where LDAP searches require a special account)::
     AUTH_LDAP_EMAIL_FIELD = "mail"  # if null in LDAP, email is set to: "{username}@email.notfound"
 
     # search configs
-    AUTH_LDAP_SEARCH = "ou=users,dc=example,dc=com"  # the LDAP search base
+    AUTH_LDAP_SEARCH = "ou=users,dc=example,dc=org"  # the LDAP search base
     AUTH_LDAP_UID_FIELD = "uid"  # the username field
-    AUTH_LDAP_BIND_USER = "uid=admin,ou=users,dc=example,dc=com"  # the special bind username for search
+    AUTH_LDAP_BIND_USER = "uid=admin,dc=example,dc=org"  # the special bind username for search
     AUTH_LDAP_BIND_PASSWORD = "admin_password"  # the special bind password for search
 
 
 You can limit the LDAP search scope by configuring::
 
-    # only allow users with memberOf="cn=myTeam,ou=teams,dc=example,dc=com"
-    AUTH_LDAP_SEARCH_FILTER = "(memberOf=cn=myTeam,ou=teams,dc=example,dc=com)"
+    # only allow users with memberOf="cn=staff,ou=groups,dc=example,dc=org"
+    AUTH_LDAP_SEARCH_FILTER = "(memberOf=cn=staff,ou=groups,dc=example,dc=org)"
 
-You can give FlaskAppBuilder roles based on LDAP roles. (note, this requires AUTH_LDAP_SEARCH to be set)
+You can give FlaskAppBuilder roles based on LDAP roles/memberships. (note, this requires AUTH_LDAP_SEARCH to be set).
+
+Note that by default roles will be evaluated based on LDAP memberships
+and by the exact match of the LDAP string returned for the user attributes.
+
+You can change AUTH_LDAP_GROUP_FIELD to evaluate roles mapping to different keys onto the
+returned LDAP user attributes. For example using the provided LDAP server with docker-compose
+"Alice" attributes are::
+
+  {
+    'sn': [b'Doe'],
+    'givenName': [b'Alice'],
+    'mail': [b'alice@example.org'],
+    'memberOf': [b'cn=readers,ou=groups,dc=example,dc=org', b'cn=staff,ou=groups,dc=example,dc=org']
+  }
+
 While LDAP is not case-sensitive, FlaskAppBuilder is, so the cases need to match::
 
     # a mapping from LDAP DN to a list of FAB roles
     AUTH_ROLES_MAPPING = {
-        "CN=fab_users,OU=groups,DC=example,DC=com": ["User"],
-        "CN=fab_admins,OU=groups,DC=example,DC=com": ["Admin"],
+        "CN=fab_users,OU=groups,DC=example,dc=org": ["User"],
+        "CN=fab_admins,OU=groups,DC=example,dc=org": ["Admin"],
     }
 
     # a mapping from OpenLDAP DN to a list of FAB roles
     AUTH_ROLES_MAPPING = {
-        "cn=fab_users,ou=groups,dc=example,dc=com": ["User"],
-        "cn=fab_admins,ou=groups,dc=example,dc=com": ["Admin"],
+        "cn=fab_users,ou=groups,dc=example,dc=org": ["User"],
+        "cn=fab_admins,ou=groups,dc=example,dc=org": ["Admin"],
     }
 
-    # the LDAP user attribute which has their role DNs
+    # the LDAP user attribute which has their role DNs, default is "memberOf"
     AUTH_LDAP_GROUP_FIELD = "memberOf"
 
     # if we should replace ALL the user's roles each login, or only on registration
