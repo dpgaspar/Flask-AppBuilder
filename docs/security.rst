@@ -137,8 +137,11 @@ You can limit the LDAP search scope by configuring::
     # only allow users with memberOf="cn=staff,ou=groups,dc=example,dc=org"
     AUTH_LDAP_SEARCH_FILTER = "(memberOf=cn=staff,ou=groups,dc=example,dc=org)"
 
-You can give FlaskAppBuilder roles based on LDAP roles/memberships. (note, this requires AUTH_LDAP_SEARCH to be set)
-Note that by default roles will be evaluated based on LDAP memberships.
+You can give FlaskAppBuilder roles based on LDAP roles/memberships. (note, this requires AUTH_LDAP_SEARCH to be set).
+
+Note that by default roles will be evaluated based on LDAP memberships
+and by the exact match of the LDAP string returned for the user attributes.
+
 You can change AUTH_LDAP_GROUP_FIELD to evaluate roles mapping to different keys onto the
 returned LDAP user attributes. For example using the provided LDAP server with docker-compose
 "Alice" attributes are::
