@@ -304,18 +304,18 @@ class SecurityManager(BaseSecurityManager):
             return
 
     def find_role(self, name):
-        if not self.auth_partial_matching:
+        role = (
+            self.get_session.query(self.role_model).filter_by(name=name).one_or_none()
+        )
+        if role:
+            return role
+        elif self.auth_partial_matching:
             return (
                 self.get_session.query(self.role_model)
-                .filter_by(name=name)
+                .filter(self.role_model.name.like(name))
                 .one_or_none()
             )
-        return (
-            self.get_session.query(self.role_model)
-            .filter(self.role_model.name.like(name))
-            .order_by(func.similarity(self.role_model.name, name).desc())
-            .first()
-        )
+        return None
 
     def get_all_roles(self):
         return self.get_session.query(self.role_model).all()
