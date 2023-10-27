@@ -312,8 +312,9 @@ class SecurityManager(BaseSecurityManager):
             )
         return (
             self.get_session.query(self.role_model)
-            .filter(self.role_model.name.like(name))
-            .one_or_none()
+                .filter(self.role_model.name.like(name))
+                .order_by(func.similarity(self.role_model.name, name).desc())
+                .first()
         )
 
     def get_all_roles(self):
