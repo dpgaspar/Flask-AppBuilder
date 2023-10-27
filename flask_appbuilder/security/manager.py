@@ -421,7 +421,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     @property
     def auth_partial_matching(self) -> bool:
-        return self.appbuilder.get_app.config.get(["AUTH_PARTIAL_MATCHING"], False)
+        return self.appbuilder.get_app.config.get("AUTH_PARTIAL_MATCHING", False)
 
     @property
     def auth_roles_sync_at_login(self) -> bool:

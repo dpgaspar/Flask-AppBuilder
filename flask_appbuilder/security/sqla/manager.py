@@ -304,7 +304,7 @@ class SecurityManager(BaseSecurityManager):
             return
 
     def find_role(self, name):
-        if True:
+        if not self.auth_partial_matching:
             return (
                 self.get_session.query(self.role_model)
                 .filter_by(name=name)

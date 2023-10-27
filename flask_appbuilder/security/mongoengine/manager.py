@@ -185,7 +185,7 @@ class SecurityManager(BaseSecurityManager):
             return
 
     def find_role(self, name):
-        if True:
+        if not self.auth_partial_matching:
             return self.role_model.objects(name=name).first()
         regex_pattern = f".*{name}.*"
         return self.role_model.objects(name__iregex=regex_pattern).first()
