@@ -418,7 +418,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_roles_mapping(self) -> Dict[str, List[str]]:
         return self.appbuilder.get_app.config["AUTH_ROLES_MAPPING"]
-    
+
     @property
     def auth_partial_matching(self) -> bool:
         return self.appbuilder.get_app.config.get(["AUTH_PARTIAL_MATCHING"], False)
