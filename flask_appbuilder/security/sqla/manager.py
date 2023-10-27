@@ -310,9 +310,11 @@ class SecurityManager(BaseSecurityManager):
                 .filter_by(name=name)
                 .one_or_none()
             )
-        return self.get_session.query(self.role_model).filter(
-            self.role_model.name.like(name)
-        ).one_or_none()
+        return (
+            self.get_session.query(self.role_model)
+            .filter(self.role_model.name.like(name))
+            .one_or_none()
+        )
 
     def get_all_roles(self):
         return self.get_session.query(self.role_model).all()
