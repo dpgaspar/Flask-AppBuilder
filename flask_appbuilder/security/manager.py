@@ -338,17 +338,24 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         _roles = set()
         _role_keys = set(role_keys)
+        _fab_roles = set()
         for role_key, fab_role_names in self.auth_roles_mapping.items():
-            if role_key in _role_keys:
-                for fab_role_name in fab_role_names:
-                    fab_role = self.find_role(fab_role_name)
-                    if fab_role:
-                        _roles.add(fab_role)
-                    else:
-                        log.warning(
-                            "Can't find role specified in AUTH_ROLES_MAPPING: %s",
-                            fab_role_name,
-                        )
+            if self.auth_partial_matching:
+                # check if role_key is a substring for each user roles
+                for user_role_in in _role_keys:
+                    if role_key in user_role_in:
+                        _fab_roles.update(fab_role_names)
+            elif role_key in _role_keys:
+                _fab_roles.update(fab_role_names)
+        for fab_role_name in _fab_roles:
+            fab_role = self.find_role(fab_role_name)
+            if fab_role:
+                _roles.add(fab_role)
+            else:
+                log.warning(
+                    "Can't find role specified in AUTH_ROLES_MAPPING: %s",
+                    fab_role_name,
+                )
         return _roles
 
     @property
@@ -1899,6 +1906,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     """
 
     def find_role(self, name):
+        raise NotImplementedError
+
+    def find_partial_role(self, name):
         raise NotImplementedError
 
     def add_role(self, name, permissions=None):
