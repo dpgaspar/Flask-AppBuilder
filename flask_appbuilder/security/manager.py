@@ -1908,9 +1908,6 @@ class BaseSecurityManager(AbstractSecurityManager):
     def find_role(self, name):
         raise NotImplementedError
 
-    def find_partial_role(self, name):
-        raise NotImplementedError
-
     def add_role(self, name, permissions=None):
         raise NotImplementedError
 
