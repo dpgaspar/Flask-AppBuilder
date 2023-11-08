@@ -138,7 +138,8 @@ class FieldConverter(object):
     def convert(self):
         for type_marker, field in self.conversion_table:
             if getattr(self.datamodel, type_marker)(self.colname):
-                col_type = self.datamodel.list_columns[self.colname].type
+                # NOTE: this looks slightly questionable.
+                col_type = self.datamodel.list_columns[self.colname].type if type_marker not in ["is_string", "is_integer"] else None
                 return field(self, col_type)
         log.error("Column %s Type not supported", self.colname)
 
