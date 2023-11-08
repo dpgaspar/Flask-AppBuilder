@@ -1,0 +1,113 @@
+import unittest
+
+from sqlalchemy import (
+    Column,
+    Boolean,
+    Date,
+    DateTime,
+    Enum,
+    Float,
+    Integer,
+    Numeric,
+    String,
+    Text,
+)
+
+from flask_appbuilder.fields import EnumField
+from wtforms import (
+    BooleanField,
+    DateField,
+    DateTimeField,
+    DecimalField,
+    FloatField,
+    IntegerField,
+    StringField,
+    TextAreaField,
+)
+
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.forms import GeneralModelConverter
+from flask_appbuilder import Model
+
+from flask import Flask
+
+
+class FieldsModel(Model):
+    id = Column(Integer, primary_key=True)
+    field_boolean = Column(Boolean())
+    field_date = Column(Date())
+    field_datetime = Column(DateTime())
+    field_enum = Column(Enum())
+    field_float = Column(Float())
+    field_integer = Column(Integer())
+    field_numeric_scale0 = Column(Numeric())
+    field_numeric_scale2 = Column(Numeric(scale=2))
+    field_numeric_scale4 = Column(Numeric(scale=4))
+    field_string = Column(String(256))
+    field_text = Column(Text)
+
+
+class FlaskTestCase(unittest.TestCase):
+
+    def test_model_without_context(self):
+        datamodel = SQLAInterface(FieldsModel)
+        conv = GeneralModelConverter(datamodel)
+        columns = [
+            "field_boolean",
+            "field_date",
+            "field_datetime",
+            "field_enum",
+            "field_float",
+            "field_integer",
+            "field_numeric_scale0",
+            "field_numeric_scale2",
+            "field_numeric_scale4",
+            "field_string",
+            "field_text",
+        ]
+        form = conv.create_form(None, columns)
+        self.assertTrue(form.field_boolean.field_class is BooleanField)
+        self.assertTrue(form.field_date.field_class is DateField)
+        self.assertTrue(form.field_datetime.field_class is DateTimeField)
+        self.assertTrue(form.field_enum.field_class is EnumField)
+        self.assertTrue(form.field_float.field_class is FloatField)
+        self.assertTrue(form.field_integer.field_class is IntegerField)
+        self.assertTrue(form.field_numeric_scale0.field_class is DecimalField and not form.field_numeric_scale0.kwargs["places"])
+        self.assertTrue(form.field_numeric_scale2.field_class is DecimalField and form.field_numeric_scale2.kwargs["places"] == 2)
+        self.assertTrue(form.field_numeric_scale4.field_class is DecimalField and form.field_numeric_scale4.kwargs["places"] == 4)
+        self.assertTrue(form.field_string.field_class is StringField)
+        self.assertTrue(form.field_text.field_class is TextAreaField)
+
+    def test_model_with_context(self):
+        datamodel = SQLAInterface(FieldsModel)
+        conv = GeneralModelConverter(datamodel)
+        columns = [
+            "field_boolean",
+            "field_date",
+            "field_datetime",
+            "field_enum",
+            "field_float",
+            "field_integer",
+            "field_numeric_scale0",
+            "field_numeric_scale2",
+            "field_numeric_scale4",
+            "field_string",
+            "field_text",
+        ]
+        app = Flask(__name__)
+        app.config["CSRF_ENABLED"] = True
+        app.config["SECRET_KEY"] = "thisismysecretkey"
+        with app.test_request_context():
+            # with app.app_context():
+            form = conv.create_form(None, columns)()
+            self.assertTrue(isinstance(form.field_boolean, BooleanField))
+            self.assertTrue(isinstance(form.field_date, DateField))
+            self.assertTrue(isinstance(form.field_datetime, DateTimeField))
+            self.assertTrue(isinstance(form.field_enum, EnumField))
+            self.assertTrue(isinstance(form.field_float, FloatField))
+            self.assertTrue(isinstance(form.field_integer, IntegerField))
+            self.assertTrue(isinstance(form.field_numeric_scale0, DecimalField) and not form.field_numeric_scale0.places)
+            self.assertTrue(isinstance(form.field_numeric_scale2, DecimalField) and form.field_numeric_scale2.places == 2)
+            self.assertTrue(isinstance(form.field_numeric_scale4, DecimalField) and form.field_numeric_scale4.places == 4)
+            self.assertTrue(isinstance(form.field_string, StringField))
+            self.assertTrue(isinstance(form.field_text, TextAreaField))
