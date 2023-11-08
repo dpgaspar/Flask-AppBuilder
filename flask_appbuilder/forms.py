@@ -50,7 +50,8 @@ class FieldConverter(object):
     conversion_table = (
         # sqlalchemy.types.Enum inherits from String, therefore `is_enum` must be
         # checked before checking for `is_string`:
-        ("is_enum", lambda conv, col_type : EnumField(conv.label,
+        ("is_enum", lambda conv, col_type : EnumField(
+            enum_class=col_type.enum_class,
             enums=col_type.enums,
             description=conv.description,
             validators=conv.validators,
