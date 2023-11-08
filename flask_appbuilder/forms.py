@@ -55,7 +55,7 @@ class FieldConverter(object):
             enums=col_type.enums,
             description=conv.description,
             validators=conv.validators,
-            widget=BS3ImageUploadFieldWidget(),
+            widget=Select2Widget(),
             default=conv.default)),
         ("is_image", lambda conv, _ : ImageUploadField(conv.label,
             description=conv.description,
