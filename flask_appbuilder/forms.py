@@ -53,6 +53,7 @@ class FieldConverter(object):
         ("is_enum", lambda conv, col_type : EnumField(
             enum_class=col_type.enum_class,
             enums=col_type.enums,
+            label=conv.label,
             description=conv.description,
             validators=conv.validators,
             widget=Select2Widget(),
