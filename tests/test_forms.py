@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from sqlalchemy import (
@@ -25,10 +26,13 @@ from wtforms import (
 )
 
 from flask import Flask
+from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.fields import EnumField
 from flask_appbuilder.forms import GeneralModelConverter
 from flask_appbuilder import Model
+
+from .base import FABTestCase
 
 
 class FieldsModel(Model):
@@ -46,7 +50,14 @@ class FieldsModel(Model):
     field_text = Column(Text)
 
 
-class FlaskTestCase(unittest.TestCase):
+class FlaskTestCase(FABTestCase):
+    def setUp(self):
+        self.app = Flask(__name__)
+        self.basedir = os.path.abspath(os.path.dirname(__file__))
+        self.app.config.from_object("tests.config_api")
+
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def test_model_without_context(self):
         datamodel = SQLAInterface(FieldsModel)
@@ -93,10 +104,7 @@ class FlaskTestCase(unittest.TestCase):
             "field_string",
             "field_text",
         ]
-        app = Flask(__name__)
-        app.config["CSRF_ENABLED"] = True
-        app.config["SECRET_KEY"] = "thisismysecretkey"
-        with app.test_request_context():
+        with self.appbuilder.get_app.test_request_context():
             form = conv.create_form(None, columns)()
             self.assertTrue(isinstance(form.field_boolean, BooleanField))
             self.assertTrue(isinstance(form.field_date, DateField))
