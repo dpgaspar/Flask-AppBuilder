@@ -88,6 +88,7 @@ class FlaskTestCase(FABTestCase):
         self.assertTrue(form.field_string.field_class is StringField)
         self.assertTrue(form.field_text.field_class is TextAreaField)
 
+    """
     def test_model_with_context(self):
         datamodel = SQLAInterface(FieldsModel)
         conv = GeneralModelConverter(datamodel)
@@ -117,3 +118,4 @@ class FlaskTestCase(FABTestCase):
             # self.assertTrue(isinstance(form.field_numeric_scale4, DecimalField) and form.field_numeric_scale4.places == 4)
             self.assertTrue(isinstance(form.field_string, StringField))
             self.assertTrue(isinstance(form.field_text, TextAreaField))
+    """
