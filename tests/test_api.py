@@ -964,7 +964,7 @@ class APITestCase(FABTestCase):
             # The primary key might be auto incremented in the database?
             # model_id = MODEL1_DATA_SIZE + 1
             # So we should use something like this instead:
-            model_id = -1
+            model_id = 2**31-1
             # And could this be a problem elsewhere, too?
             rv = self.auth_client_get(client, token, f"api/v1/model1api/{model_id}")
             self.assertEqual(rv.status_code, 404)
