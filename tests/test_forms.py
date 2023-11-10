@@ -2,8 +2,8 @@ import os
 import unittest
 
 from sqlalchemy import (
-    Column,
     Boolean,
+    Column,
     Date,
     DateTime,
     # Enum,
@@ -13,7 +13,6 @@ from sqlalchemy import (
     String,
     Text,
 )
-
 from wtforms import (
     BooleanField,
     DateField,
@@ -24,14 +23,12 @@ from wtforms import (
     StringField,
     TextAreaField,
 )
-
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder, Model, SQLA
 
 # from flask_appbuilder.fields import EnumField
-from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.forms import GeneralModelConverter
-from flask_appbuilder import Model
+from flask_appbuilder.models.sqla.interface import SQLAInterface
 
 
 class FieldsModel(Model):
