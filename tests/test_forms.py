@@ -6,7 +6,7 @@ from sqlalchemy import (
     Boolean,
     Date,
     DateTime,
-    Enum,
+    # Enum,
     Float,
     Integer,
     Numeric,
@@ -27,12 +27,10 @@ from wtforms import (
 
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
+# from flask_appbuilder.fields import EnumField
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.fields import EnumField
 from flask_appbuilder.forms import GeneralModelConverter
 from flask_appbuilder import Model
-
-from .base import FABTestCase
 
 
 class FieldsModel(Model):
