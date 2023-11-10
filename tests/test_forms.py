@@ -27,6 +27,7 @@ from wtforms import (
 
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
+
 # from flask_appbuilder.fields import EnumField
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.forms import GeneralModelConverter
