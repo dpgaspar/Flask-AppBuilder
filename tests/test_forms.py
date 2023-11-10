@@ -13,6 +13,7 @@ from sqlalchemy import (
     String,
     Text,
 )
+from flask import Flask
 from wtforms import (
     BooleanField,
     DateField,
@@ -23,10 +24,7 @@ from wtforms import (
     StringField,
     TextAreaField,
 )
-from flask import Flask
 from flask_appbuilder import AppBuilder, Model, SQLA
-
-# from flask_appbuilder.fields import EnumField
 from flask_appbuilder.forms import GeneralModelConverter
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
