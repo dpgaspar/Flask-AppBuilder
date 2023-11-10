@@ -50,7 +50,7 @@ class FieldsModel(Model):
     field_text = Column(Text)
 
 
-class FlaskTestCase(FABTestCase):
+class FlaskTestCase(unittest.TestCase):
     """
     def setUp(self):
         self.app = Flask(__name__)
