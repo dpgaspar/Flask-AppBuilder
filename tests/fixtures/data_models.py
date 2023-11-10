@@ -39,7 +39,8 @@ def insert_model1_data(session: Session, count: int) -> List[Model1]:
 @contextmanager
 def model1_data(session: Session, count: int = MODEL1_DATA_SIZE, delete: bool = False) -> List[Model1]:
     if delete:
-        session.query(Model1).delete()
+        rows = session.query(Model1).delete()
+        print(f"Deleting {rows} rows in model data")
         session.commit()
 
     model1_collection = insert_model1_data(session, count)
