@@ -2512,9 +2512,9 @@ class APITestCase(FABTestCase):
             self.assertEqual(model.field_integer, 4)
             self.assertEqual(model.field_float, 4.0)
 
-        # Revert data changes
-        self.appbuilder.session.delete(model)
-        self.appbuilder.session.commit()
+            # Revert data changes
+            self.appbuilder.session.delete(model)
+            self.appbuilder.session.commit()
 
     def test_create_item_bad_request(self):
         """
