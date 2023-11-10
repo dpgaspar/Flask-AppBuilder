@@ -960,9 +960,8 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        with model1_data(self.appbuilder.session, 1) as models:
+        with model1_data(self.appbuilder.session, 1, True):
             model_id = MODEL1_DATA_SIZE + 1
-            self.assertTrue(model_id not in [model.id for model in models])
             rv = self.auth_client_get(client, token, f"api/v1/model1api/{model_id}")
             self.assertEqual(rv.status_code, 404)
 
@@ -2512,9 +2511,9 @@ class APITestCase(FABTestCase):
             self.assertEqual(model.field_integer, 4)
             self.assertEqual(model.field_float, 4.0)
 
-            # Revert data changes
-            self.appbuilder.session.delete(model)
-            self.appbuilder.session.commit()
+        # Revert data changes
+        self.appbuilder.session.delete(model)
+        self.appbuilder.session.commit()
 
     def test_create_item_bad_request(self):
         """

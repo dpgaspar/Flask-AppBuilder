@@ -37,7 +37,11 @@ def insert_model1_data(session: Session, count: int) -> List[Model1]:
 
 
 @contextmanager
-def model1_data(session: Session, count: int = MODEL1_DATA_SIZE) -> List[Model1]:
+def model1_data(session: Session, count: int = MODEL1_DATA_SIZE, delete: bool = False) -> List[Model1]:
+    if delete:
+        session.query(Model1).delete()
+        session.commit()
+
     model1_collection = insert_model1_data(session, count)
     model_ids = [model.id for model in model1_collection]
 
@@ -49,11 +53,6 @@ def model1_data(session: Session, count: int = MODEL1_DATA_SIZE) -> List[Model1]
             if model:
                 session.delete(model)
         session.commit()
-        models = session.query(Model1).all()
-        if models:
-            # raise RuntimeError(f"model data contains {models}")
-            session.query(Model1).delete()
-            session.commit()
 
 
 def insert_model2_data(session: Session, count: int) -> List[Model2]:
