@@ -84,9 +84,18 @@ class FlaskTestCase(unittest.TestCase):
         self.assertTrue(form.field_float.field_class is FloatField)
         self.assertTrue(form.field_integer.field_class is IntegerField)
         print(form.field_numeric_scale0.kwargs["places"])
-        self.assertTrue(form.field_numeric_scale0.field_class is DecimalField and not form.field_numeric_scale0.kwargs["places"])
-        self.assertTrue(form.field_numeric_scale2.field_class is DecimalField and form.field_numeric_scale2.kwargs["places"] == 2)
-        self.assertTrue(form.field_numeric_scale4.field_class is DecimalField and form.field_numeric_scale4.kwargs["places"] == 4)
+        self.assertTrue(
+            form.field_numeric_scale0.field_class is DecimalField
+            and not form.field_numeric_scale0.kwargs["places"]
+        )
+        self.assertTrue(
+            form.field_numeric_scale2.field_class is DecimalField
+            and form.field_numeric_scale2.kwargs["places"] == 2
+        )
+        self.assertTrue(
+            form.field_numeric_scale4.field_class is DecimalField
+            and form.field_numeric_scale4.kwargs["places"] == 4
+        )
         self.assertTrue(form.field_string.field_class is StringField)
         self.assertTrue(form.field_text.field_class is TextAreaField)
 
@@ -114,8 +123,17 @@ class FlaskTestCase(unittest.TestCase):
             # self.assertTrue(isinstance(form.field_enum, EnumField))
             self.assertTrue(isinstance(form.field_float, FloatField))
             self.assertTrue(isinstance(form.field_integer, IntegerField))
-            self.assertTrue(isinstance(form.field_numeric_scale0, DecimalField) and not form.field_numeric_scale0.places)
-            self.assertTrue(isinstance(form.field_numeric_scale2, DecimalField) and form.field_numeric_scale2.places == 2)
-            self.assertTrue(isinstance(form.field_numeric_scale4, DecimalField) and form.field_numeric_scale4.places == 4)
+            self.assertTrue(
+                isinstance(form.field_numeric_scale0, DecimalField)
+                and not form.field_numeric_scale0.places
+            )
+            self.assertTrue(
+                isinstance(form.field_numeric_scale2, DecimalField)
+                and form.field_numeric_scale2.places == 2
+            )
+            self.assertTrue(
+                isinstance(form.field_numeric_scale4, DecimalField)
+                and form.field_numeric_scale4.places == 4
+            )
             self.assertTrue(isinstance(form.field_string, StringField))
             self.assertTrue(isinstance(form.field_text, TextAreaField))
