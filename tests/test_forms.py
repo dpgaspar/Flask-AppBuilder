@@ -51,6 +51,7 @@ class FieldsModel(Model):
 
 
 class FlaskTestCase(FABTestCase):
+    """
     def setUp(self):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
@@ -58,6 +59,7 @@ class FlaskTestCase(FABTestCase):
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+    """
 
     def test_model_without_context(self):
         datamodel = SQLAInterface(FieldsModel)
