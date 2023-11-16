@@ -890,16 +890,16 @@ class RolePermissionAPITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
         assert "result" in post_permissions_response
         self.assertEqual(
-            post_permissions_response["result"]["permission_view_menu_ids"],
-            [permission_1_view_menu_id, permission_2_view_menu_id],
+            sorted(post_permissions_response["result"]["permission_view_menu_ids"]),
+            sorted([permission_1_view_menu_id, permission_2_view_menu_id]),
         )
 
         role = self.appbuilder.sm.find_role(role_name)
 
         self.assertEqual(len(role.permissions), 2)
         self.assertEqual(
-            [p.id for p in role.permissions],
-            [permission_1_view_menu_id, permission_2_view_menu_id],
+            sorted([p.id for p in role.permissions]),
+            sorted([permission_1_view_menu_id, permission_2_view_menu_id]),
         )
 
         role = self.appbuilder.sm.find_role(role_name)
