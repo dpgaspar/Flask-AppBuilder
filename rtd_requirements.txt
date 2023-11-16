@@ -83,7 +83,7 @@ six==1.16.0
     #   prison
     #   python-dateutil
     #   sqlalchemy-utils
-sqlalchemy==1.4.29
+sqlalchemy==2.0.23
     # via
     #   Flask-AppBuilder (setup.py)
     #   flask-sqlalchemy
