@@ -229,7 +229,9 @@ class SQLAInterface(BaseInterface):
         if hasattr(relation, "property"):
             local_cols = getattr(self.obj, relation_name).property.local_columns
             for local_fk in local_cols:
-                query = query.options(Load(self.obj).load_only(getattr(self.obj, local_fk.name)))
+                query = query.options(
+                    Load(self.obj).load_only(getattr(self.obj, local_fk.name))
+                )
             return query
         return query
 
@@ -289,7 +291,9 @@ class SQLAInterface(BaseInterface):
                         getattr(related_model, leaf_column)
                     )
                 )
-                query = query.options(Load(related_model).load_only(getattr(related_model, leaf_column)))
+                query = query.options(
+                    Load(related_model).load_only(getattr(related_model, leaf_column))
+                )
         return query
 
     def apply_outer_select_joins(
@@ -315,16 +319,22 @@ class SQLAInterface(BaseInterface):
                 if outer_default_load:
                     related_model = self.get_related_model(root_relation)
                     query = query.options(
-                        Load(self.obj).defaultload(getattr(self.obj, root_relation)).load_only(getattr(related_model, leaf_column))
+                        Load(self.obj)
+                        .defaultload(getattr(self.obj, root_relation))
+                        .load_only(getattr(related_model, leaf_column))
                     )
                 else:
                     related_model = self.get_related_model(root_relation)
                     query = query.options(
-                        Load(self.obj).joinedload(getattr(self.obj, root_relation)).load_only(getattr(related_model, leaf_column))
+                        Load(self.obj)
+                        .joinedload(getattr(self.obj, root_relation))
+                        .load_only(getattr(related_model, leaf_column))
                     )
             else:
                 related_model = self.get_related_model(root_relation)
-                query = query.options(Load(related_model).load_only(getattr(related_model, leaf_column)))
+                query = query.options(
+                    Load(related_model).load_only(getattr(related_model, leaf_column))
+                )
 
         return query
 
