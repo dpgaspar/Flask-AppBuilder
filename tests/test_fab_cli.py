@@ -131,9 +131,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             self.expected_roles = json.loads(fd.read())
 
     def test_export_roles(self):
-        with tempfile.TemporaryDirectory(
-            ignore_cleanup_errors=os.name == "nt"
-        ) as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security")
             app.config[
@@ -175,9 +173,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                 )
 
     def test_export_roles_filename(self):
-        with tempfile.TemporaryDirectory(
-            ignore_cleanup_errors=os.name == "nt"
-        ) as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security")
             app.config[
@@ -202,9 +198,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
     @patch("json.dumps")
     def test_export_roles_indent(self, mock_json_dumps):
         """Test that json.dumps is called with the correct argument passed from CLI."""
-        with tempfile.TemporaryDirectory(
-            ignore_cleanup_errors=os.name == "nt"
-        ) as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security")
             app.config[
@@ -228,9 +222,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
 
     @unittest.skip("Is this test broken?")
     def test_import_roles(self):
-        with tempfile.TemporaryDirectory(
-            ignore_cleanup_errors=os.name == "nt"
-        ) as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("dst_app")
             app.config[
                 "SQLALCHEMY_DATABASE_URI"

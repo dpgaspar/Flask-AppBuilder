@@ -2793,9 +2793,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.enum2, TmpEnum.e1)
 
         # Revert test data
-        self.appbuilder.session.query(ModelWithEnums).filter_by(
-            id=data["id"]
-        ).delete()
+        self.appbuilder.session.query(ModelWithEnums).filter_by(id=data["id"]).delete()
         self.appbuilder.session.commit()
 
     def test_create_item_with_enum_validation(self):

@@ -941,9 +941,7 @@ class MVCTestCase(BaseMVCTestCase):
         )
 
         self.assertEqual(rv.status_code, 200)
-        model = (
-            self.appbuilder.session.query(Model3).filter_by(pk1="1").one_or_none()
-        )
+        model = self.appbuilder.session.query(Model3).filter_by(pk1="1").one_or_none()
         self.assertEqual(model.pk1, 1)
         self.assertEqual(model.pk2, datetime.datetime(2017, 1, 1))
         self.assertEqual(model.field_string, "foo2")
