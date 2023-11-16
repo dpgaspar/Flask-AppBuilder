@@ -12,14 +12,13 @@ from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.cli import (
     cast_int_like_to_int,
     create_app,
-    create_permissions,
-    create_user,
-    delete_user,
+    # create_permissions,
+    # create_user,
     export_roles,
     import_roles,
-    list_users,
+    # list_users,
     list_views,
-    reset_password,
+    # reset_password,
 )
 
 from .base import FABTestCase
