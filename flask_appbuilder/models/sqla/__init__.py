@@ -2,10 +2,7 @@ import datetime
 import logging
 import re
 
-
 from flask_sqlalchemy import SQLAlchemy
-
-
 from sqlalchemy.orm import DeclarativeBase
 
 try:
