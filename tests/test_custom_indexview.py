@@ -23,6 +23,7 @@ class FlaskTestCase(FABTestCase):
         self.app.config[
             "FAB_INDEX_VIEW"
         ] = "tests.test_custom_indexview.CustomIndexView"
+        self.app.app_context().push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)

@@ -151,10 +151,16 @@ class BaseMVCTestCase(FABTestCase):
         self.app.jinja_env.undefined = jinja2.StrictUndefined
         self.app.config.from_object("tests.config_api")
         logging.basicConfig(level=logging.ERROR)
+        self.app.app_context().push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
         self.create_default_users(self.appbuilder)
+
+    def tearDown(self):
+        self.appbuilder = None
+        self.app = None
+        self.db = None
 
     @property
     def registered_endpoints(self) -> Set:

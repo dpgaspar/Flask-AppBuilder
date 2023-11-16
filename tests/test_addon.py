@@ -21,6 +21,7 @@ class FlaskTestCase(FABTestCase):
         self.app.config["ADDON_MANAGERS"] = [
             "tests.fixtures.addon_manager.DummyAddOnManager"
         ]
+        self.app.app_context().push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)

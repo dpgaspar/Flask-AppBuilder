@@ -84,6 +84,7 @@ class APICSRFTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_api")
         self.app.config["WTF_CSRF_ENABLED"] = True
+        self.app.app_context().push()
 
         self.csrf = CSRFProtect(self.app)
         self.db = SQLA(self.app)
@@ -122,6 +123,7 @@ class APIDisableSecViewTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_VIEWS"] = False
+        self.app.app_context().push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -144,6 +146,7 @@ class APIDisableOpenApiViewTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_OPENAPI_VIEWS"] = False
+        self.app.app_context().push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -175,6 +178,7 @@ class APITestCase(FABTestCase):
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
+        self.app.app_context().push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -476,7 +480,7 @@ class APITestCase(FABTestCase):
         self.appbuilder.add_api(Model1BeforeRequest)
 
     def tearDown(self):
-        self.appbuilder.get_session.close()
+        self.appbuilder.session.close()
         engine = self.db.session.get_bind(mapper=None, clause=None)
         engine.dispose()
 
@@ -673,7 +677,7 @@ class APITestCase(FABTestCase):
 
         # Test authorized GET
         with model1_data(self.appbuilder.session, 1):
-            model = self.appbuilder.get_session.query(Model1).first()
+            model = self.appbuilder.session.query(Model1).first()
             model_id = model.id
             uri = f"api/v1/model1apirestrictedpermissions/{model_id}"
             rv = self.auth_client_get(client, token, uri)
@@ -1610,7 +1614,7 @@ class APITestCase(FABTestCase):
         """
         REST Api: Test get list filter params with many to many
         """
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
 
         child = ModelMMChild()
         child.field_string = "test_child_tmp"
@@ -1736,7 +1740,7 @@ class APITestCase(FABTestCase):
         """
         REST Api: Test get list multiple search filters
         """
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
         model1_1 = Model1(field_string="abc", field_integer=6)
         session.add(model1_1)
         session.commit()
@@ -1782,7 +1786,7 @@ class APITestCase(FABTestCase):
         """
         REST Api: Test get list custom filters
         """
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
         model1_1 = Model1(field_string="abc", field_integer=2)
         # Custom filter will get this next model (not like 'test' and field_integer=1)
         model1_2 = Model1(field_string="abcd", field_integer=1)
@@ -2157,7 +2161,7 @@ class APITestCase(FABTestCase):
 
         with model2_data(self.appbuilder.session, 3):
             model = (
-                self.appbuilder.get_session.query(Model2)
+                self.appbuilder.session.query(Model2)
                 .filter_by(field_string="test2")
                 .one_or_none()
             )
@@ -2173,7 +2177,7 @@ class APITestCase(FABTestCase):
         REST Api: Test delete item integrity
         """
         # SQLLite does not support constraints by default
-        engine_type = self.appbuilder.get_session.bind.dialect.name
+        engine_type = self.db.engine.dialect.name
         if engine_type == "sqlite":
             return
         client = self.app.test_client()
@@ -2181,7 +2185,7 @@ class APITestCase(FABTestCase):
 
         with model2_data(self.appbuilder.session, 1):
             model = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -2201,7 +2205,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         with model1_data(self.appbuilder.session, 2):
-            max_id = self.appbuilder.get_session.query(func.max(Model1.id)).scalar()
+            max_id = self.appbuilder.session.query(func.max(Model1.id)).scalar()
             pk = max_id + 1
             uri = f"api/v1/model1api/{pk}"
             rv = self.auth_client_delete(client, token, uri)
@@ -2216,7 +2220,7 @@ class APITestCase(FABTestCase):
 
         with model1_data(self.appbuilder.session, 4):
             model = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_integer=2)
                 .one_or_none()
             )
@@ -2235,7 +2239,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model1_data(self.appbuilder.session, 3):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test2")
                 .one_or_none()
             )
@@ -2257,7 +2261,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model1_data(self.appbuilder.session, 3):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test2")
                 .one_or_none()
             )
@@ -2329,7 +2333,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model1_data(self.appbuilder.session, 4):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_integer=3)
                 .one_or_none()
             )
@@ -2345,7 +2349,7 @@ class APITestCase(FABTestCase):
 
             # We can't update an item that is base filtered
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_integer=1)
                 .one_or_none()
             )
@@ -2362,7 +2366,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         with model1_data(self.appbuilder.session, 2):
-            max_id = self.appbuilder.get_session.query(func.max(Model1.id)).scalar()
+            max_id = self.appbuilder.session.query(func.max(Model1.id)).scalar()
             model_id = max_id + 1
             item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
             uri = f"api/v1/model1api/{model_id}"
@@ -2378,7 +2382,7 @@ class APITestCase(FABTestCase):
 
         with model1_data(self.appbuilder.session, 2):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -2397,7 +2401,7 @@ class APITestCase(FABTestCase):
         """
         REST Api: Test update m-m field
         """
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
 
         with model_mm_parent_data(session, 1):
             model_id = session.query(ModelMMParent).first().id
@@ -2433,7 +2437,7 @@ class APITestCase(FABTestCase):
 
         with model1_data(self.appbuilder.session, 2):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -2466,7 +2470,7 @@ class APITestCase(FABTestCase):
 
         with model1_data(self.appbuilder.session, 2):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -2562,10 +2566,10 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 201)
 
         # Revert test data
-        self.appbuilder.get_session.query(Model1).filter_by(
+        self.appbuilder.session.query(Model1).filter_by(
             field_string=f"A{MODEL1_DATA_SIZE + 1}"
         ).delete()
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.commit()
 
     def test_create_item_custom_schema(self):
         """
@@ -2616,8 +2620,8 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_float, float(MODEL1_DATA_SIZE + 1))
 
         # Revert data changes
-        self.appbuilder.get_session.delete(model)
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(model)
+        self.appbuilder.session.commit()
 
     def test_create_item_val_size(self):
         """
@@ -2697,13 +2701,13 @@ class APITestCase(FABTestCase):
         self.assertEqual(data, expected_response)
 
         # Revert test data
-        self.appbuilder.get_session.query(Model1).filter_by(
+        self.appbuilder.session.query(Model1).filter_by(
             field_string=f"test{MODEL1_DATA_SIZE + 1}"
         ).delete()
-        self.appbuilder.get_session.query(Model1).filter_by(
+        self.appbuilder.session.query(Model1).filter_by(
             field_string=f"test{MODEL1_DATA_SIZE + 2}"
         ).delete()
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.commit()
 
     def test_list_items_with_enum(self):
         """
@@ -2728,7 +2732,7 @@ class APITestCase(FABTestCase):
         """
         with model_with_enums_data(self.appbuilder.session, 1):
             model1 = (
-                self.appbuilder.get_session.query(ModelWithEnums)
+                self.appbuilder.session.query(ModelWithEnums)
                 .filter(ModelWithEnums.enum1 == "e1")
                 .first()
             )
@@ -2787,10 +2791,10 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.enum2, TmpEnum.e1)
 
         # Revert test data
-        self.appbuilder.get_session.query(ModelWithEnums).filter_by(
+        self.appbuilder.session.query(ModelWithEnums).filter_by(
             id=data["id"]
         ).delete()
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.commit()
 
     def test_create_item_with_enum_validation(self):
         """
@@ -2859,18 +2863,18 @@ class APITestCase(FABTestCase):
 
             # Rollback data changes
             model1 = (
-                self.appbuilder.get_session.query(ModelMMParent)
+                self.appbuilder.session.query(ModelMMParent)
                 .filter_by(field_string="new1")
                 .one_or_none()
             )
             model2 = (
-                self.appbuilder.get_session.query(ModelMMParent)
+                self.appbuilder.session.query(ModelMMParent)
                 .filter_by(field_string="new2")
                 .one_or_none()
             )
-            self.appbuilder.get_session.delete(model1)
-            self.appbuilder.get_session.delete(model2)
-            self.appbuilder.get_session.commit()
+            self.appbuilder.session.delete(model1)
+            self.appbuilder.session.delete(model2)
+            self.appbuilder.session.commit()
 
     def test_create_item_om_field(self):
         """
@@ -2880,9 +2884,9 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         child1 = ModelOMChild(field_string="child1")
         child2 = ModelOMChild(field_string="child2")
-        self.appbuilder.get_session.add(child1)
-        self.appbuilder.get_session.add(child2)
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.add(child1)
+        self.appbuilder.session.add(child2)
+        self.appbuilder.session.commit()
 
         item = dict(field_string="new1", children=[child1.id, child2.id])
         uri = "api/v1/modelomparentapi/"
@@ -2895,13 +2899,13 @@ class APITestCase(FABTestCase):
         )
         # Rollback data changes
         model1 = (
-            self.appbuilder.get_session.query(ModelOMParent)
+            self.appbuilder.session.query(ModelOMParent)
             .filter_by(field_string="new1")
             .one_or_none()
         )
 
-        self.appbuilder.get_session.delete(model1)
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(model1)
+        self.appbuilder.session.commit()
 
     def test_get_list_col_function(self):
         """
@@ -3079,8 +3083,8 @@ class APITestCase(FABTestCase):
         # Revert test data
         self.db.session.delete(user)
         self.db.session.commit()
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(self.appbuilder.sm.find_role("Test"))
+        self.appbuilder.session.commit()
 
     def test_base_permission_override(self):
         """
@@ -3172,9 +3176,9 @@ class APITestCase(FABTestCase):
         self.assertEqual(len(role.permissions), 1)
 
         # Revert test data
-        self.appbuilder.get_session.delete(user)
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.delete(self.appbuilder.sm.find_role("Test"))
+        self.appbuilder.session.commit()
 
     def test_permission_converge_expand(self):
         """

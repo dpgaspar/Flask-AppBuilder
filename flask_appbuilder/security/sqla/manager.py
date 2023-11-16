@@ -89,7 +89,7 @@ class SecurityManager(BaseSecurityManager):
 
     @property
     def get_session(self):
-        return self.appbuilder.get_session
+        return self.appbuilder.session
 
     def register_views(self):
         super(SecurityManager, self).register_views()
@@ -145,7 +145,7 @@ class SecurityManager(BaseSecurityManager):
             return register_user
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER, e)
-            self.appbuilder.get_session.rollback()
+            self.appbuilder.session.rollback()
             return None
 
     def del_register_user(self, register_user):
@@ -347,7 +347,7 @@ class SecurityManager(BaseSecurityManager):
         :return: Boolean
         """
         q = (
-            self.appbuilder.get_session.query(self.permissionview_model)
+            self.appbuilder.session.query(self.permissionview_model)
             .join(
                 assoc_permissionview_role,
                 and_(
@@ -368,15 +368,15 @@ class SecurityManager(BaseSecurityManager):
             .exists()
         )
         # Special case for MSSQL/Oracle (works on PG and MySQL > 8)
-        if self.appbuilder.get_session.bind.dialect.name in ("mssql", "oracle"):
-            return self.appbuilder.get_session.query(literal(True)).filter(q).scalar()
-        return self.appbuilder.get_session.query(q).scalar()
+        if self.appbuilder.session._db.engine.dialect.name in ("mssql", "oracle"):
+            return self.appbuilder.session.query(literal(True)).filter(q).scalar()
+        return self.appbuilder.session.query(q).scalar()
 
     def find_roles_permission_view_menus(
         self, permission_name: str, role_ids: List[int]
     ):
         return (
-            self.appbuilder.get_session.query(self.permissionview_model)
+            self.appbuilder.session.query(self.permissionview_model)
             .join(
                 assoc_permissionview_role,
                 and_(
@@ -425,7 +425,7 @@ class SecurityManager(BaseSecurityManager):
                 db_roles_ids.append(role.id)
 
         permission_views = (
-            self.appbuilder.get_session.query(PermissionView)
+            self.appbuilder.session.query(PermissionView)
             .join(Permission)
             .join(ViewMenu)
             .join(PermissionView.role)
@@ -451,7 +451,7 @@ class SecurityManager(BaseSecurityManager):
         Get all DB permissions from a role (one single query)
         """
         return (
-            self.appbuilder.get_session.query(PermissionView)
+            self.appbuilder.session.query(PermissionView)
             .join(Permission)
             .join(ViewMenu)
             .join(PermissionView.role)

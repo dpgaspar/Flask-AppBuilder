@@ -49,6 +49,7 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
                 },
             }
         ]
+        self.app.app_context().push()
 
         # start Database
         self.db = SQLA(self.app)

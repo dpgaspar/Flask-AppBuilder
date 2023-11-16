@@ -207,7 +207,7 @@ class AppBuilder:
             self.security_manager_class = SecurityManager
 
         self._addon_managers = app.config["ADDON_MANAGERS"]
-        self.session = session
+        self.session = session() if callable(session) else session
         self.sm = self.security_manager_class(self)
         self.bm = BabelManager(self)
         self.openapi_manager = OpenApiManager(self)

@@ -20,6 +20,7 @@ class LimiterTestCase(FABTestCase):
         self.app.config["AUTH_RATE_LIMITED"] = True
         self.app.config["AUTH_RATE_LIMIT"] = "2 per 5 second"
         logging.basicConfig(level=logging.ERROR)
+        self.app.app_context().push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)

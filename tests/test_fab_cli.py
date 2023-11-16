@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import tempfile
+import time
 from unittest.mock import ANY, patch
 
 from click.testing import CliRunner
@@ -136,6 +137,8 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+            app.app_context().push()
+
             db = SQLA(app)
             app_builder = AppBuilder(app, db.session)  # noqa: F841
             cli_runner = app.test_cli_runner()
@@ -173,10 +176,11 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security")
-
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+            app.app_context().push()
+
             db = SQLA(app)
             app_builder = AppBuilder(app, db.session)  # noqa: F841
 
@@ -200,6 +204,8 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+            app.app_context().push()
+
             db = SQLA(app)
             app_builder = AppBuilder(app, db.session)  # noqa: F841
             cli_runner = app.test_cli_runner()
@@ -220,6 +226,8 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'dst.db')}"
+            app.app_context().push()
+
             db = SQLA(app)
             app_builder = AppBuilder(app, db.session)
             cli_runner = app.test_cli_runner()

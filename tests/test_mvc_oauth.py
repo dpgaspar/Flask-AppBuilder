@@ -35,6 +35,7 @@ class APICSRFTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_oauth")
         self.app.config["WTF_CSRF_ENABLED"] = True
+        self.app.app_context().push()
 
         self.csrf = CSRFProtect(self.app)
         self.db = SQLA(self.app)
@@ -44,7 +45,7 @@ class APICSRFTestCase(FABTestCase):
         self.cleanup()
 
     def cleanup(self):
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
         users = session.query(User).filter(User.username.ilike("google%")).all()
         for user in users:
             session.delete(user)

@@ -21,8 +21,9 @@ class UserAPITestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_security_api")
-        self.db = SQLA(self.app)
+        self.app.app_context().push()
 
+        self.db = SQLA(self.app)
         self.session = self.db.session
         self.appbuilder = AppBuilder(self.app, self.session)
         self.user_model = User
@@ -433,6 +434,8 @@ class RolePermissionAPITestCase(FABTestCase):
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_API"] = True
+        self.app.app_context().push()
+
         self.db = SQLA(self.app)
         self.session = self.db.session
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -1051,6 +1054,8 @@ class UserRolePermissionDisabledTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
+        self.app.app_context().push()
+
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
@@ -1104,6 +1109,8 @@ class UserCustomPasswordComplexityValidatorTestCase(FABTestCase):
         self.app.config["FAB_ADD_SECURITY_API"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_ENABLED"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_VALIDATOR"] = passwordValidator
+        self.app.app_context().push()
+
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
         self.user_model = User
@@ -1137,7 +1144,7 @@ class UserCustomPasswordComplexityValidatorTestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, create_user_payload)
         self.assertEqual(rv.status_code, 201)
 
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
         user = (
             session.query(self.user_model)
             .filter(self.user_model.username == "password complexity test user 10")
@@ -1163,6 +1170,8 @@ class UserDefaultPasswordComplexityValidatorTestCase(FABTestCase):
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_API"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_ENABLED"] = True
+        self.app.app_context().push()
+
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
         self.user_model = User
@@ -1196,7 +1205,7 @@ class UserDefaultPasswordComplexityValidatorTestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, create_user_payload)
         self.assertEqual(rv.status_code, 201)
 
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
         user = (
             session.query(self.user_model)
             .filter(self.user_model.username == "password complexity test user")

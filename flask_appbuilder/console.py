@@ -197,7 +197,7 @@ def create_db(app, appbuilder):
     from flask_appbuilder.models.sqla import Base
 
     _appbuilder = import_application(app, appbuilder)
-    engine = _appbuilder.get_session.get_bind(mapper=None, clause=None)
+    engine = _appbuilder.session.get_bind(mapper=None, clause=None)
     Base.metadata.create_all(engine)
     click.echo(click.style("DB objects created", fg="green"))
 
