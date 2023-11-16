@@ -66,7 +66,8 @@ class MVCBabelTestCase(FABTestCase):
         app = Flask(__name__)
         app.config.from_object("tests.config_api")
         app.config["LANGUAGES"] = {}
-        app.app_context().push()
+        ctx = app.app_context()
+        ctx.push()
 
         db = SQLA(app)
         AppBuilder(app, db.session)
@@ -79,6 +80,8 @@ class MVCBabelTestCase(FABTestCase):
         data = rv.data.decode("utf-8")
         self.assertNotIn('class="f16', data)
 
+        ctx.pop()
+
     def test_babel_languages(self):
         """
         MVC: Test babel languages
@@ -89,7 +92,8 @@ class MVCBabelTestCase(FABTestCase):
             "en": {"flag": "gb", "name": "English"},
             "pt": {"flag": "pt", "name": "Portuguese"},
         }
-        app.app_context().push()
+        ctx = app.app_context()
+        ctx.push()
 
         db = SQLA(app)
         AppBuilder(app, db.session)
@@ -105,6 +109,7 @@ class MVCBabelTestCase(FABTestCase):
         rv = client.get("/lang/pt")
         self.assertEqual(rv.status_code, 302)
 
+        ctx.pop()
 
 class ListFilterTestCase(BaseMVCTestCase):
     def setUp(self):
@@ -270,7 +275,8 @@ class MVCCSRFTestCase(BaseMVCTestCase):
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_api")
         self.app.config["WTF_CSRF_ENABLED"] = True
-        self.app.app_context().push()
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         self.csrf = CSRFProtect(self.app)
         self.db = SQLA(self.app)
@@ -280,6 +286,13 @@ class MVCCSRFTestCase(BaseMVCTestCase):
             datamodel = SQLAInterface(Model1)
 
         self.appbuilder.add_view(Model2View, "Model2", category="Model2")
+
+    def tearDown(self):
+        self.appbuilder = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
+        self.db = None
 
     def test_a_csrf_delete_not_allowed(self):
         """

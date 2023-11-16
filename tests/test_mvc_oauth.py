@@ -35,7 +35,8 @@ class APICSRFTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_oauth")
         self.app.config["WTF_CSRF_ENABLED"] = True
-        self.app.app_context().push()
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         self.csrf = CSRFProtect(self.app)
         self.db = SQLA(self.app)
@@ -43,6 +44,11 @@ class APICSRFTestCase(FABTestCase):
 
     def tearDown(self):
         self.cleanup()
+        self.appbuilder = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
+        self.db = None
 
     def cleanup(self):
         session = self.appbuilder.session

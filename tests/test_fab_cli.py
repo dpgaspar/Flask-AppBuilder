@@ -35,7 +35,7 @@ class FlaskTestCase(FABTestCase):
         pass
 
     def tearDown(self):
-        log.debug("TEAR DOWN")
+        pass
 
     def test_create_app_invalid_secret_key(self):
         os.environ["FLASK_APP"] = "app:app"
@@ -69,8 +69,8 @@ class FlaskTestCase(FABTestCase):
                 ],
             )
             self.assertIn("Downloaded the skeleton app, good coding!", result.output)
-            """ TODO: collides with test_user_list?!
             os.chdir(APP_DIR)
+            """ TODO: collides with test_user_list?!
             result = runner.invoke(
                 create_user,
                 [
@@ -141,7 +141,8 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
-            app.app_context().push()
+            ctx = app.app_context()
+            ctx.push()
 
             db = SQLA(app)
             app_builder = AppBuilder(app, db.session)  # noqa: F841
@@ -176,6 +177,8 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                     expected_role_permission_view_menus,
                 )
 
+            ctx.pop()
+
     def test_export_roles_filename(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
@@ -183,7 +186,8 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
-            app.app_context().push()
+            ctx = app.app_context()
+            ctx.push()
 
             db = SQLA(app)
             app_builder = AppBuilder(app, db.session)  # noqa: F841
@@ -199,6 +203,8 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                 len(glob.glob(os.path.join(tmp_dir, "roles_export_*"))), 0
             )
 
+            ctx.pop()
+
     @patch("json.dumps")
     def test_export_roles_indent(self, mock_json_dumps):
         """Test that json.dumps is called with the correct argument passed from CLI."""
@@ -208,7 +214,8 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
-            app.app_context().push()
+            ctx = app.app_context()
+            ctx.push()
 
             db = SQLA(app)
             app_builder = AppBuilder(app, db.session)  # noqa: F841
@@ -224,14 +231,17 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                 mock_json_dumps.assert_called_with(ANY, indent=arg)
                 mock_json_dumps.reset_mock()
 
-    @unittest.skip("Is this test broken?")
+            ctx.pop()
+
+    # @unittest.skip("Is this test broken?")
     def test_import_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("dst_app")
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'dst.db')}"
-            app.app_context().push()
+            ctx = app.app_context()
+            ctx.push()
 
             db = SQLA(app)
             app_builder = AppBuilder(app, db.session)
@@ -267,3 +277,5 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                     resulting_role_permission_view_menus,
                     expected_role_permission_view_menus,
                 )
+
+            ctx.pop()

@@ -49,10 +49,12 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
                 },
             }
         ]
-        self.app.app_context().push()
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         # start Database
         self.db = SQLA(self.app)
+        self.appbuilder = None
 
     def tearDown(self):
         # Remove test user
@@ -60,16 +62,21 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         if user_alice:
             self.db.session.delete(user_alice)
             self.db.session.commit()
+        self.appbuilder = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
+        self.db = None
 
         # stop Flask
-        self.app = None
+        # self.app = None
 
         # stop Flask-AppBuilder
-        self.appbuilder = None
+        # self.appbuilder = None
 
         # stop Database
-        self.db.session.remove()
-        self.db = None
+        # self.db.session.remove()
+        # self.db = None
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()

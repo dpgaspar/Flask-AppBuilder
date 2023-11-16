@@ -34,6 +34,8 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_FIRSTNAME_FIELD"] = "givenName"
         self.app.config["AUTH_LDAP_LASTNAME_FIELD"] = "sn"
         self.app.config["AUTH_LDAP_EMAIL_FIELD"] = "mail"
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         # start Database
         self.db = SQLA(self.app)
@@ -49,15 +51,20 @@ class LDAPSearchTestCase(unittest.TestCase):
             self.db.session.delete(user_natalie)
             self.db.session.commit()
 
-        # stop Flask
+        self.appbuilder = None
+        self.ctx.pop()
+        self.ctx = None
         self.app = None
+        self.db = None
+        # stop Flask
+        # self.app = None
 
         # stop Flask-AppBuilder
-        self.appbuilder = None
+        # self.appbuilder = None
 
         # stop Database
-        self.db.session.remove()
-        self.db = None
+        # self.db.session.remove()
+        # self.db = None
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()

@@ -600,6 +600,8 @@ class MongoImportExportTestCase(unittest.TestCase):
             "host": "localhost",
             "port": 27017,
         }
+        self.ctx = self.app.app_context()
+        self.ctx.push()
         self.db = MongoEngine(self.app)  # noqa: F841
         self.app_builder = AppBuilder(  # noqa: F841
             self.app, security_manager_class=SecurityManager
@@ -607,11 +609,12 @@ class MongoImportExportTestCase(unittest.TestCase):
         self.cli_runner = self.app.test_cli_runner()
 
     def tearDown(self):
-        self.appbuilder = None
+        self.app_builder = None
+        self.ctx.pop()
+        self.ctx = None
         self.app = None
         self.db = None
         self.cli_runner = None
-        log.debug("TEAR DOWN")
 
     @classmethod
     def tearDownClass(cls):

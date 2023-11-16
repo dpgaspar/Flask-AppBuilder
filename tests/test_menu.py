@@ -21,7 +21,8 @@ class FlaskTestCase(FABTestCase):
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
-        self.app.app_context().push()
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -46,6 +47,8 @@ class FlaskTestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder = None
+        self.ctx.pop()
+        self.ctx = None
         self.app = None
         self.db = None
 
