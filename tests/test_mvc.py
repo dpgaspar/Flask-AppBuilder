@@ -181,7 +181,7 @@ class ListFilterTestCase(BaseMVCTestCase):
             # Roles doesn't exists
             rv = c.get("/users/list/?_flt_0_roles=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.db.engine.dialect.name != "mysql":
+            if self.db.session.get_bind().name != "mysql":
                 data = rv.data.decode("utf-8")
                 self.assertIn("An error occurred", data)
 
@@ -195,7 +195,7 @@ class ListFilterTestCase(BaseMVCTestCase):
             # Roles doesn't exists
             rv = c.get("/users/list/?_flt_0_created_by=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.db.engine.dialect.name != "mysql":
+            if self.db.session.get_bind().name != "mysql":
                 data = rv.data.decode("utf-8")
                 self.assertIn("An error occurred", data)
 
@@ -209,7 +209,7 @@ class ListFilterTestCase(BaseMVCTestCase):
             # Roles doesn't exists
             rv = c.get("/users/list/?_flt_1_created_by=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.db.engine.dialect.name != "mysql":
+            if self.db.session.get_bind().name != "mysql":
                 data = rv.data.decode("utf-8")
                 self.assertIn("An error occurred", data)
 
@@ -917,7 +917,7 @@ class MVCTestCase(BaseMVCTestCase):
         Test Model CRUD delete integrity validation
         """
         # SQLLite does not support constraints by default
-        engine_type = self.db.engine.dialect.name
+        engine_type = self.db.session.get_bind().name
         if engine_type == "sqlite":
             return
 

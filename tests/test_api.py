@@ -2210,7 +2210,7 @@ class APITestCase(FABTestCase):
         REST Api: Test delete item integrity
         """
         # SQLLite does not support constraints by default
-        engine_type = self.db.engine.dialect.name
+        engine_type = self.db.session.get_bind().name
         if engine_type == "sqlite":
             return
         client = self.app.test_client()
