@@ -2,7 +2,7 @@ from datetime import datetime
 import logging
 
 from flask import g
-from sqlalchemy import Column, DateTime, ForeignKey, Integer
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
 import sqlalchemy.types as types
@@ -57,7 +57,10 @@ class AuditMixin(object):
     @declared_attr
     def created_by_fk(cls):
         return Column(
-            Integer, ForeignKey("ab_user.id"), default=cls.get_user_id, nullable=False
+            Integer().with_variant(BigInteger, "mssql"),
+            ForeignKey("ab_user.id"),
+            default=cls.get_user_id,
+            nullable=False,
         )
 
     @declared_attr
@@ -71,7 +74,7 @@ class AuditMixin(object):
     @declared_attr
     def changed_by_fk(cls):
         return Column(
-            Integer,
+            Integer().with_variant(BigInteger, "mssql"),
             ForeignKey("ab_user.id"),
             default=cls.get_user_id,
             onupdate=cls.get_user_id,
