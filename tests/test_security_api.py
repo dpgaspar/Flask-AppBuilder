@@ -20,28 +20,30 @@ class UserAPITestCase(FABTestCase):
     def setUp(self) -> None:
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object("tests.config_security_api")
+        self.app.config.from_object("tests.config_api")
+        self.app.config["FAB_ADD_SECURITY_API"] = True
         self.ctx = self.app.app_context()
         self.ctx.push()
 
         self.db = SQLA(self.app)
         self.session = self.db.session
         self.appbuilder = AppBuilder(self.app, self.session)
+        self.create_default_users(self.appbuilder)
+
         self.user_model = User
         self.role_model = Role
 
     def tearDown(self):
+        for baseview in self.appbuilder.baseviews:
+            if hasattr(baseview, "datamodel"):
+                baseview.datamodel.session = None
+
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
-        # self.appbuilder.session.close()
-        # engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        # for baseview in self.appbuilder.baseviews:
-        #     if hasattr(baseview, "datamodel"):
-        #         baseview.datamodel.session = None
-        # engine.dispose()
 
     def _create_test_user(
         self,
@@ -449,6 +451,8 @@ class RolePermissionAPITestCase(FABTestCase):
         self.db = SQLA(self.app)
         self.session = self.db.session
         self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.create_default_users(self.appbuilder)
+
         self.permission_model = Permission
         self.viewmenu_model = ViewMenu
         self.role_model = Role
@@ -458,17 +462,16 @@ class RolePermissionAPITestCase(FABTestCase):
                 b.datamodel.session = self.db.session
 
     def tearDown(self):
+        for baseview in self.appbuilder.baseviews:
+            if hasattr(baseview, "datamodel"):
+                baseview.datamodel.session = None
+
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
-        # self.appbuilder.session.close()
-        # engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        # for baseview in self.appbuilder.baseviews:
-        #     if hasattr(baseview, "datamodel"):
-        #         baseview.datamodel.session = None
-        # engine.dispose()
 
     def test_list_permission_api(self):
         client = self.app.test_client()
@@ -1077,16 +1080,11 @@ class UserRolePermissionDisabledTestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
-        # self.appbuilder.session.close()
-        # engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        # for baseview in self.appbuilder.baseviews:
-        #     if hasattr(baseview, "datamodel"):
-        #         baseview.datamodel.session = None
-        # engine.dispose()
 
     def test_user_role_permission(self):
         client = self.app.test_client()
@@ -1135,20 +1133,21 @@ class UserCustomPasswordComplexityValidatorTestCase(FABTestCase):
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.create_default_users(self.appbuilder)
+
         self.user_model = User
 
     def tearDown(self):
+        for baseview in self.appbuilder.baseviews:
+            if hasattr(baseview, "datamodel"):
+                baseview.datamodel.session = None
+
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
-        # self.appbuilder.session.close()
-        # engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        # for baseview in self.appbuilder.baseviews:
-        #     if hasattr(baseview, "datamodel"):
-        #         baseview.datamodel.session = None
-        # engine.dispose()
 
     def test_password_complexity(self):
         client = self.app.test_client()
@@ -1202,20 +1201,20 @@ class UserDefaultPasswordComplexityValidatorTestCase(FABTestCase):
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.create_default_users(self.appbuilder)
+
         self.user_model = User
 
     def tearDown(self):
+        for baseview in self.appbuilder.baseviews:
+            if hasattr(baseview, "datamodel"):
+                baseview.datamodel.session = None
+
         self.appbuilder = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
         self.db = None
-        # self.appbuilder.session.close()
-        # engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        # for baseview in self.appbuilder.baseviews:
-        #     if hasattr(baseview, "datamodel"):
-        #         baseview.datamodel.session = None
-        # engine.dispose()
 
     def test_password_complexity(self):
         client = self.app.test_client()

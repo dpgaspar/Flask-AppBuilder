@@ -81,11 +81,13 @@ class SecurityPermissionsTestCase(FABTestCase):
         self.appbuilder.session.delete(self._pvm2)
         self.appbuilder.session.delete(self._db_role_1)
         self.appbuilder.session.commit()
+
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
 
     def test_get_user_permissions_mixed(self):
         """

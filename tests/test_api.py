@@ -95,10 +95,11 @@ class APICSRFTestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
 
     def test_auth_login(self):
         """
@@ -139,10 +140,11 @@ class APIDisableSecViewTestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
 
     def test_disabled_security_views(self):
         """
@@ -170,10 +172,11 @@ class APIDisableOpenApiViewTestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
 
     def test_disabled_security_views(self):
         """
@@ -506,13 +509,11 @@ class APITestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
-        # self.appbuilder.session.close()
-        # engine = self.db.session.get_bind(mapper=None, clause=None)
-        # engine.dispose()
 
     def test_babel(self):
         """

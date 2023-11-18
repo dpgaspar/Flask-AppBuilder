@@ -104,11 +104,11 @@ class FABTestCase(unittest.TestCase):
 
     def create_default_users(self, appbuilder) -> None:
         with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
-            self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
+            self.create_admin_user(appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
             self.create_user(
-                self.appbuilder,
+                appbuilder,
                 USERNAME_READONLY,
                 PASSWORD_READONLY,
                 "ReadOnly",
@@ -160,10 +160,11 @@ class BaseMVCTestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
 
     @property
     def registered_endpoints(self) -> Set:

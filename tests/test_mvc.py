@@ -70,7 +70,8 @@ class MVCBabelTestCase(FABTestCase):
         ctx.push()
 
         db = SQLA(app)
-        AppBuilder(app, db.session)
+        app_builder = AppBuilder(app, db.session)
+        self.create_default_users(app_builder)
 
         client = app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -290,10 +291,11 @@ class MVCCSRFTestCase(BaseMVCTestCase):
 
     def tearDown(self):
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
 
     def test_a_csrf_delete_not_allowed(self):
         """

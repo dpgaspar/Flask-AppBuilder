@@ -45,10 +45,11 @@ class APICSRFTestCase(FABTestCase):
     def tearDown(self):
         self.cleanup()
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
 
     def cleanup(self):
         session = self.appbuilder.session

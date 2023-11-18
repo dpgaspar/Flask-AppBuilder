@@ -58,7 +58,6 @@ class FlaskTestCase(FABTestCase):
         self.app.config["CSRF_ENABLED"] = False
         self.app.config["SECRET_KEY"] = "thisismyscretkey"
         self.app.config["WTF_CSRF_ENABLED"] = False
-
         self.db = MongoEngine(self.app)
         self.appbuilder = AppBuilder(self.app, security_manager_class=SecurityManager)
 
@@ -177,9 +176,8 @@ class FlaskTestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder = None
-        self.app = None
         self.db = None
-        log.debug("TEAR DOWN")
+        self.app = None
 
     @classmethod
     def tearDownClass(cls):
@@ -600,8 +598,6 @@ class MongoImportExportTestCase(unittest.TestCase):
             "host": "localhost",
             "port": 27017,
         }
-        self.ctx = self.app.app_context()
-        self.ctx.push()
         self.db = MongoEngine(self.app)  # noqa: F841
         self.app_builder = AppBuilder(  # noqa: F841
             self.app, security_manager_class=SecurityManager
@@ -610,10 +606,8 @@ class MongoImportExportTestCase(unittest.TestCase):
 
     def tearDown(self):
         self.app_builder = None
-        self.ctx.pop()
-        self.ctx = None
-        self.app = None
         self.db = None
+        self.app = None
         self.cli_runner = None
 
     @classmethod

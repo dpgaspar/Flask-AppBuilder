@@ -43,10 +43,11 @@ class LimiterTestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
         self.ctx.pop()
         self.ctx = None
         self.app = None
-        self.db = None
 
     def test_default_auth_rate_limit(self):
         client = self.app.test_client()
