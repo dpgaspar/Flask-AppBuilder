@@ -380,9 +380,6 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         Test register user
         """
-        if self.db.engine.dialect.name == "mssql":
-            return
-
         client = self.app.test_client()
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 

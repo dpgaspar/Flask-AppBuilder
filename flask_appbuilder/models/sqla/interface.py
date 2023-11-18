@@ -166,7 +166,7 @@ class SQLAInterface(BaseInterface):
             page
             and page_size
             and not order_column
-            and self.session._db.engine.name == "mssql"
+            and self.session._db.engine.dialect.name == "mssql"
         ):
             pk_name = self.get_pk_name()
             return query.order_by(pk_name)

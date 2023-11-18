@@ -552,9 +552,6 @@ class RolePermissionAPITestCase(FABTestCase):
         self.appbuilder.sm.del_permission(permission_name)
 
     def test_delete_permission_api(self):
-        if self.db.engine.dialect.name == "mssql":
-            return
-
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -872,9 +869,6 @@ class RolePermissionAPITestCase(FABTestCase):
         self.session.commit()
 
     def test_add_view_menu_permissions_to_role(self):
-        if self.db.engine.dialect.name == "mssql":
-            return
-
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -936,9 +930,6 @@ class RolePermissionAPITestCase(FABTestCase):
         )
 
     def test_add_invalid_view_menu_permissions_to_role(self):
-        if self.db.engine.dialect.name == "mssql":
-            return
-
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
