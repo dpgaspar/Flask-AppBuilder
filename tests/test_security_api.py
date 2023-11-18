@@ -2,7 +2,6 @@ import json
 import logging
 import os
 from typing import List
-import unittest
 
 from flask import Flask
 from flask_appbuilder import AppBuilder

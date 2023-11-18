@@ -1,4 +1,3 @@
-import unittest
 from unittest.mock import patch
 
 from flask_appbuilder import ModelView
