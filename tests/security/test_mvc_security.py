@@ -377,11 +377,13 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         self.browser_logout(client)
 
-    @unittest.skip("This test is broken on mssql")
     def test_register_user(self):
         """
         Test register user
         """
+        if self.db.engine.dialect.name == "mssql":
+            return
+
         client = self.app.test_client()
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
