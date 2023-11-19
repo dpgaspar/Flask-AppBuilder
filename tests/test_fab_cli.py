@@ -141,7 +141,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config.from_object("tests.config_security")
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+            ] = f"sqlite:///"
             ctx = app.app_context()
             ctx.push()
 
@@ -186,7 +186,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config.from_object("tests.config_security")
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+            ] = "sqlite:///"
             ctx = app.app_context()
             ctx.push()
 
@@ -214,7 +214,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config.from_object("tests.config_security")
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+            ] = "sqlite:///"
             ctx = app.app_context()
             ctx.push()
 
@@ -234,13 +234,12 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
 
             ctx.pop()
 
-    @unittest.skip("Is this test broken?")
     def test_import_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("dst_app")
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'dst.db')}"
+            ] = "sqlite:///"
             ctx = app.app_context()
             ctx.push()
 

@@ -748,8 +748,6 @@ class SecurityManager(BaseSecurityManager):
     def import_roles(self, path: str) -> None:
         """Imports roles from JSON file."""
 
-        session = self.get_session()
-
         with open(path, "r") as fd:
             roles_json = json.loads(fd.read())
 
@@ -770,5 +768,5 @@ class SecurityManager(BaseSecurityManager):
                     role.permissions.append(permission_view_menu)
             roles.append(role)
 
-        session.add_all(roles)
-        session.commit()
+        self.get_session.add_all(roles)
+        self.get_session.commit()
