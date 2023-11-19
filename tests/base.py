@@ -144,6 +144,14 @@ class FABTestCase(unittest.TestCase):
             username, first_name, last_name, email, roles, password
         )
 
+    @staticmethod
+    def create_role(
+        appbuilder,
+        name,
+    ):
+        role = appbuilder.sm.find_role(name=name)
+        return appbuilder.sm.add_role(name) if not role else role
+
 
 class BaseMVCTestCase(FABTestCase):
     def setUp(self):

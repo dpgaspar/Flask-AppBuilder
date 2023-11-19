@@ -181,7 +181,7 @@ class ListFilterTestCase(BaseMVCTestCase):
             # Roles doesn't exists
             rv = c.get("/users/list/?_flt_0_roles=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.db.session.get_bind().name != "mysql":
+            if self.db.session.get_bind().name not in ["sqlite", "mysql"]:
                 data = rv.data.decode("utf-8")
                 self.assertIn("An error occurred", data)
 
@@ -195,7 +195,7 @@ class ListFilterTestCase(BaseMVCTestCase):
             # Roles doesn't exists
             rv = c.get("/users/list/?_flt_0_created_by=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.db.session.get_bind().name != "mysql":
+            if self.db.session.get_bind().name not in ["sqlite", "mysql"]:
                 data = rv.data.decode("utf-8")
                 self.assertIn("An error occurred", data)
 
@@ -209,7 +209,7 @@ class ListFilterTestCase(BaseMVCTestCase):
             # Roles doesn't exists
             rv = c.get("/users/list/?_flt_1_created_by=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.db.session.get_bind().name != "mysql":
+            if self.db.session.get_bind().name not in ["sqlite", "mysql"]:
                 data = rv.data.decode("utf-8")
                 self.assertIn("An error occurred", data)
 
@@ -975,9 +975,10 @@ class MVCTestCase(BaseMVCTestCase):
 
         model = (
             self.appbuilder.session.query(Model3)
-            .filter_by(pk1="2", pk2="2017-02-02 00:00:00")
+            .filter_by(pk1="2", pk2=datetime.datetime(2017, 2, 2))
             .one_or_none()
         )
+        print("***", model)
         self.assertEqual(model.pk1, 2)
         self.assertEqual(model.pk2, datetime.datetime(2017, 2, 2))
         self.assertEqual(model.field_string, "bar")

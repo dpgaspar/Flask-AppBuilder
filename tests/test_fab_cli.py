@@ -12,13 +12,13 @@ from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.cli import (
     cast_int_like_to_int,
     create_app,
-    # create_permissions,
-    # create_user,
+    create_permissions,
+    create_user,
     export_roles,
     import_roles,
-    # list_users,
+    list_users,
     list_views,
-    # reset_password,
+    reset_password,
 )
 
 from .base import FABTestCase
@@ -70,7 +70,6 @@ class FlaskTestCase(FABTestCase):
             )
             self.assertIn("Downloaded the skeleton app, good coding!", result.output)
             os.chdir(APP_DIR)
-            """ TODO: collides with test_user_list?!
             result = runner.invoke(
                 create_user,
                 [
@@ -91,9 +90,6 @@ class FlaskTestCase(FABTestCase):
             runner.invoke(create_permissions, [])
 
             runner.invoke(reset_password, ["--username=bob", "--password=bar"])
-
-            runner.invoke(delete_user, ["--username=bob", "--password=bar"])
-            """
 
     test_create_app.needs_inet = True
 
@@ -139,9 +135,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security")
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///"
+            app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///"
             ctx = app.app_context()
             ctx.push()
 
@@ -184,9 +178,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security")
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = "sqlite:///"
+            app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
             ctx = app.app_context()
             ctx.push()
 
@@ -212,9 +204,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security")
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = "sqlite:///"
+            app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
             ctx = app.app_context()
             ctx.push()
 
@@ -237,9 +227,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
     def test_import_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("dst_app")
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = "sqlite:///"
+            app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
             ctx = app.app_context()
             ctx.push()
 
