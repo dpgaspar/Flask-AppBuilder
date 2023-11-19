@@ -3,7 +3,6 @@ import json
 import logging
 import os
 import tempfile
-import unittest
 from unittest.mock import ANY, patch
 
 from click.testing import CliRunner
@@ -152,7 +151,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security")
-            app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///"
+            app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
             ctx = app.app_context()
             ctx.push()
 
