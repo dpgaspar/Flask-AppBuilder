@@ -58,6 +58,7 @@ class FlaskTestCase(FABTestCase):
         """
         app = Flask("app:app")
         app.config.from_object("tests.config_security")
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
         ctx = app.app_context()
         ctx.push()
 
