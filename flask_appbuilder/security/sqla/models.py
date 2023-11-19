@@ -7,6 +7,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
+    Identity,
     Integer,
     Sequence,
     String,
@@ -26,7 +27,7 @@ class Permission(Model):
     __tablename__ = "ab_permission"
     id = Column(
         Integer().with_variant(BigInteger, "mssql"),
-        Sequence("ab_permission_id_seq"),
+        Sequence("ab_permission_id_seq", minvalue=1),
         primary_key=True,
     )
     name = Column(String(100), unique=True, nullable=False)
@@ -39,7 +40,7 @@ class ViewMenu(Model):
     __tablename__ = "ab_view_menu"
     id = Column(
         Integer().with_variant(BigInteger, "mssql"),
-        Sequence("ab_view_menu_id_seq"),
+        Sequence("ab_view_menu_id_seq", minvalue=1),
         primary_key=True,
     )
     name = Column(String(250), unique=True, nullable=False)
@@ -60,7 +61,7 @@ assoc_permissionview_role = Table(
     Column(
         "id",
         Integer().with_variant(BigInteger, "mssql"),
-        Sequence("ab_permission_view_role_id_seq"),
+        Sequence("ab_permission_view_role_id_seq", minvalue=1),
         primary_key=True,
     ),
     Column(
@@ -80,7 +81,7 @@ class Role(Model):
 
     id = Column(
         Integer().with_variant(BigInteger, "mssql"),
-        Sequence("ab_role_id_seq"),
+        Sequence("ab_role_id_seq", minvalue=1),
         primary_key=True,
     )
     name = Column(String(64), unique=True, nullable=False)
@@ -97,7 +98,7 @@ class PermissionView(Model):
     __table_args__ = (UniqueConstraint("permission_id", "view_menu_id"),)
     id = Column(
         Integer().with_variant(BigInteger, "mssql"),
-        Sequence("ab_permission_view_id_seq"),
+        Sequence("ab_permission_view_id_seq", minvalue=1),
         primary_key=True,
     )
     permission_id = Column(
@@ -119,7 +120,7 @@ assoc_user_role = Table(
     Column(
         "id",
         Integer().with_variant(BigInteger, "mssql"),
-        Sequence("ab_user_role_id_seq"),
+        Sequence("ab_user_role_id_seq", minvalue=1),
         primary_key=True,
     ),
     Column(
@@ -136,7 +137,7 @@ class User(Model):
     __tablename__ = "ab_user"
     id = Column(
         Integer().with_variant(BigInteger, "mssql"),
-        Sequence("ab_user_id_seq"),
+        Sequence("ab_user_id_seq", minvalue=1),
         primary_key=True,
     )
     first_name = Column(String(64), nullable=False)
@@ -222,7 +223,7 @@ class RegisterUser(Model):
     __tablename__ = "ab_register_user"
     id = Column(
         Integer().with_variant(BigInteger, "mssql"),
-        Sequence("ab_register_user_id_seq"),
+        Sequence("ab_register_user_id_seq", minvalue=1),
         primary_key=True,
     )
     first_name = Column(String(64), nullable=False)
