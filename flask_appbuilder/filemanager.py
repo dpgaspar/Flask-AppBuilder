@@ -205,7 +205,7 @@ class ImageManager(FileManager):
         Resizes the image
 
             :param image: The image object
-            :param size: size is PIL tuple (width, heighth, force) ex: (200,100,True)
+            :param size: size is PIL tuple (width, height, force) ex: (200,100,True)
         """
         (width, height, force) = size
 
