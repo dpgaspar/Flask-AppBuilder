@@ -627,7 +627,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.debug("User info from Azure: %s", me)
             # https://learn.microsoft.com/en-us/azure/active-directory/develop/id-token-claims-reference#payload-claims
             return {
-                "email": me["email"],
+                # To keep backward compatibility with previous versions
+                # of FAB, we use upn if available, otherwise we use email
+                "email": me["upn"] if "upn" in me else me["email"],
                 "first_name": me.get("given_name", ""),
                 "last_name": me.get("family_name", ""),
                 "username": me["oid"],
