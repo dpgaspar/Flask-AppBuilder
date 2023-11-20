@@ -480,6 +480,42 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         with self.assertRaises(OAuthProviderUnknown):
             self.appbuilder.sm.oauth_user_info("unknown", {})
 
+    def test_oauth_user_info_azure_email_upn(self):
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        claims = {
+            "aud": "test-aud",
+            "iss": "https://sts.windows.net/test/",
+            "iat": 7282182129,
+            "nbf": 7282182129,
+            "exp": 1000000000,
+            "amr": ["pwd"],
+            "email": "test@gmail.com",
+            "upn": "test@upn.com",
+            "family_name": "user",
+            "given_name": "test",
+            "idp": "live.com",
+            "name": "Test user",
+            "oid": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+            "unique_name": "live.com#test@gmail.com",
+            "ver": "1.0",
+        }
+
+        # Create an unsigned JWT
+        unsigned_jwt = jwt.encode(claims, key=None, algorithm="none")
+        user_info = self.appbuilder.sm.get_oauth_user_info(
+            "azure", {"access_token": "", "id_token": unsigned_jwt}
+        )
+        self.assertEqual(
+            user_info,
+            {
+                "email": "test@upn.com",
+                "first_name": "test",
+                "last_name": "user",
+                "role_keys": [],
+                "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+            },
+        )
+
     def test_oauth_user_info_azure(self):
         self.appbuilder = AppBuilder(self.app, self.db.session)
         claims = {
