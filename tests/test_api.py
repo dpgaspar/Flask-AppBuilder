@@ -961,7 +961,7 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model1_data(self.appbuilder.session, 1):
-            model_id = MODEL1_DATA_SIZE + 1
+            model_id = self.appbuilder.session.query(func.max(Model1.id)).scalar()
             rv = self.auth_client_get(client, token, f"api/v1/model1api/{model_id}")
             self.assertEqual(rv.status_code, 404)
 
