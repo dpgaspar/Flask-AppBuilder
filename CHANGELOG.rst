@@ -1,6 +1,19 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.10
+-----------------------------------
+
+- fix: azure keep using upn if exists (#2163) [Daniel Vaz Gaspar]
+- docs: Update shield of supported Python versions (#2156) [Dosenpfand]
+- docs: update security policy (#2155) [Daniel Vaz Gaspar]
+- docs: improve LDAP auth auth_roles_mapping (#2149) [Daniel Vaz Gaspar]
+- docs: Update security docs to reflect LDAP casing issues (#2098) [Anders Bogsnes]
+- fix: old API api column edit (#2134) [Daniel Vaz Gaspar]
+- chore: add bootstrap min map (#2148) [Daniel Vaz Gaspar]
+- chore: Add support for Python 3.10, 3.11, 3.12 and drop 3.7 (#2147) [Dosenpfand]
+- chore: use npm for all frontend dependencies (#2144) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.3.9
 -----------------------------------
 
