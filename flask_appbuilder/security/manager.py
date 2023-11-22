@@ -4,7 +4,7 @@ import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 from flask import Flask, g, session, url_for
-from flask_appbuilder.exceptions import OAuthProviderUnknown
+from flask_appbuilder.exceptions import OAuthProviderUnknown, InvalidLoginAttempt
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
@@ -669,6 +669,20 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "last_name": data.get("family_name", ""),
                 "email": data.get("email", ""),
             }
+        # for Authentik
+        if provider == "authentik":
+            # log.warn(f'RESPONSE: {resp}')
+            id_token = resp["id_token"]
+            # log.debug(f"JWT token : {id_token}")
+            me = self._get_authentik_token_info(id_token)
+            log.debug("User info from authentik: %s", me)
+            return {
+                "email": me["preferred_username"],
+                "first_name": me.get("given_name", ""),
+                "username": me["nickname"],
+                "role_keys": me.get("groups", []),
+            }
+
         raise OAuthProviderUnknown()
 
     def _get_microsoft_jwks(self) -> List[Dict[str, Any]]:
@@ -689,6 +703,42 @@ class BaseSecurityManager(AbstractSecurityManager):
             return claims
 
         return jwt.decode(id_token, options={"verify_signature": False})
+
+    def _get_authentik_jwks(self, jwks_url) -> dict:
+        import requests
+
+        resp = requests.get(jwks_url)
+        if resp.status_code == 200:
+            return resp.json()
+        return False
+
+    def _validate_jwt(self, id_token, jwks):
+        from authlib.jose import JsonWebKey, jwt as authlib_jwt
+
+        keyset = JsonWebKey.import_key_set(jwks)
+        claims = authlib_jwt.decode(id_token, keyset)
+        claims.validate()
+        log.info("JWT token is validated")
+        return claims
+
+    def _get_authentik_token_info(self, id_token):
+        me = jwt.decode(id_token, options={"verify_signature": False})
+
+        verify_signature = self.oauth_remotes["authentik"].client_kwargs.get(
+            "verify_signature", True
+        )
+        if verify_signature:
+            # Validate the token using authentik certificate
+            if me.get("iss", ""):
+                jwks = self._get_authentik_jwks(me["iss"] + "jwks/")
+                if jwks:
+                    return self._validate_jwt(id_token, jwks)
+        else:
+            # Return the token info without validating
+            log.warning("JWT token is not validated!")
+            return me
+
+        raise InvalidLoginAttempt("OAuth signature verify failed")
 
     def register_views(self):
         if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEWS", True):

@@ -58,3 +58,11 @@ class OAuthProviderUnknown(FABException):
     """
 
     ...
+
+
+class InvalidLoginAttempt(FABException):
+    """
+    When the credentials entered could not be verified
+    """
+
+    ...
