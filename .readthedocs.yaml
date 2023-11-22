@@ -19,4 +19,4 @@ sphinx:
 # https://docs.readthedocs.io/en/stable/guides/reproducible-builds.html
 python:
   install:
-  - requirements: rtd_requirements.txt
+  - requirements: requirements/docs.txt

@@ -9,7 +9,7 @@ from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.charts.views import DirectByChartView
 from flask_appbuilder.fieldwidgets import BS3PasswordFieldWidget
-from flask_appbuilder.security.decorators import has_access
+from flask_appbuilder.security.decorators import has_access, no_cache
 from flask_appbuilder.security.forms import (
     DynamicForm,
     LoginForm_db,
@@ -224,8 +224,19 @@ class UserModelView(ModelView):
             {"fields": ["first_name", "last_name", "email"], "expanded": True},
         ),
     ]
-
-    search_exclude_columns = ["password"]
+    search_columns = [
+        "first_name",
+        "last_name",
+        "username",
+        "email",
+        "active",
+        "roles",
+        "created_on",
+        "changed_on",
+        "last_login",
+        "login_count",
+        "fail_login_count",
+    ]
 
     add_columns = ["first_name", "last_name", "username", "active", "email", "roles"]
     edit_columns = ["first_name", "last_name", "username", "active", "email", "roles"]
@@ -408,7 +419,7 @@ class UserStatsChartView(DirectByChartView):
         "fail_login_count": lazy_gettext("Failed login count"),
     }
 
-    search_exclude_columns = UserModelView.search_exclude_columns
+    search_columns = UserModelView.search_columns
 
     definitions = [
         {"label": "Login Count", "group": "username", "series": ["login_count"]},
@@ -509,6 +520,7 @@ class AuthDBView(AuthView):
     login_template = "appbuilder/general/security/login_db.html"
 
     @expose("/login/", methods=["GET", "POST"])
+    @no_cache
     def login(self):
         if g.user is not None and g.user.is_authenticated:
             return redirect(self.appbuilder.get_url_for_index)
@@ -532,6 +544,7 @@ class AuthLDAPView(AuthView):
     login_template = "appbuilder/general/security/login_ldap.html"
 
     @expose("/login/", methods=["GET", "POST"])
+    @no_cache
     def login(self):
         if g.user is not None and g.user.is_authenticated:
             return redirect(self.appbuilder.get_url_for_index)
@@ -557,6 +570,7 @@ class AuthOIDView(AuthView):
     oid_ask_for_optional: List[str] = []
 
     @expose("/login/", methods=["GET", "POST"])
+    @no_cache
     def login(self, flag=True) -> WerkzeugResponse:
         @self.appbuilder.sm.oid.loginhandler
         def login_handler(self):
@@ -565,8 +579,12 @@ class AuthOIDView(AuthView):
             form = LoginForm_oid()
             if form.validate_on_submit():
                 session["remember_me"] = form.remember_me.data
+                identity_url = self.appbuilder.sm.get_oid_identity_url(form.openid.data)
+                if identity_url is None:
+                    flash(as_unicode(self.invalid_login_message), "warning")
+                    return redirect(self.appbuilder.get_url_for_login)
                 return self.appbuilder.sm.oid.try_login(
-                    form.openid.data,
+                    identity_url,
                     ask_for=self.oid_ask_for,
                     ask_for_optional=self.oid_ask_for_optional,
                 )
@@ -592,6 +610,10 @@ class AuthOIDView(AuthView):
                 remember_me = session["remember_me"]
                 session.pop("remember_me", None)
 
+            log.warning(
+                "AUTH_OID is deprecated and will be removed in version 5. "
+                "Migrate to other authentication methods."
+            )
             login_user(user, remember=remember_me)
             next_url = request.args.get("next", "")
             return redirect(get_safe_redirect(next_url))
@@ -712,7 +734,7 @@ class AuthRemoteUserView(AuthView):
 
     @expose("/login/")
     def login(self) -> WerkzeugResponse:
-        username = request.environ.get("REMOTE_USER")
+        username = request.environ.get(self.appbuilder.sm.auth_remote_user_env_var)
         if g.user is not None and g.user.is_authenticated:
             next_url = request.args.get("next", "")
             return redirect(get_safe_redirect(next_url))

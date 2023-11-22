@@ -18,7 +18,7 @@ F.A.B comes with bootswatch themes ready to use, to change bootstrap default the
 
 	app.config['APP_THEME'] = "spacelab.css"
  
-You can choose from the following `themes <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py>`_  
+You can choose from the following `themes <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py.tpl>`_  
 
 
 Changing the index

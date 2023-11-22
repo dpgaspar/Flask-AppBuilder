@@ -39,6 +39,8 @@ class SecurityManager(BaseSecurityManager):
             F.A.B AppBuilder main object
         """
         super(SecurityManager, self).__init__(appbuilder)
+        log.warning("MongoEngine is deprecated and will be removed in version 5.")
+
         user_datamodel = MongoEngineInterface(self.user_model)
         if self.auth_type == c.AUTH_DB:
             self.userdbmodelview.datamodel = user_datamodel

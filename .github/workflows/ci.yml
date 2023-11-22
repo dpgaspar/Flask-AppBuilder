@@ -15,9 +15,9 @@ jobs:
         python-version: [3.8]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -25,8 +25,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          pip install -r requirements/dev.txt
       - name: black
         run: black --check setup.py flask_appbuilder
       - name: flake8
@@ -56,9 +55,9 @@ jobs:
         ports:
           - 15432:5432
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
@@ -78,12 +77,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
       - name: Run tests
         run: |
-          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo' tests
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -107,9 +106,9 @@ jobs:
         ports:
           - 13306:3306
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
@@ -129,12 +128,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
       - name: Run tests
         run: |
-          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo' tests
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -156,9 +155,9 @@ jobs:
         ports:
           - 11433:1433
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
@@ -178,13 +177,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev freetds-bin unixodbc-dev tdsodbc
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
           sudo cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
       - name: Run tests
         run: |
-          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo' tests
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -200,35 +199,50 @@ jobs:
         ports:
           - 27017:27017
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Run openldap
-        run: |
-          docker run -d \
-            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
-            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
-            -e LDAP_URI=ldap://openldap:1389 \
-            -e LDAP_BASE=dc=example,dc=org \
-            -e LDAP_ADMIN_USERNAME=admin \
-            -e LDAP_ADMIN_PASSWORD=admin_password \
-            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
-            -p 1389:1389 \
-            bitnami/openldap:2.6.4
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
-          pip install -r requirements-mongodb.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
+          pip install -r requirements/mongodb.txt
       - name: Run tests
         run: |
           nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A 'mongo' tests
+      - name: Upload code coverage
+        run: |
+          bash <(curl -s https://codecov.io/bash) -cF python
+
+  test-openid:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python-version: [3.8]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
+          pip install --upgrade pip
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
+          pip install -r requirements/openid.txt
+      - name: Run tests
+        run: |
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A 'openid' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python

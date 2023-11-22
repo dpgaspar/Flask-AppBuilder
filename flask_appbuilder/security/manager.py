@@ -4,7 +4,7 @@ import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 from flask import Flask, g, session, url_for
-from flask_appbuilder.exceptions import OAuthProviderUnknown
+from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
@@ -257,6 +257,11 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_FIRSTNAME_FIELD", "givenName")
             app.config.setdefault("AUTH_LDAP_LASTNAME_FIELD", "sn")
             app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
+            # Nested groups options
+            app.config.setdefault("AUTH_LDAP_USE_NESTED_GROUPS_FOR_ROLES", False)
+
+        if self.auth_type == AUTH_REMOTE_USER:
+            app.config.setdefault("AUTH_REMOTE_USER_ENV_VAR", "REMOTE_USER")
 
         # Rate limiting
         app.config.setdefault("AUTH_RATE_LIMITED", False)
@@ -265,7 +270,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_OID:
             from flask_openid import OpenID
 
+            log.warning(
+                "AUTH_OID is deprecated and will be removed in version 5. "
+                "Migrate to other authentication methods."
+            )
             self.oid = OpenID(app)
+
         if self.auth_type == AUTH_OAUTH:
             from authlib.integrations.flask_client import OAuth
 
@@ -296,7 +306,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.limiter = self.create_limiter(app)
 
     def create_limiter(self, app: Flask) -> Limiter:
-        limiter = Limiter(key_func=get_remote_address)
+        limiter = Limiter(
+            key_func=app.config.get("RATELIMIT_KEY_FUNC", get_remote_address)
+        )
         limiter.init_app(app)
         return limiter
 
@@ -416,6 +428,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"]
 
     @property
+    def auth_remote_user_env_var(self) -> str:
+        return self.appbuilder.get_app.config["AUTH_REMOTE_USER_ENV_VAR"]
+
+    @property
     def auth_roles_mapping(self) -> Dict[str, List[str]]:
         return self.appbuilder.get_app.config["AUTH_ROLES_MAPPING"]
 
@@ -494,6 +510,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_tls_keyfile(self):
         return self.appbuilder.get_app.config["AUTH_LDAP_TLS_KEYFILE"]
+
+    @property
+    def auth_ldap_use_nested_groups_for_roles(self):
+        return self.appbuilder.get_app.config["AUTH_LDAP_USE_NESTED_GROUPS_FOR_ROLES"]
 
     @property
     def openid_providers(self):
@@ -648,11 +668,26 @@ class BaseSecurityManager(AbstractSecurityManager):
             me = self.appbuilder.sm.oauth_remotes[provider].get("userinfo")
             data = me.json()
             log.debug("User info from Okta: %s", data)
+            if "error" not in data:
+                return {
+                    "username": f"{provider}_{data['sub']}",
+                    "first_name": data.get("given_name", ""),
+                    "last_name": data.get("family_name", ""),
+                    "email": data["email"],
+                    "role_keys": data.get("groups", []),
+                }
+            else:
+                log.error(data.get("error_description"))
+                return {}
+        # for Auth0
+        if provider == "auth0":
+            data = self.appbuilder.sm.oauth_remotes[provider].userinfo()
+            log.debug("User info from Auth0: %s", data)
             return {
-                "username": "okta_" + data.get("sub", ""),
+                "username": f"{provider}_{data['sub']}",
                 "first_name": data.get("given_name", ""),
                 "last_name": data.get("family_name", ""),
-                "email": data.get("email", ""),
+                "email": data["email"],
                 "role_keys": data.get("groups", []),
             }
         # for Keycloak
@@ -668,7 +703,20 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "first_name": data.get("given_name", ""),
                 "last_name": data.get("family_name", ""),
                 "email": data.get("email", ""),
+                "role_keys": data.get("groups", []),
             }
+        # for Authentik
+        if provider == "authentik":
+            id_token = resp["id_token"]
+            me = self._get_authentik_token_info(id_token)
+            log.debug("User info from authentik: %s", me)
+            return {
+                "email": me["preferred_username"],
+                "first_name": me.get("given_name", ""),
+                "username": me["nickname"],
+                "role_keys": me.get("groups", []),
+            }
+
         raise OAuthProviderUnknown()
 
     def _get_microsoft_jwks(self) -> List[Dict[str, Any]]:
@@ -689,6 +737,48 @@ class BaseSecurityManager(AbstractSecurityManager):
             return claims
 
         return jwt.decode(id_token, options={"verify_signature": False})
+
+    def _get_authentik_jwks(self, jwks_url) -> dict:
+        import requests
+
+        resp = requests.get(jwks_url)
+        if resp.status_code == 200:
+            return resp.json()
+        return False
+
+    def _validate_jwt(self, id_token, jwks):
+        from authlib.jose import JsonWebKey, jwt as authlib_jwt
+
+        keyset = JsonWebKey.import_key_set(jwks)
+        claims = authlib_jwt.decode(id_token, keyset)
+        claims.validate()
+        log.info("JWT token is validated")
+        return claims
+
+    def _get_authentik_token_info(self, id_token):
+        me = jwt.decode(id_token, options={"verify_signature": False})
+
+        verify_signature = self.oauth_remotes["authentik"].client_kwargs.get(
+            "verify_signature", True
+        )
+        if verify_signature:
+            # Validate the token using authentik certificate
+            jwks_uri = self.oauth_remotes["authentik"].server_metadata.get("jwks_uri")
+            if jwks_uri:
+                jwks = self._get_authentik_jwks(jwks_uri)
+                if jwks:
+                    return self._validate_jwt(id_token, jwks)
+            else:
+                log.error(
+                    "jwks_uri not specified in OAuth Providers, "
+                    "could not verify token signature"
+                )
+        else:
+            # Return the token info without validating
+            log.warning("JWT token is not validated!")
+            return me
+
+        raise InvalidLoginAttempt("OAuth signature verify failed")
 
     def register_views(self):
         if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEWS", True):
@@ -963,10 +1053,53 @@ class BaseSecurityManager(AbstractSecurityManager):
             user_dn = search_result[0][0]
             # extract the other attributes
             user_info = search_result[0][1]
-            # return
-            return user_dn, user_info
         except (IndexError, NameError):
             return None, None
+
+        # get nested groups for user
+        if self.auth_ldap_use_nested_groups_for_roles:
+            nested_groups = self._ldap_get_nested_groups(ldap, con, user_dn)
+
+            if self.auth_ldap_group_field in user_info:
+                user_info[self.auth_ldap_group_field].extend(nested_groups)
+            else:
+                user_info[self.auth_ldap_group_field] = nested_groups
+
+        # return
+        return user_dn, user_info
+
+    def _ldap_get_nested_groups(self, ldap, con, user_dn) -> List[str]:
+        """
+        Searches nested groups for user. Only for MS AD version.
+
+        :param ldap: The ldap module reference
+        :param con: The ldap connection
+        :param user_dn: user DN to match with CN
+        :return: ldap groups array
+        """
+        log.debug("Nested groups for LDAP enabled.")
+        # filter for microsoft active directory only
+        nested_groups_filter_str = (
+            f"(&(objectCategory=Group)(member:1.2.840.113556.1.4.1941:={user_dn}))"
+        )
+        nested_groups_request_fields = ["cn"]
+
+        nested_groups_search_result = con.search_s(
+            self.auth_ldap_search,
+            ldap.SCOPE_SUBTREE,
+            nested_groups_filter_str,
+            nested_groups_request_fields,
+        )
+        log.debug(
+            "LDAP search for nested groups returned: %s",
+            nested_groups_search_result,
+        )
+
+        nested_groups = [
+            x[0].encode() for x in nested_groups_search_result if x[0] is not None
+        ]
+        log.debug("LDAP nested groups for users: %s", nested_groups)
+        return nested_groups
 
     def _ldap_calculate_user_roles(
         self, user_attributes: Dict[str, bytes]
@@ -1435,6 +1568,14 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         # If it's not a builtin role check against database store roles
         return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
+
+    def get_oid_identity_url(self, provider_name: str) -> Optional[str]:
+        """
+        Returns the OIDC identity provider URL
+        """
+        for provider in self.openid_providers:
+            if provider.get("name") == provider_name:
+                return provider.get("url")
 
     def get_user_roles(self, user) -> List[object]:
         """
@@ -2069,14 +2210,17 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def load_user(self, pk):
-        return self.get_user_by_id(int(pk))
+        user = self.get_user_by_id(int(pk))
+        if user.is_active:
+            return user
 
     def load_user_jwt(self, _jwt_header, jwt_data):
         identity = jwt_data["sub"]
         user = self.load_user(identity)
-        # Set flask g.user to JWT user, we can't do it on before request
-        g.user = user
-        return user
+        if user.is_active:
+            # Set flask g.user to JWT user, we can't do it on before request
+            g.user = user
+            return user
 
     @staticmethod
     def before_request():
