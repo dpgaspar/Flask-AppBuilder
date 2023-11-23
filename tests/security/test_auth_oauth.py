@@ -4,14 +4,13 @@ import unittest
 
 from authlib.jose.errors import BadSignatureError
 from flask import Flask
-import jinja2
-import jwt
-
 from flask_appbuilder import AppBuilder
 from flask_appbuilder import SQLA
 from flask_appbuilder.const import AUTH_OAUTH
 from flask_appbuilder.exceptions import InvalidLoginAttempt
 from flask_appbuilder.exceptions import OAuthProviderUnknown
+import jinja2
+import jwt
 from tests.const import USERNAME_ADMIN
 from tests.const import USERNAME_READONLY
 from tests.fixtures.users import create_default_users
