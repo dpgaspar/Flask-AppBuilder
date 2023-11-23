@@ -2,17 +2,18 @@ import logging
 import os
 import unittest
 
+from authlib.jose.errors import BadSignatureError
 from flask import Flask
-
 import jinja2
 import jwt
-from authlib.jose.errors import BadSignatureError
 
-
-from flask_appbuilder import SQLA, AppBuilder
+from flask_appbuilder import AppBuilder
+from flask_appbuilder import SQLA
 from flask_appbuilder.const import AUTH_OAUTH
-from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
-from tests.const import USERNAME_ADMIN, USERNAME_READONLY
+from flask_appbuilder.exceptions import InvalidLoginAttempt
+from flask_appbuilder.exceptions import OAuthProviderUnknown
+from tests.const import USERNAME_ADMIN
+from tests.const import USERNAME_READONLY
 from tests.fixtures.users import create_default_users
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
