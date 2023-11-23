@@ -11,8 +11,7 @@ from authlib.jose.errors import BadSignatureError
 
 from flask_appbuilder import SQLA, AppBuilder
 from flask_appbuilder.const import AUTH_OAUTH
-from flask_appbuilder.exceptions import (InvalidLoginAttempt,
-                                         OAuthProviderUnknown)
+from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
 from tests.fixtures.users import create_default_users
 
