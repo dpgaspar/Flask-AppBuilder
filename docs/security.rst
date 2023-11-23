@@ -340,14 +340,15 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                     "verify_signature": True,
                 },
                 "access_token_url": (
-                    "https://authentik.mydomain.com" "/application/o/token/"
+                    "https://authentik.mydomain.com/application/o/token/"
                 ),
                 "authorize_url": (
-                    "https://authentik.mydomain.com/" "application/o/authorize/"
+                    "https://authentik.mydomain.com/application/o/authorize/"
                 ),
                 "request_token_url": None,
                 "client_id": "CLIENT_ID",
                 "client_secret": "CLIENT_SECRET",
+                'jwks_uri': 'https://authentik.mydomain.com/application/o/APPLICATION_NAME/jwks/',
             },
         },
     ]

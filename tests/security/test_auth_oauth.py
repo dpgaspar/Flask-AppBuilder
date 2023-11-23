@@ -5,7 +5,7 @@ import unittest
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.const import AUTH_OAUTH
-from flask_appbuilder.exceptions import OAuthProviderUnknown, InvalidLoginAttempt
+from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
 import jinja2
 import jwt
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
@@ -768,6 +768,10 @@ class OAuthAuthentikTestCase(unittest.TestCase):
                     "request_token_url": None,
                     "client_id": "CLIENT_ID",
                     "client_secret": "CLIENT_SECRET",
+                    "jwks_uri": (
+                        "https://authentik.mydomain.com/"
+                        "application/o/APPLICATION_NAME/jwks/"
+                    ),
                 },
             },
         ]
@@ -873,6 +877,10 @@ r9+EFRsxA5GNYA==
                     "request_token_url": None,
                     "client_id": "CLIENT_ID",
                     "client_secret": "CLIENT_SECRET",
+                    "jwks_uri": (
+                        "https://authentik.mydomain.com/"
+                        "application/o/APPLICATION_NAME/jwks/"
+                    ),
                 },
             },
         ]
@@ -963,6 +971,10 @@ BVl433tgTTQ=
                     "request_token_url": None,
                     "client_id": "CLIENT_ID",
                     "client_secret": "CLIENT_SECRET",
+                    "jwks_uri": (
+                        "https://authentik.mydomain.com/"
+                        "application/o/APPLICATION_NAME/jwks/"
+                    ),
                 },
             },
         ]

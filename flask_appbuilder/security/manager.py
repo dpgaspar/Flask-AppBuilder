@@ -4,7 +4,7 @@ import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 from flask import Flask, g, session, url_for
-from flask_appbuilder.exceptions import OAuthProviderUnknown, InvalidLoginAttempt
+from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
@@ -671,9 +671,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             }
         # for Authentik
         if provider == "authentik":
-            # log.warn(f'RESPONSE: {resp}')
             id_token = resp["id_token"]
-            # log.debug(f"JWT token : {id_token}")
             me = self._get_authentik_token_info(id_token)
             log.debug("User info from authentik: %s", me)
             return {
@@ -729,10 +727,16 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         if verify_signature:
             # Validate the token using authentik certificate
-            if me.get("iss", ""):
-                jwks = self._get_authentik_jwks(me["iss"] + "jwks/")
+            jwks_uri = self.oauth_remotes["authentik"].server_metadata.get("jwks_uri")
+            if jwks_uri:
+                jwks = self._get_authentik_jwks(jwks_uri)
                 if jwks:
                     return self._validate_jwt(id_token, jwks)
+            else:
+                log.error(
+                    "jwks_uri not specified in OAuth Providers, "
+                    "could not verify token signature"
+                )
         else:
             # Return the token info without validating
             log.warning("JWT token is not validated!")
