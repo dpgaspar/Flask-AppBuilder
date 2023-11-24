@@ -60,7 +60,8 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
                     "client_kwargs": {"scope": "openid profile email groups"},
                     "access_token_url": "https://AUTH0_DOMAIN/oauth/token",
                     "authorize_url": "https://AUTH0_DOMAIN/authorize",
-                    "server_metadata_url": "https://AUTH0_DOMAIN/.well-known/openid-configuration",
+                    "server_metadata_url": "https://AUTH0_DOMAIN/.well-known/"
+                    "openid-configuration",
                 },
             },
         ]
