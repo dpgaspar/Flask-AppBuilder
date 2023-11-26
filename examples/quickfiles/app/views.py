@@ -1,7 +1,7 @@
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import ModelView, CompactCRUDMixin
 from app.models import Project, ProjectFiles
-from app import appbuilder, db
+from app import app, appbuilder, db
 
 
 class ProjectFilesModelView(ModelView):
@@ -36,8 +36,9 @@ class ProjectModelView(CompactCRUDMixin, ModelView):
     ]
 
 
-db.create_all()
-appbuilder.add_view(
-    ProjectModelView, "List Projects", icon="fa-table", category="Projects"
-)
-appbuilder.add_view_no_menu(ProjectFilesModelView)
+with app.app_context():
+    db.create_all()
+    appbuilder.add_view(
+        ProjectModelView, "List Projects", icon="fa-table", category="Projects"
+    )
+    appbuilder.add_view_no_menu(ProjectFilesModelView)

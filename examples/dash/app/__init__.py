@@ -13,9 +13,10 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 app = Flask(__name__)
 app.config.from_object("config")
-db = SQLA(app)
-appbuilder = AppBuilder(app, db.session)
-app = Dash_App1.Add_Dash(app, appbuilder)
-app = Dash_App2.Add_Dash(app, appbuilder)
+with app.app_context():
+    db = SQLA(app)
+    appbuilder = AppBuilder(app, db.session)
+    app = Dash_App1.Add_Dash(app, appbuilder)
+    app = Dash_App2.Add_Dash(app, appbuilder)
 
 from . import views  # noqa

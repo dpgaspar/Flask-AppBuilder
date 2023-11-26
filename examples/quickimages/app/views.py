@@ -3,7 +3,7 @@ from flask_appbuilder.models.group import aggregate_count
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import ModelView
 
-from . import appbuilder, db
+from . import app, appbuilder, db
 from .models import Person, PersonGroup
 
 
@@ -138,13 +138,14 @@ class PersonChartView(GroupByChartView):
     ]
 
 
-db.create_all()
-appbuilder.add_view(
-    GroupModelView(), "List Groups", icon="fa-folder-open-o", category="Contacts"
-)
-appbuilder.add_view(
-    PersonModelView(), "List Contacts", icon="fa-envelope", category="Contacts"
-)
-appbuilder.add_view(
-    PersonChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts"
-)
+with app.app_context():
+    db.create_all()
+    appbuilder.add_view(
+        GroupModelView(), "List Groups", icon="fa-folder-open-o", category="Contacts"
+    )
+    appbuilder.add_view(
+        PersonModelView(), "List Contacts", icon="fa-envelope", category="Contacts"
+    )
+    appbuilder.add_view(
+        PersonChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts"
+    )

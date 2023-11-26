@@ -15,8 +15,9 @@ config = {
 
 app = Flask('single_filter_multi_value')
 app.config.update(config)
-db = SQLA(app)
-appbuilder = AppBuilder(app, db.session)
+with app.app_context():
+    db = SQLA(app)
+    appbuilder = AppBuilder(app, db.session)
 
 
 program_registration = Table(
@@ -34,6 +35,7 @@ course_registration = Table(
 
 
 class Teacher(Model):
+    __tablename__ = "teacher"
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
 
@@ -42,6 +44,7 @@ class Teacher(Model):
 
 
 class Program(Model):
+    __tablename__ = "program"
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
 
@@ -50,6 +53,7 @@ class Program(Model):
 
 
 class Student(Model):
+    __tablename__ = "student"
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     program = relationship(Program, secondary=program_registration,
@@ -60,6 +64,7 @@ class Student(Model):
 
 
 class Course(Model):
+    __tablename__ = "course"
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     teacher_id = Column(Integer, ForeignKey('teacher.id'), nullable=False)
@@ -127,33 +132,35 @@ class TeacherView(ModelView):
         return redirect(self.get_redirect())
 
 
-db.create_all()
+with app.app_context():
+    db.create_all()
 
-appbuilder.add_view(TeacherView, 'Teachers')
-appbuilder.add_view(CourseView, 'Courses')
-appbuilder.add_view(StudentView, 'Students')
-appbuilder.add_view(ProgramView, 'Programs')
+    appbuilder.add_view(TeacherView, 'Teachers')
+    appbuilder.add_view(CourseView, 'Courses')
+    appbuilder.add_view(StudentView, 'Students')
+    appbuilder.add_view(ProgramView, 'Programs')
 
 def add_data():
 
-    db.session.add(Program(name="Bachelor of Science IT"))
-    db.session.add(Program(name="Bachelor of Science Computer Science"))
-    mr_smith = Teacher(name='Jonathan Smith')
-    db.session.add(mr_smith)
-    rod = Student(name='Rod')
-    jane = Student(name='Jane')
-    freddy = Student(name='Freddy')
-    db.session.add(rod)
-    db.session.add(jane)
-    db.session.add(freddy)
+    with app.app_context():
+        db.session.add(Program(name="Bachelor of Science IT"))
+        db.session.add(Program(name="Bachelor of Science Computer Science"))
+        mr_smith = Teacher(name='Jonathan Smith')
+        db.session.add(mr_smith)
+        rod = Student(name='Rod')
+        jane = Student(name='Jane')
+        freddy = Student(name='Freddy')
+        db.session.add(rod)
+        db.session.add(jane)
+        db.session.add(freddy)
 
-    db.session.add(Course(title="Introduction to Programming using Pyhon",
-                          teacher=mr_smith,
-                          students=[rod, jane, freddy]))
-    db.session.add(Course(title="Mathematics I",
-                          teacher=mr_smith,
-                          students=[rod, jane]))
-    db.session.commit()
+        db.session.add(Course(title="Introduction to Programming using Pyhon",
+                            teacher=mr_smith,
+                            students=[rod, jane, freddy]))
+        db.session.add(Course(title="Mathematics I",
+                            teacher=mr_smith,
+                            students=[rod, jane]))
+        db.session.commit()
 
 
 if __name__ == '__main__':

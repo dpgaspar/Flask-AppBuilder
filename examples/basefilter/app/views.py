@@ -3,7 +3,7 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.models.sqla.filters import FilterEqualFunction
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from . import appbuilder, db
+from . import app, appbuilder, db
 from .models import Contact, ContactGroup
 
 
@@ -47,15 +47,16 @@ class GroupModelView(ModelView):
     related_views = [ContactModelView]
 
 
-db.create_all()
-appbuilder.add_view(
-    GroupModelView,
-    "List Groups",
-    icon="fa-folder-open-o",
-    category="Contacts",
-    category_icon="fa-envelope",
-)
-appbuilder.add_separator("Contacts")
-appbuilder.add_view(
-    ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
-)
+with app.app_context():
+    db.create_all()
+    appbuilder.add_view(
+        GroupModelView,
+        "List Groups",
+        icon="fa-folder-open-o",
+        category="Contacts",
+        category_icon="fa-envelope",
+    )
+    appbuilder.add_separator("Contacts")
+    appbuilder.add_view(
+        ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
+    )

@@ -2,7 +2,7 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import ModelView
 from flask_appbuilder.widgets import ListBlock, ShowBlockWidget
 
-from . import appbuilder, db
+from . import app, appbuilder, db
 from .models import Product, ProductType
 
 
@@ -32,12 +32,13 @@ class ProductTypeView(ModelView):
     related_views = [ProductView]
 
 
-db.create_all()
-appbuilder.add_view(ProductPubView, "Our Products", icon="fa-folder-open-o")
-appbuilder.add_view(
-    ProductView, "List Products", icon="fa-folder-open-o", category="Management"
-)
-appbuilder.add_separator("Management")
-appbuilder.add_view(
-    ProductTypeView, "List Product Types", icon="fa-envelope", category="Management"
-)
+with app.app_context():
+    db.create_all()
+    appbuilder.add_view(ProductPubView, "Our Products", icon="fa-folder-open-o")
+    appbuilder.add_view(
+        ProductView, "List Products", icon="fa-folder-open-o", category="Management"
+    )
+    appbuilder.add_separator("Management")
+    appbuilder.add_view(
+        ProductTypeView, "List Product Types", icon="fa-envelope", category="Management"
+    )

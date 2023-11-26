@@ -3,7 +3,7 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.charts.views import ChartView, TimeChartView
 from flask_babel import lazy_gettext as _
 
-from app import session, appbuilder
+from app import app, session, appbuilder
 from .models import Group, Gender, Contact
 
 
@@ -100,24 +100,25 @@ fixed_translations_import = [
 ]
 
 
-fill_gender()
-appbuilder.add_view(
-    GroupModelView,
-    "List Groups",
-    icon="fa-folder-open-o",
-    category="Contacts",
-    category_icon="fa-envelope",
-)
-appbuilder.add_view(
-    ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
-)
-appbuilder.add_separator("Contacts")
-appbuilder.add_view(
-    ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts"
-)
-appbuilder.add_view(
-    ContactTimeChartView,
-    "Contacts Birth Chart",
-    icon="fa-dashboard",
-    category="Contacts",
-)
+with app.app_context():
+    fill_gender()
+    appbuilder.add_view(
+        GroupModelView,
+        "List Groups",
+        icon="fa-folder-open-o",
+        category="Contacts",
+        category_icon="fa-envelope",
+    )
+    appbuilder.add_view(
+        ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
+    )
+    appbuilder.add_separator("Contacts")
+    appbuilder.add_view(
+        ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts"
+    )
+    appbuilder.add_view(
+        ContactTimeChartView,
+        "Contacts Birth Chart",
+        icon="fa-dashboard",
+        category="Contacts",
+    )

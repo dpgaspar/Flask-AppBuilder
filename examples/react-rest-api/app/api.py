@@ -1,7 +1,7 @@
 from flask_appbuilder import ModelRestApi, BaseView, has_access, expose
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from . import appbuilder, db
+from . import app, appbuilder, db
 from .models import Contact, ContactGroup, Gender
 
 
@@ -14,8 +14,9 @@ def fill_gender():
         db.session.rollback()
 
 
-db.create_all()
-fill_gender()
+with app.app_context():
+    db.create_all()
+    fill_gender()
 
 
 class ContactModelApi(ModelRestApi):
@@ -33,7 +34,8 @@ class ContactModelApi(ModelRestApi):
             "gender.name"]
 
 
-appbuilder.add_api(ContactModelApi)
+with app.app_context():
+    appbuilder.add_api(ContactModelApi)
 
 
 class GroupModelApi(ModelRestApi):
@@ -42,7 +44,8 @@ class GroupModelApi(ModelRestApi):
    allow_browser_login = True
 
 
-appbuilder.add_api(GroupModelApi)
+with app.app_context():
+    appbuilder.add_api(GroupModelApi)
 
 
 class ReactRenderView(BaseView):
@@ -54,7 +57,8 @@ class ReactRenderView(BaseView):
                                     param1 = param1)
 
 
-appbuilder.add_view_no_menu(ReactRenderView)
-appbuilder.add_link("Contacts", href='/reactrenderview/contact', category='Contacts')
-appbuilder.add_link("Groups", href='/reactrenderview/group', category='Contacts')
+with app.app_context():
+    appbuilder.add_view_no_menu(ReactRenderView)
+    appbuilder.add_link("Contacts", href='/reactrenderview/contact', category='Contacts')
+    appbuilder.add_link("Groups", href='/reactrenderview/group', category='Contacts')
 

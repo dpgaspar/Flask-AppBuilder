@@ -8,7 +8,8 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 app = Flask(__name__)
 app.config.from_object("config")
-db = SQLA(app)
-appbuilder = AppBuilder(app, db.session, base_template="mybase.html")
+with app.app_context():
+    db = SQLA(app)
+    appbuilder = AppBuilder(app, db.session, base_template="mybase.html")
 
 from . import models, views  # noqa

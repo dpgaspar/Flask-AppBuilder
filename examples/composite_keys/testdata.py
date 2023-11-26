@@ -1,5 +1,5 @@
 import logging
-from app import db
+from app import app, db
 from app.models import Inventory, Datacenter, Rack, Item
 import random
 import string
@@ -25,33 +25,34 @@ def serial_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return "".join(random.choice(chars) for _ in range(size))
 
 
-for city in cities:
-    datacenter = Datacenter()
-    datacenter.name = "DC %s" % city
-    datacenter.address = city
-    datacenters.append(datacenter)
-    db.session.add(datacenter)
-    log.info(datacenter)
-    try:
-        db.session.commit()
-        for num in range(1, DC_RACK_MAX):
-            rack = Rack()
-            rack.num = num
-            rack.datacenter = datacenter
-            db.session.add(rack)
+with app.app_context():
+    for city in cities:
+        datacenter = Datacenter()
+        datacenter.name = "DC %s" % city
+        datacenter.address = city
+        datacenters.append(datacenter)
+        db.session.add(datacenter)
+        log.info(datacenter)
+        try:
+            db.session.commit()
+            for num in range(1, DC_RACK_MAX):
+                rack = Rack()
+                rack.num = num
+                rack.datacenter = datacenter
+                db.session.add(rack)
 
-    except Exception as e:
-        log.error("Creating Datacenter: %s", e)
-        db.session.rollback()
+        except Exception as e:
+            log.error("Creating Datacenter: %s", e)
+            db.session.rollback()
 
-for i in range(1, ITEM_MAX):
-    item = Item()
-    item.serial_number = serial_generator()
-    item.model = get_random_name(models)
-    db.session.add(item)
-    log.info(item)
-    try:
-        db.session.commit()
-    except Exception as e:
-        log.error("Creating Item: %s", e)
-        db.session.rollback()
+    for i in range(1, ITEM_MAX):
+        item = Item()
+        item.serial_number = serial_generator()
+        item.model = get_random_name(models)
+        db.session.add(item)
+        log.info(item)
+        try:
+            db.session.commit()
+        except Exception as e:
+            log.error("Creating Item: %s", e)
+            db.session.rollback()

@@ -8,7 +8,7 @@ from flask_appbuilder.models.group import aggregate_avg, aggregate_sum
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import ModelView
 
-from . import appbuilder
+from . import app, appbuilder
 from .models import Country, CountryStats, PoliticalType
 
 log = logging.getLogger(__name__)
@@ -79,37 +79,38 @@ class CountryGroupByChartView(GroupByChartView):
     ]
 
 
-appbuilder.add_view(
-    CountryModelView, "List Countries", icon="fa-folder-open-o", category="Statistics"
-)
-appbuilder.add_view(
-    PoliticalTypeModelView,
-    "List Political Types",
-    icon="fa-folder-open-o",
-    category="Statistics",
-)
-appbuilder.add_view(
-    CountryStatsModelView,
-    "List Country Stats",
-    icon="fa-folder-open-o",
-    category="Statistics",
-)
-appbuilder.add_separator("Statistics")
-appbuilder.add_view(
-    CountryStatsDirectChart,
-    "Show Country Chart",
-    icon="fa-dashboard",
-    category="Statistics",
-)
-appbuilder.add_view(
-    CountryGroupByChartView,
-    "Group Country Chart",
-    icon="fa-dashboard",
-    category="Statistics",
-)
-appbuilder.add_view(
-    CountryDirectChartView,
-    "Show Country Chart",
-    icon="fa-dashboard",
-    category="Statistics",
-)
+with app.app_context():
+    appbuilder.add_view(
+        CountryModelView, "List Countries", icon="fa-folder-open-o", category="Statistics"
+    )
+    appbuilder.add_view(
+        PoliticalTypeModelView,
+        "List Political Types",
+        icon="fa-folder-open-o",
+        category="Statistics",
+    )
+    appbuilder.add_view(
+        CountryStatsModelView,
+        "List Country Stats",
+        icon="fa-folder-open-o",
+        category="Statistics",
+    )
+    appbuilder.add_separator("Statistics")
+    appbuilder.add_view(
+        CountryStatsDirectChart,
+        "Show Country Chart",
+        icon="fa-dashboard",
+        category="Statistics",
+    )
+    appbuilder.add_view(
+        CountryGroupByChartView,
+        "Group Country Chart",
+        icon="fa-dashboard",
+        category="Statistics",
+    )
+    appbuilder.add_view(
+        CountryDirectChartView,
+        "Show Country Chart",
+        icon="fa-dashboard",
+        category="Statistics",
+    )

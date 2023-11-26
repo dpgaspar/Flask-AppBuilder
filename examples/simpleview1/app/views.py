@@ -1,6 +1,6 @@
 from flask_appbuilder.baseviews import BaseView, expose
 
-from . import appbuilder
+from . import app, appbuilder
 
 
 class MyView(BaseView):
@@ -21,4 +21,5 @@ class MyView(BaseView):
         return param1
 
 
-appbuilder.add_view_no_menu(MyView())
+with app.app_context():
+    appbuilder.add_view_no_menu(MyView())

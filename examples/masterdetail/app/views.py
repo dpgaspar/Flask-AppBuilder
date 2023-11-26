@@ -3,7 +3,7 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import MasterDetailView
 from flask_babel import lazy_gettext as _
 
-from . import appbuilder, db
+from . import app, appbuilder, db
 from .models import Contact, ContactGroup, Gender
 
 
@@ -91,15 +91,16 @@ fixed_translations_import = [
     _("Contacts Birth Chart"),
 ]
 
-db.create_all()
-fill_gender()
-appbuilder.add_view(
-    GroupMasterView, "List Groups", icon="fa-folder-open-o", category="Contacts"
-)
-appbuilder.add_separator("Contacts")
-appbuilder.add_view(
-    GroupGeneralView, "Manage Groups", icon="fa-folder-open-o", category="Contacts"
-)
-appbuilder.add_view(
-    ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts"
-)
+with app.app_context():
+    db.create_all()
+    fill_gender()
+    appbuilder.add_view(
+        GroupMasterView, "List Groups", icon="fa-folder-open-o", category="Contacts"
+    )
+    appbuilder.add_separator("Contacts")
+    appbuilder.add_view(
+        GroupGeneralView, "Manage Groups", icon="fa-folder-open-o", category="Contacts"
+    )
+    appbuilder.add_view(
+        ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts"
+    )

@@ -3,7 +3,7 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.actions import action
 
-from app import appbuilder
+from app import app, appbuilder
 from .models import ContactGroup
 
 
@@ -30,10 +30,11 @@ class GroupModelView(ModelView):
         return redirect(self.get_redirect())
 
 
-appbuilder.add_view(
-    GroupModelView,
-    "List Groups",
-    icon="fa-folder-open-o",
-    category="Contacts",
-    category_icon="fa-envelope",
-)
+with app.app_context():
+    appbuilder.add_view(
+        GroupModelView,
+        "List Groups",
+        icon="fa-folder-open-o",
+        category="Contacts",
+        category_icon="fa-envelope",
+    )

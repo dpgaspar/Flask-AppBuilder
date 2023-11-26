@@ -5,7 +5,7 @@ from flask_appbuilder.charts.views import GroupByChartView
 from flask_appbuilder.models.group import aggregate_count
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from . import appbuilder, db
+from . import app, appbuilder, db
 from .models import Contact, ContactGroup, Gender
 
 
@@ -119,25 +119,26 @@ class ContactTimeChartView(GroupByChartView):
     ]
 
 
-db.create_all()
-fill_gender()
-appbuilder.add_view(
-    GroupModelView,
-    "List Groups",
-    icon="fa-folder-open-o",
-    category="Contacts",
-    category_icon="fa-envelope",
-)
-appbuilder.add_view(
-    ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
-)
-appbuilder.add_separator("Contacts")
-appbuilder.add_view(
-    ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts"
-)
-appbuilder.add_view(
-    ContactTimeChartView,
-    "Contacts Birth Chart",
-    icon="fa-dashboard",
-    category="Contacts",
-)
+with app.app_context():
+    db.create_all()
+    fill_gender()
+    appbuilder.add_view(
+        GroupModelView,
+        "List Groups",
+        icon="fa-folder-open-o",
+        category="Contacts",
+        category_icon="fa-envelope",
+    )
+    appbuilder.add_view(
+        ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
+    )
+    appbuilder.add_separator("Contacts")
+    appbuilder.add_view(
+        ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts"
+    )
+    appbuilder.add_view(
+        ContactTimeChartView,
+        "Contacts Birth Chart",
+        icon="fa-dashboard",
+        category="Contacts",
+    )

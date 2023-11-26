@@ -11,8 +11,9 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 app = Flask(__name__)
 app.config.from_object("config")
-db = SQLA(app)
-appbuilder = AppBuilder(app, db.session)
+with app.app_context():
+    db = SQLA(app)
+    appbuilder = AppBuilder(app, db.session)
 
 
 @event.listens_for(Engine, "connect")
