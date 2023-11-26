@@ -262,7 +262,21 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 "client_kwargs": {"scope": "openid profile email groups"},
                 "access_token_url": "https://OKTA_DOMAIN.okta.com/oauth2/v1/token",
                 "authorize_url": "https://OKTA_DOMAIN.okta.com/oauth2/v1/authorize",
-                "server_metadata_url": f"https://OKTA_DOMAIN.okta.com/.well-known/openid-configuration",
+                "server_metadata_url": "https://OKTA_DOMAIN.okta.com/.well-known/openid-configuration",
+            },
+        },
+        {
+            "name": "auth0",
+            "icon": "fa-shield-halved",
+            "token_key": "access_token",
+            "remote_app": {
+                "client_id": "AUTH0_KEY",
+                "client_secret": "AUTH0_SECRET",
+                "api_base_url": "https://AUTH0_DOMAIN/oauth2/v1/",
+                "client_kwargs": {"scope": "openid profile email groups"},
+                "access_token_url": "https://AUTH0_DOMAIN/oauth/token",
+                "authorize_url": "https://AUTH0_DOMAIN/authorize",
+                "server_metadata_url": "https://AUTH0_DOMAIN/.well-known/openid-configuration",
             },
         },
         {
