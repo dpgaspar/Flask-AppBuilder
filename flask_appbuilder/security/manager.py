@@ -649,10 +649,21 @@ class BaseSecurityManager(AbstractSecurityManager):
             data = me.json()
             log.debug("User info from Okta: %s", data)
             return {
-                "username": "okta_" + data.get("sub", ""),
+                "username": f"{provider}_{data['sub']}",
                 "first_name": data.get("given_name", ""),
                 "last_name": data.get("family_name", ""),
-                "email": data.get("email", ""),
+                "email": data["email"],
+                "role_keys": data.get("groups", []),
+            }
+        # for Auth0
+        if provider == "auth0":
+            data = self.appbuilder.sm.oauth_remotes[provider].userinfo()
+            log.debug("User info from Auth0: %s", data)
+            return {
+                "username": f"{provider}_{data['sub']}",
+                "first_name": data.get("given_name", ""),
+                "last_name": data.get("family_name", ""),
+                "email": data["email"],
                 "role_keys": data.get("groups", []),
             }
         # for Keycloak
