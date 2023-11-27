@@ -672,6 +672,7 @@ r9+EFRsxA5GNYA==
                 "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
             },
         )
+
     def test_oauth_user_info_auth0(self):
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
