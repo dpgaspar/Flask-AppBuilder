@@ -1,6 +1,7 @@
 import logging
 import os
 import unittest
+from unittest.mock import MagicMock
 
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
@@ -47,7 +48,22 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
                     "AZURE_APPLICATION_ID/"
                     "oauth2/authorize",
                 },
-            }
+            },
+            {
+                "name": "auth0",
+                "icon": "fa-shield-halved",
+                "token_key": "access_token",
+                "remote_app": {
+                    "client_id": "AUTH0_KEY",
+                    "client_secret": "AUTH0_SECRET",
+                    "api_base_url": "https://AUTH0_DOMAIN/oauth2/v1/",
+                    "client_kwargs": {"scope": "openid profile email groups"},
+                    "access_token_url": "https://AUTH0_DOMAIN/oauth/token",
+                    "authorize_url": "https://AUTH0_DOMAIN/authorize",
+                    "server_metadata_url": "https://AUTH0_DOMAIN/.well-known/"
+                    "openid-configuration",
+                },
+            },
         ]
 
         # start Database
@@ -480,6 +496,42 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         with self.assertRaises(OAuthProviderUnknown):
             self.appbuilder.sm.oauth_user_info("unknown", {})
 
+    def test_oauth_user_info_azure_email_upn(self):
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        claims = {
+            "aud": "test-aud",
+            "iss": "https://sts.windows.net/test/",
+            "iat": 7282182129,
+            "nbf": 7282182129,
+            "exp": 1000000000,
+            "amr": ["pwd"],
+            "email": "test@gmail.com",
+            "upn": "test@upn.com",
+            "family_name": "user",
+            "given_name": "test",
+            "idp": "live.com",
+            "name": "Test user",
+            "oid": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+            "unique_name": "live.com#test@gmail.com",
+            "ver": "1.0",
+        }
+
+        # Create an unsigned JWT
+        unsigned_jwt = jwt.encode(claims, key=None, algorithm="none")
+        user_info = self.appbuilder.sm.get_oauth_user_info(
+            "azure", {"access_token": "", "id_token": unsigned_jwt}
+        )
+        self.assertEqual(
+            user_info,
+            {
+                "email": "test@upn.com",
+                "first_name": "test",
+                "last_name": "user",
+                "role_keys": [],
+                "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+            },
+        )
+
     def test_oauth_user_info_azure(self):
         self.appbuilder = AppBuilder(self.app, self.db.session)
         claims = {
@@ -614,5 +666,32 @@ r9+EFRsxA5GNYA==
                 "last_name": "user",
                 "role_keys": [],
                 "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+            },
+        )
+
+    def test_oauth_user_info_auth0(self):
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        self.appbuilder.sm.oauth_remotes["auth0"].userinfo = MagicMock(
+            return_value={
+                "email": "test@gmail.com",
+                "given_name": "test",
+                "family_name": "user",
+                "role_keys": [],
+                "sub": "test-sub",
+            }
+        )
+
+        user_info = self.appbuilder.sm.get_oauth_user_info(
+            "auth0", {"access_token": "", "id_token": ""}
+        )
+        self.assertEqual(
+            user_info,
+            {
+                "email": "test@gmail.com",
+                "first_name": "test",
+                "last_name": "user",
+                "role_keys": [],
+                "username": "auth0_test-sub",
             },
         )

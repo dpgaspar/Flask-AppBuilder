@@ -638,7 +638,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.debug("User info from Azure: %s", me)
             # https://learn.microsoft.com/en-us/azure/active-directory/develop/id-token-claims-reference#payload-claims
             return {
-                "email": me["email"],
+                # To keep backward compatibility with previous versions
+                # of FAB, we use upn if available, otherwise we use email
+                "email": me["upn"] if "upn" in me else me["email"],
                 "first_name": me.get("given_name", ""),
                 "last_name": me.get("family_name", ""),
                 "username": me["oid"],
@@ -658,10 +660,21 @@ class BaseSecurityManager(AbstractSecurityManager):
             data = me.json()
             log.debug("User info from Okta: %s", data)
             return {
-                "username": "okta_" + data.get("sub", ""),
+                "username": f"{provider}_{data['sub']}",
                 "first_name": data.get("given_name", ""),
                 "last_name": data.get("family_name", ""),
-                "email": data.get("email", ""),
+                "email": data["email"],
+                "role_keys": data.get("groups", []),
+            }
+        # for Auth0
+        if provider == "auth0":
+            data = self.appbuilder.sm.oauth_remotes[provider].userinfo()
+            log.debug("User info from Auth0: %s", data)
+            return {
+                "username": f"{provider}_{data['sub']}",
+                "first_name": data.get("given_name", ""),
+                "last_name": data.get("family_name", ""),
+                "email": data["email"],
                 "role_keys": data.get("groups", []),
             }
         # for Keycloak
