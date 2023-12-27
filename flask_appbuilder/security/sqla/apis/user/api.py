@@ -68,8 +68,6 @@ class UserApi(ModelRestApi):
     def pre_update(self, item):
         item.changed_on = datetime.now()
         item.changed_by_fk = g.user.id
-        if item.password:
-            item.password = generate_password_hash(item.password)
 
     def pre_add(self, item):
         item.password = generate_password_hash(item.password)
@@ -203,6 +201,9 @@ class UserApi(ModelRestApi):
 
             if "roles" in item.keys():
                 model.roles = roles
+
+            if "password" in item:
+                model.password = generate_password_hash(item["password"])
 
             self.pre_update(model)
             self.datamodel.edit(model, raise_exception=True)
