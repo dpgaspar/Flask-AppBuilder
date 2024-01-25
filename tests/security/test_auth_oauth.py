@@ -1,6 +1,7 @@
 import logging
 import os
 import unittest
+from unittest.mock import MagicMock
 
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
@@ -47,7 +48,22 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
                     "AZURE_APPLICATION_ID/"
                     "oauth2/authorize",
                 },
-            }
+            },
+            {
+                "name": "auth0",
+                "icon": "fa-shield-halved",
+                "token_key": "access_token",
+                "remote_app": {
+                    "client_id": "AUTH0_KEY",
+                    "client_secret": "AUTH0_SECRET",
+                    "api_base_url": "https://AUTH0_DOMAIN/oauth2/v1/",
+                    "client_kwargs": {"scope": "openid profile email groups"},
+                    "access_token_url": "https://AUTH0_DOMAIN/oauth/token",
+                    "authorize_url": "https://AUTH0_DOMAIN/authorize",
+                    "server_metadata_url": "https://AUTH0_DOMAIN/.well-known/"
+                    "openid-configuration",
+                },
+            },
         ]
 
         # start Database
@@ -650,5 +666,32 @@ r9+EFRsxA5GNYA==
                 "last_name": "user",
                 "role_keys": [],
                 "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+            },
+        )
+
+    def test_oauth_user_info_auth0(self):
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        self.appbuilder.sm.oauth_remotes["auth0"].userinfo = MagicMock(
+            return_value={
+                "email": "test@gmail.com",
+                "given_name": "test",
+                "family_name": "user",
+                "role_keys": [],
+                "sub": "test-sub",
+            }
+        )
+
+        user_info = self.appbuilder.sm.get_oauth_user_info(
+            "auth0", {"access_token": "", "id_token": ""}
+        )
+        self.assertEqual(
+            user_info,
+            {
+                "email": "test@gmail.com",
+                "first_name": "test",
+                "last_name": "user",
+                "role_keys": [],
+                "username": "auth0_test-sub",
             },
         )
