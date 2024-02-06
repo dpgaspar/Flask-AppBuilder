@@ -444,6 +444,8 @@ class RolePermissionAPITestCase(FABTestCase):
             if hasattr(b, "datamodel") and b.datamodel.session is not None:
                 b.datamodel.session = self.db.session
 
+        self.create_default_users(self.appbuilder)
+
     def tearDown(self):
         self.appbuilder.session.close()
         engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
@@ -910,10 +912,7 @@ class RolePermissionAPITestCase(FABTestCase):
 
     def test_add_invalid_view_menu_permissions_to_role(self):
         client = self.app.test_client()
-        # token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        token = self._login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        users = self.session.query(User).all()
-        raise Exception(json.loads(token.data.decode("utf-8")), users)
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         num = 1
         role_name = f"test_add_permissions_to_role_api_{num}"
@@ -924,7 +923,6 @@ class RolePermissionAPITestCase(FABTestCase):
         uri = f"api/v1/security/roles/{role_id}/permissions"
         rv = self.auth_client_post(client, token, uri, {})
 
-        raise Exception(rv.data, token, rv.status_code)
         self.assertEqual(rv.status_code, 400)
         role = self.appbuilder.sm.find_role(role_name)
         self.session.delete(role)
