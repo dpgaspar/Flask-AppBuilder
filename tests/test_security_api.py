@@ -910,7 +910,9 @@ class RolePermissionAPITestCase(FABTestCase):
 
     def test_add_invalid_view_menu_permissions_to_role(self):
         client = self.app.test_client()
-        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        # token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        token = self._login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        raise Exception(json.loads(token.data.decode("utf-8")))
 
         num = 1
         role_name = f"test_add_permissions_to_role_api_{num}"
