@@ -921,7 +921,7 @@ class RolePermissionAPITestCase(FABTestCase):
         uri = f"api/v1/security/roles/{role_id}/permissions"
         rv = self.auth_client_post(client, token, uri, {})
 
-        raise Exception(rv.data)
+        raise Exception(rv.data, token, rv.status_code)
         self.assertEqual(rv.status_code, 400)
         role = self.appbuilder.sm.find_role(role_name)
         self.session.delete(role)
