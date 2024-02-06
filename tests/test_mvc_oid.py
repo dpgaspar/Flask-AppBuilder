@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 from flask_appbuilder import SQLA
-from flask_appbuilder.security.sqla.models import User
 from tests.base import FABTestCase
 
 
@@ -14,16 +13,6 @@ class MVCOIDTestCase(FABTestCase):
         self.app.config.from_object("tests.config_oid")
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
-
-    def tearDown(self):
-        self.cleanup()
-
-    def cleanup(self):
-        session = self.appbuilder.get_session
-        users = session.query(User).filter(User.username.ilike("google%")).all()
-        for user in users:
-            session.delete(user)
-        session.commit()
 
     def test_oid_login_get(self):
         """
