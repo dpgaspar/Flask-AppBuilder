@@ -912,7 +912,8 @@ class RolePermissionAPITestCase(FABTestCase):
         client = self.app.test_client()
         # token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         token = self._login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        raise Exception(json.loads(token.data.decode("utf-8")))
+        users = self.session.query(User).all()
+        raise Exception(json.loads(token.data.decode("utf-8")), users)
 
         num = 1
         role_name = f"test_add_permissions_to_role_api_{num}"
