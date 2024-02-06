@@ -1447,6 +1447,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         # If it's not a builtin role check against database store roles
         return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
 
+    def get_oid_identity_url(self, provider_name: str) -> Optional[str]:
+        """
+        Returns the OIDC identity provider URL
+        """
+        for provider in self.openid_providers:
+            if provider.get("name") == provider_name:
+                return provider.get("url")
+
     def get_user_roles(self, user) -> List[object]:
         """
         Get current user roles, if user is not authenticated returns the public role

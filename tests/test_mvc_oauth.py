@@ -26,7 +26,7 @@ class OAuthRemoteMock:
             return UserInfoReponseMock()
 
 
-class APICSRFTestCase(FABTestCase):
+class MVCOAuthTestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
         from flask_wtf import CSRFProtect
