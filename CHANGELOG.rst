@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.11rc1
+-----------------------------------
+
+- fix: openID provider validation flow (#2186) [Daniel Vaz Gaspar]
+- feat: support Auth0 OAuth2 (#2171) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.3.10
 -----------------------------------
 
