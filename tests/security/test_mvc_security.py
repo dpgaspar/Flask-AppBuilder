@@ -121,6 +121,9 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         rv = self.client.get("/model1view/list/")
         self.assertEqual(rv.status_code, 302)
 
+        self.db.session.delete(test_user)
+        self.db.session.commit()
+
     def test_db_login_no_next_url(self):
         """
         Test Security no next URL
