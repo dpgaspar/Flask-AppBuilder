@@ -1,4 +1,3 @@
-import logging
 import os
 import unittest
 from unittest.mock import MagicMock
@@ -11,10 +10,6 @@ import jinja2
 import jwt
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
 from tests.fixtures.users import create_default_users
-
-logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
-logging.getLogger().setLevel(logging.DEBUG)
-log = logging.getLogger(__name__)
 
 
 class OAuthRegistrationRoleTestCase(unittest.TestCase):

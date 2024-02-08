@@ -258,6 +258,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_LASTNAME_FIELD", "sn")
             app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
 
+        if self.auth_type == AUTH_REMOTE_USER:
+            app.config.setdefault("AUTH_REMOTE_USER_ENV_VAR", "REMOTE_USER")
+
         # Rate limiting
         app.config.setdefault("AUTH_RATE_LIMITED", False)
         app.config.setdefault("AUTH_RATE_LIMIT", "10 per 20 second")
@@ -414,6 +417,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_user_registration_role_jmespath(self) -> str:
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"]
+
+    @property
+    def auth_remote_user_env_var(self) -> str:
+        return self.appbuilder.get_app.config["AUTH_REMOTE_USER_ENV_VAR"]
 
     @property
     def auth_roles_mapping(self) -> Dict[str, List[str]]:
