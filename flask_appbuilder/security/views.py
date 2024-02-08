@@ -716,7 +716,7 @@ class AuthRemoteUserView(AuthView):
 
     @expose("/login/")
     def login(self) -> WerkzeugResponse:
-        username = request.environ.get("REMOTE_USER")
+        username = request.environ.get(self.appbuilder.sm.auth_remote_user_env_var)
         if g.user is not None and g.user.is_authenticated:
             next_url = request.args.get("next", "")
             return redirect(get_safe_redirect(next_url))
