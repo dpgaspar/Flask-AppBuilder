@@ -93,6 +93,37 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn(INVALID_LOGIN_STRING, data)
 
+    def test_login_invalid_user(self):
+        """
+        Test Security Login, Logout, invalid login, invalid access
+        """
+        test_username = "testuser"
+        test_password = "password"
+        test_user = self.create_user(
+            self.appbuilder,
+            test_username,
+            test_password,
+            "Admin",
+            "user",
+            "user",
+            "testuser@fab.org",
+        )
+        # Login and list with admin
+        self.browser_login(self.client, test_username, test_password)
+        rv = self.client.get("/model1view/list/")
+        self.assertEqual(rv.status_code, 200)
+
+        # Using the same session make sure the user is not allowed to access when
+        # the user is deactivated
+        test_user.active = False
+        self.db.session.merge(test_user)
+        self.db.session.commit()
+        rv = self.client.get("/model1view/list/")
+        self.assertEqual(rv.status_code, 302)
+
+        self.db.session.delete(test_user)
+        self.db.session.commit()
+
     def test_db_login_no_next_url(self):
         """
         Test Security no next URL
