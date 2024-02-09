@@ -46,6 +46,11 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | Requires ``jmespath`` to be installed.     |           |
 |                                        | See :ref:`jmespath-examples` for examples  |           |
 +----------------------------------------+--------------------------------------------+-----------+
+| AUTH_REMOTE_USER_ENV_VAR               | When using AUTH_TYPE = AUTH_REMOTE_USER    |   No      |
+|                                        | Optionally set the wsgi environment var    |           |
+|                                        | that holds the current logged in user      |           |
+|                                        | Default: REMOTE_USER                       |           |
++----------------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLES_SYNC_AT_LOGIN               | Sets if user's roles are replaced each     |   No      |
 |                                        | login with those received from LDAP/OAUTH  |           |
 |                                        | Default: False                             |           |
