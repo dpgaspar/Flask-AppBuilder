@@ -20,6 +20,8 @@ class LimiterTestCase(FABTestCase):
         self.app.config["AUTH_RATE_LIMITED"] = True
         self.app.config["AUTH_RATE_LIMIT"] = "2 per 5 second"
         logging.basicConfig(level=logging.ERROR)
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -38,6 +40,14 @@ class LimiterTestCase(FABTestCase):
 
         self.appbuilder.add_api(Base1Api)
         self.appbuilder.add_view(TestView, name="testview")
+
+    def tearDown(self):
+        self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     def test_default_auth_rate_limit(self):
         client = self.app.test_client()

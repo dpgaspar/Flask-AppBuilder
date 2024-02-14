@@ -10,9 +10,10 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 app = Flask(__name__)
 app.config.from_object("config")
-db = SQLA(app)
-session = db.session
-appbuilder = AppBuilder(app, session)
+with app.app_context():
+    db = SQLA(app)
+    session = db.session
+    appbuilder = AppBuilder(app, session)
 
 """
 Only include this for SQLLite constraints
@@ -26,6 +27,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 from app.models import *
 
 
-db.create_all()
+with app.app_context():
+    db.create_all()
 
 from app import views

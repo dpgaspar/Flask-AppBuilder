@@ -10,7 +10,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "ap
 app.config["CSRF_ENABLED"] = True
 app.config["SECRET_KEY"] = "thisismyscretkey"
 
-db = SQLA(app)
-appbuilder = AppBuilder(app, db.session)
+with app.app_context():
+    db = SQLA(app)
+    appbuilder = AppBuilder(app, db.session)
 
 app.run(host="0.0.0.0", port=8080, debug=True)

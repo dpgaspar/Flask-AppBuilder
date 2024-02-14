@@ -1,12 +1,13 @@
-from app import db
+from app import app, db
 from app.models import ContactGroup
 
-db.create_all()
+with app.app_context():
+    db.create_all()
 
-try:
-    db.session.add(ContactGroup(name="Friends"))
-    db.session.add(ContactGroup(name="Family"))
-    db.session.add(ContactGroup(name="Work"))
-    db.session.commit()
-except:
-    db.session.rollback()
+    try:
+        db.session.add(ContactGroup(name="Friends"))
+        db.session.add(ContactGroup(name="Family"))
+        db.session.add(ContactGroup(name="Work"))
+        db.session.commit()
+    except:
+        db.session.rollback()

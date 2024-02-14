@@ -4,6 +4,7 @@ from flask_appbuilder import Model
 from flask_appbuilder.api.schemas import BaseModelSchema
 from marshmallow import fields, ValidationError
 from sqlalchemy import (
+    BigInteger,
     Column,
     Date,
     DateTime,
@@ -24,7 +25,8 @@ def validate_name(n):
 
 
 class Model1(Model):
-    id = Column(Integer, primary_key=True)
+    __tablename__ = "model1"
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     field_integer = Column(Integer())
     field_float = Column(Float())
@@ -54,14 +56,19 @@ class Model1CustomSchema(BaseModelSchema):
 
 
 class Model2(Model):
-    id = Column(Integer, primary_key=True)
+    __tablename__ = "model2"
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     field_integer = Column(Integer())
     field_float = Column(Float())
     field_date = Column(Date())
     excluded_string = Column(String(50), default="EXCLUDED")
     default_string = Column(String(50), default="DEFAULT")
-    group_id = Column(Integer, ForeignKey("model1.id"), nullable=False)
+    group_id = Column(
+        Integer().with_variant(BigInteger, "mssql"),
+        ForeignKey("model1.id"),
+        nullable=False,
+    )
     group = relationship("Model1")
 
     def __repr__(self):
@@ -72,6 +79,7 @@ class Model2(Model):
 
 
 class Model3(Model):
+    __tablename__ = "model3"
     pk1 = Column(Integer(), primary_key=True)
     pk2 = Column(DateTime(), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
@@ -81,11 +89,20 @@ class Model3(Model):
 
 
 class Model4(Model):
-    id = Column(Integer(), primary_key=True)
+    __tablename__ = "model4"
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
-    model1_1_id = Column(Integer, ForeignKey("model1.id"), nullable=False)
+    model1_1_id = Column(
+        Integer().with_variant(BigInteger, "mssql"),
+        ForeignKey("model1.id"),
+        nullable=False,
+    )
     model1_1 = relationship("Model1", foreign_keys=[model1_1_id])
-    model1_2_id = Column(Integer, ForeignKey("model1.id"), nullable=False)
+    model1_2_id = Column(
+        Integer().with_variant(BigInteger, "mssql"),
+        ForeignKey("model1.id"),
+        nullable=False,
+    )
     model1_2 = relationship("Model1", foreign_keys=[model1_2_id])
 
     def __repr__(self):
@@ -93,7 +110,8 @@ class Model4(Model):
 
 
 class ModelWithProperty(Model):
-    id = Column(Integer, primary_key=True)
+    __tablename__ = "model_with_property"
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
 
     @property
@@ -108,7 +126,8 @@ class TmpEnum(enum.Enum):
 
 
 class ModelWithEnums(Model):
-    id = Column(Integer, primary_key=True)
+    __tablename__ = "model_with_enums"
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     enum1 = Column(Enum("e1", "e2", "e3", "e4", name="enum1"))
     enum2 = Column(Enum(TmpEnum))
     enum3 = Column(Enum(TmpEnum), info={"marshmallow_by_value": False})
@@ -117,23 +136,29 @@ class ModelWithEnums(Model):
 assoc_parent_child = Table(
     "parent_child",
     Model.metadata,
-    Column("id", Integer, primary_key=True),
-    Column("parent_id", Integer, ForeignKey("parent.id")),
-    Column("child_id", Integer, ForeignKey("child.id")),
+    Column("id", Integer().with_variant(BigInteger, "mssql"), primary_key=True),
+    Column(
+        "parent_id",
+        Integer().with_variant(BigInteger, "mssql"),
+        ForeignKey("parent.id"),
+    ),
+    Column(
+        "child_id", Integer().with_variant(BigInteger, "mssql"), ForeignKey("child.id")
+    ),
     UniqueConstraint("parent_id", "child_id"),
 )
 
 
 class ModelMMParent(Model):
     __tablename__ = "parent"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     children = relationship("ModelMMChild", secondary=assoc_parent_child)
 
 
 class ModelMMChild(Model):
     __tablename__ = "child"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     field_integer = Column(Integer())
 
@@ -141,16 +166,24 @@ class ModelMMChild(Model):
 assoc_parent_child_required = Table(
     "parent_child_required",
     Model.metadata,
-    Column("id", Integer, primary_key=True),
-    Column("parent_id", Integer, ForeignKey("parent_required.id")),
-    Column("child_id", Integer, ForeignKey("child_required.id")),
+    Column("id", Integer().with_variant(BigInteger, "mssql"), primary_key=True),
+    Column(
+        "parent_id",
+        Integer().with_variant(BigInteger, "mssql"),
+        ForeignKey("parent_required.id"),
+    ),
+    Column(
+        "child_id",
+        Integer().with_variant(BigInteger, "mssql"),
+        ForeignKey("child_required.id"),
+    ),
     UniqueConstraint("parent_id", "child_id"),
 )
 
 
 class ModelMMParentRequired(Model):
     __tablename__ = "parent_required"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     children = relationship(
         "ModelMMChildRequired",
@@ -161,20 +194,23 @@ class ModelMMParentRequired(Model):
 
 class ModelMMChildRequired(Model):
     __tablename__ = "child_required"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
 
 
 class ModelOMParent(Model):
     __tablename__ = "model_om_parent"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
 
 
 class ModelOMChild(Model):
-    id = Column(Integer, primary_key=True)
+    __tablename__ = "model_om_child"
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
-    parent_id = Column(Integer, ForeignKey("model_om_parent.id"))
+    parent_id = Column(
+        Integer().with_variant(BigInteger, "mssql"), ForeignKey("model_om_parent.id")
+    )
     parent = relationship(
         "ModelOMParent",
         backref=backref("children", cascade="all, delete-orphan"),
@@ -184,13 +220,16 @@ class ModelOMChild(Model):
 
 class ModelOOParent(Model):
     __tablename__ = "model_oo_parent"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     child = relationship("ModelOOChild", back_populates="parent", uselist=False)
 
 
 class ModelOOChild(Model):
-    id = Column(Integer, primary_key=True)
+    __tablename__ = "model_oo_child"
+    id = Column(Integer().with_variant(BigInteger, "mssql"), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
-    parent_id = Column(Integer, ForeignKey("model_oo_parent.id"))
+    parent_id = Column(
+        Integer().with_variant(BigInteger, "mssql"), ForeignKey("model_oo_parent.id")
+    )
     parent = relationship("ModelOOParent", back_populates="child")

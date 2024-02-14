@@ -21,6 +21,8 @@ class FlaskTestCase(FABTestCase):
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -45,8 +47,11 @@ class FlaskTestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder = None
-        self.app = None
+        # self.db.drop_all()
         self.db = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     def test_menu_access_denied(self):
         """
@@ -127,11 +132,11 @@ class FlaskTestCase(FABTestCase):
         self.browser_logout(client)
 
         # Revert test data
-        self.appbuilder.get_session.delete(
+        self.appbuilder.session.delete(
             self.appbuilder.sm.find_user(username=limited_user)
         )
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role(limited_role))
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(self.appbuilder.sm.find_role(limited_role))
+        self.appbuilder.session.commit()
 
     def test_menu_api_public(self):
         """
@@ -172,7 +177,7 @@ class FlaskTestCase(FABTestCase):
         # Revert test data
         role = self.appbuilder.sm.find_role("Public")
         role.permissions = []
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.commit()
 
     def test_redirect_after_logout(self):
         """

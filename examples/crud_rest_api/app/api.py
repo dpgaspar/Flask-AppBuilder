@@ -4,12 +4,13 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.filters import BaseFilter
 from sqlalchemy import or_
 
-from . import appbuilder, db
+from . import app, appbuilder, db
 from .models import Contact, ContactGroup, ModelOMParent
 from marshmallow import fields, Schema
 
 
-db.create_all()
+with app.app_context():
+    db.create_all()
 
 
 class GreetingsResponseSchema(Schema):
@@ -41,7 +42,8 @@ class GreetingApi(BaseApi):
         return self.response(200, message="Hello")
 
 
-appbuilder.add_api(GreetingApi)
+with app.app_context():
+    appbuilder.add_api(GreetingApi)
 
 
 class CustomFilter(BaseFilter):
@@ -65,7 +67,8 @@ class ContactModelApi(ModelRestApi):
     }
 
 
-appbuilder.add_api(ContactModelApi)
+with app.app_context():
+    appbuilder.add_api(ContactModelApi)
 
 
 class GroupModelApi(ModelRestApi):
@@ -74,7 +77,8 @@ class GroupModelApi(ModelRestApi):
     allow_browser_login = True
 
 
-appbuilder.add_api(GroupModelApi)
+with app.app_context():
+    appbuilder.add_api(GroupModelApi)
 
 
 class ModelOMParentApi(ModelRestApi):
@@ -82,4 +86,5 @@ class ModelOMParentApi(ModelRestApi):
     datamodel = SQLAInterface(ModelOMParent)
 
 
-appbuilder.add_api(ModelOMParentApi)
+with app.app_context():
+    appbuilder.add_api(ModelOMParentApi)

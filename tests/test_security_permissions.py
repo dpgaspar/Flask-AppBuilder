@@ -11,6 +11,8 @@ class SecurityPermissionsTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_security")
         self.app.config["FAB_ADD_SECURITY_VIEWS"] = False
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -71,14 +73,21 @@ class SecurityPermissionsTestCase(FABTestCase):
         )
 
     def tearDown(self):
-        self.appbuilder.get_session.delete(self._user01)
-        self.appbuilder.get_session.delete(self._user02)
-        self.appbuilder.get_session.delete(self._user03)
-        self.appbuilder.get_session.delete(self._user04)
-        self.appbuilder.get_session.delete(self._pvm1)
-        self.appbuilder.get_session.delete(self._pvm2)
-        self.appbuilder.get_session.delete(self._db_role_1)
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(self._user01)
+        self.appbuilder.session.delete(self._user02)
+        self.appbuilder.session.delete(self._user03)
+        self.appbuilder.session.delete(self._user04)
+        self.appbuilder.session.delete(self._pvm1)
+        self.appbuilder.session.delete(self._pvm2)
+        self.appbuilder.session.delete(self._db_role_1)
+        self.appbuilder.session.commit()
+
+        self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     def test_get_user_permissions_mixed(self):
         """

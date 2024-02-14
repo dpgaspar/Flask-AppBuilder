@@ -23,15 +23,19 @@ class FlaskTestCase(FABTestCase):
         self.app.config[
             "FAB_INDEX_VIEW"
         ] = "tests.test_custom_indexview.CustomIndexView"
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def tearDown(self):
         self.appbuilder = None
-        self.app = None
+        # self.db.drop_all()
         self.db = None
-        log.debug("TEAR DOWN")
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     def test_custom_indexview(self):
         """

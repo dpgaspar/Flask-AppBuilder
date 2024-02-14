@@ -14,9 +14,19 @@ class FlaskTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+
+    def tearDown(self):
+        self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     def test_get_filter_args_allow_one(self):
         datamodel = SQLAInterface(Model1)

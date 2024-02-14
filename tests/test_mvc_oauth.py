@@ -35,6 +35,8 @@ class MVCOAuthTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_oauth")
         self.app.config["WTF_CSRF_ENABLED"] = True
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         self.csrf = CSRFProtect(self.app)
         self.db = SQLA(self.app)
@@ -42,9 +44,15 @@ class MVCOAuthTestCase(FABTestCase):
 
     def tearDown(self):
         self.cleanup()
+        self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     def cleanup(self):
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
         users = session.query(User).filter(User.username.ilike("google%")).all()
         for user in users:
             session.delete(user)

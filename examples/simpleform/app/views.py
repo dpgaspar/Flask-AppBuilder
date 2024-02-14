@@ -2,7 +2,7 @@ from flask import flash, render_template
 from flask_appbuilder import SimpleFormView
 from flask_babel import lazy_gettext as _
 
-from . import appbuilder, db
+from . import app, appbuilder, db
 from .forms import MyForm
 
 
@@ -19,14 +19,15 @@ class MyFormView(SimpleFormView):
         flash(self.message, "info")
 
 
-appbuilder.add_view(
-    MyFormView,
-    "My form View",
-    icon="fa-group",
-    label=_("My form View"),
-    category="My Forms",
-    category_icon="fa-cogs",
-)
+with app.app_context():
+    appbuilder.add_view(
+        MyFormView,
+        "My form View",
+        icon="fa-group",
+        label=_("My form View"),
+        category="My Forms",
+        category_icon="fa-cogs",
+    )
 
 """
     Application wide 404 error handler
@@ -43,4 +44,5 @@ def page_not_found(e):
     )
 
 
-db.create_all()
+with app.app_context():
+    db.create_all()

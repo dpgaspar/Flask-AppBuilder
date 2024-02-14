@@ -12,7 +12,7 @@ from flask_appbuilder.widgets import (
     FormVerticalWidget, ListBlock, ListWidget, ShowBlockWidget
 )
 
-from . import appbuilder, db
+from . import app, appbuilder, db
 from .forms import TestForm
 from .models import (
     Contact, ContactGroup, FloatModel, Gender, Product, ProductManufacturer, ProductModel
@@ -231,59 +231,60 @@ class PostTweet(BaseView):
         return redirect(self.appbuilder.get_url_for_index)
 
 
-fill_gender()
+with app.app_context():
+    fill_gender()
 
-appbuilder.add_view(
-    GroupModelView,
-    "List Groups",
-    icon="fa-folder-open-o",
-    category="Contacts",
-    category_icon="fa-envelope",
-)
-appbuilder.add_view(
-    ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
-)
-appbuilder.add_view(
-    ContactModelView2, "List Contacts 2", icon="fa-envelope", category="Contacts"
-)
-appbuilder.add_view(
-    FloatModelView, "List Float Model", icon="fa-envelope", category="Contacts"
-)
-appbuilder.add_view(
-    MultipleViewsExp, "Multiple Views", icon="fa-envelope", category="Contacts"
-)
-appbuilder.add_separator("Contacts")
-appbuilder.add_view(
-    ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts"
-)
-appbuilder.add_view(
-    ContactTimeChartView,
-    "Contacts Birth Chart",
-    icon="fa-dashboard",
-    category="Contacts",
-)
+    appbuilder.add_view(
+        GroupModelView,
+        "List Groups",
+        icon="fa-folder-open-o",
+        category="Contacts",
+        category_icon="fa-envelope",
+    )
+    appbuilder.add_view(
+        ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
+    )
+    appbuilder.add_view(
+        ContactModelView2, "List Contacts 2", icon="fa-envelope", category="Contacts"
+    )
+    appbuilder.add_view(
+        FloatModelView, "List Float Model", icon="fa-envelope", category="Contacts"
+    )
+    appbuilder.add_view(
+        MultipleViewsExp, "Multiple Views", icon="fa-envelope", category="Contacts"
+    )
+    appbuilder.add_separator("Contacts")
+    appbuilder.add_view(
+        ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts"
+    )
+    appbuilder.add_view(
+        ContactTimeChartView,
+        "Contacts Birth Chart",
+        icon="fa-dashboard",
+        category="Contacts",
+    )
 
-appbuilder.add_view(
-    ProductManufacturerView,
-    "List Manufacturer",
-    icon="fa-folder-open-o",
-    category="Products",
-    category_icon="fa-envelope",
-)
-appbuilder.add_view(
-    ProductModelView, "List Models", icon="fa-envelope", category="Products"
-)
-appbuilder.add_view(
-    ProductView, "List Products", icon="fa-envelope", category="Products"
-)
-appbuilder.add_link(
-    "ContacModelView_lnk",
-    "ContactModelView.add",
-    icon="fa-envelope",
-    label="Add Contact",
-)
-appbuilder.add_view(TestForm, "My form View", icon="fa-group", label="My Test form")
-appbuilder.add_view(PostTweet, "Tweet", icon="fa-twitter", label="Tweet")
+    appbuilder.add_view(
+        ProductManufacturerView,
+        "List Manufacturer",
+        icon="fa-folder-open-o",
+        category="Products",
+        category_icon="fa-envelope",
+    )
+    appbuilder.add_view(
+        ProductModelView, "List Models", icon="fa-envelope", category="Products"
+    )
+    appbuilder.add_view(
+        ProductView, "List Products", icon="fa-envelope", category="Products"
+    )
+    appbuilder.add_link(
+        "ContacModelView_lnk",
+        "ContactModelView.add",
+        icon="fa-envelope",
+        label="Add Contact",
+    )
+    appbuilder.add_view(TestForm, "My form View", icon="fa-group", label="My Test form")
+    appbuilder.add_view(PostTweet, "Tweet", icon="fa-twitter", label="Tweet")
 
-appbuilder.add_link("Index", "MyIndexView.index")
-appbuilder.security_cleanup()
+    appbuilder.add_link("Index", "MyIndexView.index")
+    appbuilder.security_cleanup()

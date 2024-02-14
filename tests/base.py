@@ -105,11 +105,11 @@ class FABTestCase(unittest.TestCase):
 
     def create_default_users(self, appbuilder) -> None:
         with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
-            self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
+            self.create_admin_user(appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
             self.create_user(
-                self.appbuilder,
+                appbuilder,
                 USERNAME_READONLY,
                 PASSWORD_READONLY,
                 "ReadOnly",
@@ -145,6 +145,14 @@ class FABTestCase(unittest.TestCase):
             username, first_name, last_name, email, roles, password
         )
 
+    @staticmethod
+    def create_role(
+        appbuilder,
+        name,
+    ):
+        role = appbuilder.sm.find_role(name=name)
+        return appbuilder.sm.add_role(name) if not role else role
+
 
 class BaseMVCTestCase(FABTestCase):
     def setUp(self):
@@ -152,10 +160,20 @@ class BaseMVCTestCase(FABTestCase):
         self.app.jinja_env.undefined = jinja2.StrictUndefined
         self.app.config.from_object("tests.config_api")
         logging.basicConfig(level=logging.ERROR)
+        self.ctx = self.app.app_context()
+        self.ctx.push()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
         self.create_default_users(self.appbuilder)
+
+    def tearDown(self):
+        self.appbuilder = None
+        # self.db.drop_all()
+        self.db = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     @property
     def registered_endpoints(self) -> Set:

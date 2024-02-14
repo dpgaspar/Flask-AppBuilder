@@ -34,7 +34,7 @@ class FlaskTestCase(FABTestCase):
         pass
 
     def tearDown(self):
-        log.debug("TEAR DOWN")
+        pass
 
     def test_create_app_invalid_secret_key(self):
         os.environ["FLASK_APP"] = "app:app"
@@ -56,10 +56,18 @@ class FlaskTestCase(FABTestCase):
         """
         Test create app, create-user
         """
-        os.environ["FLASK_APP"] = "app:app"
-        runner = CliRunner()
-        with runner.isolated_filesystem():
-            result = runner.invoke(
+        app = Flask("app:app")
+        app.config.from_object("tests.config_security")
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+        ctx = app.app_context()
+        ctx.push()
+
+        db = SQLA(app)
+        app_builder = AppBuilder(app, db.session)  # noqa: F841
+        cli_runner = app.test_cli_runner()
+
+        with cli_runner.isolated_filesystem():
+            result = cli_runner.invoke(
                 create_app,
                 [
                     f"--name={APP_DIR}",
@@ -69,7 +77,7 @@ class FlaskTestCase(FABTestCase):
             )
             self.assertIn("Downloaded the skeleton app, good coding!", result.output)
             os.chdir(APP_DIR)
-            result = runner.invoke(
+            result = cli_runner.invoke(
                 create_user,
                 [
                     "--username=bob",
@@ -83,12 +91,14 @@ class FlaskTestCase(FABTestCase):
             log.info(result.output)
             self.assertIn("User bob created.", result.output)
 
-            result = runner.invoke(list_users, [])
+            result = cli_runner.invoke(list_users, [])
             self.assertIn("bob", result.output)
 
-            runner.invoke(create_permissions, [])
+            cli_runner.invoke(create_permissions, [])
 
-            runner.invoke(reset_password, ["--username=bob", "--password=bar"])
+            cli_runner.invoke(reset_password, ["--username=bob", "--password=bar"])
+
+        ctx.pop()
 
     test_create_app.needs_inet = True
 
@@ -96,12 +106,21 @@ class FlaskTestCase(FABTestCase):
         """
         CLI: Test list views
         """
-        os.environ["FLASK_APP"] = "app:app"
-        runner = CliRunner()
-        with runner.isolated_filesystem():
-            result = runner.invoke(list_views, [])
+        app = Flask("app:app")
+        app.config.from_object("tests.config_security")
+        ctx = app.app_context()
+        ctx.push()
+
+        db = SQLA(app)
+        app_builder = AppBuilder(app, db.session)  # noqa: F841
+        cli_runner = app.test_cli_runner()
+
+        with cli_runner.isolated_filesystem():
+            result = cli_runner.invoke(list_views, [])
             self.assertIn("List of registered views", result.output)
             self.assertIn(" Route:/api/v1/security", result.output)
+
+        ctx.pop()
 
     test_list_views.needs_inet = True
 
@@ -133,9 +152,10 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security")
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+            app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+            ctx = app.app_context()
+            ctx.push()
+
             db = SQLA(app)
             app_builder = AppBuilder(app, db.session)  # noqa: F841
             cli_runner = app.test_cli_runner()
@@ -169,14 +189,16 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                     expected_role_permission_view_menus,
                 )
 
+            ctx.pop()
+
     def test_export_roles_filename(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security")
+            app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+            ctx = app.app_context()
+            ctx.push()
 
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
             db = SQLA(app)
             app_builder = AppBuilder(app, db.session)  # noqa: F841
 
@@ -191,35 +213,40 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                 len(glob.glob(os.path.join(tmp_dir, "roles_export_*"))), 0
             )
 
+            ctx.pop()
+
     @patch("json.dumps")
     def test_export_roles_indent(self, mock_json_dumps):
         """Test that json.dumps is called with the correct argument passed from CLI."""
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            app = Flask("src_app")
-            app.config.from_object("tests.config_security")
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
-            db = SQLA(app)
-            app_builder = AppBuilder(app, db.session)  # noqa: F841
-            cli_runner = app.test_cli_runner()
+        app = Flask("src_app")
+        app.config.from_object("tests.config_security")
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+        ctx = app.app_context()
+        ctx.push()
 
-            cli_runner.invoke(export_roles)
-            mock_json_dumps.assert_called_with(ANY, indent=None)
+        db = SQLA(app)
+        app_builder = AppBuilder(app, db.session)  # noqa: F841
+        cli_runner = app.test_cli_runner()
+
+        cli_runner.invoke(export_roles)
+        mock_json_dumps.assert_called_with(ANY, indent=None)
+        mock_json_dumps.reset_mock()
+
+        example_cli_args = ["", "foo", -1, 0, 1]
+        for arg in example_cli_args:
+            cli_runner.invoke(export_roles, [f"--indent={arg}"])
+            mock_json_dumps.assert_called_with(ANY, indent=arg)
             mock_json_dumps.reset_mock()
 
-            example_cli_args = ["", "foo", -1, 0, 1]
-            for arg in example_cli_args:
-                cli_runner.invoke(export_roles, [f"--indent={arg}"])
-                mock_json_dumps.assert_called_with(ANY, indent=arg)
-                mock_json_dumps.reset_mock()
+        ctx.pop()
 
     def test_import_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("dst_app")
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'dst.db')}"
+            app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+            ctx = app.app_context()
+            ctx.push()
+
             db = SQLA(app)
             app_builder = AppBuilder(app, db.session)
             cli_runner = app.test_cli_runner()
@@ -254,3 +281,5 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                     resulting_role_permission_view_menus,
                     expected_role_permission_view_menus,
                 )
+
+            ctx.pop()

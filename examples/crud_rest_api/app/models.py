@@ -9,6 +9,7 @@ mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
 class ContactGroup(Model):
+    __tablename__ = "contact_group"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -17,11 +18,13 @@ class ContactGroup(Model):
 
 
 class Gender(enum.Enum):
+    __tablename__ = "gender"
     Female = 1
     Male = 2
 
 
 class Contact(Model):
+    __tablename__ = "contact"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))
@@ -51,6 +54,7 @@ class ModelOMParent(Model):
 
 
 class ModelOMChild(Model):
+    __tablename__ = "model_om_child"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     parent_id = Column(Integer, ForeignKey("model_om_parent.id"))

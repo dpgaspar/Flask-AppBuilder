@@ -30,7 +30,7 @@ flask-jwt-extended==4.3.1
     # via Flask-AppBuilder (setup.py)
 flask-login==0.4.1
     # via Flask-AppBuilder (setup.py)
-flask-sqlalchemy==2.5.1
+flask-sqlalchemy==3.1.1
     # via Flask-AppBuilder (setup.py)
 flask-wtf==0.14.3
     # via Flask-AppBuilder (setup.py)
@@ -83,7 +83,7 @@ six==1.16.0
     #   prison
     #   python-dateutil
     #   sqlalchemy-utils
-sqlalchemy==1.4.29
+sqlalchemy==2.0.23
     # via
     #   Flask-AppBuilder (setup.py)
     #   flask-sqlalchemy

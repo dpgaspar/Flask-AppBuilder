@@ -166,7 +166,7 @@ class SQLAInterface(BaseInterface):
             page
             and page_size
             and not order_column
-            and self.session.bind.dialect.name == "mssql"
+            and self.session.get_bind().name == "mssql"
         ):
             pk_name = self.get_pk_name()
             return query.order_by(pk_name)
@@ -221,7 +221,7 @@ class SQLAInterface(BaseInterface):
 
     def _apply_normal_col_select_option(self, query: Query, column: str) -> Query:
         if not self.is_relation(column) and not self.is_property_or_function(column):
-            return query.options(Load(self.obj).load_only(column))
+            return query.options(Load(self.obj).load_only(getattr(self.obj, column)))
         return query
 
     def _apply_relation_fks_select_options(self, query: Query, relation_name) -> Query:
@@ -229,7 +229,9 @@ class SQLAInterface(BaseInterface):
         if hasattr(relation, "property"):
             local_cols = getattr(self.obj, relation_name).property.local_columns
             for local_fk in local_cols:
-                query = query.options(Load(self.obj).load_only(local_fk.name))
+                query = query.options(
+                    Load(self.obj).load_only(getattr(self.obj, local_fk.name))
+                )
             return query
         return query
 
@@ -286,10 +288,12 @@ class SQLAInterface(BaseInterface):
                 # https://docs.sqlalchemy.org/en/13/orm/loading_relationships.html
                 query = query.options(
                     contains_eager(relation.of_type(related_model)).load_only(
-                        leaf_column
+                        getattr(related_model, leaf_column)
                     )
                 )
-                query = query.options(Load(related_model).load_only(leaf_column))
+                query = query.options(
+                    Load(related_model).load_only(getattr(related_model, leaf_column))
+                )
         return query
 
     def apply_outer_select_joins(
@@ -313,16 +317,24 @@ class SQLAInterface(BaseInterface):
                 root_relation
             ) or self.is_relation_one_to_many(root_relation):
                 if outer_default_load:
+                    related_model = self.get_related_model(root_relation)
                     query = query.options(
-                        Load(self.obj).defaultload(root_relation).load_only(leaf_column)
+                        Load(self.obj)
+                        .defaultload(getattr(self.obj, root_relation))
+                        .load_only(getattr(related_model, leaf_column))
                     )
                 else:
+                    related_model = self.get_related_model(root_relation)
                     query = query.options(
-                        Load(self.obj).joinedload(root_relation).load_only(leaf_column)
+                        Load(self.obj)
+                        .joinedload(getattr(self.obj, root_relation))
+                        .load_only(getattr(related_model, leaf_column))
                     )
             else:
                 related_model = self.get_related_model(root_relation)
-                query = query.options(Load(related_model).load_only(leaf_column))
+                query = query.options(
+                    Load(related_model).load_only(getattr(related_model, leaf_column))
+                )
 
         return query
 
@@ -447,7 +459,7 @@ class SQLAInterface(BaseInterface):
         if select_columns and self.exists_col_to_many(select_columns):
             if select_columns and order_column:
                 select_columns = select_columns + [order_column]
-            outer_query = inner_query.from_self()
+            outer_query = inner_query._legacy_from_self()
             outer_query = self.apply_outer_select_joins(
                 outer_query, select_columns, outer_default_load=outer_default_load
             )
