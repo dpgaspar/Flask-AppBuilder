@@ -106,22 +106,21 @@ class ContactTimeChartView(GroupByChartView):
     ]
 
 
-db.create_all()
-fill_gender()
-appbuilder.add_view(
-    GroupModelView,
-    "List Groups",
-    icon="fa-folder-open-o",
-    category="Contacts",
-    category_icon="fa-envelope",
-)
-appbuilder.add_view(
-    ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
-)
-appbuilder.add_separator("Contacts")
-appbuilder.add_view(
-    ContactTimeChartView,
-    "Contacts Birth Chart",
-    icon="fa-dashboard",
-    category="Contacts",
-)
+with appbuilder.app.app_context():
+    appbuilder.add_view(
+        GroupModelView,
+        "List Groups",
+        icon="fa-folder-open-o",
+        category="Contacts",
+        category_icon="fa-envelope",
+    )
+    appbuilder.add_view(
+        ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
+    )
+    appbuilder.add_separator("Contacts")
+    appbuilder.add_view(
+        ContactTimeChartView,
+        "Contacts Birth Chart",
+        icon="fa-dashboard",
+        category="Contacts",
+    )
