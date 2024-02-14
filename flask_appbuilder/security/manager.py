@@ -258,6 +258,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_LASTNAME_FIELD", "sn")
             app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
 
+        if self.auth_type == AUTH_REMOTE_USER:
+            app.config.setdefault("AUTH_REMOTE_USER_ENV_VAR", "REMOTE_USER")
+
         # Rate limiting
         app.config.setdefault("AUTH_RATE_LIMITED", False)
         app.config.setdefault("AUTH_RATE_LIMIT", "10 per 20 second")
@@ -414,6 +417,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_user_registration_role_jmespath(self) -> str:
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"]
+
+    @property
+    def auth_remote_user_env_var(self) -> str:
+        return self.appbuilder.get_app.config["AUTH_REMOTE_USER_ENV_VAR"]
 
     @property
     def auth_roles_mapping(self) -> Dict[str, List[str]]:
@@ -1447,6 +1454,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         # If it's not a builtin role check against database store roles
         return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
 
+    def get_oid_identity_url(self, provider_name: str) -> Optional[str]:
+        """
+        Returns the OIDC identity provider URL
+        """
+        for provider in self.openid_providers:
+            if provider.get("name") == provider_name:
+                return provider.get("url")
+
     def get_user_roles(self, user) -> List[object]:
         """
         Get current user roles, if user is not authenticated returns the public role
@@ -2080,14 +2095,17 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def load_user(self, pk):
-        return self.get_user_by_id(int(pk))
+        user = self.get_user_by_id(int(pk))
+        if user.is_active:
+            return user
 
     def load_user_jwt(self, _jwt_header, jwt_data):
         identity = jwt_data["sub"]
         user = self.load_user(identity)
-        # Set flask g.user to JWT user, we can't do it on before request
-        g.user = user
-        return user
+        if user.is_active:
+            # Set flask g.user to JWT user, we can't do it on before request
+            g.user = user
+            return user
 
     @staticmethod
     def before_request():
