@@ -822,7 +822,7 @@ class OAuthAuthentikTestCase(unittest.TestCase):
             "iss": "https://authentik.mydomain.com/application/o/flask-appbuilder-test/",
             "sub": "2ac1102e7cf5a4b1cb2dd5adbe4761c551691ecd88991f78d0195d4d3d0cfcfa",
             "aud": "CLIENT_ID",
-            "exp": 1703257941,
+            "exp": 3203257941,
             "iat": 1700665941,
             "auth_time": 7282182129,  # 100 years from now ;)
             "acr": "goauthentik.io/providers/oauth2/default",
