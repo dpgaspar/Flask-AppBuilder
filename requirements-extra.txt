@@ -1,4 +1,4 @@
-Pillow~=10.0.1
+Pillow~=10.2.0
 cython==0.29.17
 mysqlclient==2.0.1
 psycopg2-binary==2.9.6
