@@ -1,0 +1,2 @@
+nose2[coverage_plugin]
+parameterized

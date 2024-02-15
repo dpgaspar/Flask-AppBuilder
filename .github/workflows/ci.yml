@@ -25,8 +25,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          pip install -r requirements/dev.txt
       - name: black
         run: black --check setup.py flask_appbuilder
       - name: flake8
@@ -78,9 +77,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
       - name: Run tests
         run: |
           nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
@@ -129,9 +128,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
       - name: Run tests
         run: |
           nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
@@ -178,9 +177,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev freetds-bin unixodbc-dev tdsodbc
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
           sudo cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
       - name: Run tests
         run: |
@@ -210,10 +209,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
-          pip install -r requirements-mongodb.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/mongodb.txt
       - name: Run tests
         run: |
           nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A 'mongo' tests
@@ -237,10 +235,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
-          pip install -r requirements-openid.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/openid.txt
       - name: Run tests
         run: |
           nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A 'openid' tests
