@@ -76,8 +76,8 @@ marshmallow==3.20.1
     # via
     #   flask-appbuilder
     #   marshmallow-sqlalchemy
-marshmallow-sqlalchemy==0.26.1
-    # via flask-appbuilder
+marshmallow-sqlalchemy==0.28.2
+    # via Flask-AppBuilder (setup.py)
 mdurl==0.1.2
     # via markdown-it-py
 ordered-set==4.1.0

@@ -58,7 +58,7 @@ setup(
         "Flask-JWT-Extended>=4.0.0, <5.0.0",
         "jsonschema>=3, <5",
         "marshmallow>=3.18.0, <4",
-        "marshmallow-sqlalchemy>=0.22.0, <0.27.0",
+        "marshmallow-sqlalchemy>=0.22.0, <0.29.0",
         "python-dateutil>=2.3, <3",
         "prison>=0.2.1, <1.0.0",
         "PyJWT>=2.0.0, <3.0.0",
