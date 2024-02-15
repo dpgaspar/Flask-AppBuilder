@@ -343,13 +343,35 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 "authorize_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/authorize",
             },
         },
+        {
+            "name": "authentik",
+            "token_key": "access_token",
+            "icon": "fa-fingerprint",
+            "remote_app": {
+                "api_base_url": "https://authentik.mydomain.com",
+                "client_kwargs": {
+                    "scope": "email profile",
+                    "verify_signature": True,
+                },
+                "access_token_url": (
+                    "https://authentik.mydomain.com/application/o/token/"
+                ),
+                "authorize_url": (
+                    "https://authentik.mydomain.com/application/o/authorize/"
+                ),
+                "request_token_url": None,
+                "client_id": "CLIENT_ID",
+                "client_secret": "CLIENT_SECRET",
+                'jwks_uri': 'https://authentik.mydomain.com/application/o/APPLICATION_NAME/jwks/',
+            },
+        },
     ]
 
 This needs a small explanation, you basically have five special keys:
 
 :name: the name of the provider:
     you can choose whatever you want, but FAB has builtin logic in `BaseSecurityManager.get_oauth_user_info()` for:
-    'azure', 'github', 'google', 'keycloak', 'keycloak_before_17', 'linkedin', 'okta', 'openshift', 'twitter'
+    'authentik', 'azure', 'github', 'google', 'keycloak', 'keycloak_before_17', 'linkedin', 'okta', 'openshift', 'twitter'
 
 :icon: the font-awesome icon for this provider
 
