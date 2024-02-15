@@ -4,7 +4,6 @@ black
 coverage
 flake8-import-order
 flake8
-hiro
 mypy
 mypy-extensions
 pip-tools
