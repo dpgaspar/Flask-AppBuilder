@@ -596,6 +596,10 @@ class AuthOIDView(AuthView):
                 remember_me = session["remember_me"]
                 session.pop("remember_me", None)
 
+            log.warning(
+                "AUTH_OID is deprecated and will be removed in version 5. "
+                "Migrate to other authentication methods."
+            )
             login_user(user, remember=remember_me)
             next_url = request.args.get("next", "")
             return redirect(get_safe_redirect(next_url))
