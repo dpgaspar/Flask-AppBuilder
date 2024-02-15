@@ -4,7 +4,7 @@ i18n Translations
 Introduction
 ------------
 
-F.A.B. has support for 15 languages (planning for some more):
+F.A.B. has support for 16 languages (planning for some more):
  - Chinese
  - Dutch
  - English
@@ -20,6 +20,7 @@ F.A.B. has support for 15 languages (planning for some more):
  - Greek
  - Korean
  - Italian
+ - Turkish
 
 This means that all messages, builtin on the framework are translated to these languages.
 

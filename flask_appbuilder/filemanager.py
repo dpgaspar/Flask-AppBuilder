@@ -204,17 +204,17 @@ class ImageManager(FileManager):
         """
         Resizes the image
 
-        :param image: The image object
-        :param size: size is PIL tuple (width, heigth, force) ex: (200,100,True)
+            :param image: The image object
+            :param size: size is PIL tuple (width, height, force) ex: (200,100,True)
         """
         (width, height, force) = size
 
         if image.size[0] > width or image.size[1] > height:
             if force:
-                return ImageOps.fit(self.image, (width, height), Image.ANTIALIAS)
+                return ImageOps.fit(self.image, (width, height), Image.LANCZOS)
             else:
                 thumb = self.image.copy()
-                thumb.thumbnail((width, height), Image.ANTIALIAS)
+                thumb.thumbnail((width, height), Image.LANCZOS)
                 return thumb
 
         return image
