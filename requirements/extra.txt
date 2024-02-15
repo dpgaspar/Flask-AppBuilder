@@ -18,6 +18,8 @@ cython==0.29.17
     # via -r requirements/extra.in
 idna==3.6
     # via requests
+jmespath==1.0.1
+    # via -r requirements/extra.in
 mysqlclient==2.0.1
     # via -r requirements/extra.in
 pillow==10.2.0

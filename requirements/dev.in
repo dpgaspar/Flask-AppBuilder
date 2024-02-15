@@ -5,7 +5,6 @@ coverage
 flake8-import-order
 flake8
 hiro
-jmespath
 mypy
 mypy-extensions
 pip-tools

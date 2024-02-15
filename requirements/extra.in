@@ -6,3 +6,4 @@ pyodbc
 requests
 Authlib
 python-ldap
+jmespath
