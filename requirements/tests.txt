@@ -6,6 +6,8 @@
 #
 coverage==7.4.1
     # via nose2
+hiro==1.1.1
+    # via -r requirements/tests.in
 nose2[coverage_plugin]==0.14.1
     # via -r requirements/tests.in
 parameterized==0.9.0
