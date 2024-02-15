@@ -5,6 +5,8 @@ from tests.base import FABTestCase
 
 
 class MVCOIDTestCase(FABTestCase):
+    openid = True
+
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder

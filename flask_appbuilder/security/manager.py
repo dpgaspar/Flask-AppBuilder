@@ -268,7 +268,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_OID:
             from flask_openid import OpenID
 
+            log.warning(
+                "AUTH_OID is deprecated and will be removed in version 5. "
+                "Migrate to other authentication methods."
+            )
             self.oid = OpenID(app)
+
         if self.auth_type == AUTH_OAUTH:
             from authlib.integrations.flask_client import OAuth
 
