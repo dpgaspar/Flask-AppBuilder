@@ -565,8 +565,12 @@ class AuthOIDView(AuthView):
             form = LoginForm_oid()
             if form.validate_on_submit():
                 session["remember_me"] = form.remember_me.data
+                identity_url = self.appbuilder.sm.get_oid_identity_url(form.openid.data)
+                if identity_url is None:
+                    flash(as_unicode(self.invalid_login_message), "warning")
+                    return redirect(self.appbuilder.get_url_for_login)
                 return self.appbuilder.sm.oid.try_login(
-                    form.openid.data,
+                    identity_url,
                     ask_for=self.oid_ask_for,
                     ask_for_optional=self.oid_ask_for_optional,
                 )
@@ -592,6 +596,10 @@ class AuthOIDView(AuthView):
                 remember_me = session["remember_me"]
                 session.pop("remember_me", None)
 
+            log.warning(
+                "AUTH_OID is deprecated and will be removed in version 5. "
+                "Migrate to other authentication methods."
+            )
             login_user(user, remember=remember_me)
             next_url = request.args.get("next", "")
             return redirect(get_safe_redirect(next_url))
@@ -604,7 +612,6 @@ class AuthOAuthView(AuthView):
 
     @expose("/login/")
     @expose("/login/<provider>")
-    @expose("/login/<provider>/<register>")
     def login(self, provider: Optional[str] = None) -> WerkzeugResponse:
         log.debug("Provider: %s", provider)
         if g.user is not None and g.user.is_authenticated:
@@ -713,7 +720,7 @@ class AuthRemoteUserView(AuthView):
 
     @expose("/login/")
     def login(self) -> WerkzeugResponse:
-        username = request.environ.get("REMOTE_USER")
+        username = request.environ.get(self.appbuilder.sm.auth_remote_user_env_var)
         if g.user is not None and g.user.is_authenticated:
             next_url = request.args.get("next", "")
             return redirect(get_safe_redirect(next_url))

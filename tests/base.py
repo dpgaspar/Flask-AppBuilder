@@ -14,6 +14,7 @@ from flask_appbuilder.const import (
     API_SECURITY_USERNAME_KEY,
     API_SECURITY_VERSION,
 )
+from flask_appbuilder.security.sqla.models import User
 from hiro import Timeline
 import jinja2
 from tests.const import (
@@ -130,7 +131,7 @@ class FABTestCase(unittest.TestCase):
         last_name="user",
         email="admin@fab.org",
         role_names=None,
-    ):
+    ) -> User:
         user = appbuilder.sm.find_user(username=username)
         if user:
             appbuilder.session.delete(user)

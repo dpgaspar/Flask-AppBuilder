@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     env:
       SQLALCHEMY_DATABASE_URI:
         postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
@@ -83,7 +83,7 @@ jobs:
           pip install -r requirements-extra.txt
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests --ignore-files="test_mongoengine\.py"
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -134,7 +134,7 @@ jobs:
           pip install -r requirements-extra.txt
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests --ignore-files="test_mongoengine\.py"
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -184,7 +184,7 @@ jobs:
           sudo cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests --ignore-files="test_mongoengine\.py"
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -193,7 +193,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     services:
       mongo:
         image: mongo:4.4.1-bionic
@@ -205,18 +205,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Run openldap
-        run: |
-          docker run -d \
-            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
-            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
-            -e LDAP_URI=ldap://openldap:1389 \
-            -e LDAP_BASE=dc=example,dc=org \
-            -e LDAP_ADMIN_USERNAME=admin \
-            -e LDAP_ADMIN_PASSWORD=admin_password \
-            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
-            -p 1389:1389 \
-            bitnami/openldap:2.6.4
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -228,7 +216,34 @@ jobs:
           pip install -r requirements-mongodb.txt
       - name: Run tests
         run: |
-          nosetests --stop -v --with-coverage --cover-package=flask_appbuilder tests/test_mongoengine.py
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A 'mongo' tests
+      - name: Upload code coverage
+        run: |
+          bash <(curl -s https://codecov.io/bash) -cF python
+
+  test-openid:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python-version: [3.8]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pip install -r requirements-extra.txt
+          pip install -r requirements-openid.txt
+      - name: Run tests
+        run: |
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A 'openid' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python

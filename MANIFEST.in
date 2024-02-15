@@ -5,4 +5,3 @@ prune *.pyc
 recursive-include flask_appbuilder/static *
 recursive-include flask_appbuilder/templates *
 recursive-include flask_appbuilder/translations *
-recursive-include flask_appbuilder/tests *

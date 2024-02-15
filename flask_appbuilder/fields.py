@@ -2,9 +2,13 @@ from __future__ import unicode_literals
 
 import operator
 
+from packaging import version
+import wtforms
 from wtforms import widgets
 from wtforms.fields import Field, SelectField, SelectFieldBase
 from wtforms.validators import ValidationError
+
+IS_WTFORMS_LESS_THEN_3_1_0 = version.parse(wtforms.__version__) < version.parse("3.1.0")
 
 
 class AJAXSelectField(Field):
@@ -130,10 +134,16 @@ class QuerySelectField(SelectFieldBase):
 
     def iter_choices(self):
         if self.allow_blank:
-            yield ("__None", self.blank_text, self.data is None)
+            if IS_WTFORMS_LESS_THEN_3_1_0:
+                yield ("__None", self.blank_text, self.data is None)
+            else:
+                yield ("__None", self.blank_text, self.data is None, {})
 
         for pk, obj in self._get_object_list():
-            yield (pk, self.get_label(obj), obj == self.data)
+            if IS_WTFORMS_LESS_THEN_3_1_0:
+                yield (pk, self.get_label(obj), obj == self.data)
+            else:
+                yield (pk, self.get_label(obj), obj == self.data, {})
 
     def process_formdata(self, valuelist):
         if valuelist:
@@ -203,7 +213,10 @@ class QuerySelectMultipleField(QuerySelectField):
 
     def iter_choices(self):
         for pk, obj in self._get_object_list():
-            yield (pk, self.get_label(obj), obj in self.data)
+            if IS_WTFORMS_LESS_THEN_3_1_0:
+                yield (pk, self.get_label(obj), obj in self.data)
+            else:
+                yield (pk, self.get_label(obj), obj in self.data, {})
 
     def process_formdata(self, valuelist):
         self._formdata = set(valuelist)

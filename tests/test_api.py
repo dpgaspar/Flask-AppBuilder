@@ -104,7 +104,6 @@ class APICSRFTestCase(FABTestCase):
 
 
 class APIDisableSecViewTestCase(FABTestCase):
-
     base_fab_endpoint = [
         "IndexView.index",
         "appbuilder.static",
@@ -136,7 +135,6 @@ class APIDisableSecViewTestCase(FABTestCase):
 
 
 class APIDisableOpenApiViewTestCase(FABTestCase):
-
     openapi_fab_endpoint = ["OpenApi.get", "SwaggerView.show"]
 
     def setUp(self):
@@ -903,7 +901,6 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model2_data(self.appbuilder.session, 1) as models:
-
             model2_id = models[0].id
             uri = f"api/v1/model2dottednotationapi/{model2_id}"
             rv = self.auth_client_get(client, token, uri)
@@ -964,7 +961,7 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model1_data(self.appbuilder.session, 1):
-            model_id = MODEL1_DATA_SIZE + 1
+            model_id = self.appbuilder.session.query(func.max(Model1.id)).scalar() + 1
             rv = self.auth_client_get(client, token, f"api/v1/model1api/{model_id}")
             self.assertEqual(rv.status_code, 404)
 
@@ -2938,7 +2935,6 @@ class APITestCase(FABTestCase):
         uri = "api/v1/modelwithpropertyapi/"
 
         with model_with_property_data(self.appbuilder.session, MODEL1_DATA_SIZE):
-
             rv = self.auth_client_get(client, token, uri)
             self.assertEqual(rv.status_code, 200)
             data = json.loads(rv.data.decode("utf-8"))

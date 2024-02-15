@@ -1,6 +1,65 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.3.11
+-----------------------------------
+
+- fix: openID provider validation flow (#2186) [Daniel Vaz Gaspar]
+- feat: support Auth0 OAuth2 (#2171) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.3.10
+-----------------------------------
+
+- fix: azure keep using upn if exists (#2163) [Daniel Vaz Gaspar]
+- docs: Update shield of supported Python versions (#2156) [Dosenpfand]
+- docs: update security policy (#2155) [Daniel Vaz Gaspar]
+- docs: improve LDAP auth auth_roles_mapping (#2149) [Daniel Vaz Gaspar]
+- docs: Update security docs to reflect LDAP casing issues (#2098) [Anders Bogsnes]
+- fix: old API api column edit (#2134) [Daniel Vaz Gaspar]
+- chore: add bootstrap min map (#2148) [Daniel Vaz Gaspar]
+- chore: Add support for Python 3.10, 3.11, 3.12 and drop 3.7 (#2147) [Dosenpfand]
+- chore: use npm for all frontend dependencies (#2144) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.3.9
+-----------------------------------
+
+- ci: create release script (#2142) [Daniel Vaz Gaspar]
+- fix: wtforms compat on 3.1.0 (#2138) [Daniel Vaz Gaspar]
+- docs: fix RTD config requirements (#2140) [Daniel Vaz Gaspar]
+- docs: fix RTD config (#2139) [Daniel Vaz Gaspar]
+- docs: add RTD required config (#2135) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.3.8
+-----------------------------------
+
+- fix: filter list UI spacing between elements (#2128) [Daniel Vaz Gaspar]
+- fix: add github sponsor (#2130) [Daniel Vaz Gaspar]
+- docs: add github sponsor (#2129) [Daniel Vaz Gaspar]
+- fix: swagger include js and css on static (#2127) [Daniel Vaz Gaspar]
+- fix: Remove erroring endpoint "/login/<provider>/<register>" from AuthOAuthView (#2120) [David Kalamarides]
+- fix: azure user info claims and JWT decode (#2121) [Daniel Vaz Gaspar]
+- fix: Validate Azure JWTs using `authlib` (#2112) [Daniel Wolf]
+- docs(typo): "preform" -> "perform" x4 (#2123) [Sam Firke]
+
+Improvements and Bug fixes on 4.3.7
+-----------------------------------
+
+- fix: swagger missing nonce (#2116) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.3.6
+-----------------------------------
+
+- fix: increase email field length (#2102) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.3.5
+-----------------------------------
+
+- fix: release tests exclusion (#2093) [Daniel Vaz Gaspar]
+- fix: make deletion in quicktemplates example work again (#2088) [Fabian Halkivaha]
+- fix: MVC form action, broken reset my password (#2091) [Daniel Vaz Gaspar]
+- chore: dont add 'tests' package to wheel (#2087) [cwegener]
+- chore(deps): bump pygments from 2.13.0 to 2.15.0 (#2089) [dependabot[bot]]
+
 Improvements and Bug fixes on 4.3.4
 -----------------------------------
 

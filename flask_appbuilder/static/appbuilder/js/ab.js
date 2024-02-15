@@ -2,27 +2,29 @@
 // AJAX REST call to server to fetch data for select2 Slaves
 //-----------------------------------------------------------
 function loadSelectDataSlave(elem) {
-    $(".my_select2_ajax_slave").each(function( index ) {
+    $(".my_select2_ajax_slave").each(function (index) {
         var elem = $(this);
         var master_id = elem.attr('master_id');
         var master_val = $('#' + master_id).val();
         if (master_val) {
             var endpoint = elem.attr('endpoint');
             endpoint = endpoint.replace("{{ID}}", master_val);
-            $.get( endpoint, function( data ) {
+            $.get(endpoint, function (data) {
                 elem.select2({data: data, placeholder: "Select", allowClear: true});
             });
+        } else {
+            elem.select2({
+                data: {id: "", text: ""},
+                placeholder: "Select",
+                allowClear: true
+            });
         }
-        else {
-            elem.select2({data: {id: "",text: ""}, placeholder: "Select", allowClear: true});
-        }
-        $('#' + master_id).on("change", function(e) {
-            var change_master_id = elem.attr('master_id');
+        $('#' + master_id).on("change", function (e) {
             var change_master_val = $('#' + master_id).val();
             var endpoint = elem.attr('endpoint');
             if (change_master_val) {
                 endpoint = endpoint.replace("{{ID}}", change_master_val);
-                $.get( endpoint, function( data ) {
+                $.get(endpoint, function (data) {
                     elem.select2({data: data, placeholder: "Select", allowClear: true});
                 });
             }
@@ -35,9 +37,9 @@ function loadSelectDataSlave(elem) {
 // AJAX REST call to server to fetch data for select2
 //----------------------------------------------------
 function loadSelectData() {
-    $(".my_select2_ajax").each(function( index ) {
+    $(".my_select2_ajax").each(function (index) {
         var elem = $(this);
-        $.get( $(this).attr('endpoint'), function( data ) {
+        $.get($(this).attr('endpoint'), function (data) {
             elem.select2({data: data, placeholder: "Select", allowClear: true});
         });
     });
@@ -47,23 +49,27 @@ function loadSelectData() {
 //---------------------------------------
 // Setup date time modal views, select2
 //---------------------------------------
-$(function() {
+$(function () {
 
-    $('.appbuilder_datetime').datetimepicker();
-    $('.appbuilder_date').datetimepicker({
-        pickTime: false });
+    $('.appbuilder_datetime').datepicker({
+        format: 'yyyy-mm-dd'
+    });
+    $('.appbuilder_date').datepicker({
+        format: 'yyyy-mm-dd',
+        pickTime: false
+    });
     $(".my_select2").select2(
         {placeholder: "Select a State", allowClear: true, theme: "bootstrap"}
     );
     $(".my_select2.readonly").select2("readonly", true);
     loadSelectData();
     loadSelectDataSlave();
-    $("a").tooltip({container:'.row', 'placement': 'bottom'});
+    $("a").tooltip({container: '.row', 'placement': 'bottom'});
 });
 
 
-$( ".my_change" ).on("change", function(e) {
-    var theForm=document.getElementById("model_form");
+$(".my_change").on("change", function (e) {
+    var theForm = document.getElementById("model_form");
     theForm.action = "";
     theForm.method = "get";
     theForm.trigger('submit');
@@ -74,7 +80,7 @@ $( ".my_change" ).on("change", function(e) {
 // Bootstrap modal, javascript alert
 //---------------------------------------
 function ab_alert(text) {
-    $('#modal-alert').on('show.bs.modal', function(e) {
+    $('#modal-alert').on('show.bs.modal', function (e) {
             $('.modal-text').text(text);
         }
     );
@@ -87,14 +93,14 @@ function ab_alert(text) {
 //---------------------------------------
 
 // On link attr "data-text" is set to the modal text
-$(function(){
-    $(".confirm").on('click', function() {
+$(function () {
+    $(".confirm").on('click', function () {
         $('.modal-text').text($(this).data('text'));
     });
 });
 
 // If positive confirmation on model follow link
-$('#modal-confirm').on('show.bs.modal', function(e) {
+$('#modal-confirm').on('show.bs.modal', function (e) {
     $(this).find('#modal-confirm-ok').attr('href', $(e.relatedTarget).data('href'));
 });
 

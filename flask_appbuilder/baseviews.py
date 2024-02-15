@@ -71,7 +71,6 @@ def expose_api(name="", url="", methods=("GET",), description=""):
 
 
 class AbstractViewApi:
-
     appbuilder: "AppBuilder"
     base_permissions: Optional[List[str]]
     class_permission_name: str
@@ -1069,7 +1068,6 @@ class BaseCRUDView(BaseModelView):
         widgets=None,
         **args,
     ):
-
         """get joined base filter and current active filter for query"""
         widgets = widgets or {}
         actions = actions or self.actions

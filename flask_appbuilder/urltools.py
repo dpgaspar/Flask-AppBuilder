@@ -8,8 +8,8 @@ log = logging.getLogger(__name__)
 
 class Stack(object):
     """
-        Stack data structure will not insert
-        equal sequential data
+    Stack data structure will not insert
+    equal sequential data
     """
 
     def __init__(self, list=None, size=5):
@@ -36,7 +36,7 @@ class Stack(object):
 
 def get_group_by_args():
     """
-        Get page arguments for group by
+    Get page arguments for group by
     """
     group_by = request.args.get("group_by")
     if not group_by:
@@ -46,10 +46,10 @@ def get_group_by_args():
 
 def get_page_args():
     """
-        Get page arguments, returns a dictionary
-        { <VIEW_NAME>: PAGE_NUMBER }
+    Get page arguments, returns a dictionary
+    { <VIEW_NAME>: PAGE_NUMBER }
 
-        Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
+    Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
 
     """
     pages = {}
@@ -62,10 +62,10 @@ def get_page_args():
 
 def get_page_size_args():
     """
-        Get page size arguments, returns an int
-        { <VIEW_NAME>: PAGE_NUMBER }
+    Get page size arguments, returns an int
+    { <VIEW_NAME>: PAGE_NUMBER }
 
-        Arguments are passed: psize_<VIEW_NAME>=<PAGE_SIZE>
+    Arguments are passed: psize_<VIEW_NAME>=<PAGE_SIZE>
 
     """
     page_sizes = {}
@@ -78,10 +78,10 @@ def get_page_size_args():
 
 def get_order_args():
     """
-        Get order arguments, return a dictionary
-        { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
+    Get order arguments, return a dictionary
+    { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
 
-        Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
+    Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
 
     """
     orders = {}

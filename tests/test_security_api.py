@@ -444,6 +444,8 @@ class RolePermissionAPITestCase(FABTestCase):
             if hasattr(b, "datamodel") and b.datamodel.session is not None:
                 b.datamodel.session = self.db.session
 
+        self.create_default_users(self.appbuilder)
+
     def tearDown(self):
         self.appbuilder.session.close()
         engine = self.appbuilder.session.get_bind(mapper=None, clause=None)

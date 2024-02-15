@@ -35,7 +35,6 @@ class FileManager(object):
         permission=0o755,
         **kwargs
     ):
-
         ctx = app_stack.top
 
         if "UPLOAD_FOLDER" in ctx.app.config and not base_path:
@@ -85,8 +84,8 @@ class FileManager(object):
 
 class ImageManager(FileManager):
     """
-        Image Manager will manage your image files referenced on SQLAlchemy Model
-        will save files on IMG_UPLOAD_FOLDER as <uuid>_sep_<filename>
+    Image Manager will manage your image files referenced on SQLAlchemy Model
+    will save files on IMG_UPLOAD_FOLDER as <uuid>_sep_<filename>
     """
 
     keep_image_formats = ("PNG",)
@@ -103,7 +102,6 @@ class ImageManager(FileManager):
         permission=0o755,
         **kwargs
     ):
-
         # Check if PIL is installed
         if Image is None:
             raise Exception("PIL library was not found")
@@ -161,10 +159,10 @@ class ImageManager(FileManager):
     # Saving
     def save_file(self, data, filename, size=None, thumbnail_size=None):
         """
-            Saves an image File
+        Saves an image File
 
-            :param data: FileStorage from Flask form upload field
-            :param filename: Filename with full path
+        :param data: FileStorage from Flask form upload field
+        :param filename: Filename with full path
 
         """
         max_size = size or self.max_size
@@ -204,19 +202,19 @@ class ImageManager(FileManager):
 
     def resize(self, image, size):
         """
-            Resizes the image
+        Resizes the image
 
             :param image: The image object
-            :param size: size is PIL tuple (width, heigth, force) ex: (200,100,True)
+            :param size: size is PIL tuple (width, height, force) ex: (200,100,True)
         """
         (width, height, force) = size
 
         if image.size[0] > width or image.size[1] > height:
             if force:
-                return ImageOps.fit(self.image, (width, height), Image.ANTIALIAS)
+                return ImageOps.fit(self.image, (width, height), Image.LANCZOS)
             else:
                 thumb = self.image.copy()
-                thumb.thumbnail((width, height), Image.ANTIALIAS)
+                thumb.thumbnail((width, height), Image.LANCZOS)
                 return thumb
 
         return image
@@ -241,23 +239,23 @@ def uuid_namegen(file_data):
 
 def get_file_original_name(name):
     """
-        Use this function to get the user's original filename.
-        Filename is concatenated with <UUID>_sep_<FILE NAME>, to avoid collisions.
-        Use this function on your models on an additional function
+    Use this function to get the user's original filename.
+    Filename is concatenated with <UUID>_sep_<FILE NAME>, to avoid collisions.
+    Use this function on your models on an additional function
 
-        ::
+    ::
 
-            class ProjectFiles(Base):
-                id = Column(Integer, primary_key=True)
-                file = Column(FileColumn, nullable=False)
+        class ProjectFiles(Base):
+            id = Column(Integer, primary_key=True)
+            file = Column(FileColumn, nullable=False)
 
-                def file_name(self):
-                    return get_file_original_name(str(self.file))
+            def file_name(self):
+                return get_file_original_name(str(self.file))
 
-        :param name:
-            The file name from model
-        :return:
-            Returns the user's original filename removes <UUID>_sep_
+    :param name:
+        The file name from model
+    :return:
+        Returns the user's original filename removes <UUID>_sep_
     """
     re_match = re.findall(".*_sep_(.*)", name)
     if re_match:

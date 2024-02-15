@@ -73,17 +73,17 @@ def echo_header(title):
 @click.group()
 def cli_app():
     """
-        This is a set of commands to ease the creation and maintenance
-        of your flask-appbuilder applications.
+    This is a set of commands to ease the creation and maintenance
+    of your flask-appbuilder applications.
 
-        All commands that import your app will assume by default that
-        you're running on your projects directory just before the app directory.
-        They will also assume that __init__.py initializes AppBuilder
-        like this (using a var named appbuilder) just like the skeleton app::
+    All commands that import your app will assume by default that
+    you're running on your projects directory just before the app directory.
+    They will also assume that __init__.py initializes AppBuilder
+    like this (using a var named appbuilder) just like the skeleton app::
 
-        appbuilder = AppBuilder(......)
+    appbuilder = AppBuilder(......)
 
-        If you're using different namings use app and appbuilder parameters.
+    If you're using different namings use app and appbuilder parameters.
     """
     pass
 
@@ -100,7 +100,7 @@ def cli_app():
 @click.password_option()
 def reset_password(app, appbuilder, username, password):
     """
-        Resets a user's password
+    Resets a user's password
     """
     _appbuilder = import_application(app, appbuilder)
     user = _appbuilder.sm.find_user(username=username)
@@ -121,7 +121,7 @@ def reset_password(app, appbuilder, username, password):
 @click.password_option()
 def create_admin(app, appbuilder, username, firstname, lastname, email, password):
     """
-        Creates an admin user
+    Creates an admin user
     """
     auth_type = {
         c.AUTH_DB: "Database Authentications",
@@ -160,7 +160,7 @@ def create_admin(app, appbuilder, username, firstname, lastname, email, password
 @click.password_option()
 def create_user(app, appbuilder, role, username, firstname, lastname, email, password):
     """
-        Create a user
+    Create a user
     """
     _appbuilder = import_application(app, appbuilder)
     role_object = _appbuilder.sm.find_role(role)
@@ -181,7 +181,7 @@ def create_user(app, appbuilder, role, username, firstname, lastname, email, pas
 @click.option("--debug", default=True)
 def run(app, appbuilder, host, port, debug):
     """
-        Runs Flask dev web server.
+    Runs Flask dev web server.
     """
     _appbuilder = import_application(app, appbuilder)
     _appbuilder.get_app.run(host=host, port=port, debug=debug)
@@ -192,7 +192,7 @@ def run(app, appbuilder, host, port, debug):
 @click.option("--appbuilder", default="appbuilder", help="your AppBuilder object")
 def create_db(app, appbuilder):
     """
-        Create all your database objects (SQLAlchemy specific).
+    Create all your database objects (SQLAlchemy specific).
     """
     from flask_appbuilder.models.sqla import Base
 
@@ -207,7 +207,7 @@ def create_db(app, appbuilder):
 @click.option("--appbuilder", default="appbuilder", help="your AppBuilder object")
 def version(app, appbuilder):
     """
-        Flask-AppBuilder package version
+    Flask-AppBuilder package version
     """
     _appbuilder = import_application(app, appbuilder)
     click.echo(
@@ -222,7 +222,7 @@ def version(app, appbuilder):
 @click.option("--appbuilder", default="appbuilder", help="your AppBuilder object")
 def security_cleanup(app, appbuilder):
     """
-        Cleanup unused permissions from views and roles.
+    Cleanup unused permissions from views and roles.
     """
     _appbuilder = import_application(app, appbuilder)
     _appbuilder.security_cleanup()
@@ -234,7 +234,7 @@ def security_cleanup(app, appbuilder):
 @click.option("--appbuilder", default="appbuilder", help="your AppBuilder object")
 def list_views(app, appbuilder):
     """
-        List all registered views
+    List all registered views
     """
     _appbuilder = import_application(app, appbuilder)
     echo_header("List of registered views")
@@ -251,7 +251,7 @@ def list_views(app, appbuilder):
 @click.option("--appbuilder", default="appbuilder", help="your AppBuilder object")
 def list_users(app, appbuilder):
     """
-        List all users on the database
+    List all users on the database
     """
     _appbuilder = import_application(app, appbuilder)
     echo_header("List of users")
@@ -273,7 +273,7 @@ def list_users(app, appbuilder):
 )
 def babel_extract(config, input, output, target, keywords):
     """
-        Babel, Extracts and updates all messages marked for translation
+    Babel, Extracts and updates all messages marked for translation
     """
     click.echo(
         click.style(
@@ -302,7 +302,7 @@ def babel_extract(config, input, output, target, keywords):
 )
 def babel_compile(target):
     """
-        Babel, Compiles all translations
+    Babel, Compiles all translations
     """
     click.echo(click.style("Starting Compile target:{0}".format(target), fg="green"))
     os.popen("pybabel compile -f -d {0}".format(target))
@@ -323,7 +323,7 @@ def babel_compile(target):
 )
 def create_app(name, engine):
     """
-        Create a Skeleton application (needs internet connection to github)
+    Create a Skeleton application (needs internet connection to github)
     """
     try:
         if engine.lower() == "sqlalchemy":
@@ -362,7 +362,7 @@ def create_app(name, engine):
 )
 def create_addon(name):
     """
-        Create a Skeleton AddOn (needs internet connection to github)
+    Create a Skeleton AddOn (needs internet connection to github)
     """
     try:
         full_name = "fab_addon_" + name
@@ -392,7 +392,7 @@ def create_addon(name):
 )
 def collect_static(static_folder):
     """
-        Copies flask-appbuilder static files to your projects static folder
+    Copies flask-appbuilder static files to your projects static folder
     """
     appbuilder_static_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "static/appbuilder"

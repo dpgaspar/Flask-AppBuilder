@@ -15,10 +15,10 @@ log = logging.getLogger(__name__)
 
 class BaseChartView(BaseModelView):
     """
-        This is the base class for all chart views.
-        Use DirectByChartView or GroupByChartView, override their properties
-         and their base classes
-        (BaseView, BaseModelView, BaseChartView) to customise your charts
+    This is the base class for all chart views.
+    Use DirectByChartView or GroupByChartView, override their properties
+     and their base classes
+    (BaseView, BaseModelView, BaseChartView) to customise your charts
     """
 
     chart_template = "appbuilder/general/charts/chart.html"
@@ -60,8 +60,8 @@ class BaseChartView(BaseModelView):
 
     def _get_view_widget(self, **kwargs):
         """
-            :return:
-                Returns a widget
+        :return:
+            Returns a widget
         """
         return self._get_chart_widget(**kwargs).get("chart")
 
@@ -139,7 +139,7 @@ class GroupByChartView(BaseChartView):
 
     def get_group_by_class(self, definition):
         """
-            intantiates the processing class (Direct or Grouped) and returns it.
+        intantiates the processing class (Direct or Grouped) and returns it.
         """
         group_by = definition["group"]
         series = definition["series"]
@@ -160,7 +160,6 @@ class GroupByChartView(BaseChartView):
         definition="",
         **args
     ):
-
         height = height or self.height
         widgets = widgets or dict()
         joined_filters = filters.get_joined_filters(self._base_filters)
@@ -221,45 +220,45 @@ class GroupByChartView(BaseChartView):
 
 class DirectByChartView(GroupByChartView):
     """
-        Use this class to display charts with multiple series,
-        based on columns or methods defined on models.
-        You can display multiple charts on the same view.
+    Use this class to display charts with multiple series,
+    based on columns or methods defined on models.
+    You can display multiple charts on the same view.
 
-        Default routing point is '/chart'
+    Default routing point is '/chart'
 
-        Setup definitions property to configure the chart
+    Setup definitions property to configure the chart
 
-        :label: (optional) String label to display on chart selection.
-        :group: String with the column name or method from model.
-        :formatter: (optional) function that formats the output of 'group' key
-        :series: A list of tuples with the aggregation function and the column name
-                to apply the aggregation
+    :label: (optional) String label to display on chart selection.
+    :group: String with the column name or method from model.
+    :formatter: (optional) function that formats the output of 'group' key
+    :series: A list of tuples with the aggregation function and the column name
+            to apply the aggregation
 
-        The **definitions** property respects the following grammar::
+    The **definitions** property respects the following grammar::
+
+        definitions = [
+                {
+                 'label': 'label for chart definition',
+                 'group': '<COLNAME>'|'<MODEL FUNCNAME>',
+                 'formatter': <FUNC FORMATTER FOR GROUP COL>,
+                 'series': ['<COLNAME>'|'<MODEL FUNCNAME>',...]
+                }, ...
+              ]
+
+    example::
+
+        class CountryDirectChartView(DirectByChartView):
+            datamodel = SQLAInterface(CountryStats)
+            chart_title = 'Direct Data Example'
 
             definitions = [
-                    {
-                     'label': 'label for chart definition',
-                     'group': '<COLNAME>'|'<MODEL FUNCNAME>',
-                     'formatter': <FUNC FORMATTER FOR GROUP COL>,
-                     'series': ['<COLNAME>'|'<MODEL FUNCNAME>',...]
-                    }, ...
-                  ]
-
-        example::
-
-            class CountryDirectChartView(DirectByChartView):
-                datamodel = SQLAInterface(CountryStats)
-                chart_title = 'Direct Data Example'
-
-                definitions = [
-                    {
-                        'label': 'Unemployment',
-                        'group': 'stat_date',
-                        'series': ['unemployed_perc',
-                            'college_perc']
-                    }
-                ]
+                {
+                    'label': 'Unemployment',
+                    'group': 'stat_date',
+                    'series': ['unemployed_perc',
+                        'college_perc']
+                }
+            ]
 
     """
 
@@ -293,7 +292,6 @@ class BaseSimpleGroupByChartView(BaseChartView):  # pragma: no cover
         height=None,
         **args
     ):
-
         height = height or self.height
         widgets = widgets or dict()
         group_by = group_by or self.group_by_columns[0]
@@ -333,8 +331,8 @@ class BaseSimpleDirectChartView(BaseChartView):  # pragma: no cover
 
     def get_group_by_columns(self):
         """
-            returns the keys from direct_columns
-            Used in template, so that user can choose from options
+        returns the keys from direct_columns
+        Used in template, so that user can choose from options
         """
         return list(self.direct_columns.keys())
 
@@ -348,7 +346,6 @@ class BaseSimpleDirectChartView(BaseChartView):  # pragma: no cover
         height=None,
         **args
     ):
-
         height = height or self.height
         widgets = widgets or dict()
         joined_filters = filters.get_joined_filters(self._base_filters)
@@ -377,11 +374,11 @@ class BaseSimpleDirectChartView(BaseChartView):  # pragma: no cover
 
 class ChartView(BaseSimpleGroupByChartView):  # pragma: no cover
     """
-        **DEPRECATED**
+    **DEPRECATED**
 
-        Provides a simple (and hopefully nice) way to draw charts on your application.
+    Provides a simple (and hopefully nice) way to draw charts on your application.
 
-        This will show Google Charts based on group by of your tables.
+    This will show Google Charts based on group by of your tables.
     """
 
     @expose("/chart/<group_by>")
@@ -410,12 +407,12 @@ class ChartView(BaseSimpleGroupByChartView):  # pragma: no cover
 
 class TimeChartView(BaseSimpleGroupByChartView):  # pragma: no cover
     """
-        **DEPRECATED**
+    **DEPRECATED**
 
-        Provides a simple way to draw some time charts on your application.
+    Provides a simple way to draw some time charts on your application.
 
-        This will show Google Charts based on count and group
-        by month and year for your tables.
+    This will show Google Charts based on count and group
+    by month and year for your tables.
     """
 
     chart_template = "appbuilder/general/charts/chart_time.html"
@@ -432,7 +429,6 @@ class TimeChartView(BaseSimpleGroupByChartView):  # pragma: no cover
         height=None,
         **args
     ):
-
         height = height or self.height
         widgets = widgets or dict()
         group_by = group_by or self.group_by_columns[0]
@@ -487,17 +483,17 @@ class TimeChartView(BaseSimpleGroupByChartView):  # pragma: no cover
 
 class DirectChartView(BaseSimpleDirectChartView):  # pragma: no cover
     """
-        **DEPRECATED**
+    **DEPRECATED**
 
-        This class is responsible for displaying a Google chart with
-        direct model values. Chart widget uses json.
-        No group by is processed, example::
+    This class is responsible for displaying a Google chart with
+    direct model values. Chart widget uses json.
+    No group by is processed, example::
 
-            class StatsChartView(DirectChartView):
-                datamodel = SQLAInterface(Stats)
-                chart_title = lazy_gettext('Statistics')
-                direct_columns = {'Some Stats': ('X_col_1', 'stat_col_1', 'stat_col_2'),
-                                  'Other Stats': ('X_col2', 'stat_col_3')}
+        class StatsChartView(DirectChartView):
+            datamodel = SQLAInterface(Stats)
+            chart_title = lazy_gettext('Statistics')
+            direct_columns = {'Some Stats': ('X_col_1', 'stat_col_1', 'stat_col_2'),
+                              'Other Stats': ('X_col2', 'stat_col_3')}
 
     """
 

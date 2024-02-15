@@ -19,7 +19,6 @@ except ImportError:
 
 
 class BS3FileUploadFieldWidget(object):
-
     empty_template = (
         '<div class="input-group">'
         '<span class="input-group-addon"><i class="fa fa-upload"></i>'
@@ -57,7 +56,6 @@ class BS3FileUploadFieldWidget(object):
 
 
 class BS3ImageUploadFieldWidget(object):
-
     empty_template = (
         '<div class="input-group">'
         '<span class="input-group-addon"><span class="glyphicon glyphicon-upload"></span>'
@@ -105,22 +103,22 @@ class BS3ImageUploadFieldWidget(object):
 # Fields
 class FileUploadField(fields.StringField):
     """
-        Customizable file-upload field.
+    Customizable file-upload field.
 
-        Saves file to configured path, handles updates and deletions.
-        Inherits from `StringField`, resulting filename will be stored as string.
+    Saves file to configured path, handles updates and deletions.
+    Inherits from `StringField`, resulting filename will be stored as string.
     """
 
     widget = BS3FileUploadFieldWidget()
 
     def __init__(self, label=None, validators=None, filemanager=None, **kwargs):
         """
-            Constructor.
+        Constructor.
 
-            :param label:
-                Display label
-            :param validators:
-                Validators
+        :param label:
+            Display label
+        :param validators:
+            Validators
         """
 
         self.filemanager = filemanager or FileManager()
@@ -193,13 +191,12 @@ class FileUploadField(fields.StringField):
 
 class ImageUploadField(fields.StringField):
     """
-        Image upload field.
+    Image upload field.
     """
 
     widget = BS3ImageUploadFieldWidget()
 
     def __init__(self, label=None, validators=None, imagemanager=None, **kwargs):
-
         self.imagemanager = imagemanager or ImageManager()
         self._should_delete = False
         super().__init__(label, validators, **kwargs)

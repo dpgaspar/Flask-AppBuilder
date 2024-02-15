@@ -9,7 +9,6 @@ def _include_filters(obj):
 
 
 class GenericInterface(BaseInterface):
-
     filter_converter_class = filters.GenericFilterConverter
 
     def __init__(self, obj, session=None):
@@ -25,7 +24,6 @@ class GenericInterface(BaseInterface):
         page=None,
         page_size=None,
     ):
-
         query = self.session.query(self.obj)
         if filters:
             query = filters.apply_all(query)
@@ -68,7 +66,7 @@ class GenericInterface(BaseInterface):
 
     def get_keys(self, lst):
         """
-            return a list of pk values from object list
+        return a list of pk values from object list
         """
         pk_name = self.get_pk_name()
         return [getattr(item, pk_name) for item in lst]

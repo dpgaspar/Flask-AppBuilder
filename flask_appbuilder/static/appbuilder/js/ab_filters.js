@@ -51,7 +51,7 @@ var AdminFilters = function (element, labels, form, filters, active_filters) {
             $field.attr('class', ' filter_val ' + $field.attr('class'));
         }
         $el.append(
-            $('<td/>').append($field)
+            $('<td class="filter"/>').append($field)
         );
     }
 
@@ -81,7 +81,7 @@ var AdminFilters = function (element, labels, form, filters, active_filters) {
             cx += 1;
         });
         $el.append(
-            $('<td />').append($select)
+            $('<td class="filter"/>').append($select)
         );
         // avoids error
         // if (i_option === -1) { $select.select2(); }
@@ -112,12 +112,13 @@ var AdminFilters = function (element, labels, form, filters, active_filters) {
             $field_inner = $("input", $($field))
             $field_inner.attr('name', '_flt_0_' + name);
             $field_inner.attr('class', ' filter_val ' + $field_inner.attr('class'));
+            $field_inner.attr('style', "width: 100%");
         } else {
             $field.attr('name', '_flt_0_' + name);
             $field.attr('class', ' filter_val ' + $field.attr('class'));
         }
         $el.append(
-            $('<td/>').append($field)
+            $('<td class="filter"/>').append($field)
         );
         if ($field.hasClass("my_select2")) {
             $field.select2({

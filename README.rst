@@ -8,7 +8,7 @@ Flask App Builder
         :alt: PyPI
         :target: https://pypi.org/project/Flask-AppBuilder/
 
-.. image:: https://img.shields.io/badge/pyversions-3.6%2C3.7-blue.svg
+.. image:: https://img.shields.io/badge/pyversions-3.8%2C%203.9%2C%203.10%2C%203.11%2C%203.12-blue.svg
         :target: https://www.python.org/
 
 .. image:: https://codecov.io/github/dpgaspar/Flask-AppBuilder/coverage.svg?branch=master

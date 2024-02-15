@@ -41,10 +41,10 @@ log = logging.getLogger(__name__)
 
 class FieldConverter(object):
     """
-        Helper class that converts model fields into WTForm fields
+    Helper class that converts model fields into WTForm fields
 
-        it has a conversion table with type method checks from model
-        interfaces, these methods are invoked with a column name
+    it has a conversion table with type method checks from model
+    interfaces, these methods are invoked with a column name
     """
 
     conversion_table = (
@@ -109,8 +109,8 @@ class FieldConverter(object):
 
 class GeneralModelConverter(object):
     """
-        Returns a form from a model only one public exposed
-        method 'create_form'
+    Returns a form from a model only one public exposed
+    method 'create_form'
     """
 
     def __init__(self, datamodel):
@@ -153,9 +153,9 @@ class GeneralModelConverter(object):
         form_props,
     ):
         """
-            Creates a WTForm field for many to one related fields,
-            will use a Select box based on a query. Will only
-            work with SQLAlchemy interface.
+        Creates a WTForm field for many to one related fields,
+        will use a Select box based on a query. Will only
+        work with SQLAlchemy interface.
         """
         query_func = self._get_related_query_func(col_name, filter_rel_fields)
         get_pk_func = self._get_related_pk_func(col_name)
@@ -273,28 +273,28 @@ class GeneralModelConverter(object):
         filter_rel_fields=None,
     ):
         """
-            Converts a model to a form given
+        Converts a model to a form given
 
-            :param label_columns:
-                A dictionary with the column's labels.
-            :param inc_columns:
-                A list with the columns to include
-            :param description_columns:
-                A dictionary with a description for cols.
-            :param validators_columns:
-                A dictionary with WTForms validators ex::
+        :param label_columns:
+            A dictionary with the column's labels.
+        :param inc_columns:
+            A list with the columns to include
+        :param description_columns:
+            A dictionary with a description for cols.
+        :param validators_columns:
+            A dictionary with WTForms validators ex::
 
-                    validators={'personal_email':EmailValidator}
+                validators={'personal_email':EmailValidator}
 
-            :param extra_fields:
-                A dictionary containing column names and a WTForm
-                Form fields to be added to the form, these fields do not
-                 exist on the model itself ex::
+        :param extra_fields:
+            A dictionary containing column names and a WTForm
+            Form fields to be added to the form, these fields do not
+             exist on the model itself ex::
 
-                    extra_fields={'some_col':BooleanField('Some Col', default=False)}
+                extra_fields={'some_col':BooleanField('Some Col', default=False)}
 
-            :param filter_rel_fields:
-                A filter to be applied on relationships
+        :param filter_rel_fields:
+            A filter to be applied on relationships
         """
         label_columns = label_columns or {}
         inc_columns = inc_columns or []
@@ -319,7 +319,7 @@ class GeneralModelConverter(object):
 
 class DynamicForm(FlaskForm):
     """
-        Refresh method will force select field to refresh
+    Refresh method will force select field to refresh
     """
 
     @classmethod
