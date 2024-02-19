@@ -1,6 +1,27 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.4.0
+-----------------------------------
+
+- chore(deps): bump the github-actions group with 4 updates (#2201) [dependabot[bot]]
+- fix: python versions setup.py (#2204) [Daniel Vaz Gaspar]
+- ci: refactor requirements structure and improve dependabot config (#2198) [Daniel Vaz Gaspar]
+- chore(deps): bump jinja2 from 3.0.3 to 3.1.3 (#2180) [dependabot[bot]]
+- fix: authentik test (#2199) [Daniel Vaz Gaspar]
+- feat: Added authentik as new identity provider (#2168) [Jasper Schoenmaker]
+- chore(deps): bump requests from 2.26.0 to 2.31.0 (#2050) [dependabot[bot]]
+- docs: updated Flask-Babel link and fix typo (#2166) [Gughanathan M]
+- chore: bump several non base dependencies (#2197) [Daniel Vaz Gaspar]
+- fix: Increase upper bound on marshmallow-sqlalchemy (#2191) [spike77453]
+- chore: remove email_validator constraint (#2167) [Marcus Lim]
+- chore: Upgrade to Pillow 10.0.1 (#2136) [Dosenpfand]
+- chore(docs): Update i18n.rst for Turkish (#2187) [coteli]
+- chore: upgrade werkzeug and Flask, deprecate OpenID and MongoEngine (#2196) [Daniel Vaz Gaspar]
+- feat: Turkish translations (#2185) [coteli]
+- feat: AUTH_REMOTE_USER_ENV_VAR config key for auth REMOTE_USER type (#2193) [Daniel Vaz Gaspar]
+- fix: don't load inactive users with sessions (#2192) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.3.11
 -----------------------------------
 
