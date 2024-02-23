@@ -224,8 +224,19 @@ class UserModelView(ModelView):
             {"fields": ["first_name", "last_name", "email"], "expanded": True},
         ),
     ]
-
-    search_exclude_columns = ["password"]
+    search_columns = [
+        "first_name",
+        "last_name",
+        "username",
+        "email",
+        "active",
+        "roles",
+        "created_on",
+        "changed_on",
+        "last_login",
+        "login_count",
+        "fail_login_count",
+    ]
 
     add_columns = ["first_name", "last_name", "username", "active", "email", "roles"]
     edit_columns = ["first_name", "last_name", "username", "active", "email", "roles"]
