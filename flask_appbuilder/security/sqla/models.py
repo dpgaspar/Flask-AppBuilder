@@ -64,7 +64,6 @@ class Role(Model):
         "PermissionView",
         secondary=assoc_permissionview_role,
         backref="role",
-        lazy="dynamic",
     )
 
     def __repr__(self):
