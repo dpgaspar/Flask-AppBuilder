@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.4.1rc1
+-----------------------------------
+
+- fix: performance issues on user and roles list (#2209) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.4.0
 -----------------------------------
 
