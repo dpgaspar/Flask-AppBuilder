@@ -61,7 +61,9 @@ class Role(Model):
     id = Column(Integer, Sequence("ab_role_id_seq"), primary_key=True)
     name = Column(String(64), unique=True, nullable=False)
     permissions = relationship(
-        "PermissionView", secondary=assoc_permissionview_role, backref="role"
+        "PermissionView",
+        secondary=assoc_permissionview_role,
+        backref="role",
     )
 
     def __repr__(self):
@@ -73,9 +75,9 @@ class PermissionView(Model):
     __table_args__ = (UniqueConstraint("permission_id", "view_menu_id"),)
     id = Column(Integer, Sequence("ab_permission_view_id_seq"), primary_key=True)
     permission_id = Column(Integer, ForeignKey("ab_permission.id"))
-    permission = relationship("Permission")
+    permission = relationship("Permission", lazy="joined")
     view_menu_id = Column(Integer, ForeignKey("ab_view_menu.id"))
-    view_menu = relationship("ViewMenu")
+    view_menu = relationship("ViewMenu", lazy="joined")
 
     def __repr__(self):
         return str(self.permission).replace("_", " ") + " on " + str(self.view_menu)

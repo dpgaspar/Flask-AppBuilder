@@ -109,7 +109,11 @@ class ListFilterTestCase(BaseMVCTestCase):
         class Model1View(ModelView):
             datamodel = SQLAInterface(Model1)
 
+        class Model2View(ModelView):
+            datamodel = SQLAInterface(Model2)
+
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
+        self.appbuilder.add_view(Model2View, "Model2", category="Model2")
 
     def test_list_filter_starts_with(self):
         """
@@ -181,8 +185,7 @@ class ListFilterTestCase(BaseMVCTestCase):
         with self.app.test_client() as c:
             self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-            # Roles doesn't exists
-            rv = c.get("/users/list/?_flt_0_created_by=aaaa", follow_redirects=True)
+            rv = c.get("/model2view/list/?_flt_0_group=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
             if self.db.session.bind.dialect.name != "mysql":
                 data = rv.data.decode("utf-8")
@@ -196,7 +199,7 @@ class ListFilterTestCase(BaseMVCTestCase):
             self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
 
             # Roles doesn't exists
-            rv = c.get("/users/list/?_flt_1_created_by=aaaa", follow_redirects=True)
+            rv = c.get("/model2view/list/?_flt_1_group=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
             if self.db.session.bind.dialect.name != "mysql":
                 data = rv.data.decode("utf-8")
