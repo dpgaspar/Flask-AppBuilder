@@ -17,7 +17,7 @@ Direct Data Charts
 These charts can display multiple series, based on columns or methods defined on models.
 You can display multiple charts on the same view.
 
-Let's create a simple model first, the gold is to display a chart showing the unemployment evolution
+Let's create a simple model first, the goal is to display a chart showing the unemployment evolution
 versus the percentage of the population with higher education, our model will be::
 
     class CountryStats(Model):
