@@ -2,20 +2,20 @@ import datetime
 import logging
 import re
 
-try:
-    from flask_sqlalchemy import DefaultMeta, Model as FSQLAlchemyModel
-except ImportError:
-    from flask_sqlalchemy.model import (  # noqa
-        DefaultMeta,
-        Model as FSQLAlchemyModel,
-    )
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import (
+    _QueryProperty,
+    DefaultMeta,
+    get_state,
+    SessionBase,
+    SignallingSession,
+    SQLAlchemy,
+)
+from sqlalchemy import orm
 
-
 try:
-    from sqlalchemy.ext.declarative import as_declarative, declarative_base
+    from sqlalchemy.ext.declarative import as_declarative
 except ImportError:
-    from sqlalchemy.ext.declarative.api import as_declarative  # noqa
+    from sqlalchemy.ext.declarative.api import as_declarative
 
 try:
     from sqlalchemy.orm.util import identity_key  # noqa
@@ -102,7 +102,8 @@ class ModelDeclarativeMeta(DefaultMeta):
     """
 
 
-class BaseModel:
+@as_declarative(name="Model", metaclass=ModelDeclarativeMeta)
+class Model(object):
     """
     Use this class has the base for your models,
     it will define your table names automatically
@@ -128,35 +129,6 @@ class BaseModel:
             if isinstance(col, datetime.datetime) or isinstance(col, datetime.date):
                 col = col.isoformat()
             result[key] = col
-        return result
-
-
-Model = declarative_base(cls=BaseModel, metaclass=ModelDeclarativeMeta, name="Model")
-
-
-class SQLA(SQLAlchemy):
-    """
-        This is a child class of flask_SQLAlchemy
-        It's purpose is to override the declarative base of the original
-        package. So that it is bound to F.A.B. Model class allowing the dev
-        to be in the same namespace of the security tables (and others)
-        and can use AuditMixin class alike.
-
-        Use it and configure it just like flask_SQLAlchemy
-    """
-
-    def __init__(self, *args, **kwargs):
-        model_class = kwargs.pop("model_class", Model)
-
-        super().__init__(*args, model_class=model_class, **kwargs)
-
-    def get_tables_for_bind(self, bind=None):
-        """Returns a list of all tables relevant for a bind."""
-        result = []
-        tables = Model.metadata.tables
-        for key in tables:
-            if tables[key].info.get("bind_key") == bind:
-                result.append(tables[key])
         return result
 
 
