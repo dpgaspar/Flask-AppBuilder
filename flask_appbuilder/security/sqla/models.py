@@ -1,6 +1,9 @@
 import datetime
 
 from flask import g
+from flask_appbuilder import Model
+from flask_appbuilder._compat import as_unicode
+
 from sqlalchemy import (
     Boolean,
     Column,
@@ -15,8 +18,6 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import backref, relationship
 
-from ... import Model
-from ..._compat import as_unicode
 
 _dont_audit = False
 
@@ -99,7 +100,7 @@ class User(Model):
     username = Column(String(64), unique=True, nullable=False)
     password = Column(String(256))
     active = Column(Boolean)
-    email = Column(String(64), unique=True, nullable=False)
+    email = Column(String(320), unique=True, nullable=False)
     last_login = Column(DateTime)
     login_count = Column(Integer)
     fail_login_count = Column(Integer)
@@ -161,7 +162,7 @@ class User(Model):
         return as_unicode(self.id)
 
     def get_full_name(self):
-        return u"{0} {1}".format(self.first_name, self.last_name)
+        return "{0} {1}".format(self.first_name, self.last_name)
 
     def __repr__(self):
         return self.get_full_name()
