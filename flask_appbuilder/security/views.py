@@ -643,6 +643,11 @@ class AuthOAuthView(AuthView):
             request.args.to_dict(flat=False), random_state, algorithm="HS256"
         )
         session["oauth_state"] = random_state
+
+        params = {}
+        if current_app.config.get("AUTH_OAUTH_PRESERVE_LOGIN_QUERY", False):
+            params = request.args
+
         try:
             if provider == "twitter":
                 return self.appbuilder.sm.oauth_remotes[provider].authorize_redirect(
@@ -659,6 +664,7 @@ class AuthOAuthView(AuthView):
                         ".oauth_authorized", provider=provider, _external=True
                     ),
                     state=state.decode("ascii") if isinstance(state, bytes) else state,
+                    **params,
                 )
         except Exception as e:
             log.error("Error on OAuth authorize: %s", e)
