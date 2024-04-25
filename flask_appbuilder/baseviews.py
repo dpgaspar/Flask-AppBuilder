@@ -149,6 +149,11 @@ class BaseView(AbstractViewApi):
                 'delete': 'write'
             }
     """
+    strict_method_mapping = False
+    """
+    Enforcing that a permission mapping is defined for each and every methods
+    This can help preventing sprawling permissions in larger applications
+    """
     previous_method_permission_name = None
     """
         Use same structure as method_permission_name. If set security converge
@@ -411,6 +416,8 @@ class BaseView(AbstractViewApi):
         Returns the permission name for a method
         """
         permission = self.method_permission_name.get(method_name)
+        if self.strict_method_mapping and not permission:
+            raise FABException(f"Method {method_name} does not have a permission mapping")
         if permission:
             return permission
         else:

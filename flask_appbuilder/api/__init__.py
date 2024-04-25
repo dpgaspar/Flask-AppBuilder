@@ -284,6 +284,11 @@ class BaseApi(AbstractViewApi):
             'delete': 'write'
         }
     """
+    strict_method_mapping = False
+    """
+    Enforcing that a permission mapping is defined for each and every methods
+    This can help preventing sprawling permissions in larger applications
+    """
     previous_method_permission_name: Optional[Dict[str, str]] = None
     """
     Use same structure as method_permission_name. If set security converge
@@ -728,7 +733,10 @@ class BaseApi(AbstractViewApi):
         Returns the permission name for a method
         """
         if self.method_permission_name:
-            return self.method_permission_name.get(method_name, method_name)
+            perm = self.method_permission_name.get(method_name)
+            if self.strict_method_mapping and not perm:
+                raise FABException(f"Method {method_name} does not have a permission mapping")
+            return perm or method_name
         else:
             if hasattr(getattr(self, method_name), "_permission_name"):
                 return getattr(getattr(self, method_name), "_permission_name")
