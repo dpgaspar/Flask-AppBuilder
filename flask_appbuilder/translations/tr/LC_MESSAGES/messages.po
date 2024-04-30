@@ -124,7 +124,7 @@ msgstr "Silinen Satır"
 #: build/lib/flask_appbuilder/models/base.py:30
 #: flask_appbuilder/models/base.py:30
 msgid "Associated data exists, please delete them first"
-msgstr "Bağlantılı veriler mevcut, lütfen önce bunları silin"
+msgstr "İlişkili veriler mevcut, lütfen önce bunları silin"
 
 #: build/lib/flask_appbuilder/models/base.py:31
 #: build/lib/flask_appbuilder/models/base.py:32
