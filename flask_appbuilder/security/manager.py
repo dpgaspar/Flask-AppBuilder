@@ -915,7 +915,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             The clear text password to reset and save hashed on the db
         """
         user = self.get_user_by_id(userid)
-        user.password = generate_password_hash(password, method="pbkdf2:sha256")
+        user.password = generate_password_hash(password, method="pbkdf2")
         self.update_user(user)
 
     def update_user_auth_stat(self, user, success=True):
@@ -965,7 +965,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if user is None or (not user.is_active):
             # Balance failure and success
             check_password_hash(
-                "pbkdf2:sha256:150000$Z3t6fmj2$22da622d94a1f8118"
+                "pbkdf2:150000$Z3t6fmj2$22da622d94a1f8118"
                 "c0976a03d2f18f680bfff877c9a965db9eedc51bc0be87c",
                 "password",
             )

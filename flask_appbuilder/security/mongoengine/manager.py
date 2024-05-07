@@ -85,7 +85,7 @@ class SecurityManager(BaseSecurityManager):
                 register_user.password = hashed_password
             else:
                 register_user.password = generate_password_hash(
-                    password, method="pbkdf2:sha256"
+                    password, method="pbkdf2"
                 )
             register_user.registration_hash = str(uuid.uuid1())
             register_user.save()
@@ -133,7 +133,7 @@ class SecurityManager(BaseSecurityManager):
             if hashed_password:
                 user.password = hashed_password
             else:
-                user.password = generate_password_hash(password, method="pbkdf2:sha256")
+                user.password = generate_password_hash(password, method="pbkdf2")
             user.save()
             log.info(c.LOGMSG_INF_SEC_ADD_USER, username)
             return user
