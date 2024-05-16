@@ -4,14 +4,13 @@ import datetime
 from typing import Any
 
 from flask_sqlalchemy import SQLAlchemy
-from flask_sqlalchemy.model import DefaultMeta
 from sqlalchemy.engine import Connection, Engine
-from sqlalchemy.ext.declarative import as_declarative
+from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.sql.schema import Table
 
 
-@as_declarative(name="Model", metaclass=DefaultMeta)
-class Model:
+# @as_declarative
+class Model(DeclarativeBase):
     """
     Use this class has the base for your models,
     it will define your table names automatically

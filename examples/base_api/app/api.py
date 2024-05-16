@@ -2,13 +2,11 @@ from flask import request
 from flask_appbuilder.api import BaseApi, expose, rison, safe
 from flask_appbuilder.security.decorators import protect
 
-from . import appbuilder
 
 greeting_schema = {"type": "object", "properties": {"name": {"type": "string"}}}
 
 
 class ExampleApi(BaseApi):
-
     resource_name = "example"
     apispec_parameter_schemas = {"greeting_schema": greeting_schema}
 
@@ -137,6 +135,3 @@ class ExampleApi(BaseApi):
               $ref: '#/components/responses/500'
         """
         raise Exception
-
-
-appbuilder.add_api(ExampleApi)

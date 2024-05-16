@@ -1,5 +1,6 @@
 import datetime
 
+from flask_sqlalchemy.model import NameMixin
 from flask_appbuilder import Model
 from sqlalchemy import Column, Date, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
@@ -7,7 +8,7 @@ from sqlalchemy.orm import relationship
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
-class ContactGroup(Model):
+class ContactGroup(NameMixin, Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -15,7 +16,7 @@ class ContactGroup(Model):
         return self.name
 
 
-class Gender(Model):
+class Gender(NameMixin, Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -23,7 +24,7 @@ class Gender(Model):
         return self.name
 
 
-class Contact(Model):
+class Contact(NameMixin, Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))

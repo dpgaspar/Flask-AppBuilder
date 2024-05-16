@@ -1,19 +1,10 @@
-import logging
-
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
 
-"""
- Logging configuration
-"""
-logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
-logging.getLogger().setLevel(logging.DEBUG)
+from .api import ExampleApi
+from .extensions import app, appbuilder, db
 
 
-app = Flask(__name__)
-app.config.from_object("config")
-db = SQLA(app)
-appbuilder = AppBuilder(app, db.session)
-
-
-from . import api  # noqa
+def create_app() -> Flask:
+    appbuilder.init_app(app, db.session)
+    appbuilder.add_api(ExampleApi)
+    return app

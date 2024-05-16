@@ -1,11 +1,13 @@
 import logging
-from app import app, db
+from app import create_app, db
 from app.models import ContactGroup, Gender, Contact
 import random
 from datetime import datetime
 
 log = logging.getLogger(__name__)
 
+
+app = create_app()
 
 def get_random_name(names_list, size=1):
     name_lst = [
