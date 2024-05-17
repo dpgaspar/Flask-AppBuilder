@@ -1,14 +1,18 @@
-import logging
-
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
 
-logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
-logging.getLogger().setLevel(logging.DEBUG)
+from .api import GreetingApi, ContactModelApi, GroupModelApi, ModelOMParentApi
+from .extensions import  appbuilder, db
 
-app = Flask(__name__)
-app.config.from_object("config")
-db = SQLA(app)
-appbuilder = AppBuilder(app, db.session)
 
-from . import models, api  # noqa
+def create_app() -> Flask:
+    app = Flask(__name__)
+    app.config.from_object("config")
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
+        appbuilder.init_app(app, db.session)
+        appbuilder.add_api(GreetingApi)
+        appbuilder.add_api(ContactModelApi)
+        appbuilder.add_api(GroupModelApi)
+        appbuilder.add_api(ModelOMParentApi)
+    return app

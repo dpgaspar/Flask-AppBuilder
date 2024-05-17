@@ -33,7 +33,7 @@ class ImageColumn(types.TypeDecorator):
         self.size = size
 
 
-class AuditMixin(object):
+class AuditMixin:
     """
     AuditMixin
     Mixin for models, adds 4 columns to stamp,

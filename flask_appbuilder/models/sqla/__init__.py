@@ -9,7 +9,6 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.sql.schema import Table
 
 
-# @as_declarative
 class Model(DeclarativeBase):
     """
     Use this class has the base for your models,
