@@ -1578,6 +1578,7 @@ class ModelRestApi(BaseModelApi):
         if select_cols and output_select_cols:
             return self.response_400(message="Cannot use both select and sel columns")
         list_select_columns = self.list_select_columns
+        pruned_select_cols = []
         if output_select_cols:
             pruned_select_cols = [
                 col for col in output_select_cols if col in self.list_columns
