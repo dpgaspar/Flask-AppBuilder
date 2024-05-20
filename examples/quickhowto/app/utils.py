@@ -1,4 +1,4 @@
-from .extensions import db
+from flask_appbuilder.extensions import db
 from .models import Gender
 
 

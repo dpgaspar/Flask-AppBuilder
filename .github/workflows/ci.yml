@@ -31,7 +31,7 @@ jobs:
       - name: flake8
         run: flake8 flask_appbuilder
       - name: mypy
-        run: mypy flask_appbuilder
+        run: mypy flask_appbuilder/**/*.py
       - name: black
         run: black --check tests
       - name: flake8

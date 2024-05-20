@@ -1,16 +1,16 @@
 from flask import Flask
 
+from flask_appbuilder.extensions import db
 from .api import GreetingApi, ContactModelApi, GroupModelApi, ModelOMParentApi
-from .extensions import  appbuilder, db
+from .extensions import appbuilder
 
 
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object("config")
-    db.init_app(app)
     with app.app_context():
+        appbuilder.init_app(app)
         db.create_all()
-        appbuilder.init_app(app, db.session)
         appbuilder.add_api(GreetingApi)
         appbuilder.add_api(ContactModelApi)
         appbuilder.add_api(GroupModelApi)

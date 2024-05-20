@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 import json
 import logging
@@ -98,7 +100,7 @@ class SecurityManager(BaseSecurityManager):
     def session(self):
         return self.appbuilder.session
 
-    def register_views(self):
+    def register_views(self) -> None:
         super().register_views()
 
         if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_API", False):
@@ -125,7 +127,7 @@ class SecurityManager(BaseSecurityManager):
             log.error(c.LOGMSG_ERR_SEC_CREATE_DB, e)
             exit(1)
 
-    def _create_db(self):
+    def _create_db(self) -> None:
         engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
         inspector = Inspector.from_engine(engine)
         if "ab_user" not in inspector.get_table_names():
@@ -134,7 +136,7 @@ class SecurityManager(BaseSecurityManager):
             log.info(c.LOGMSG_INF_SEC_ADD_DB)
         super().create_db()
 
-    def find_register_user(self, registration_hash):
+    def find_register_user(self, registration_hash: str) -> Optional[RegisterUser]:
         return (
             self.appbuilder.session.query(self.registeruser_model)
             .filter(self.registeruser_model.registration_hash == registration_hash)
@@ -142,8 +144,14 @@ class SecurityManager(BaseSecurityManager):
         )
 
     def add_register_user(
-        self, username, first_name, last_name, email, password="", hashed_password=""
-    ):
+        self,
+        username: str,
+        first_name: str,
+        last_name: str,
+        email: str,
+        password: str = "",
+        hashed_password: str = "",
+    ) -> User:
         """
         Add a registration request for the user.
 
@@ -222,11 +230,11 @@ class SecurityManager(BaseSecurityManager):
 
     def add_user(
         self,
-        username,
-        first_name,
-        last_name,
-        email,
-        role,
+        username: str,
+        first_name: str,
+        last_name: str,
+        email: str,
+        role: Role | list[Role],
         password="",
         hashed_password="",
     ):

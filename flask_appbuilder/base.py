@@ -1,14 +1,14 @@
+from __future__ import annotations
+
 from functools import reduce
 import logging
 from typing import Any, Callable, cast, Dict, List, Optional, Type, TYPE_CHECKING, Union
 
 from flask import Blueprint, current_app, Flask, url_for
-from sqlalchemy.orm.session import Session as SessionBase
-
-from . import __version__
-from .api.manager import OpenApiManager
-from .babel.manager import BabelManager
-from .const import (
+from flask_appbuilder import __version__
+from flask_appbuilder.api.manager import OpenApiManager
+from flask_appbuilder.babel.manager import BabelManager
+from flask_appbuilder.const import (
     LOGMSG_ERR_FAB_ADD_PERMISSION_MENU,
     LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW,
     LOGMSG_ERR_FAB_ADDON_IMPORT,
@@ -17,9 +17,11 @@ from .const import (
     LOGMSG_INF_FAB_ADDON_ADDED,
     LOGMSG_WAR_FAB_VIEW_EXISTS,
 )
-from .filters import TemplateFilters
-from .menu import Menu, MenuApiManager
-from .views import IndexView, UtilView
+from flask_appbuilder.extensions import db
+from flask_appbuilder.filters import TemplateFilters
+from flask_appbuilder.menu import Menu, MenuApiManager
+from flask_appbuilder.views import IndexView, UtilView
+from sqlalchemy.orm.session import Session as SessionBase
 
 if TYPE_CHECKING:
     from flask_appbuilder.basemanager import BaseManager
@@ -49,7 +51,7 @@ def dynamic_class_import(class_path: str) -> Optional[DynamicImportType]:
         tmp = class_path.split(".")
         module_path = ".".join(tmp[0:-1])
         package = __import__(module_path)
-        return reduce(getattr, tmp[1:], package)
+        return reduce(getattr, tmp[1:], package)  # type: ignore
     except Exception as e:
         log.exception(e)
         log.error(LOGMSG_ERR_FAB_ADDON_IMPORT, class_path, e)
@@ -65,12 +67,11 @@ class AppBuilder:
     initialize your application like this for SQLAlchemy::
 
         from flask import Flask
-        from flask_appbuilder import SQLA, AppBuilder
+        from flask_appbuilder import AppBuilder
 
         app = Flask(__name__)
         app.config.from_object('config')
-        db = SQLA(app)
-        appbuilder = AppBuilder(app, db.session)
+        appbuilder = AppBuilder(app)
 
     When using MongoEngine::
 
@@ -94,7 +95,6 @@ class AppBuilder:
     def __init__(
         self,
         app: Optional[Flask] = None,
-        session: Optional[SessionBase] = None,
         menu: Optional[Menu] = None,
         indexview: Optional[Type["AbstractViewApi"]] = None,
         base_template: str = "appbuilder/baselayout.html",
@@ -147,9 +147,9 @@ class AppBuilder:
         self.menuapi_manager: MenuApiManager = None  # type: ignore
 
         if app is not None:
-            self.init_app(app, session)
+            self.init_app(app)
 
-    def init_app(self, app: Flask, session: SessionBase) -> None:
+    def init_app(self, app: Flask) -> None:
         """
         Will initialize the Flask app, supporting the app factory pattern.
 
@@ -169,6 +169,7 @@ class AppBuilder:
         app.config.setdefault("FAB_STATIC_URL_PATH", self.static_url_path)
 
         self.app = app
+        db.init_app(app)
 
         self.base_template = app.config.get("FAB_BASE_TEMPLATE", self.base_template)
         self.static_folder = app.config.get("FAB_STATIC_FOLDER", self.static_folder)
@@ -207,7 +208,6 @@ class AppBuilder:
             self.security_manager_class = SecurityManager
 
         self._addon_managers = app.config["ADDON_MANAGERS"]
-        self.session = session
         self.sm = self.security_manager_class(self)
         self.bm = BabelManager(self)
         self.openapi_manager = OpenApiManager(self)
@@ -252,13 +252,13 @@ class AppBuilder:
             return current_app
 
     @property
-    def get_session(self) -> SessionBase:
+    def session(self) -> SessionBase:
         """
         Get the current sqlalchemy session.
 
         :return: SQLAlchemy Session
         """
-        return self.session
+        return db.session
 
     @property
     def app_name(self) -> str:
@@ -613,7 +613,7 @@ class AppBuilder:
             return {}
         return self.sm.security_converge(self.baseviews, self.menu.menu, dry)
 
-    def get_url_for_login_with(self, next_url: str = None) -> str:
+    def get_url_for_login_with(self, next_url: str | None = None) -> str:
         if self.sm.auth_view is None:
             return ""
         return url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"), next=next_url)

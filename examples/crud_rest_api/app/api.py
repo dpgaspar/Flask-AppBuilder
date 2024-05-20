@@ -51,7 +51,7 @@ class ContactModelApi(ModelRestApi):
     resource_name = "contact"
     datamodel = SQLAInterface(Contact)
     allow_browser_login = True
-
+    list_columns = ["id", "name", "contact_group.id"]
     search_filters = {"name": [CustomFilter]}
     openapi_spec_methods = {
         "get_list": {"get": {"description": "Get all contacts, filter and pagination"}}
