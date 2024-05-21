@@ -137,7 +137,7 @@ class SecurityManager(BaseSecurityManager):
         if hashed_password:
             register_user.password = hashed_password
         else:
-            register_user.password = generate_password_hash(password)
+            register_user.password = generate_password_hash(password, method="pbkdf2")
         register_user.registration_hash = str(uuid.uuid1())
         try:
             self.get_session.add(register_user)
@@ -224,7 +224,7 @@ class SecurityManager(BaseSecurityManager):
             if hashed_password:
                 user.password = hashed_password
             else:
-                user.password = generate_password_hash(password)
+                user.password = generate_password_hash(password, method="pbkdf2")
             self.get_session.add(user)
             self.get_session.commit()
             log.info(c.LOGMSG_INF_SEC_ADD_USER, username)
