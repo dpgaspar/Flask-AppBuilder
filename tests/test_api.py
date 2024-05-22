@@ -26,6 +26,7 @@ from flask_appbuilder.const import (
     API_SECURITY_REFRESH_TOKEN_KEY,
     API_SELECT_COLUMNS_RIS_KEY,
     API_SELECT_KEYS_RIS_KEY,
+    API_SELECT_SEL_COLUMNS_RIS_KEY,
     API_SHOW_COLUMNS_RIS_KEY,
     API_SHOW_TITLE_RIS_KEY,
     API_URI_RIS_KEY,
@@ -870,7 +871,7 @@ class APITestCase(FABTestCase):
         )
         self.assertEqual(rv.status_code, 200)
 
-    def test_get_item_select_cols(self):
+    def test_get_item_choose_cols(self):
         """
         REST Api: Test get item with select columns
         """
@@ -1854,7 +1855,7 @@ class APITestCase(FABTestCase):
             {"name": "Custom Filter", "operator": "custom_filter"}, field_string_filters
         )
 
-    def test_get_list_select_cols(self):
+    def test_get_list_choose_cols(self):
         """
         REST Api: Test get list with select columns
         """
@@ -1863,6 +1864,34 @@ class APITestCase(FABTestCase):
 
         argument = {
             API_SELECT_COLUMNS_RIS_KEY: ["field_integer"],
+            "order_column": "field_integer",
+            "order_direction": "asc",
+        }
+
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(argument)}"
+        with model1_data(self.appbuilder.session, 5):
+            rv = self.auth_client_get(client, token, uri)
+            data = json.loads(rv.data.decode("utf-8"))
+            self.assertEqual(data[API_RESULT_RES_KEY][0], {"field_integer": 0})
+            self.assertEqual(
+                data[API_LABEL_COLUMNS_RES_KEY], {"field_integer": "Field Integer"}
+            )
+            self.assertEqual(
+                data[API_DESCRIPTION_COLUMNS_RES_KEY],
+                {"field_integer": "Field Integer"},
+            )
+            self.assertEqual(data[API_LIST_COLUMNS_RES_KEY], ["field_integer"])
+            self.assertEqual(rv.status_code, 200)
+
+    def test_get_list_choose_select_cols(self):
+        """
+        REST Api: Test get list with select columns
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        argument = {
+            API_SELECT_SEL_COLUMNS_RIS_KEY: ["field_integer"],
             "order_column": "field_integer",
             "order_direction": "asc",
         }

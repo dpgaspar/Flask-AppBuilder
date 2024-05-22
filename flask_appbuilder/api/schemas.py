@@ -18,6 +18,7 @@ from ..const import (
     API_PERMISSIONS_RIS_KEY,
     API_SELECT_COLUMNS_RIS_KEY,
     API_SELECT_KEYS_RIS_KEY,
+    API_SELECT_SEL_COLUMNS_RIS_KEY,
     API_SHOW_COLUMNS_RIS_KEY,
     API_SHOW_TITLE_RIS_KEY,
 )
@@ -70,6 +71,7 @@ get_list_schema = {
             },
         },
         API_SELECT_COLUMNS_RIS_KEY: {"type": "array", "items": {"type": "string"}},
+        API_SELECT_SEL_COLUMNS_RIS_KEY: {"type": "array", "items": {"type": "string"}},
         API_ORDER_COLUMN_RIS_KEY: {"type": "string"},
         API_ORDER_DIRECTION_RIS_KEY: {"type": "string", "enum": ["asc", "desc"]},
         API_PAGE_INDEX_RIS_KEY: {"type": "integer"},

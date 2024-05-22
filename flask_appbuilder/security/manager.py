@@ -695,6 +695,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "first_name": data.get("given_name", ""),
                 "last_name": data.get("family_name", ""),
                 "email": data.get("email", ""),
+                "role_keys": data.get("groups", []),
             }
         # for Authentik
         if provider == "authentik":

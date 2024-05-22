@@ -1,6 +1,15 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.5.0
+-----------------------------------
+
+- feat: REST API new select columns query param (#2242) [Daniel Vaz Gaspar]
+- chore: bump werkzeug to 3.0.3 (#2237) [Daniel Vaz Gaspar]
+- fix: Keycloak OAuth2, get groups as role_keys per default (#2235) [Andreas 'count' Kotes]
+- fix: Check if Oauth login with OKTA is correct (#1926) [Hojjat Ali Mohammadi]
+- docs: Update quickcharts.rst for typo gold to goal (#2217) [Abhinav Pareek]
+
 Improvements and Bug fixes on 4.4.1
 -----------------------------------
 
