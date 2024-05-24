@@ -214,6 +214,8 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        |                                            |           |
 |                                        | It authenticates with "format-userexample".|           |
 +----------------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_USE_NESTED_GROUPS_FOR_ROLES  | Get users nested groups from LDAP(MS AD)   |   No      |
++----------------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLE_ADMIN                        | Configure the name of the admin role.      |   No      |
 +----------------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLE_PUBLIC                       | Special Role that holds the public         |   No      |
@@ -338,10 +340,10 @@ It should be a long random bytes or str. For example, copy the output of this to
 
 Using config.py
 ---------------
- 
+
 My favorite way, and the one I advise if you are building a medium to large size application
 is to place all your configuration keys on a config.py file
- 
+
 Next you only have to import them to the Flask app object, like this
 ::
 
@@ -356,10 +358,10 @@ Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBui
 Using JMESPath to map user registration role
 --------------------------------------------
 
-If user self registration is enabled and ``AUTH_USER_REGISTRATION_ROLE_JMESPATH`` is set, it is 
+If user self registration is enabled and ``AUTH_USER_REGISTRATION_ROLE_JMESPATH`` is set, it is
 used as a `JMESPath <http://jmespath.org/>`_ expression to evalate user registration role. The input
 values is ``userinfo`` dict, returned by ``get_oauth_user_info`` function of Security Manager.
-Usage of JMESPath expressions requires `jmespath <https://pypi.org/project/jmespath/>`_ package 
+Usage of JMESPath expressions requires `jmespath <https://pypi.org/project/jmespath/>`_ package
 to be installed.
 
 In case of Google OAuth, userinfo contains user's email that can be used to map some users as admins
