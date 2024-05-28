@@ -3,9 +3,7 @@ from functools import reduce
 import logging
 from typing import Any, Type
 
-from flask_babel import lazy_gettext
-
-from .filters import BaseFilterConverter, Filters
+from flask_appbuilder.models.filters import BaseFilterConverter, Filters
 
 try:
     import enum
@@ -25,26 +23,6 @@ class BaseInterface:
 
     filter_converter_class = Type[BaseFilterConverter]
     """ when sub classing override with your own custom filter converter """
-
-    """ Messages to display on CRUD Events """
-    add_row_message = lazy_gettext("Added Row")
-    edit_row_message = lazy_gettext("Changed Row")
-    delete_row_message = lazy_gettext("Deleted Row")
-    delete_integrity_error_message = lazy_gettext(
-        "Associated data exists, please delete them first"
-    )
-    add_integrity_error_message = lazy_gettext(
-        "Integrity error, probably unique constraint"
-    )
-    edit_integrity_error_message = lazy_gettext(
-        "Integrity error, probably unique constraint"
-    )
-    general_error_message = lazy_gettext("General Error")
-
-    database_error_message = lazy_gettext("Database Error")
-
-    """ Tuple with message and text with severity type ex: ("Added Row", "info") """
-    message = ()
 
     def __init__(self, obj: Type[Any]):
         self.obj = obj
@@ -264,25 +242,25 @@ class BaseInterface:
     -----------------------------------------
     """
 
-    def add(self, item):
+    def add(self, item: Any, commit: bool = True) -> None:
         """
         Adds object
         """
         raise NotImplementedError
 
-    def edit(self, item):
+    def edit(self, item: Any, commit: bool = True) -> None:
         """
         Edit (change) object
         """
         raise NotImplementedError
 
-    def delete(self, item):
+    def delete(self, item: Any, commit: bool = True) -> None:
         """
         Deletes object
         """
         raise NotImplementedError
 
-    def get_col_default(self, col_name):
+    def get_col_default(self, col_name: str):
         pass
 
     def get_keys(self, lst):

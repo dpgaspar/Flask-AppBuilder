@@ -15,20 +15,23 @@ from flask import (
     session,
     url_for,
 )
-
-from ._compat import as_unicode
-from .actions import ActionItem
-from .const import PERMISSION_PREFIX
-from .forms import GeneralModelConverter
-from .hooks import get_before_request_hooks, wrap_route_handler_with_hooks
-from .urltools import (
+from flask_appbuilder._compat import as_unicode
+from flask_appbuilder.actions import ActionItem
+from flask_appbuilder.const import PERMISSION_PREFIX
+from flask_appbuilder.forms import GeneralModelConverter
+from flask_appbuilder.hooks import (
+    get_before_request_hooks,
+    wrap_route_handler_with_hooks,
+)
+from flask_appbuilder.urltools import (
     get_filter_args,
     get_order_args,
     get_page_args,
     get_page_size_args,
     Stack,
 )
-from .widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
+from flask_appbuilder.widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
+from flask_babel import lazy_gettext
 
 if TYPE_CHECKING:
     from flask_appbuilder.base import AppBuilder
@@ -667,6 +670,20 @@ class BaseCRUDView(BaseModelView):
     Customize ModelView overriding this properties
     """
 
+    """ Messages to display on CRUD Events """
+    add_row_message = lazy_gettext("Added Row")
+    edit_row_message = lazy_gettext("Changed Row")
+    delete_row_message = lazy_gettext("Deleted Row")
+    delete_integrity_error_message = lazy_gettext(
+        "Associated data exists, please delete them first"
+    )
+    add_integrity_error_message = lazy_gettext(
+        "Integrity error, probably unique constraint"
+    )
+    edit_integrity_error_message = lazy_gettext(
+        "Integrity error, probably unique constraint"
+    )
+
     related_views = None
     """
         List with ModelView classes
@@ -1227,9 +1244,12 @@ class BaseCRUDView(BaseModelView):
                 except Exception as e:
                     flash(str(e), "danger")
                 else:
-                    if self.datamodel.add(item):
+                    try:
+                        self.datamodel.add(item)
                         self.post_add(item)
-                    flash(*self.datamodel.message)
+                        flash(self.add_row_message, "success")
+                    except Exception as e:
+                        flash(str(e))
                 finally:
                     return None
             else:
@@ -1271,9 +1291,12 @@ class BaseCRUDView(BaseModelView):
                 except Exception as e:
                     flash(str(e), "danger")
                 else:
-                    if self.datamodel.edit(item):
+                    try:
+                        self.datamodel.edit(item)
                         self.post_update(item)
-                    flash(*self.datamodel.message)
+                        flash(self.edit_row_message, "success")
+                    except Exception as e:
+                        flash(str(e), "danger")
                 finally:
                     return None
             else:
@@ -1313,9 +1336,12 @@ class BaseCRUDView(BaseModelView):
         except Exception as e:
             flash(str(e), "danger")
         else:
-            if self.datamodel.delete(item):
+            try:
+                self.datamodel.delete(item)
                 self.post_delete(item)
-            flash(*self.datamodel.message)
+                flash(self.delete_row_message, "success")
+            except Exception as e:
+                flash(str(e))
             self.update_redirect()
 
     """
