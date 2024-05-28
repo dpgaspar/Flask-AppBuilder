@@ -1,12 +1,11 @@
 import os
 
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.urltools import get_filter_args
+from tests.base import FABTestCase
 from tests.sqla.models import Model1
-
-from .base import FABTestCase
 
 
 class FlaskTestCase(FABTestCase):
@@ -15,8 +14,7 @@ class FlaskTestCase(FABTestCase):
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
 
-        self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.appbuilder = AppBuilder(self.app)
 
     def test_get_filter_args_allow_one(self):
         datamodel = SQLAInterface(Model1)

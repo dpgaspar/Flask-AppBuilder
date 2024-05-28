@@ -8,7 +8,6 @@ import uuid
 
 from flask import has_app_context
 from flask_appbuilder import const as c
-from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.manager import BaseSecurityManager
 from flask_appbuilder.security.sqla.apis import (
@@ -28,7 +27,7 @@ from flask_appbuilder.security.sqla.models import (
     ViewMenu,
 )
 from sqlalchemy import and_, func, literal, update
-from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy import inspect
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import generate_password_hash
@@ -128,11 +127,12 @@ class SecurityManager(BaseSecurityManager):
             exit(1)
 
     def _create_db(self) -> None:
-        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        inspector = Inspector.from_engine(engine)
+        from flask_appbuilder.extensions import db
+
+        inspector = inspector = inspect(db.engine)
         if "ab_user" not in inspector.get_table_names():
             log.info(c.LOGMSG_INF_SEC_NO_DB)
-            Model.metadata.create_all(engine)
+            db.create_all()
             log.info(c.LOGMSG_INF_SEC_ADD_DB)
         super().create_db()
 
@@ -276,7 +276,7 @@ class SecurityManager(BaseSecurityManager):
             return False
 
     def get_user_by_id(self, pk):
-        return self.appbuilder.session.query(self.user_model).get(pk)
+        return self.appbuilder.session.get(self.user_model, pk)
 
     def get_first_user(self) -> "User":
         return self.appbuilder.session.query(self.user_model).first()

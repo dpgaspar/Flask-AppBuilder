@@ -1,10 +1,8 @@
 import logging
 import os
 
-from flask_appbuilder import SQLA
+from tests.base import FABTestCase
 from tests.fixtures.addon_manager import DummyAddOnManager
-
-from .base import FABTestCase
 
 
 log = logging.getLogger(__name__)
@@ -21,9 +19,7 @@ class FlaskTestCase(FABTestCase):
         self.app.config["ADDON_MANAGERS"] = [
             "tests.fixtures.addon_manager.DummyAddOnManager"
         ]
-
-        self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.appbuilder = AppBuilder(self.app)
 
     def tearDown(self):
         self.appbuilder = None

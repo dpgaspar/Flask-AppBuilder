@@ -6,7 +6,7 @@ import unittest
 
 from flask import Flask, Response
 from flask.testing import FlaskClient
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.const import (
     API_SECURITY_PASSWORD_KEY,
     API_SECURITY_PROVIDER_KEY,
@@ -153,8 +153,7 @@ class BaseMVCTestCase(FABTestCase):
         self.app.config.from_object("tests.config_api")
         logging.basicConfig(level=logging.ERROR)
 
-        self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.appbuilder = AppBuilder(self.app)
         self.create_default_users(self.appbuilder)
 
     @property

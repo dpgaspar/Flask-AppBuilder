@@ -1723,7 +1723,7 @@ class ModelRestApi(BaseModelApi):
         # This validates custom Schema with custom validations
         self.pre_add(item)
         try:
-            self.datamodel.add(item, raise_exception=True)
+            self.datamodel.add(item)
             self.post_add(item)
             return self.response(
                 201,
@@ -1789,7 +1789,7 @@ class ModelRestApi(BaseModelApi):
             return self.response_422(message=err.messages)
         self.pre_update(item)
         try:
-            self.datamodel.edit(item, raise_exception=True)
+            self.datamodel.edit(item)
             self.post_update(item)
             return self.response(
                 200,
@@ -1850,7 +1850,7 @@ class ModelRestApi(BaseModelApi):
             return self.response_404()
         self.pre_delete(item)
         try:
-            self.datamodel.delete(item, raise_exception=True)
+            self.datamodel.delete(item)
             self.post_delete(item)
             return self.response(200, message="OK")
         except IntegrityError as e:

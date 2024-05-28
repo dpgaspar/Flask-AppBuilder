@@ -233,7 +233,7 @@ class SQLAInterface(BaseInterface):
             local_cols = getattr(self.obj, relation_name).property.local_columns
             for local_fk in local_cols:
                 query = query.options(
-                    Load(self.obj).load_only(getattr(self.objk, local_fk.name))
+                    Load(self.obj).load_only(getattr(self.obj, local_fk.name))
                 )
             return query
         return query
