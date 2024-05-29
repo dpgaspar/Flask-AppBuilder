@@ -7,7 +7,7 @@ from unittest.mock import ANY, patch
 
 from click.testing import CliRunner
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.cli import (
     cast_int_like_to_int,
     create_app,
@@ -19,8 +19,7 @@ from flask_appbuilder.cli import (
     list_views,
     reset_password,
 )
-
-from .base import FABTestCase
+from tests.base import FABTestCase
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
@@ -99,6 +98,17 @@ class FlaskTestCase(FABTestCase):
         os.environ["FLASK_APP"] = "app:app"
         runner = CliRunner()
         with runner.isolated_filesystem():
+            result = runner.invoke(
+                create_app,
+                [
+                    f"--name={APP_DIR}",
+                    "--engine=SQLAlchemy",
+                    f"--secret-key={10*'SECRET'}",
+                ],
+            )
+            self.assertIn("Downloaded the skeleton app, good coding!", result.output)
+            os.chdir(APP_DIR)
+
             result = runner.invoke(list_views, [])
             self.assertIn("List of registered views", result.output)
             self.assertIn(" Route:/api/v1/security", result.output)
@@ -136,38 +146,38 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
-            db = SQLA(app)
-            app_builder = AppBuilder(app, db.session)  # noqa: F841
-            cli_runner = app.test_cli_runner()
+            with app.app_context():
+                app_builder = AppBuilder(app)  # noqa: F841
+                cli_runner = app.test_cli_runner()
 
-            path = os.path.join(tmp_dir, "roles.json")
+                path = os.path.join(tmp_dir, "roles.json")
 
-            export_result = cli_runner.invoke(export_roles, [f"--path={path}"])
+                export_result = cli_runner.invoke(export_roles, [f"--path={path}"])
 
-            self.assertEqual(export_result.exit_code, 0)
-            self.assertTrue(os.path.exists(path))
+                self.assertEqual(export_result.exit_code, 0)
+                self.assertTrue(os.path.exists(path))
 
-            with open(path, "r") as fd:
-                resulting_roles = json.loads(fd.read())
+                with open(path, "r") as fd:
+                    resulting_roles = json.loads(fd.read())
 
-            for expected_role in self.expected_roles:
-                match = [
-                    r for r in resulting_roles if r["name"] == expected_role["name"]
-                ]
-                self.assertTrue(match)
-                resulting_role = match[0]
-                resulting_role_permission_view_menus = {
-                    (pvm["permission"]["name"], pvm["view_menu"]["name"])
-                    for pvm in resulting_role["permissions"]
-                }
-                expected_role_permission_view_menus = {
-                    (pvm["permission"]["name"], pvm["view_menu"]["name"])
-                    for pvm in expected_role["permissions"]
-                }
-                self.assertEqual(
-                    resulting_role_permission_view_menus,
-                    expected_role_permission_view_menus,
-                )
+                for expected_role in self.expected_roles:
+                    match = [
+                        r for r in resulting_roles if r["name"] == expected_role["name"]
+                    ]
+                    self.assertTrue(match)
+                    resulting_role = match[0]
+                    resulting_role_permission_view_menus = {
+                        (pvm["permission"]["name"], pvm["view_menu"]["name"])
+                        for pvm in resulting_role["permissions"]
+                    }
+                    expected_role_permission_view_menus = {
+                        (pvm["permission"]["name"], pvm["view_menu"]["name"])
+                        for pvm in expected_role["permissions"]
+                    }
+                    self.assertEqual(
+                        resulting_role_permission_view_menus,
+                        expected_role_permission_view_menus,
+                    )
 
     def test_export_roles_filename(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -177,8 +187,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
-            db = SQLA(app)
-            app_builder = AppBuilder(app, db.session)  # noqa: F841
+            app_builder = AppBuilder(app)  # noqa: F841
 
             owd = os.getcwd()
             os.chdir(tmp_dir)
@@ -200,8 +209,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
-            db = SQLA(app)
-            app_builder = AppBuilder(app, db.session)  # noqa: F841
+            app_builder = AppBuilder(app)  # noqa: F841
             cli_runner = app.test_cli_runner()
 
             cli_runner.invoke(export_roles)
@@ -220,37 +228,39 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'dst.db')}"
-            db = SQLA(app)
-            app_builder = AppBuilder(app, db.session)
-            cli_runner = app.test_cli_runner()
+            with app.app_context():
+                app_builder = AppBuilder(app)
+                cli_runner = app.test_cli_runner()
 
-            path = os.path.join(tmp_dir, "roles.json")
+                path = os.path.join(tmp_dir, "roles.json")
 
-            with open(path, "w") as fd:
-                fd.write(json.dumps(self.expected_roles))
+                with open(path, "w") as fd:
+                    fd.write(json.dumps(self.expected_roles))
 
-            # before import roles on dst app include only Admin and Public
-            self.assertEqual(len(app_builder.sm.get_all_roles()), 2)
+                # before import roles on dst app include only Admin and Public
+                self.assertEqual(len(app_builder.sm.get_all_roles()), 2)
 
-            import_result = cli_runner.invoke(import_roles, [f"--path={path}"])
-            self.assertEqual(import_result.exit_code, 0)
+                import_result = cli_runner.invoke(import_roles, [f"--path={path}"])
+                self.assertEqual(import_result.exit_code, 0)
 
-            resulting_roles = app_builder.sm.get_all_roles()
+                resulting_roles = app_builder.sm.get_all_roles()
 
-            for expected_role in self.expected_roles:
-                match = [r for r in resulting_roles if r.name == expected_role["name"]]
-                self.assertTrue(match)
-                resulting_role = match[0]
+                for expected_role in self.expected_roles:
+                    match = [
+                        r for r in resulting_roles if r.name == expected_role["name"]
+                    ]
+                    self.assertTrue(match)
+                    resulting_role = match[0]
 
-                expected_role_permission_view_menus = {
-                    (pvm["permission"]["name"], pvm["view_menu"]["name"])
-                    for pvm in expected_role["permissions"]
-                }
-                resulting_role_permission_view_menus = {
-                    (pvm.permission.name, pvm.view_menu.name)
-                    for pvm in resulting_role.permissions
-                }
-                self.assertEqual(
-                    resulting_role_permission_view_menus,
-                    expected_role_permission_view_menus,
-                )
+                    expected_role_permission_view_menus = {
+                        (pvm["permission"]["name"], pvm["view_menu"]["name"])
+                        for pvm in expected_role["permissions"]
+                    }
+                    resulting_role_permission_view_menus = {
+                        (pvm.permission.name, pvm.view_menu.name)
+                        for pvm in resulting_role.permissions
+                    }
+                    self.assertEqual(
+                        resulting_role_permission_view_menus,
+                        expected_role_permission_view_menus,
+                    )

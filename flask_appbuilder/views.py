@@ -14,16 +14,31 @@ from flask import (
     session,
     url_for,
 )
+from flask_appbuilder._compat import as_unicode, string_types
+from flask_appbuilder.baseviews import (
+    BaseCRUDView,
+    BaseFormView,
+    BaseView,
+    expose,
+    expose_api,
+)
+from flask_appbuilder.const import FLAMSG_ERR_SEC_ACCESS_DENIED, PERMISSION_PREFIX
 from flask_appbuilder.exceptions import FABException
+from flask_appbuilder.filemanager import uuid_originalname
+from flask_appbuilder.security.decorators import (
+    has_access,
+    has_access_api,
+    permission_name,
+)
+from flask_appbuilder.urltools import (
+    get_filter_args,
+    get_order_args,
+    get_page_args,
+    get_page_size_args,
+)
+from flask_appbuilder.widgets import GroupFormListWidget, ListMasterWidget
+from sqlalchemy.exc import SQLAlchemyError
 
-
-from ._compat import as_unicode, string_types
-from .baseviews import BaseCRUDView, BaseFormView, BaseView, expose, expose_api
-from .const import FLAMSG_ERR_SEC_ACCESS_DENIED, PERMISSION_PREFIX
-from .filemanager import uuid_originalname
-from .security.decorators import has_access, has_access_api, permission_name
-from .urltools import get_filter_args, get_order_args, get_page_args, get_page_size_args
-from .widgets import GroupFormListWidget, ListMasterWidget
 
 log = logging.getLogger(__name__)
 
@@ -332,16 +347,22 @@ class RestCRUDView(BaseCRUDView):
             item = self.datamodel.obj()
             form.populate_obj(item)
             self.pre_add(item)
-            if self.datamodel.add(item):
+            try:
+                self.datamodel.add(item)
                 self.post_add(item)
                 http_return_code = 200
-            else:
+                payload = {
+                    "message": self.add_row_message,
+                    "item": self.show_item_dict(item),
+                    "severity": "success",
+                }
+            except SQLAlchemyError:
                 http_return_code = 500
-            payload = {
-                "message": self.datamodel.message[0],
-                "item": self.show_item_dict(item),
-                "severity": self.datamodel.message[1],
-            }
+                payload = {
+                    "message": self.database_error_message,
+                    "item": self.show_item_dict(item),
+                    "severity": "danger",
+                }
         else:
             payload = {"message": "Validation error", "error_details": form.errors}
             http_return_code = 500
@@ -377,14 +398,22 @@ class RestCRUDView(BaseCRUDView):
 
             form.populate_obj(item)
             self.pre_update(item)
-            if self.datamodel.edit(item):
+            try:
+                self.datamodel.edit(item)
                 self.post_update(item)
                 http_return_code = 200
-            payload = {
-                "message": self.datamodel.message[0],
-                "severity": self.datamodel.message[1],
-                "item": self.show_item_dict(item),
-            }
+                payload = {
+                    "message": self.edit_row_message,
+                    "severity": "success",
+                    "item": self.show_item_dict(item),
+                }
+            except SQLAlchemyError:
+                http_return_code = 500
+                payload = {
+                    "message": self.database_error_message,
+                    "severity": "danger",
+                    "item": self.show_item_dict(item),
+                }
         else:
             payload = {
                 "message": "Validation error",
@@ -402,18 +431,22 @@ class RestCRUDView(BaseCRUDView):
         if not item:
             abort(404)
         self.pre_delete(item)
-        if self.datamodel.delete(item):
+        try:
+            self.datamodel.delete(item)
             self.post_delete(item)
             http_return_code = 200
-        else:
+            payload = {
+                "message": self.delete_row_message,
+                "severity": "success",
+            }
+        except SQLAlchemyError:
             http_return_code = 500
+            payload = {
+                "message": self.database_error_message,
+                "severity": "danger",
+            }
         response = make_response(
-            jsonify(
-                {
-                    "message": self.datamodel.message[0],
-                    "severity": self.datamodel.message[1],
-                }
-            ),
+            jsonify(payload),
             http_return_code,
         )
         response.headers["Content-Type"] = "application/json"

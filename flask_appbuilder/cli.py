@@ -16,7 +16,7 @@ from .const import AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_OID, AUTH_REMOTE_USER
 
 
 SQLA_REPO_URL = (
-    "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip"
+    "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/refs/heads/v5.zip"
 )
 MONGOENGIE_REPO_URL = (
     "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip"
@@ -322,7 +322,7 @@ def create_app(name: str, engine: str, secret_key: str) -> None:
     try:
         if engine.lower() == "sqlalchemy":
             url = urlopen(SQLA_REPO_URL)
-            dirname = "Flask-AppBuilder-Skeleton-master"
+            dirname = "Flask-AppBuilder-Skeleton-5"
         elif engine.lower() == "mongoengine":
             url = urlopen(MONGOENGIE_REPO_URL)
             dirname = "Flask-AppBuilder-Skeleton-me-master"

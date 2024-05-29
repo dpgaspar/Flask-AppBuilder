@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 import logging
 import re
@@ -2158,9 +2160,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         """Imports roles from JSON file."""
         raise NotImplementedError
 
-    def load_user(self, pk):
+    def load_user(self, pk: int) -> Any | None:
         user = self.get_user_by_id(int(pk))
-        if user.is_active:
+        if user and user.is_active:
             return user
 
     def load_user_jwt(self, _jwt_header, jwt_data):

@@ -683,6 +683,7 @@ class BaseCRUDView(BaseModelView):
     edit_integrity_error_message = lazy_gettext(
         "Integrity error, probably unique constraint"
     )
+    database_error_message = lazy_gettext("Database Error")
 
     related_views = None
     """
