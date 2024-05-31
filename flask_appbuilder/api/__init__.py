@@ -20,23 +20,15 @@ import urllib.parse
 from apispec import APISpec, yaml_utils
 from apispec.exceptions import DuplicateComponentNameError
 from flask import Blueprint, current_app, jsonify, make_response, request, Response
-from flask_appbuilder.models.sqla import Model
-from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_babel import lazy_gettext as _
-import jsonschema
-from marshmallow import Schema, ValidationError
-from marshmallow.fields import Field
-from marshmallow_sqlalchemy.fields import Related, RelatedList
-import prison
-from sqlalchemy.exc import IntegrityError
-from werkzeug.exceptions import BadRequest
-import yaml
-
-from .convert import Model2SchemaConverter
-from .schemas import get_info_schema, get_item_schema, get_list_schema
-from .._compat import as_unicode
-from ..baseviews import AbstractViewApi
-from ..const import (
+from flask_appbuilder._compat import as_unicode
+from flask_appbuilder.api.convert import Model2SchemaConverter
+from flask_appbuilder.api.schemas import (
+    get_info_schema,
+    get_item_schema,
+    get_list_schema,
+)
+from flask_appbuilder.baseviews import AbstractViewApi
+from flask_appbuilder.const import (
     API_ADD_COLUMNS_RES_KEY,
     API_ADD_COLUMNS_RIS_KEY,
     API_ADD_TITLE_RES_KEY,
@@ -73,11 +65,29 @@ from ..const import (
     API_URI_RIS_KEY,
     PERMISSION_PREFIX,
 )
-from ..exceptions import FABException, InvalidOrderByColumnFABException
-from ..hooks import get_before_request_hooks, wrap_route_handler_with_hooks
-from ..models.filters import Filters
-from ..security.decorators import permission_name, protect
-from ..utils.limit import Limit
+from flask_appbuilder.exceptions import (
+    DatabaseException,
+    FABException,
+    InvalidOrderByColumnFABException,
+)
+from flask_appbuilder.hooks import (
+    get_before_request_hooks,
+    wrap_route_handler_with_hooks,
+)
+from flask_appbuilder.models.filters import Filters
+from flask_appbuilder.models.sqla import Model
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.security.decorators import permission_name, protect
+from flask_appbuilder.utils.limit import Limit
+from flask_babel import lazy_gettext as _
+import jsonschema
+from marshmallow import Schema, ValidationError
+from marshmallow.fields import Field
+from marshmallow_sqlalchemy.fields import Related, RelatedList
+import prison
+from werkzeug.exceptions import BadRequest
+import yaml
+
 
 if TYPE_CHECKING:
     from flask_appbuilder import AppBuilder
@@ -1748,8 +1758,10 @@ class ModelRestApi(BaseModelApi):
                     "id": self.datamodel.get_pk_value(item),
                 },
             )
-        except IntegrityError as e:
-            return self.response_422(message=str(e.orig))
+        except DatabaseException as e:
+            return self.response_422(
+                message=f"Database exception occurred: {e.__cause__}"
+            )
 
     @expose("/", methods=["POST"])
     @protect()
@@ -1811,8 +1823,10 @@ class ModelRestApi(BaseModelApi):
                 200,
                 **{API_RESULT_RES_KEY: self.edit_model_schema.dump(item, many=False)},
             )
-        except IntegrityError as e:
-            return self.response_422(message=str(e.orig))
+        except DatabaseException as e:
+            return self.response_422(
+                message=f"Database exception occurred: {e.__cause__}"
+            )
 
     @expose("/<pk>", methods=["PUT"])
     @protect()
@@ -1869,8 +1883,10 @@ class ModelRestApi(BaseModelApi):
             self.datamodel.delete(item)
             self.post_delete(item)
             return self.response(200, message="OK")
-        except IntegrityError as e:
-            return self.response_422(message=str(e.orig))
+        except DatabaseException as e:
+            return self.response_422(
+                message=f"Database exception occurred: {e.__cause__}"
+            )
 
     @expose("/<pk>", methods=["DELETE"])
     @protect()
