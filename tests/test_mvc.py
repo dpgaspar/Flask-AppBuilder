@@ -189,7 +189,7 @@ class ListFilterTestCase(BaseMVCTestCase):
 
             rv = c.get("/model2view/list/?_flt_0_group=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.appbuilder.session.bind.dialect.name != "mysql":
+            if self.appbuilder.session.get_bind().name != "mysql":
                 data = rv.data.decode("utf-8")
                 self.assertIn("An error occurred", data)
 

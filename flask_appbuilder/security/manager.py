@@ -1608,9 +1608,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         Check if current user or public has access to view or menu
         """
-        if current_user.is_authenticated:
+        if current_user.is_authenticated and current_user.active:
             return self._has_view_access(g.user, permission_name, view_name)
-        elif current_user_jwt:
+        elif current_user_jwt and current_user_jwt.active:
             return self._has_view_access(current_user_jwt, permission_name, view_name)
         else:
             return self.is_item_public(permission_name, view_name)
@@ -2168,7 +2168,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def load_user_jwt(self, _jwt_header, jwt_data):
         identity = jwt_data["sub"]
         user = self.load_user(identity)
-        if user.is_active:
+        if user and user.is_active:
             # Set flask g.user to JWT user, we can't do it on before request
             g.user = user
             return user

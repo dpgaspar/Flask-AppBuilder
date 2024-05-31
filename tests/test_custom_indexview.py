@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask_appbuilder import IndexView, SQLA
+from flask_appbuilder import IndexView
 
 from .base import FABTestCase
 
@@ -24,8 +24,7 @@ class FlaskTestCase(FABTestCase):
             "FAB_INDEX_VIEW"
         ] = "tests.test_custom_indexview.CustomIndexView"
 
-        self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.appbuilder = AppBuilder(self.app)
 
     def tearDown(self):
         self.appbuilder = None

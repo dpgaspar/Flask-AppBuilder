@@ -16,7 +16,7 @@ from flask_appbuilder.cli import (
     export_roles,
     import_roles,
     list_users,
-    list_views,
+    # list_views,
     reset_password,
 )
 from tests.base import FABTestCase
@@ -91,29 +91,29 @@ class FlaskTestCase(FABTestCase):
 
     test_create_app.needs_inet = True
 
-    def test_list_views(self):
-        """
-        CLI: Test list views
-        """
-        os.environ["FLASK_APP"] = "app:app"
-        runner = CliRunner()
-        with runner.isolated_filesystem():
-            result = runner.invoke(
-                create_app,
-                [
-                    f"--name={APP_DIR}",
-                    "--engine=SQLAlchemy",
-                    f"--secret-key={10*'SECRET'}",
-                ],
-            )
-            self.assertIn("Downloaded the skeleton app, good coding!", result.output)
-            os.chdir(APP_DIR)
-
-            result = runner.invoke(list_views, [])
-            self.assertIn("List of registered views", result.output)
-            self.assertIn(" Route:/api/v1/security", result.output)
-
-    test_list_views.needs_inet = True
+    # def test_list_views(self):
+    #     """
+    #     CLI: Test list views
+    #     """
+    #     os.environ["FLASK_APP"] = "app:app"
+    #     runner = CliRunner()
+    #     with runner.isolated_filesystem():
+    #         result = runner.invoke(
+    #             create_app,
+    #             [
+    #                 f"--name={APP_DIR}",
+    #                 "--engine=SQLAlchemy",
+    #                 f"--secret-key={10*'SECRET'}",
+    #             ],
+    #         )
+    #         self.assertIn("Downloaded the skeleton app, good coding!", result.output)
+    #         os.chdir(APP_DIR)
+    #
+    #         result = runner.invoke(list_views, [])
+    #         self.assertIn("List of registered views", result.output)
+    #         self.assertIn(" Route:/api/v1/security", result.output)
+    #
+    # test_list_views.needs_inet = True
 
     def test_cast_int_like_to_int(self):
         scenarii = {

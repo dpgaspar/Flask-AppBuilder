@@ -30,17 +30,17 @@ class Gender(Model):
 
 
 class Contact(Model):
-    id = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
-    address: Mapped[str] = mapped_column(String(564))
-    birthday: Mapped[Optional[datetime.date]] = mapped_column(Date, nullable=True)
-    personal_phone: Mapped[str] = mapped_column(String(20))
-    personal_celphone: Mapped[str] = mapped_column(String(20))
-    contact_group_id = mapped_column(
+    address: Mapped[Optional[str]] = mapped_column(String(564))
+    birthday: Mapped[Optional[datetime.date]] = mapped_column(Date)
+    personal_phone: Mapped[Optional[str]] = mapped_column(String(20))
+    personal_celphone: Mapped[Optional[str]] = mapped_column(String(20))
+    contact_group_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("contact_group.id"), nullable=False
     )
     contact_group: Mapped[ContactGroup] = relationship("ContactGroup")
-    gender_id = mapped_column(Integer, ForeignKey("gender.id"), nullable=False)
+    gender_id: Mapped[int] = mapped_column(Integer, ForeignKey("gender.id"), nullable=False)
     gender: Mapped[Gender] = relationship("Gender")
 
     def __repr__(self):

@@ -1,4 +1,3 @@
-from flask_appbuilder import SQLA
 from flask_login import AnonymousUserMixin
 from tests.base import FABTestCase
 
@@ -12,8 +11,9 @@ class SecurityPermissionsTestCase(FABTestCase):
         self.app.config.from_object("tests.config_security")
         self.app.config["FAB_ADD_SECURITY_VIEWS"] = False
 
-        self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        self.appbuilder = AppBuilder(self.app)
 
         self._db_role_1 = self.appbuilder.sm.add_role("DB_ROLE1")
         self._pvm1 = self.appbuilder.sm.add_permission_view_menu(
@@ -71,14 +71,19 @@ class SecurityPermissionsTestCase(FABTestCase):
         )
 
     def tearDown(self):
-        self.appbuilder.get_session.delete(self._user01)
-        self.appbuilder.get_session.delete(self._user02)
-        self.appbuilder.get_session.delete(self._user03)
-        self.appbuilder.get_session.delete(self._user04)
-        self.appbuilder.get_session.delete(self._pvm1)
-        self.appbuilder.get_session.delete(self._pvm2)
-        self.appbuilder.get_session.delete(self._db_role_1)
-        self.appbuilder.get_session.commit()
+        def tearDown(self):
+            self.appbuilder.session.delete(self._user01)
+            self.appbuilder.session.delete(self._user02)
+            self.appbuilder.session.delete(self._user03)
+            self.appbuilder.session.delete(self._user04)
+            self.appbuilder.session.delete(self._pvm1)
+            self.appbuilder.session.delete(self._pvm2)
+            self.appbuilder.session.delete(self._db_role_1)
+            self.appbuilder.session.commit()
+            self.appbuilder = None
+            self.ctx.pop()
+            self.ctx = None
+            self.app = None
 
     def test_get_user_permissions_mixed(self):
         """

@@ -25,7 +25,9 @@ _dont_audit = False
 class Permission(Model):
     __tablename__ = "ab_permission"
 
-    id = mapped_column(Integer, Sequence("ab_permission_id_seq"), primary_key=True)
+    id: Mapped[int] = mapped_column(
+        Integer, Sequence("ab_permission_id_seq"), primary_key=True
+    )
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
 
     def __repr__(self):
@@ -35,7 +37,9 @@ class Permission(Model):
 class ViewMenu(Model):
     __tablename__ = "ab_view_menu"
 
-    id = mapped_column(Integer, Sequence("ab_view_menu_id_seq"), primary_key=True)
+    id: Mapped[int] = mapped_column(
+        Integer, Sequence("ab_view_menu_id_seq"), primary_key=True
+    )
     name: Mapped[str] = mapped_column(String(250), unique=True, nullable=False)
 
     def __eq__(self, other):
@@ -60,7 +64,9 @@ assoc_permissionview_role = db.Table(
 class Role(Model):
     __tablename__ = "ab_role"
 
-    id = mapped_column(Integer, Sequence("ab_role_id_seq"), primary_key=True)
+    id: Mapped[int] = mapped_column(
+        Integer, Sequence("ab_role_id_seq"), primary_key=True
+    )
     name: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
     permissions: Mapped[List["PermissionView"]] = relationship(
         "PermissionView",
@@ -75,10 +81,12 @@ class Role(Model):
 class PermissionView(Model):
     __tablename__ = "ab_permission_view"
     __table_args__ = (UniqueConstraint("permission_id", "view_menu_id"),)
-    id = mapped_column(Integer, Sequence("ab_permission_view_id_seq"), primary_key=True)
-    permission_id = mapped_column(Integer, ForeignKey("ab_permission.id"))
+    id: Mapped[int] = mapped_column(
+        Integer, Sequence("ab_permission_view_id_seq"), primary_key=True
+    )
+    permission_id: Mapped[int] = mapped_column(Integer, ForeignKey("ab_permission.id"))
     permission: Mapped[Permission] = relationship("Permission", lazy="joined")
-    view_menu_id = mapped_column(Integer, ForeignKey("ab_view_menu.id"))
+    view_menu_id: Mapped[int] = mapped_column(Integer, ForeignKey("ab_view_menu.id"))
     view_menu: Mapped[ViewMenu] = relationship("ViewMenu", lazy="joined")
 
     def __repr__(self):
@@ -96,12 +104,14 @@ assoc_user_role = db.Table(
 
 class User(Model):
     __tablename__ = "ab_user"
-    id = mapped_column(Integer, Sequence("ab_user_id_seq"), primary_key=True)
+    id: Mapped[int] = mapped_column(
+        Integer, Sequence("ab_user_id_seq"), primary_key=True
+    )
     first_name: Mapped[str] = mapped_column(String(64), nullable=False)
     last_name: Mapped[str] = mapped_column(String(64), nullable=False)
     username: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(256))
-    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    password: Mapped[Optional[str]] = mapped_column(String(256))
+    active: Mapped[Optional[bool]] = mapped_column(Boolean, default=True)
     email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
     last_login: Mapped[Optional[datetime.datetime]] = mapped_column(
         DateTime, nullable=True
@@ -111,10 +121,10 @@ class User(Model):
     roles: Mapped[List[Role]] = relationship(
         "Role", secondary=assoc_user_role, backref="user"
     )
-    created_on: Mapped[datetime.datetime] = mapped_column(
+    created_on: Mapped[Optional[datetime.datetime]] = mapped_column(
         DateTime, default=lambda: datetime.datetime.now(), nullable=True
     )
-    changed_on: Mapped[datetime.datetime] = mapped_column(
+    changed_on: Mapped[Optional[datetime.datetime]] = mapped_column(
         DateTime, default=lambda: datetime.datetime.now(), nullable=True
     )
 
@@ -180,9 +190,9 @@ class RegisterUser(Model):
     first_name: Mapped[str] = mapped_column(String(64), nullable=False)
     last_name: Mapped[str] = mapped_column(String(64), nullable=False)
     username: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(256))
+    password: Mapped[Optional[str]] = mapped_column(String(256))
     email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
-    registration_date: Mapped[datetime.datetime] = mapped_column(
+    registration_date: Mapped[Optional[datetime.datetime]] = mapped_column(
         DateTime, default=lambda: datetime.datetime.now(), nullable=True
     )
-    registration_hash: Mapped[str] = mapped_column(String(256))
+    registration_hash: Mapped[Optional[str]] = mapped_column(String(256))

@@ -138,7 +138,7 @@ class RoleApi(ModelRestApi):
                     permissions.append(permission)
 
             role.permissions = permissions
-            self.datamodel.edit(role, raise_exception=True)
+            self.datamodel.edit(role)
             return self.response(
                 200,
                 **{

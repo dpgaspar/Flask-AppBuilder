@@ -4,7 +4,7 @@ import logging
 from typing import Any, Dict, List, Optional, Set
 import unittest
 
-from flask import Flask, Response
+from flask import Flask
 from flask.testing import FlaskClient
 from flask_appbuilder import AppBuilder
 from flask_appbuilder.const import (
@@ -23,6 +23,7 @@ from tests.const import (
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
+from werkzeug.test import TestResponse
 
 
 class FABTestCase(unittest.TestCase):
@@ -75,7 +76,7 @@ class FABTestCase(unittest.TestCase):
         password: str,
         next_url: Optional[str] = None,
         follow_redirects: bool = True,
-    ) -> Response:
+    ) -> TestResponse:
         login_url = "/login/"
         if next_url:
             login_url = f"{login_url}?next={next_url}"
@@ -162,8 +163,8 @@ class BaseMVCTestCase(FABTestCase):
         from flask_appbuilder.extensions import db
 
         db.drop_all()
-        self.appbuilder = None
         self.ctx.pop()
+        self.appbuilder = None
         self.ctx = None
         self.app = None
 

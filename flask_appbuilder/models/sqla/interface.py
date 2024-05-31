@@ -314,9 +314,9 @@ class SQLAInterface(BaseInterface):
                 continue
 
             root_relation = get_column_root_relation(column)
-            leaf_column = get_column_leaf(column)
-
             related_model = self.get_related_model(root_relation)
+            leaf_column = getattr(related_model, get_column_leaf(column))
+
             if self.is_relation_many_to_many(
                 root_relation
             ) or self.is_relation_one_to_many(root_relation):
@@ -324,13 +324,13 @@ class SQLAInterface(BaseInterface):
                     query = query.options(
                         Load(self.obj)
                         .defaultload(self.obj, root_relation)
-                        .load_only(getattr(related_model, leaf_column))
+                        .load_only(leaf_column)
                     )
                 else:
                     query = query.options(
                         Load(self.obj)
                         .joinedload(getattr(self.obj, root_relation))
-                        .load_only(getattr(related_model, leaf_column))
+                        .load_only(leaf_column)
                     )
             else:
                 query = query.options(Load(related_model).load_only(leaf_column))
