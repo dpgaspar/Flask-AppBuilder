@@ -26,7 +26,9 @@ class Permission(Model):
     __tablename__ = "ab_permission"
 
     id: Mapped[int] = mapped_column(
-        Integer, Sequence("ab_permission_id_seq"), primary_key=True
+        Integer,
+        Sequence("ab_permission_id_seq", start=1, increment=1, minvalue=1, cycle=False),
+        primary_key=True,
     )
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
 
@@ -38,7 +40,9 @@ class ViewMenu(Model):
     __tablename__ = "ab_view_menu"
 
     id: Mapped[int] = mapped_column(
-        Integer, Sequence("ab_view_menu_id_seq"), primary_key=True
+        Integer,
+        Sequence("ab_view_menu_id_seq", start=1, increment=1, minvalue=1, cycle=False),
+        primary_key=True,
     )
     name: Mapped[str] = mapped_column(String(250), unique=True, nullable=False)
 
@@ -54,7 +58,18 @@ class ViewMenu(Model):
 
 assoc_permissionview_role = db.Table(
     "ab_permission_view_role",
-    Column("id", Integer, Sequence("ab_permission_view_role_id_seq"), primary_key=True),
+    Column(
+        "id",
+        Integer,
+        Sequence(
+            "ab_permission_view_role_id_seq",
+            start=1,
+            increment=1,
+            minvalue=1,
+            cycle=False,
+        ),
+        primary_key=True,
+    ),
     Column("permission_view_id", Integer, ForeignKey("ab_permission_view.id")),
     Column("role_id", Integer, ForeignKey("ab_role.id")),
     UniqueConstraint("permission_view_id", "role_id"),
@@ -65,7 +80,9 @@ class Role(Model):
     __tablename__ = "ab_role"
 
     id: Mapped[int] = mapped_column(
-        Integer, Sequence("ab_role_id_seq"), primary_key=True
+        Integer,
+        Sequence("ab_role_id_seq", start=1, increment=1, minvalue=1, cycle=False),
+        primary_key=True,
     )
     name: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
     permissions: Mapped[List["PermissionView"]] = relationship(
@@ -82,7 +99,11 @@ class PermissionView(Model):
     __tablename__ = "ab_permission_view"
     __table_args__ = (UniqueConstraint("permission_id", "view_menu_id"),)
     id: Mapped[int] = mapped_column(
-        Integer, Sequence("ab_permission_view_id_seq"), primary_key=True
+        Integer,
+        Sequence(
+            "ab_permission_view_id_seq", start=1, increment=1, minvalue=1, cycle=False
+        ),
+        primary_key=True,
     )
     permission_id: Mapped[int] = mapped_column(Integer, ForeignKey("ab_permission.id"))
     permission: Mapped[Permission] = relationship("Permission", lazy="joined")
@@ -95,7 +116,12 @@ class PermissionView(Model):
 
 assoc_user_role = db.Table(
     "ab_user_role",
-    Column("id", Integer, Sequence("ab_user_role_id_seq"), primary_key=True),
+    Column(
+        "id",
+        Integer,
+        Sequence("ab_user_role_id_seq", start=1, increment=1, minvalue=1, cycle=False),
+        primary_key=True,
+    ),
     Column("user_id", Integer, ForeignKey("ab_user.id")),
     Column("role_id", Integer, ForeignKey("ab_role.id")),
     UniqueConstraint("user_id", "role_id"),
@@ -105,7 +131,9 @@ assoc_user_role = db.Table(
 class User(Model):
     __tablename__ = "ab_user"
     id: Mapped[int] = mapped_column(
-        Integer, Sequence("ab_user_id_seq"), primary_key=True
+        Integer,
+        Sequence("ab_user_id_seq", start=1, increment=1, minvalue=1, cycle=False),
+        primary_key=True,
     )
     first_name: Mapped[str] = mapped_column(String(64), nullable=False)
     last_name: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -186,7 +214,13 @@ class User(Model):
 
 class RegisterUser(Model):
     __tablename__ = "ab_register_user"
-    id = mapped_column(Integer, Sequence("ab_register_user_id_seq"), primary_key=True)
+    id = mapped_column(
+        Integer,
+        Sequence(
+            "ab_register_user_id_seq", start=1, increment=1, minvalue=1, cycle=False
+        ),
+        primary_key=True,
+    )
     first_name: Mapped[str] = mapped_column(String(64), nullable=False)
     last_name: Mapped[str] = mapped_column(String(64), nullable=False)
     username: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
