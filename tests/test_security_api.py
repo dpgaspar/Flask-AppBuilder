@@ -353,8 +353,8 @@ class UserAPITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
         updated_user = db.session.query(User).get(user_id)
         self.assertEqual(len(updated_user.roles), 2)
-        self.assertEqual(updated_user.roles[0].name, "test-role2")
-        self.assertEqual(updated_user.roles[1].name, "test-role3")
+        update_use_roles = sorted([role.name for role in updated_user.roles])
+        self.assertEqual(update_use_roles, ["test-role2", "test-role3"])
         self.assertEqual(updated_user.email, updated_email)
 
         roles = (
