@@ -19,9 +19,12 @@ class FlaskTestCase(FABTestCase):
         self.app.config["ADDON_MANAGERS"] = [
             "tests.fixtures.addon_manager.DummyAddOnManager"
         ]
+        self.ctx = self.app.app_context()
+        self.ctx.push()
         self.appbuilder = AppBuilder(self.app)
 
     def tearDown(self):
+        self.ctx.pop()
         self.appbuilder = None
         self.app = None
         self.db = None
