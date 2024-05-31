@@ -160,9 +160,6 @@ class BaseMVCTestCase(FABTestCase):
         self.create_default_users(self.appbuilder)
 
     def tearDown(self):
-        from flask_appbuilder.extensions import db
-
-        db.drop_all()
         self.ctx.pop()
         self.appbuilder = None
         self.ctx = None

@@ -71,19 +71,18 @@ class SecurityPermissionsTestCase(FABTestCase):
         )
 
     def tearDown(self):
-        def tearDown(self):
-            self.appbuilder.session.delete(self._user01)
-            self.appbuilder.session.delete(self._user02)
-            self.appbuilder.session.delete(self._user03)
-            self.appbuilder.session.delete(self._user04)
-            self.appbuilder.session.delete(self._pvm1)
-            self.appbuilder.session.delete(self._pvm2)
-            self.appbuilder.session.delete(self._db_role_1)
-            self.appbuilder.session.commit()
-            self.appbuilder = None
-            self.ctx.pop()
-            self.ctx = None
-            self.app = None
+        self.appbuilder.session.delete(self._user01)
+        self.appbuilder.session.delete(self._user02)
+        self.appbuilder.session.delete(self._user03)
+        self.appbuilder.session.delete(self._user04)
+        self.appbuilder.session.delete(self._pvm1)
+        self.appbuilder.session.delete(self._pvm2)
+        self.appbuilder.session.delete(self._db_role_1)
+        self.appbuilder.session.commit()
+        self.appbuilder = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     def test_get_user_permissions_mixed(self):
         """
