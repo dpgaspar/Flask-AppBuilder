@@ -1296,7 +1296,7 @@ class BaseCRUDView(BaseModelView):
                         self.datamodel.edit(item)
                         self.post_update(item)
                         flash(self.edit_row_message, "success")
-                    except Exception as e:
+                    except Exception:
                         flash(self.database_error_message, "danger")
                 finally:
                     return None

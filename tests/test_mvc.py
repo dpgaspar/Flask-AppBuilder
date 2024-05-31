@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 from typing import Set
+from unittest import mock
 
 from flask import Flask, make_response, redirect, session
 from flask_appbuilder import AppBuilder
@@ -174,11 +175,13 @@ class ListFilterTestCase(BaseMVCTestCase):
             self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
 
             # Roles doesn't exists
-            rv = c.get("/users/list/?_flt_0_roles=aaaa", follow_redirects=True)
-            self.assertEqual(rv.status_code, 200)
-            if self.appbuilder.session.get_bind().name != "mysql":
-                data = rv.data.decode("utf-8")
-                self.assertIn("An error occurred", data)
+            with mock.patch("flask_appbuilder.models.sqla.filters.log") as log_patch:
+                rv = c.get("/users/list/?_flt_0_roles=aaaa", follow_redirects=True)
+                self.assertEqual(rv.status_code, 200)
+                if self.appbuilder.session.get_bind().name != "mysql":
+                    log_patch.warning.assert_called_with(
+                        "Related object for column: %s returned Null", "roles"
+                    )
 
     def test_list_filter_o_m_invalid_object_type(self):
         """
@@ -189,9 +192,6 @@ class ListFilterTestCase(BaseMVCTestCase):
 
             rv = c.get("/model2view/list/?_flt_0_group=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.appbuilder.session.get_bind().name != "mysql":
-                data = rv.data.decode("utf-8")
-                self.assertIn("An error occurred", data)
 
     def test_list_filter_not_o_m_invalid_object_type(self):
         """
@@ -203,9 +203,6 @@ class ListFilterTestCase(BaseMVCTestCase):
             # Roles doesn't exists
             rv = c.get("/model2view/list/?_flt_1_group=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.appbuilder.session.get_bind().name != "mysql":
-                data = rv.data.decode("utf-8")
-                self.assertIn("An error occurred", data)
 
     def test_list_filter_unknown_column(self):
         """
