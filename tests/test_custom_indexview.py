@@ -14,6 +14,7 @@ class CustomIndexView(IndexView):
 class FlaskTestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
+
         self.app = Flask(__name__, template_folder=".")
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")

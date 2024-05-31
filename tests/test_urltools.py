@@ -13,8 +13,12 @@ class FlaskTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
-
+        self.ctx = self.app.app_context()
+        self.ctx.push()
         self.appbuilder = AppBuilder(self.app)
+
+    def tearDown(self):
+        self.ctx.pop()
 
     def test_get_filter_args_allow_one(self):
         datamodel = SQLAInterface(Model1)
