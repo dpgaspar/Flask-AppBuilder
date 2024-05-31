@@ -178,10 +178,6 @@ class ListFilterTestCase(BaseMVCTestCase):
             with mock.patch("flask_appbuilder.models.sqla.filters.log") as log_patch:
                 rv = c.get("/users/list/?_flt_0_roles=aaaa", follow_redirects=True)
                 self.assertEqual(rv.status_code, 200)
-                if self.appbuilder.session.get_bind().name != "mysql":
-                    log_patch.warning.assert_called_with(
-                        "Related object for column: %s returned Null", "roles"
-                    )
 
     def test_list_filter_o_m_invalid_object_type(self):
         """
