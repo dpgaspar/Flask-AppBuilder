@@ -22,16 +22,14 @@ class FlaskTestCase(FABTestCase):
 
     def test_get_filter_args_allow_one(self):
         datamodel = SQLAInterface(Model1)
-        with self.appbuilder.get_app.test_request_context(
-            "/users/list?_flt_1_field_string=a"
-        ):
+        with self.app.test_request_context("/users/list?_flt_1_field_string=a"):
             filters = datamodel.get_filters(["field_string", "field_integer"])
             get_filter_args(filters)
             assert filters.values == [["a"]]
 
     def test_get_filter_args_allow_multiple(self):
         datamodel = SQLAInterface(Model1)
-        with self.appbuilder.get_app.test_request_context(
+        with self.app.test_request_context(
             "/users/list?_flt_1_field_string=a&_flt_1_field_integer=2"
         ):
             filters = datamodel.get_filters(["field_string", "field_integer"])
@@ -40,27 +38,21 @@ class FlaskTestCase(FABTestCase):
 
     def test_get_filter_args_disallow(self):
         datamodel = SQLAInterface(Model1)
-        with self.appbuilder.get_app.test_request_context(
-            "/users/list?_flt_1_field_float=1.0"
-        ):
+        with self.app.test_request_context("/users/list?_flt_1_field_float=1.0"):
             filters = datamodel.get_filters(["field_string", "field_integer"])
             get_filter_args(filters)
             assert filters.values == []
 
     def test_get_filter_args_disallow_off(self):
         datamodel = SQLAInterface(Model1)
-        with self.appbuilder.get_app.test_request_context(
-            "/users/list?_flt_1_field_float=1.0"
-        ):
+        with self.app.test_request_context("/users/list?_flt_1_field_float=1.0"):
             filters = datamodel.get_filters(["field_string", "field_integer"])
             get_filter_args(filters, disallow_if_not_in_search=False)
             assert filters.values == [["1.0"]]
 
     def test_get_filter_args_invalid_index(self):
         datamodel = SQLAInterface(Model1)
-        with self.appbuilder.get_app.test_request_context(
-            "/users/list?_flt_a_field_string=a"
-        ):
+        with self.app.test_request_context("/users/list?_flt_a_field_string=a"):
             filters = datamodel.get_filters(["field_string", "field_integer"])
             get_filter_args(filters)
             assert filters.values == []
