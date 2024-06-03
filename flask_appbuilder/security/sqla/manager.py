@@ -6,7 +6,7 @@ import logging
 from typing import Dict, List, Optional, Tuple, Union
 import uuid
 
-from flask import has_app_context
+from flask import current_app, has_app_context
 from flask_appbuilder import const as c
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.manager import BaseSecurityManager
@@ -102,7 +102,7 @@ class SecurityManager(BaseSecurityManager):
     def register_views(self) -> None:
         super().register_views()
 
-        if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_API", False):
+        if not current_app.config.get("FAB_ADD_SECURITY_API", False):
             return
 
         self.appbuilder.add_api(self.permission_api)
@@ -112,7 +112,7 @@ class SecurityManager(BaseSecurityManager):
         self.appbuilder.add_api(self.permission_view_menu_api)
 
     def create_db(self) -> None:
-        if not self.appbuilder.app.config.get("FAB_CREATE_DB", True):
+        if not current_app.config.get("FAB_CREATE_DB", True):
             return
         try:
             # Check if an application context does not exist

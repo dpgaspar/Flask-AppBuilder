@@ -136,7 +136,6 @@ class AppBuilder:
         self.indexview = indexview
         self.static_folder = static_folder
         self.static_url_path = static_url_path
-        self.app = app
         self.update_perms = update_perms
 
         # Security Manager Class
@@ -168,7 +167,8 @@ class AppBuilder:
         app.config.setdefault("FAB_STATIC_FOLDER", self.static_folder)
         app.config.setdefault("FAB_STATIC_URL_PATH", self.static_url_path)
 
-        self.app = app
+        self._init_extension(app)
+        # init flask-sqlalchemy
         db.init_app(app)
 
         self.base_template = app.config.get("FAB_BASE_TEMPLATE", self.base_template)
@@ -217,16 +217,15 @@ class AppBuilder:
         app.before_request(self.sm.before_request)
         self._add_admin_views()
         self._add_addon_views()
-        if self.app:
-            self._add_menu_permissions()
-        else:
-            self.post_init()
-        self._init_extension(app)
+        self._add_menu_permissions()
 
     def _init_extension(self, app: Flask) -> None:
         app.appbuilder = self
-        if not hasattr(app, "extensions"):
-            app.extensions = {}
+        if "appbuilder" in app.extensions:
+            raise RuntimeError(
+                "A 'Flask-AppBuilder' instance has"
+                " already been registered on this Flask app."
+            )
         app.extensions["appbuilder"] = self
 
     def post_init(self) -> None:
@@ -234,22 +233,18 @@ class AppBuilder:
             # instantiate the views and add session
             baseview = self._check_and_init(baseview)
             # Register the views has blueprints
-            if baseview.__class__.__name__ not in self.get_app.blueprints.keys():
+            if baseview.__class__.__name__ not in current_app.blueprints.keys():
                 self.register_blueprint(baseview)
             # Add missing permissions where needed
         self.add_permissions()
 
     @property
-    def get_app(self) -> Flask:
-        """
-        Get current or configured flask app
-
-        :return: Flask App
-        """
-        if self.app:
-            return self.app
-        else:
-            return current_app
+    def app(self):
+        log.warning(
+            "appbuilder.app will be deprecated in future versions, "
+            "use current_app instead"
+        )
+        return current_app
 
     @property
     def session(self) -> SessionBase:
@@ -267,7 +262,7 @@ class AppBuilder:
 
         :return: String with app name
         """
-        return self.get_app.config["APP_NAME"]
+        return current_app.config["APP_NAME"]
 
     @property
     def app_theme(self) -> str:
@@ -276,7 +271,7 @@ class AppBuilder:
 
         :return: String app theme name
         """
-        return self.get_app.config["APP_THEME"]
+        return current_app.config["APP_THEME"]
 
     @property
     def app_icon(self) -> str:
@@ -285,11 +280,11 @@ class AppBuilder:
 
         :return: String with relative app icon location
         """
-        return self.get_app.config["APP_ICON"]
+        return current_app.config["APP_ICON"]
 
     @property
     def languages(self) -> Dict[str, Any]:
-        return self.get_app.config["LANGUAGES"]
+        return current_app.config["LANGUAGES"]
 
     @property
     def version(self) -> str:
@@ -301,7 +296,7 @@ class AppBuilder:
         return __version__
 
     def _add_global_filters(self) -> None:
-        self.template_filters = TemplateFilters(self.get_app, self.sm)
+        self.template_filters = TemplateFilters(current_app, self.sm)
 
     def _add_global_static(self) -> None:
         bp = Blueprint(
@@ -312,7 +307,7 @@ class AppBuilder:
             static_folder=self.static_folder,
             static_url_path=self.static_url_path,
         )
-        self.get_app.register_blueprint(bp)
+        current_app.register_blueprint(bp)
 
     def _add_admin_views(self) -> None:
         """
@@ -349,11 +344,6 @@ class AppBuilder:
     def _check_and_init(
         self, baseview: Union[Type["AbstractViewApi"], "AbstractViewApi"]
     ) -> "AbstractViewApi":
-        # If class if not instantiated, instantiate it
-        # and add db session from security models.
-        if hasattr(baseview, "datamodel"):
-            if getattr(baseview, "datamodel").session is None:
-                getattr(baseview, "datamodel").session = self.session
         if isinstance(baseview, type):
             baseview = baseview()
         return baseview
@@ -444,10 +434,9 @@ class AppBuilder:
             baseview.appbuilder = self
             self.baseviews.append(baseview)
             self._process_inner_views()
-            if self.app:
-                self.register_blueprint(baseview)
-                self._add_permission(baseview)
-                self.add_limits(baseview)
+            self.register_blueprint(baseview)
+            self._add_permission(baseview)
+            self.add_limits(baseview)
         self.add_link(
             name=name,
             href=href,
@@ -515,10 +504,9 @@ class AppBuilder:
             baseview=baseview,
             cond=cond,
         )
-        if self.app:
-            self._add_permissions_menu(name)
-            if category:
-                self._add_permissions_menu(category)
+        self._add_permissions_menu(name)
+        if category:
+            self._add_permissions_menu(category)
 
     def add_separator(
         self, category: str, cond: Optional[Callable[..., bool]] = None
@@ -561,12 +549,11 @@ class AppBuilder:
             baseview.appbuilder = self
             self.baseviews.append(baseview)
             self._process_inner_views()
-            if self.app:
-                self.register_blueprint(
-                    baseview, endpoint=endpoint, static_folder=static_folder
-                )
-                self._add_permission(baseview)
-                self.add_limits(baseview)
+            self.register_blueprint(
+                baseview, endpoint=endpoint, static_folder=static_folder
+            )
+            self._add_permission(baseview)
+            self.add_limits(baseview)
         else:
             log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS, baseview.__class__.__name__)
         return baseview
@@ -702,7 +689,7 @@ class AppBuilder:
         endpoint: Optional[str] = None,
         static_folder: Optional[str] = None,
     ) -> None:
-        self.get_app.register_blueprint(
+        current_app.register_blueprint(
             baseview.create_blueprint(
                 self, endpoint=endpoint, static_folder=static_folder
             )

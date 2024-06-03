@@ -5,7 +5,7 @@ import logging
 import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
-from flask import Flask, g, session, url_for
+from flask import current_app, Flask, g, session, url_for
 from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
@@ -217,55 +217,56 @@ class BaseSecurityManager(AbstractSecurityManager):
     permissionviewmodelview = PermissionViewModelView
 
     def __init__(self, appbuilder):
-        super(BaseSecurityManager, self).__init__(appbuilder)
-        app = self.appbuilder.get_app
+        super().__init__(appbuilder)
         # Base Security Config
-        app.config.setdefault("AUTH_ROLE_ADMIN", "Admin")
-        app.config.setdefault("AUTH_ROLE_PUBLIC", "Public")
-        app.config.setdefault("AUTH_TYPE", AUTH_DB)
+        current_app.config.setdefault("AUTH_ROLE_ADMIN", "Admin")
+        current_app.config.setdefault("AUTH_ROLE_PUBLIC", "Public")
+        current_app.config.setdefault("AUTH_TYPE", AUTH_DB)
         # Self Registration
-        app.config.setdefault("AUTH_USER_REGISTRATION", False)
-        app.config.setdefault("AUTH_USER_REGISTRATION_ROLE", self.auth_role_public)
-        app.config.setdefault("AUTH_USER_REGISTRATION_ROLE_JMESPATH", None)
+        current_app.config.setdefault("AUTH_USER_REGISTRATION", False)
+        current_app.config.setdefault(
+            "AUTH_USER_REGISTRATION_ROLE", self.auth_role_public
+        )
+        current_app.config.setdefault("AUTH_USER_REGISTRATION_ROLE_JMESPATH", None)
         # Role Mapping
-        app.config.setdefault("AUTH_ROLES_MAPPING", {})
-        app.config.setdefault("AUTH_ROLES_SYNC_AT_LOGIN", False)
-        app.config.setdefault("AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS", False)
+        current_app.config.setdefault("AUTH_ROLES_MAPPING", {})
+        current_app.config.setdefault("AUTH_ROLES_SYNC_AT_LOGIN", False)
+        current_app.config.setdefault("AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS", False)
 
         # LDAP Config
         if self.auth_type == AUTH_LDAP:
-            if "AUTH_LDAP_SERVER" not in app.config:
+            if "AUTH_LDAP_SERVER" not in current_app.config:
                 raise Exception(
                     "No AUTH_LDAP_SERVER defined on config"
                     " with AUTH_LDAP authentication type."
                 )
-            app.config.setdefault("AUTH_LDAP_SEARCH", "")
-            app.config.setdefault("AUTH_LDAP_SEARCH_FILTER", "")
-            app.config.setdefault("AUTH_LDAP_APPEND_DOMAIN", "")
-            app.config.setdefault("AUTH_LDAP_USERNAME_FORMAT", "")
-            app.config.setdefault("AUTH_LDAP_BIND_USER", "")
-            app.config.setdefault("AUTH_LDAP_BIND_PASSWORD", "")
+            current_app.config.setdefault("AUTH_LDAP_SEARCH", "")
+            current_app.config.setdefault("AUTH_LDAP_SEARCH_FILTER", "")
+            current_app.config.setdefault("AUTH_LDAP_APPEND_DOMAIN", "")
+            current_app.config.setdefault("AUTH_LDAP_USERNAME_FORMAT", "")
+            current_app.config.setdefault("AUTH_LDAP_BIND_USER", "")
+            current_app.config.setdefault("AUTH_LDAP_BIND_PASSWORD", "")
             # TLS options
-            app.config.setdefault("AUTH_LDAP_USE_TLS", False)
-            app.config.setdefault("AUTH_LDAP_ALLOW_SELF_SIGNED", False)
-            app.config.setdefault("AUTH_LDAP_TLS_DEMAND", False)
-            app.config.setdefault("AUTH_LDAP_TLS_CACERTDIR", "")
-            app.config.setdefault("AUTH_LDAP_TLS_CACERTFILE", "")
-            app.config.setdefault("AUTH_LDAP_TLS_CERTFILE", "")
-            app.config.setdefault("AUTH_LDAP_TLS_KEYFILE", "")
+            current_app.config.setdefault("AUTH_LDAP_USE_TLS", False)
+            current_app.config.setdefault("AUTH_LDAP_ALLOW_SELF_SIGNED", False)
+            current_app.config.setdefault("AUTH_LDAP_TLS_DEMAND", False)
+            current_app.config.setdefault("AUTH_LDAP_TLS_CACERTDIR", "")
+            current_app.config.setdefault("AUTH_LDAP_TLS_CACERTFILE", "")
+            current_app.config.setdefault("AUTH_LDAP_TLS_CERTFILE", "")
+            current_app.config.setdefault("AUTH_LDAP_TLS_KEYFILE", "")
             # Mapping options
-            app.config.setdefault("AUTH_LDAP_UID_FIELD", "uid")
-            app.config.setdefault("AUTH_LDAP_GROUP_FIELD", "memberOf")
-            app.config.setdefault("AUTH_LDAP_FIRSTNAME_FIELD", "givenName")
-            app.config.setdefault("AUTH_LDAP_LASTNAME_FIELD", "sn")
-            app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
+            current_app.config.setdefault("AUTH_LDAP_UID_FIELD", "uid")
+            current_app.config.setdefault("AUTH_LDAP_GROUP_FIELD", "memberOf")
+            current_app.config.setdefault("AUTH_LDAP_FIRSTNAME_FIELD", "givenName")
+            current_app.config.setdefault("AUTH_LDAP_LASTNAME_FIELD", "sn")
+            current_app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
 
         if self.auth_type == AUTH_REMOTE_USER:
-            app.config.setdefault("AUTH_REMOTE_USER_ENV_VAR", "REMOTE_USER")
+            current_app.config.setdefault("AUTH_REMOTE_USER_ENV_VAR", "REMOTE_USER")
 
         # Rate limiting
-        app.config.setdefault("AUTH_RATE_LIMITED", False)
-        app.config.setdefault("AUTH_RATE_LIMIT", "10 per 20 second")
+        current_app.config.setdefault("AUTH_RATE_LIMITED", False)
+        current_app.config.setdefault("AUTH_RATE_LIMIT", "10 per 20 second")
 
         if self.auth_type == AUTH_OID:
             from flask_openid import OpenID
@@ -274,12 +275,12 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "AUTH_OID is deprecated and will be removed in version 5. "
                 "Migrate to other authentication methods."
             )
-            self.oid = OpenID(app)
+            self.oid = OpenID(current_app)
 
         if self.auth_type == AUTH_OAUTH:
             from authlib.integrations.flask_client import OAuth
 
-            self.oauth = OAuth(app)
+            self.oauth = OAuth(current_app)
             self.oauth_remotes = {}
             for _provider in self.oauth_providers:
                 provider_name = _provider["name"]
@@ -297,13 +298,13 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         self._builtin_roles = self.create_builtin_roles()
         # Setup Flask-Login
-        self.lm = self.create_login_manager(app)
+        self.lm = self.create_login_manager(current_app)
 
         # Setup Flask-Jwt-Extended
-        self.jwt_manager = self.create_jwt_manager(app)
+        self.jwt_manager = self.create_jwt_manager(current_app)
 
         # Setup Flask-Limiter
-        self.limiter = self.create_limiter(app)
+        self.limiter = self.create_limiter(current_app)
 
     def create_limiter(self, app: Flask) -> Limiter:
         limiter = Limiter(key_func=get_remote_address)
@@ -332,8 +333,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         jwt_manager.user_lookup_loader(self.load_user_jwt)
         return jwt_manager
 
-    def create_builtin_roles(self):
-        return self.appbuilder.get_app.config.get("FAB_ROLES", {})
+    @staticmethod
+    def create_builtin_roles():
+        return current_app.config.get("FAB_ROLES", {})
 
     def get_roles_from_keys(self, role_keys: List[str]) -> Set[role_model]:
         """
@@ -387,143 +389,143 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     @property
     def api_login_allow_multiple_providers(self):
-        return self.appbuilder.get_app.config["AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS"]
+        return current_app.config["AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS"]
 
     @property
     def auth_type(self) -> int:
-        return self.appbuilder.get_app.config["AUTH_TYPE"]
+        return current_app.config["AUTH_TYPE"]
 
     @property
     def auth_username_ci(self) -> str:
-        return self.appbuilder.get_app.config.get("AUTH_USERNAME_CI", True)
+        return current_app.config.get("AUTH_USERNAME_CI", True)
 
     @property
     def auth_role_admin(self) -> str:
-        return self.appbuilder.get_app.config["AUTH_ROLE_ADMIN"]
+        return current_app.config["AUTH_ROLE_ADMIN"]
 
     @property
     def auth_role_public(self) -> str:
-        return self.appbuilder.get_app.config["AUTH_ROLE_PUBLIC"]
+        return current_app.config["AUTH_ROLE_PUBLIC"]
 
     @property
     def auth_ldap_server(self) -> str:
-        return self.appbuilder.get_app.config["AUTH_LDAP_SERVER"]
+        return current_app.config["AUTH_LDAP_SERVER"]
 
     @property
     def auth_ldap_use_tls(self) -> bool:
-        return self.appbuilder.get_app.config["AUTH_LDAP_USE_TLS"]
+        return current_app.config["AUTH_LDAP_USE_TLS"]
 
     @property
     def auth_user_registration(self) -> bool:
-        return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION"]
+        return current_app.config["AUTH_USER_REGISTRATION"]
 
     @property
     def auth_user_registration_role(self) -> str:
-        return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE"]
+        return current_app.config["AUTH_USER_REGISTRATION_ROLE"]
 
     @property
     def auth_user_registration_role_jmespath(self) -> str:
-        return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"]
+        return current_app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"]
 
     @property
     def auth_remote_user_env_var(self) -> str:
-        return self.appbuilder.get_app.config["AUTH_REMOTE_USER_ENV_VAR"]
+        return current_app.config["AUTH_REMOTE_USER_ENV_VAR"]
 
     @property
     def auth_roles_mapping(self) -> Dict[str, List[str]]:
-        return self.appbuilder.get_app.config["AUTH_ROLES_MAPPING"]
+        return current_app.config["AUTH_ROLES_MAPPING"]
 
     @property
     def auth_roles_sync_at_login(self) -> bool:
-        return self.appbuilder.get_app.config["AUTH_ROLES_SYNC_AT_LOGIN"]
+        return current_app.config["AUTH_ROLES_SYNC_AT_LOGIN"]
 
     @property
     def auth_ldap_search(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_SEARCH"]
+        return current_app.config["AUTH_LDAP_SEARCH"]
 
     @property
     def auth_ldap_search_filter(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_SEARCH_FILTER"]
+        return current_app.config["AUTH_LDAP_SEARCH_FILTER"]
 
     @property
     def auth_ldap_bind_user(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_BIND_USER"]
+        return current_app.config["AUTH_LDAP_BIND_USER"]
 
     @property
     def auth_ldap_bind_password(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_BIND_PASSWORD"]
+        return current_app.config["AUTH_LDAP_BIND_PASSWORD"]
 
     @property
     def auth_ldap_append_domain(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_APPEND_DOMAIN"]
+        return current_app.config["AUTH_LDAP_APPEND_DOMAIN"]
 
     @property
     def auth_ldap_username_format(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_USERNAME_FORMAT"]
+        return current_app.config["AUTH_LDAP_USERNAME_FORMAT"]
 
     @property
     def auth_ldap_uid_field(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_UID_FIELD"]
+        return current_app.config["AUTH_LDAP_UID_FIELD"]
 
     @property
     def auth_ldap_group_field(self) -> str:
-        return self.appbuilder.get_app.config["AUTH_LDAP_GROUP_FIELD"]
+        return current_app.config["AUTH_LDAP_GROUP_FIELD"]
 
     @property
     def auth_ldap_firstname_field(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_FIRSTNAME_FIELD"]
+        return current_app.config["AUTH_LDAP_FIRSTNAME_FIELD"]
 
     @property
     def auth_ldap_lastname_field(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_LASTNAME_FIELD"]
+        return current_app.config["AUTH_LDAP_LASTNAME_FIELD"]
 
     @property
     def auth_ldap_email_field(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_EMAIL_FIELD"]
+        return current_app.config["AUTH_LDAP_EMAIL_FIELD"]
 
     @property
     def auth_ldap_bind_first(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_BIND_FIRST"]
+        return current_app.config["AUTH_LDAP_BIND_FIRST"]
 
     @property
     def auth_ldap_allow_self_signed(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_ALLOW_SELF_SIGNED"]
+        return current_app.config["AUTH_LDAP_ALLOW_SELF_SIGNED"]
 
     @property
     def auth_ldap_tls_demand(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_TLS_DEMAND"]
+        return current_app.config["AUTH_LDAP_TLS_DEMAND"]
 
     @property
     def auth_ldap_tls_cacertdir(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_TLS_CACERTDIR"]
+        return current_app.config["AUTH_LDAP_TLS_CACERTDIR"]
 
     @property
     def auth_ldap_tls_cacertfile(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_TLS_CACERTFILE"]
+        return current_app.config["AUTH_LDAP_TLS_CACERTFILE"]
 
     @property
     def auth_ldap_tls_certfile(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_TLS_CERTFILE"]
+        return current_app.config["AUTH_LDAP_TLS_CERTFILE"]
 
     @property
     def auth_ldap_tls_keyfile(self):
-        return self.appbuilder.get_app.config["AUTH_LDAP_TLS_KEYFILE"]
+        return current_app.config["AUTH_LDAP_TLS_KEYFILE"]
 
     @property
     def openid_providers(self):
-        return self.appbuilder.get_app.config["OPENID_PROVIDERS"]
+        return current_app.config["OPENID_PROVIDERS"]
 
     @property
     def oauth_providers(self):
-        return self.appbuilder.get_app.config["OAUTH_PROVIDERS"]
+        return current_app.config["OAUTH_PROVIDERS"]
 
     @property
     def is_auth_limited(self) -> bool:
-        return self.appbuilder.get_app.config["AUTH_RATE_LIMITED"]
+        return current_app.config["AUTH_RATE_LIMITED"]
 
     @property
     def auth_rate_limit(self) -> str:
-        return self.appbuilder.get_app.config["AUTH_RATE_LIMIT"]
+        return current_app.config["AUTH_RATE_LIMIT"]
 
     @property
     def current_user(self):
@@ -775,7 +777,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise InvalidLoginAttempt("OAuth signature verify failed")
 
     def register_views(self):
-        if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEWS", True):
+        if not current_app.config.get("FAB_ADD_SECURITY_VIEWS", True):
             return
         # Security APIs
         self.appbuilder.add_api(self.security_api)
@@ -861,7 +863,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 category="Security",
             )
         self.appbuilder.menu.add_separator("Security")
-        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_PERMISSION_VIEW", True):
+        if current_app.config.get("FAB_ADD_SECURITY_PERMISSION_VIEW", True):
             self.appbuilder.add_view(
                 self.permissionmodelview,
                 "Base Permissions",
@@ -869,7 +871,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 label=_("Base Permissions"),
                 category="Security",
             )
-        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEW_MENU_VIEW", True):
+        if current_app.config.get("FAB_ADD_SECURITY_VIEW_MENU_VIEW", True):
             self.appbuilder.add_view(
                 self.viewmenumodelview,
                 "Views/Menus",
@@ -877,9 +879,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 label=_("Views/Menus"),
                 category="Security",
             )
-        if self.appbuilder.app.config.get(
-            "FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW", True
-        ):
+        if current_app.config.get("FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW", True):
             self.appbuilder.add_view(
                 self.permissionviewmodelview,
                 "Permission on Views/Menus",
@@ -892,7 +892,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         Setups the DB, creates admin and public roles if they don't exist.
         """
-        roles_mapping = self.appbuilder.get_app.config.get("FAB_ROLES_MAPPING", {})
+        roles_mapping = current_app.config.get("FAB_ROLES_MAPPING", {})
         for pk, name in roles_mapping.items():
             self.update_role(pk, name)
         for role_name, permission_view_menus in self.builtin_roles.items():

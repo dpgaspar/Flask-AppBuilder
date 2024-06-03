@@ -564,7 +564,7 @@ class MVCTestCase(BaseMVCTestCase):
 
         def get_model1_by_name(datamodel, name):
             model = (
-                datamodel.session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string=name)
                 .one_or_none()
             )

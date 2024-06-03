@@ -76,8 +76,8 @@ def expose_api(name="", url="", methods=("GET",), description=""):
 class AbstractViewApi:
     appbuilder: "AppBuilder"
     base_permissions: Optional[List[str]]
-    class_permission_name: str
-    endpoint: str
+    class_permission_name: Optional[str]
+    endpoint: Optional[str]
     default_view: str
 
     def create_blueprint(
@@ -1403,9 +1403,7 @@ class BaseCRUDView(BaseModelView):
         """
         if current_app.config.get("FAB_ALLOW_GET_UNSAFE_MUTATIONS", False):
             return True
-        return not (
-            request.method == "GET" and self.appbuilder.app.extensions.get("csrf")
-        )
+        return not (request.method == "GET" and current_app.extensions.get("csrf"))
 
     def prefill_form(self, form, pk):
         """

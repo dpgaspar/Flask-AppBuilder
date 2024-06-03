@@ -5,6 +5,7 @@ from typing import Set
 
 from flask import (
     abort,
+    current_app,
     flash,
     jsonify,
     make_response,
@@ -668,7 +669,7 @@ class ModelView(RestCRUDView):
     @has_access
     def download(self, filename):
         return send_file(
-            op.join(self.appbuilder.app.config["UPLOAD_FOLDER"], filename),
+            op.join(current_app.config["UPLOAD_FOLDER"], filename),
             download_name=uuid_originalname(filename),
             as_attachment=True,
         )
