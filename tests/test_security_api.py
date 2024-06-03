@@ -419,10 +419,6 @@ class RolePermissionAPITestCase(FABTestCase):
         self.viewmenu_model = ViewMenu
         self.role_model = Role
 
-        for b in self.appbuilder.baseviews:
-            if hasattr(b, "datamodel") and b.datamodel.session is not None:
-                b.datamodel.session = db.session
-
         self.create_default_users(self.appbuilder)
 
     def tearDown(self):

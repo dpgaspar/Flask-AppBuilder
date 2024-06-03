@@ -2,6 +2,7 @@ import datetime
 import logging
 
 from dateutil import parser
+from flask_appbuilder.extensions import db
 from flask_appbuilder.exceptions import ApplyFilterException
 from flask_appbuilder.models.filters import (
     BaseFilter,
@@ -194,7 +195,7 @@ class FilterRelationOneToManyEqual(FilterRelation):
         except SQLAlchemyError as exc:
             logging.warning("Filter exception for %s will not apply", field)
             try:
-                self.datamodel.session.rollback()
+                db.session.rollback()
             except SQLAlchemyError:
                 # on MSSQL a rollback would fail here
                 pass
@@ -213,7 +214,7 @@ class FilterRelationOneToManyNotEqual(FilterRelation):
         except SQLAlchemyError as exc:
             log.warning("Filter exception for %s will not apply", field)
             try:
-                self.datamodel.session.rollback()
+                db.session.rollback()
             except SQLAlchemyError:
                 # on MSSQL a rollback would fail here
                 pass
@@ -239,7 +240,7 @@ class FilterRelationManyToManyEqual(FilterRelation):
                 value_item,
             )
             try:
-                self.datamodel.session.rollback()
+                db.session.rollback()
             except SQLAlchemyError:
                 # on MSSQL a rollback would fail here
                 pass

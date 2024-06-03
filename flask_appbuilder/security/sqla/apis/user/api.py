@@ -4,6 +4,7 @@ from flask import g, request
 from flask_appbuilder import ModelRestApi
 from flask_appbuilder.api import expose, safe
 from flask_appbuilder.const import API_RESULT_RES_KEY
+from flask_appbuilder.extensions import db
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.decorators import permission_name, protect
 from flask_appbuilder.security.sqla.apis.user.schema import (
@@ -120,7 +121,7 @@ class UserApi(ModelRestApi):
                 else:
                     for role_id in item[key]:
                         role = (
-                            self.datamodel.session.query(Role)
+                            db.session.query(Role)
                             .filter(Role.id == role_id)
                             .one_or_none()
                         )
@@ -192,7 +193,7 @@ class UserApi(ModelRestApi):
                 else:
                     for role_id in item[key]:
                         role = (
-                            self.datamodel.session.query(Role)
+                            db.session.query(Role)
                             .filter(Role.id == role_id)
                             .one_or_none()
                         )
