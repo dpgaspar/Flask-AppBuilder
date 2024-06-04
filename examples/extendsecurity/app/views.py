@@ -42,28 +42,10 @@ class ContactModelView(ModelView):
     base_filters = [["created_by.company", FilterEqualFunction, get_user_company]]
 
 
-appbuilder.add_view(
-    ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts"
-)
-appbuilder.add_separator("Contacts")
-
-
 class GroupModelView(ModelView):
     datamodel = SQLAInterface(ContactGroup)
     related_views = [ContactModelView]
 
 
-appbuilder.add_view(
-    GroupModelView,
-    "List Groups",
-    icon="fa-folder-open-o",
-    category="Contacts",
-    category_icon="fa-envelope",
-)
-
-
 class CompanyModelView(ModelView):
     datamodel = SQLAInterface(Company)
-
-
-appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open-o")

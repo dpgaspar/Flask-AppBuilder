@@ -1,4 +1,6 @@
 from flask_appbuilder import AppBuilder
 
+from . import MySecurityManager
 
-appbuilder = AppBuilder()
+
+appbuilder = AppBuilder(security_manager_class=MySecurityManager)

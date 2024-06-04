@@ -1,6 +1,7 @@
 import logging
 
 from flask import Flask
+from .security import MySecurityManager
 from .views import (
     DepartmentView,
     EmployeeView,

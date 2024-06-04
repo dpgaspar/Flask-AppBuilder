@@ -76,6 +76,20 @@ assoc_permissionview_role = db.Table(
 )
 
 
+assoc_user_role = db.Table(
+    "ab_user_role",
+    Column(
+        "id",
+        Integer,
+        Sequence("ab_user_role_id_seq", start=1, increment=1, minvalue=1, cycle=False),
+        primary_key=True,
+    ),
+    Column("user_id", Integer, ForeignKey("ab_user.id")),
+    Column("role_id", Integer, ForeignKey("ab_role.id")),
+    UniqueConstraint("user_id", "role_id"),
+)
+
+
 class Role(Model):
     __tablename__ = "ab_role"
 
@@ -89,6 +103,9 @@ class Role(Model):
         "PermissionView",
         secondary=assoc_permissionview_role,
         backref="role",
+    )
+    users: Mapped[List["User"]] = relationship(
+        "User", secondary=assoc_user_role, backref="roles", enable_typechecks=False
     )
 
     def __repr__(self):
@@ -114,20 +131,6 @@ class PermissionView(Model):
         return str(self.permission).replace("_", " ") + " on " + str(self.view_menu)
 
 
-assoc_user_role = db.Table(
-    "ab_user_role",
-    Column(
-        "id",
-        Integer,
-        Sequence("ab_user_role_id_seq", start=1, increment=1, minvalue=1, cycle=False),
-        primary_key=True,
-    ),
-    Column("user_id", Integer, ForeignKey("ab_user.id")),
-    Column("role_id", Integer, ForeignKey("ab_role.id")),
-    UniqueConstraint("user_id", "role_id"),
-)
-
-
 class User(Model):
     __tablename__ = "ab_user"
     id: Mapped[int] = mapped_column(
@@ -146,9 +149,6 @@ class User(Model):
     )
     login_count: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     fail_login_count: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
-    roles: Mapped[List[Role]] = relationship(
-        "Role", secondary=assoc_user_role, backref="user"
-    )
     created_on: Mapped[Optional[datetime.datetime]] = mapped_column(
         DateTime, default=lambda: datetime.datetime.now(), nullable=True
     )
