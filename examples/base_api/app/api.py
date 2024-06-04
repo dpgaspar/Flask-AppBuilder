@@ -3,7 +3,11 @@ from flask_appbuilder.api import BaseApi, expose, rison, safe
 from flask_appbuilder.security.decorators import protect
 
 
-greeting_schema = {"type": "object", "properties": {"name": {"type": "string"}}}
+greeting_schema = {
+    "type": "object",
+    "properties": {"name": {"type": "string"}},
+    "required": ["name"],
+}
 
 
 class ExampleApi(BaseApi):
@@ -75,7 +79,12 @@ class ExampleApi(BaseApi):
         ---
         get:
           parameters:
-          - $ref: '#/components/parameters/greeting_schema'
+          - in: query
+            name: q
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/greeting_schema'
           responses:
             200:
               description: Greet the user

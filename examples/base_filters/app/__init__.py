@@ -1,16 +1,14 @@
 from flask import Flask
 
 from .views import ContactModelView, GroupModelView
-from .extensions import  appbuilder, db
+from .extensions import appbuilder
 
 
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object("config")
-    db.init_app(app)
     with app.app_context():
-        appbuilder.init_app(app, db.session)
-        db.create_all()
+        appbuilder.init_app(app)
         appbuilder.add_view(
             GroupModelView,
             "List Groups",

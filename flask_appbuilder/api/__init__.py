@@ -189,7 +189,10 @@ def rison(
                 try:
                     jsonschema.validate(instance=kwargs["rison"], schema=schema)
                 except jsonschema.ValidationError as e:
-                    return self.response_400(message=f"Not a valid rison schema {e}")
+                    validation_message = str(e).split("\n")[0]
+                    return self.response_400(
+                        message=f"Not a valid rison schema {validation_message}"
+                    )
             return f(self, *args, **kwargs)
 
         return functools.update_wrapper(wraps, f)

@@ -1,27 +1,39 @@
 import logging
 
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
-from sqlalchemy import event
-from sqlalchemy.engine import Engine
+from .views import (
+    DepartmentView,
+    EmployeeView,
+    FunctionView,
+    EmployeeHistoryView,
+    BenefitView,
+)
+from .extensions import appbuilder
 
-from .security import MySecurityManager
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
 
 
-app = Flask(__name__)
-app.config.from_object("config")
-db = SQLA(app)
-appbuilder = AppBuilder(app, db.session, security_manager_class=MySecurityManager)
+def create_app() -> Flask:
+    app = Flask(__name__)
+    app.config.from_object("config")
+    with app.app_context():
+        appbuilder.init_app(app)
 
+        appbuilder.add_view_no_menu(EmployeeHistoryView, "EmployeeHistoryView")
+        appbuilder.add_view(
+            EmployeeView, "Employees", icon="fa-folder-open-o", category="Company"
+        )
+        appbuilder.add_separator("Company")
+        appbuilder.add_view(
+            DepartmentView, "Departments", icon="fa-folder-open-o", category="Company"
+        )
+        appbuilder.add_view(
+            FunctionView, "Functions", icon="fa-folder-open-o", category="Company"
+        )
+        appbuilder.add_view(
+            BenefitView, "Benefits", icon="fa-folder-open-o", category="Company"
+        )
 
-@event.listens_for(Engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
-
-
-from . import models, views  # noqa
+    return app

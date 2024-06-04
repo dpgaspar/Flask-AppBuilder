@@ -24,7 +24,9 @@ class Gender(NameMixin, Model):
     def __repr__(self):
         return self.name
 
+
 from flask_appbuilder.security.sqla.models import User
+
 
 class Contact(AuditMixin, NameMixin, Model):
     id = Column(Integer, primary_key=True)

@@ -40,7 +40,6 @@ def upsert_test_data():
         log.error("Creating Groups: %s", e)
         db.session.rollback()
 
-
     model_oo_parents = list()
     for i in range(20):
         model = ModelOMParent()
@@ -56,7 +55,6 @@ def upsert_test_data():
             model.parent = model_oo_parents[i]
             db.session.add(model)
             db.session.commit()
-
 
     f = open("NAMES.DIC", "rb")
     names_list = [x.strip() for x in f.readlines()]
@@ -84,6 +82,7 @@ def upsert_test_data():
         except Exception as e:
             log.error("Creating Contact: %s", e)
             db.session.rollback()
+
 
 with app.app_context():
     upsert_test_data()

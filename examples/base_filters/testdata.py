@@ -2,7 +2,8 @@ from datetime import datetime
 import logging
 import random
 
-from app import appbuilder, db, create_app
+from flask_appbuilder.extensions import db
+from app import appbuilder, create_app
 from app.models import Contact, ContactGroup, Gender
 
 log = logging.getLogger(__name__)
@@ -91,6 +92,7 @@ def upsert_test_data():
         except Exception as e:
             log.error("Contact creation error: %s", e)
             db.session.rollback()
+
 
 with app.app_context():
     upsert_test_data()

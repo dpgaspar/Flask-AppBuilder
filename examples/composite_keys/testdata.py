@@ -1,7 +1,7 @@
 import logging
 from app import create_app
-from app.extensions import db
 from app.models import Datacenter, Rack, Item
+from flask_appbuilder.extensions import db
 import random
 import string
 
@@ -17,6 +17,7 @@ models = ["Server MX", "Server MY", "Server DL380", "Server x440", "Server x460"
 datacenters = list()
 
 app = create_app()
+
 
 def get_random_name(names_list, size=1):
     return names_list[random.randrange(0, len(names_list))]
@@ -57,6 +58,7 @@ def upsert_test_data():
         except Exception as e:
             log.error("Creating Item: %s", e)
             db.session.rollback()
+
 
 with app.app_context():
     upsert_test_data()
