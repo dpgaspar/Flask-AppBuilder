@@ -33,7 +33,6 @@ configuration imports the constants for the authentication methods::
         AUTH_DB,
         AUTH_LDAP,
         AUTH_OAUTH,
-        AUTH_OID,
         AUTH_REMOTE_USER
     )
 
@@ -63,25 +62,6 @@ username and hashed password field kept on your database.
 
 Administrators can create users with passwords, and users can change their passwords. This is all done using the UI.
 (You can override and extend the default UI as we'll see on *Your Custom Security*)
-
-Authentication: OpenID
-----------------------
-
-This authentication method uses `Flask-OpenID <https://github.com/mitsuhiko/flask-openid>`_. All configuration is done
-on **config.py** using OPENID_PROVIDERS key, just add or remove from the list the providers you want to enable::
-
-    AUTH_TYPE = AUTH_OID
-    OPENID_PROVIDERS = [
-        { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
-        { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
-        { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
-        { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }
-    ]
-
-Each list entry is a dict with a readable OpenID name and it's url, if the url needs an username just add it using <username>.
-The login template for this method will provide a text box for the user to fillout his/her username.
-
-F.A.B. will ask for the 'email' from OpenID, and if this email belongs to some user on your application he/she will login successfully.
 
 Authentication: LDAP
 --------------------
@@ -894,7 +874,6 @@ If you're using:
 :AUTH_DB: Extend UserDBModelView
 :AUTH_LDAP: Extend UserLDAPModelView
 :AUTH_REMOTE_USER: Extend UserRemoteUserModelView
-:AUTH_OID: Extend UserOIDModelView
 :AUTH_OAUTH: Extend UserOAuthModelView
 
 So using AUTH_DB::
@@ -970,7 +949,6 @@ Note that this is for AUTH_DB, so if you're using:
 :AUTH_DB: Override userdbmodelview
 :AUTH_LDAP: Override userldapmodelview
 :AUTH_REMOTE_USER: Override userremoteusermodelview
-:AUTH_OID: Override useroidmodelview
 
 Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
 **AppBuilder** (on __init__.py)::

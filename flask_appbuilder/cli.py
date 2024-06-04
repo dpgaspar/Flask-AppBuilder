@@ -10,7 +10,7 @@ from flask import current_app
 from flask.cli import with_appcontext
 import jinja2
 
-from .const import AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_OID, AUTH_REMOTE_USER
+from .const import AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_REMOTE_USER
 
 
 SQLA_REPO_URL = (
@@ -71,7 +71,6 @@ def create_admin(username, firstname, lastname, email, password):
     """
     auth_type = {
         AUTH_DB: "Database Authentications",
-        AUTH_OID: "OpenID Authentication",
         AUTH_LDAP: "LDAP Authentication",
         AUTH_REMOTE_USER: "WebServer REMOTE_USER Authentication",
         AUTH_OAUTH: "OAuth Authentication",

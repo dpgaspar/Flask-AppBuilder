@@ -1,5 +1,25 @@
 import logging
 
+from flask_appbuilder.fields import (
+    EnumField,
+    QuerySelectField,
+    QuerySelectMultipleField,
+)
+from flask_appbuilder.fieldwidgets import (
+    BS3TextAreaFieldWidget,
+    BS3TextFieldWidget,
+    DatePickerWidget,
+    DateTimePickerWidget,
+    Select2ManyWidget,
+    Select2Widget,
+)
+from flask_appbuilder.upload import (
+    BS3FileUploadFieldWidget,
+    BS3ImageUploadFieldWidget,
+    FileUploadField,
+    ImageUploadField,
+)
+from flask_appbuilder.validators import Unique
 from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
@@ -13,23 +33,6 @@ from wtforms import (
 )
 from wtforms import validators
 
-from .fields import EnumField, QuerySelectField, QuerySelectMultipleField
-from .fieldwidgets import (
-    BS3TextAreaFieldWidget,
-    BS3TextFieldWidget,
-    DatePickerWidget,
-    DateTimePickerWidget,
-    Select2ManyWidget,
-    Select2Widget,
-)
-from .models.mongoengine.fields import MongoFileField, MongoImageField
-from .upload import (
-    BS3FileUploadFieldWidget,
-    BS3ImageUploadFieldWidget,
-    FileUploadField,
-    ImageUploadField,
-)
-from .validators import Unique
 
 try:
     from wtforms.fields.core import _unset_value as unset_value
@@ -50,8 +53,6 @@ class FieldConverter(object):
     conversion_table = (
         ("is_image", ImageUploadField, BS3ImageUploadFieldWidget),
         ("is_file", FileUploadField, BS3FileUploadFieldWidget),
-        ("is_gridfs_file", MongoFileField, BS3FileUploadFieldWidget),
-        ("is_gridfs_image", MongoImageField, BS3ImageUploadFieldWidget),
         ("is_text", TextAreaField, BS3TextAreaFieldWidget),
         ("is_binary", TextAreaField, BS3TextAreaFieldWidget),
         ("is_string", StringField, BS3TextFieldWidget),

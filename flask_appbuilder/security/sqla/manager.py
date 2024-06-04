@@ -65,8 +65,6 @@ class SecurityManager(BaseSecurityManager):
             self.userdbmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_LDAP:
             self.userldapmodelview.datamodel = user_datamodel
-        elif self.auth_type == c.AUTH_OID:
-            self.useroidmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_OAUTH:
             self.useroauthmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_REMOTE_USER:

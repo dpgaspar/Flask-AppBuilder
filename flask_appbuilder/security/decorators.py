@@ -60,7 +60,7 @@ def protect(allow_browser_login=False):
             def do_something_else(self):
                 ....
 
-    By default the permission's name is the methods name.
+    By default, the permission's name is the methods name.
     """
 
     def _protect(f):
@@ -118,7 +118,7 @@ def has_access(f):
     Use this decorator to enable granular security permissions to your methods.
     Permissions will be associated to a role, and roles are associated to users.
 
-    By default the permission's name is the methods name.
+    By default, the permission's name is the methods name.
     """
     if hasattr(f, "_permission_name"):
         permission_str = f._permission_name

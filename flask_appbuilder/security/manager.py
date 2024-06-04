@@ -3,28 +3,38 @@ import logging
 import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
+<<<<<<< Updated upstream
 from flask import Flask, g, session, url_for
+=======
+from flask import current_app, Flask, g, session, url_for
+from flask_appbuilder.basemanager import BaseManager
+from flask_appbuilder.const import (
+    AUTH_DB,
+    AUTH_LDAP,
+    AUTH_OAUTH,
+    AUTH_REMOTE_USER,
+    LOGMSG_ERR_SEC_ADD_REGISTER_USER,
+    LOGMSG_ERR_SEC_AUTH_LDAP,
+    LOGMSG_ERR_SEC_AUTH_LDAP_TLS,
+    LOGMSG_WAR_SEC_LOGIN_FAILED,
+    LOGMSG_WAR_SEC_NO_USER,
+    LOGMSG_WAR_SEC_NOLDAP_OBJ,
+    MICROSOFT_KEY_SET_URL,
+    PERMISSION_PREFIX,
+)
+>>>>>>> Stashed changes
 from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
-from flask_babel import lazy_gettext as _
-from flask_jwt_extended import current_user as current_user_jwt
-from flask_jwt_extended import JWTManager
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from flask_login import current_user, LoginManager
-import jwt
-from werkzeug.security import check_password_hash, generate_password_hash
-
-from .api import SecurityApi
-from .registerviews import (
+from flask_appbuilder.models.base import BaseInterface
+from flask_appbuilder.security.api import SecurityApi
+from flask_appbuilder.security.registerviews import (
     RegisterUserDBView,
     RegisterUserOAuthView,
-    RegisterUserOIDView,
 )
-from .views import (
+from flask_appbuilder.security.sqla.models import User
+from flask_appbuilder.security.views import (
     AuthDBView,
     AuthLDAPView,
     AuthOAuthView,
-    AuthOIDView,
     AuthRemoteUserView,
     PermissionModelView,
     PermissionViewModelView,
@@ -36,27 +46,19 @@ from .views import (
     UserInfoEditView,
     UserLDAPModelView,
     UserOAuthModelView,
-    UserOIDModelView,
     UserRemoteUserModelView,
     UserStatsChartView,
     ViewMenuModelView,
 )
-from ..basemanager import BaseManager
-from ..const import (
-    AUTH_DB,
-    AUTH_LDAP,
-    AUTH_OAUTH,
-    AUTH_OID,
-    AUTH_REMOTE_USER,
-    LOGMSG_ERR_SEC_ADD_REGISTER_USER,
-    LOGMSG_ERR_SEC_AUTH_LDAP,
-    LOGMSG_ERR_SEC_AUTH_LDAP_TLS,
-    LOGMSG_WAR_SEC_LOGIN_FAILED,
-    LOGMSG_WAR_SEC_NO_USER,
-    LOGMSG_WAR_SEC_NOLDAP_OBJ,
-    MICROSOFT_KEY_SET_URL,
-    PERMISSION_PREFIX,
-)
+from flask_babel import lazy_gettext as _
+from flask_jwt_extended import current_user as current_user_jwt
+from flask_jwt_extended import JWTManager
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_login import current_user, LoginManager
+import jwt
+from werkzeug.security import check_password_hash, generate_password_hash
+
 
 log = logging.getLogger(__name__)
 
@@ -142,8 +144,6 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Flask-Login LoginManager """
     jwt_manager = None
     """ Flask-JWT-Extended """
-    oid = None
-    """ Flask-OpenID OpenID """
     oauth = None
     """ Flask-OAuth """
     oauth_remotes = None
@@ -170,9 +170,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     userdbmodelview = UserDBModelView
     """ Override if you want your own user db view """
     userldapmodelview = UserLDAPModelView
-    """ Override if you want your own user ldap view """
-    useroidmodelview = UserOIDModelView
-    """ Override if you want your own user OID view """
+    """ Override if you want your own user LDAP view """
     useroauthmodelview = UserOAuthModelView
     """ Override if you want your own user OAuth view """
     userremoteusermodelview = UserRemoteUserModelView
@@ -183,8 +181,6 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Authentication DB view """
     authldapview = AuthLDAPView
     """ Override if you want your own Authentication LDAP view """
-    authoidview = AuthOIDView
-    """ Override if you want your own Authentication OID view """
     authoauthview = AuthOAuthView
     """ Override if you want your own Authentication OAuth view """
     authremoteuserview = AuthRemoteUserView
@@ -192,8 +188,6 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
-    registeruseroidview = RegisterUserOIDView
-    """ Override if you want your own register user OpenID view """
     registeruseroauthview = RegisterUserOAuthView
     """ Override if you want your own register user OAuth view """
 
@@ -265,6 +259,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault("AUTH_RATE_LIMITED", False)
         app.config.setdefault("AUTH_RATE_LIMIT", "10 per 20 second")
 
+<<<<<<< Updated upstream
         if self.auth_type == AUTH_OID:
             from flask_openid import OpenID
 
@@ -274,6 +269,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             )
             self.oid = OpenID(app)
 
+=======
+>>>>>>> Stashed changes
         if self.auth_type == AUTH_OAUTH:
             from authlib.integrations.flask_client import OAuth
 
@@ -365,18 +362,18 @@ class BaseSecurityManager(AbstractSecurityManager):
         return provider_to_auth_type.get(self.auth_type)
 
     @property
-    def get_url_for_registeruser(self):
+    def get_url_for_registeruser(self) -> str:
         return url_for(
             "%s.%s"
             % (self.registeruser_view.endpoint, self.registeruser_view.default_view)
         )
 
     @property
-    def get_user_datamodel(self):
+    def get_user_datamodel(self) -> BaseInterface:
         return self.user_view.datamodel
 
     @property
-    def get_register_user_datamodel(self):
+    def get_register_user_datamodel(self) -> BaseInterface:
         return self.registerusermodelview.datamodel
 
     @property
@@ -384,8 +381,13 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self._builtin_roles
 
     @property
+<<<<<<< Updated upstream
     def api_login_allow_multiple_providers(self):
         return self.appbuilder.get_app.config["AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS"]
+=======
+    def api_login_allow_multiple_providers(self) -> bool:
+        return current_app.config["AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS"]
+>>>>>>> Stashed changes
 
     @property
     def auth_type(self) -> int:
@@ -436,6 +438,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["AUTH_ROLES_SYNC_AT_LOGIN"]
 
     @property
+<<<<<<< Updated upstream
     def auth_ldap_search(self):
         return self.appbuilder.get_app.config["AUTH_LDAP_SEARCH"]
 
@@ -462,12 +465,41 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_uid_field(self):
         return self.appbuilder.get_app.config["AUTH_LDAP_UID_FIELD"]
+=======
+    def auth_ldap_search(self) -> str:
+        return current_app.config["AUTH_LDAP_SEARCH"]
+
+    @property
+    def auth_ldap_search_filter(self) -> str:
+        return current_app.config["AUTH_LDAP_SEARCH_FILTER"]
+
+    @property
+    def auth_ldap_bind_user(self) -> str:
+        return current_app.config["AUTH_LDAP_BIND_USER"]
+
+    @property
+    def auth_ldap_bind_password(self) -> str:
+        return current_app.config["AUTH_LDAP_BIND_PASSWORD"]
+
+    @property
+    def auth_ldap_append_domain(self) -> str:
+        return current_app.config["AUTH_LDAP_APPEND_DOMAIN"]
+
+    @property
+    def auth_ldap_username_format(self) -> str:
+        return current_app.config["AUTH_LDAP_USERNAME_FORMAT"]
+
+    @property
+    def auth_ldap_uid_field(self) -> str:
+        return current_app.config["AUTH_LDAP_UID_FIELD"]
+>>>>>>> Stashed changes
 
     @property
     def auth_ldap_group_field(self) -> str:
         return self.appbuilder.get_app.config["AUTH_LDAP_GROUP_FIELD"]
 
     @property
+<<<<<<< Updated upstream
     def auth_ldap_firstname_field(self):
         return self.appbuilder.get_app.config["AUTH_LDAP_FIRSTNAME_FIELD"]
 
@@ -514,6 +546,50 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def oauth_providers(self):
         return self.appbuilder.get_app.config["OAUTH_PROVIDERS"]
+=======
+    def auth_ldap_firstname_field(self) -> str:
+        return current_app.config["AUTH_LDAP_FIRSTNAME_FIELD"]
+
+    @property
+    def auth_ldap_lastname_field(self) -> str:
+        return current_app.config["AUTH_LDAP_LASTNAME_FIELD"]
+
+    @property
+    def auth_ldap_email_field(self) -> str:
+        return current_app.config["AUTH_LDAP_EMAIL_FIELD"]
+
+    @property
+    def auth_ldap_bind_first(self) -> str:
+        return current_app.config["AUTH_LDAP_BIND_FIRST"]
+
+    @property
+    def auth_ldap_allow_self_signed(self) -> bool:
+        return current_app.config["AUTH_LDAP_ALLOW_SELF_SIGNED"]
+
+    @property
+    def auth_ldap_tls_demand(self) -> bool:
+        return current_app.config["AUTH_LDAP_TLS_DEMAND"]
+
+    @property
+    def auth_ldap_tls_cacertdir(self) -> str:
+        return current_app.config["AUTH_LDAP_TLS_CACERTDIR"]
+
+    @property
+    def auth_ldap_tls_cacertfile(self) -> str:
+        return current_app.config["AUTH_LDAP_TLS_CACERTFILE"]
+
+    @property
+    def auth_ldap_tls_certfile(self) -> str:
+        return current_app.config["AUTH_LDAP_TLS_CERTFILE"]
+
+    @property
+    def auth_ldap_tls_keyfile(self) -> str:
+        return current_app.config["AUTH_LDAP_TLS_KEYFILE"]
+
+    @property
+    def oauth_providers(self) -> str:
+        return current_app.config["OAUTH_PROVIDERS"]
+>>>>>>> Stashed changes
 
     @property
     def is_auth_limited(self) -> bool:
@@ -524,7 +600,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["AUTH_RATE_LIMIT"]
 
     @property
-    def current_user(self):
+    def current_user(self) -> User:
         if current_user.is_authenticated:
             return g.user
         elif current_user_jwt:
@@ -538,7 +614,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         Decorator function to be the OAuth user info getter
         for all the providers, receives provider and response
         return a dict with the information returned from the provider.
-        The returned user info dict should have it's keys with the same
+        The returned user info dict should have its keys with the same
         name as the User Model.
 
         Use it like this an example for GitHub ::
@@ -557,7 +633,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.oauth_user_info = wraps
         return wraps
 
-    def get_oauth_token_key_name(self, provider):
+    def get_oauth_token_key_name(self, provider: str) -> str:
         """
         Returns the token_key name for the oauth provider
         if none is configured defaults to oauth_token
@@ -567,7 +643,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             if _provider["name"] == provider:
                 return _provider.get("token_key", "oauth_token")
 
-    def get_oauth_token_secret_name(self, provider):
+    def get_oauth_token_secret_name(self, provider: str) -> str:
         """
         Returns the token_secret name for the oauth provider
         if none is configured defaults to oauth_secret
@@ -781,8 +857,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_user_registration:
             if self.auth_type == AUTH_DB:
                 self.registeruser_view = self.registeruserdbview()
-            elif self.auth_type == AUTH_OID:
-                self.registeruser_view = self.registeruseroidview()
             elif self.auth_type == AUTH_OAUTH:
                 self.registeruser_view = self.registeruseroauthview()
             if self.registeruser_view:
@@ -795,7 +869,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_DB:
             self.user_view = self.userdbmodelview
             self.auth_view = self.authdbview()
-
         elif self.auth_type == AUTH_LDAP:
             self.user_view = self.userldapmodelview
             self.auth_view = self.authldapview()
@@ -805,14 +878,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         elif self.auth_type == AUTH_REMOTE_USER:
             self.user_view = self.userremoteusermodelview
             self.auth_view = self.authremoteuserview()
-        else:
-            self.user_view = self.useroidmodelview
-            self.auth_view = self.authoidview()
-            if self.auth_user_registration:
-                pass
-                # self.registeruser_view = self.registeruseroidview()
-                # self.appbuilder.add_view_no_menu(self.registeruser_view)
-
         self.appbuilder.add_view_no_menu(self.auth_view)
 
         # this needs to be done after the view is added, otherwise the blueprint
@@ -1323,21 +1388,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                 log.error(e)
                 return None
 
-    def auth_user_oid(self, email):
-        """
-        OpenID user Authentication
-
-        :param email: user's email to authenticate
-        :type self: User model
-        """
-        user = self.find_user(email=email)
-        if user is None or (not user.is_active):
-            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED, email)
-            return None
-        else:
-            self.update_user_auth_stat(user)
-            return user
-
     def auth_user_remote_user(self, username):
         """
         REMOTE_USER user Authentication
@@ -1517,14 +1567,6 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         # If it's not a builtin role check against database store roles
         return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
-
-    def get_oid_identity_url(self, provider_name: str) -> Optional[str]:
-        """
-        Returns the OIDC identity provider URL
-        """
-        for provider in self.openid_providers:
-            if provider.get("name") == provider_name:
-                return provider.get("url")
 
     def get_user_roles(self, user) -> List[object]:
         """
