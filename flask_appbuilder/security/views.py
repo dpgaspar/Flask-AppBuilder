@@ -1,7 +1,7 @@
 import datetime
 import logging
 import re
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 from flask import abort, current_app, flash, g, redirect, request, session, url_for
 from flask_appbuilder._compat import as_unicode
@@ -13,7 +13,6 @@ from flask_appbuilder.security.decorators import has_access
 from flask_appbuilder.security.forms import (
     DynamicForm,
     LoginForm_db,
-    LoginForm_oid,
     ResetPasswordForm,
     SelectDataRequired,
     UserInfoEdit,
@@ -262,16 +261,6 @@ class UserModelView(ModelView):
         return redirect(
             url_for(self.appbuilder.sm.userinfoeditview.__name__ + ".this_form_get")
         )
-
-
-class UserOIDModelView(UserModelView):
-    """
-    View that add OID specifics to User view.
-    Override to implement your own custom view.
-    Then override useroidmodelview property on SecurityManager
-    """
-
-    pass
 
 
 class UserLDAPModelView(UserModelView):
@@ -560,62 +549,6 @@ class AuthLDAPView(AuthView):
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
-
-
-class AuthOIDView(AuthView):
-    login_template = "appbuilder/general/security/login_oid.html"
-    oid_ask_for = ["email"]
-    oid_ask_for_optional: List[str] = []
-
-    @expose("/login/", methods=["GET", "POST"])
-    def login(self, flag=True) -> WerkzeugResponse:
-        @self.appbuilder.sm.oid.loginhandler
-        def login_handler(self):
-            if g.user is not None and g.user.is_authenticated:
-                return redirect(self.appbuilder.get_url_for_index)
-            form = LoginForm_oid()
-            if form.validate_on_submit():
-                session["remember_me"] = form.remember_me.data
-                identity_url = self.appbuilder.sm.get_oid_identity_url(form.openid.data)
-                if identity_url is None:
-                    flash(as_unicode(self.invalid_login_message), "warning")
-                    return redirect(self.appbuilder.get_url_for_login)
-                return self.appbuilder.sm.oid.try_login(
-                    identity_url,
-                    ask_for=self.oid_ask_for,
-                    ask_for_optional=self.oid_ask_for_optional,
-                )
-            return self.render_template(
-                self.login_template,
-                title=self.title,
-                form=form,
-                providers=self.appbuilder.sm.openid_providers,
-                appbuilder=self.appbuilder,
-            )
-
-        @self.appbuilder.sm.oid.after_login
-        def after_login(resp):
-            if resp.email is None or resp.email == "":
-                flash(as_unicode(self.invalid_login_message), "warning")
-                return redirect(self.appbuilder.get_url_for_login)
-            user = self.appbuilder.sm.auth_user_oid(resp.email)
-            if user is None:
-                flash(as_unicode(self.invalid_login_message), "warning")
-                return redirect(self.appbuilder.get_url_for_login)
-            remember_me = False
-            if "remember_me" in session:
-                remember_me = session["remember_me"]
-                session.pop("remember_me", None)
-
-            log.warning(
-                "AUTH_OID is deprecated and will be removed in version 5. "
-                "Migrate to other authentication methods."
-            )
-            login_user(user, remember=remember_me)
-            next_url = request.args.get("next", "")
-            return redirect(get_safe_redirect(next_url))
-
-        return login_handler(self)
 
 
 class AuthOAuthView(AuthView):
