@@ -62,8 +62,10 @@ class AuditMixin:
 
     @declared_attr
     def created_by(cls):
+        from flask_appbuilder.security.sqla.models import User
+
         return relationship(
-            "User",
+            User,
             primaryjoin="%s.created_by_fk == User.id" % cls.__name__,
             enable_typechecks=False,
         )
@@ -80,8 +82,10 @@ class AuditMixin:
 
     @declared_attr
     def changed_by(cls):
+        from flask_appbuilder.security.sqla.models import User
+
         return relationship(
-            "User",
+            User,
             primaryjoin="%s.changed_by_fk == User.id" % cls.__name__,
             enable_typechecks=False,
         )

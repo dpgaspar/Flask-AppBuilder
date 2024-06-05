@@ -114,22 +114,18 @@ class SecurityManager(BaseSecurityManager):
     def create_db(self) -> None:
         if not current_app.config.get("FAB_CREATE_DB", True):
             return
-        try:
             # Check if an application context does not exist
-            if not has_app_context():
-                # Create a new application context
-                with self.appbuilder.app.app_context():
-                    self._create_db()
-            else:
+        if not has_app_context():
+            # Create a new application context
+            with self.appbuilder.app.app_context():
                 self._create_db()
-        except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_CREATE_DB, e)
-            exit(1)
+        else:
+            self._create_db()
 
     def _create_db(self) -> None:
         from flask_appbuilder.extensions import db
 
-        inspector = inspector = inspect(db.engine)
+        inspector = inspect(db.engine)
         if "ab_user" not in inspector.get_table_names():
             log.info(c.LOGMSG_INF_SEC_NO_DB)
             db.create_all()

@@ -1,6 +1,5 @@
 import datetime
 
-from flask_sqlalchemy.model import NameMixin
 from flask_appbuilder import Model
 from flask_appbuilder.models.mixins import AuditMixin
 from sqlalchemy import Column, Date, ForeignKey, Integer, String
@@ -9,7 +8,7 @@ from sqlalchemy.orm import relationship
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
-class ContactGroup(NameMixin, Model):
+class ContactGroup(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -17,7 +16,7 @@ class ContactGroup(NameMixin, Model):
         return self.name
 
 
-class Gender(NameMixin, Model):
+class Gender(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -25,10 +24,7 @@ class Gender(NameMixin, Model):
         return self.name
 
 
-from flask_appbuilder.security.sqla.models import User
-
-
-class Contact(AuditMixin, NameMixin, Model):
+class Contact(AuditMixin, Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))

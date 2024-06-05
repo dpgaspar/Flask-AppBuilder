@@ -104,7 +104,7 @@ class Role(Model):
         secondary=assoc_permissionview_role,
         backref="role",
     )
-    users: Mapped[List["User"]] = relationship(
+    user: Mapped[List["User"]] = relationship(
         "User", secondary=assoc_user_role, backref="roles", enable_typechecks=False
     )
 

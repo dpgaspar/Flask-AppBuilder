@@ -168,8 +168,9 @@ class AppBuilder:
         app.config.setdefault("FAB_STATIC_URL_PATH", self.static_url_path)
 
         self._init_extension(app)
-        # init flask-sqlalchemy
-        db.init_app(app)
+        # init flask-sqlalchemy if needed
+        if "sqlalchemy" not in app.extensions:
+            db.init_app(app)
 
         self.base_template = app.config.get("FAB_BASE_TEMPLATE", self.base_template)
         self.static_folder = app.config.get("FAB_STATIC_FOLDER", self.static_folder)
