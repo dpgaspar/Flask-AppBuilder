@@ -39,7 +39,6 @@ setup(
     package_data={"": ["LICENSE"]},
     entry_points={
         "flask.commands": ["fab=flask_appbuilder.cli:fab"],
-        "console_scripts": ["fabmanager = flask_appbuilder.console:cli"],
     },
     include_package_data=True,
     zip_safe=False,

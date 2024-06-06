@@ -240,7 +240,7 @@ class AppBuilder:
         self.add_permissions()
 
     @property
-    def app(self):
+    def app(self) -> Flask:
         log.warning(
             "appbuilder.app will be deprecated in future versions, "
             "use current_app instead"

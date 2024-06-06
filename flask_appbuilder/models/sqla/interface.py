@@ -5,7 +5,7 @@ import logging
 from typing import Any, Iterable, Optional, Tuple, Type
 
 from flask import Request
-from flask_appbuilder.exceptions import DatabaseException
+from flask_appbuilder.exceptions import DatabaseException, FABException
 from flask_appbuilder.extensions import db
 from flask_appbuilder.filemanager import FileManager, ImageManager
 from flask_appbuilder.models.base import BaseInterface
@@ -297,11 +297,25 @@ class SQLAInterface(BaseInterface):
                 )
         return query
 
+    def get_outer_query_from_inner_query(
+        self, query: Query, inner_query: Query
+    ) -> Query:
+        subquery = inner_query.subquery()
+        pk = self.get_pk()
+        pk_name = self.get_pk_name()
+        if isinstance(pk_name, str):
+            subquery_pk = getattr(subquery.c, pk_name)
+            return query.join(subquery, pk == subquery_pk)
+        if isinstance(pk_name, Iterable):
+            raise FABException("Composite primary key not supported")
+        raise FABException("No primary key found")
+
     def apply_outer_select_joins(
         self,
         query: Query,
         select_columns: list[str] | None = None,
         outer_default_load: bool = False,
+        aliases_mapping: dict[str, AliasedClass] | None = None,
     ) -> Query:
         if not select_columns:
             return query
@@ -331,7 +345,11 @@ class SQLAInterface(BaseInterface):
                         .load_only(leaf_column)
                     )
             else:
-                query = query.options(Load(related_model).load_only(leaf_column))
+                query = query.options(
+                    Load(self.obj)
+                    .joinedload(getattr(self.obj, root_relation))
+                    .load_only(leaf_column)
+                )
 
         return query
 
@@ -360,12 +378,13 @@ class SQLAInterface(BaseInterface):
 
     def exists_col_to_many(self, select_columns: list[str]) -> bool:
         for column in select_columns:
-            if is_column_dotted(column):
-                root_relation = get_column_root_relation(column)
-                if self.is_relation_many_to_many(
-                    root_relation
-                ) or self.is_relation_one_to_many(root_relation):
-                    return True
+            if not is_column_dotted(column):
+                continue
+            root_relation = get_column_root_relation(column)
+            if self.is_relation_many_to_many(
+                root_relation
+            ) or self.is_relation_one_to_many(root_relation):
+                return True
         return False
 
     def get_alias_mapping(
@@ -456,9 +475,12 @@ class SQLAInterface(BaseInterface):
         if select_columns and self.exists_col_to_many(select_columns):
             if select_columns and order_column:
                 select_columns = select_columns + [order_column]
-            outer_query = inner_query._legacy_from_self()
+            outer_query = self.get_outer_query_from_inner_query(query, inner_query)
             outer_query = self.apply_outer_select_joins(
-                outer_query, select_columns, outer_default_load=outer_default_load
+                outer_query,
+                select_columns,
+                outer_default_load=outer_default_load,
+                aliases_mapping=aliases_mapping,
             )
             return self.apply_order_by(outer_query, order_column, order_direction)
         else:
