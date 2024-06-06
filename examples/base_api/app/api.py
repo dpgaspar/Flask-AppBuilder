@@ -2,13 +2,15 @@ from flask import request
 from flask_appbuilder.api import BaseApi, expose, rison, safe
 from flask_appbuilder.security.decorators import protect
 
-from . import appbuilder
 
-greeting_schema = {"type": "object", "properties": {"name": {"type": "string"}}}
+greeting_schema = {
+    "type": "object",
+    "properties": {"name": {"type": "string"}},
+    "required": ["name"],
+}
 
 
 class ExampleApi(BaseApi):
-
     resource_name = "example"
     apispec_parameter_schemas = {"greeting_schema": greeting_schema}
 
@@ -77,7 +79,12 @@ class ExampleApi(BaseApi):
         ---
         get:
           parameters:
-          - $ref: '#/components/parameters/greeting_schema'
+          - in: query
+            name: q
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/greeting_schema'
           responses:
             200:
               description: Greet the user
@@ -137,6 +144,3 @@ class ExampleApi(BaseApi):
               $ref: '#/components/responses/500'
         """
         raise Exception
-
-
-appbuilder.add_api(ExampleApi)
