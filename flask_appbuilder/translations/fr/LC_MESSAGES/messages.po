@@ -625,6 +625,10 @@ msgstr "Si vous n'êtes pas inscrit, inscrivez-vous"
 msgid "Register"
 msgstr "S'inscrire"
 
+#: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:30
+msgid "Sign In with "
+msgstr "Connectez-vous avec "
+
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:44
 msgid "Please choose one of the following providers:"
 msgstr "S'il vous plaît, choisissez un des fournisseurs:"
