@@ -31,7 +31,7 @@
 
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                                {{ form.password(size = 80, class = "form-control") }}
+                                {{ form.password(size = 80, class = "form-control", autocomplete = "off") }}
                             </div>
                             {% for error in form.errors.get('openid', []) %}
                             <span class="help-inline">[{{error}}]</span><br>
