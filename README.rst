@@ -54,7 +54,6 @@ Includes:
 
   - Database
       - SQLAlchemy, multiple database support: sqlite, MySQL, ORACLE, MSSQL, DB2 etc.
-      - Partial support for MongoDB using MongoEngine.
       - Multiple database connections support (Vertical partitioning).
       - Easy mixin audit to models (created/changed by user, and timestamps).
   - Security
@@ -62,7 +61,7 @@ Includes:
       - Inserts on the Database all the detailed permissions possible on your application.
       - Public (no authentication needed) and Private permissions.
       - Role based permissions.
-      - Authentication support for OAuth, OpenID, Database, LDAP and REMOTE_USER environ var.
+      - Authentication support for OAuth, Database, LDAP and REMOTE_USER environ var.
       - Support for self user registration.
   - Views and Widgets
       - Automatic menu generation.
