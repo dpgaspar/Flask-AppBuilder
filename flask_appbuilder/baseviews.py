@@ -1382,7 +1382,7 @@ class BaseCRUDView(BaseModelView):
 
     def populate_item_from_form(self, form, item, is_created):
         """
-        Populate the properties of the item to be created or updated based 
+        Populate the properties of the item to be created or updated based
         on the content of the form.
         """
         form.populate_obj(item)
