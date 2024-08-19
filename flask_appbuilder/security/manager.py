@@ -304,7 +304,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.limiter = self.create_limiter(app)
 
     def create_limiter(self, app: Flask) -> Limiter:
-        limiter = Limiter(key_func=get_remote_address)
+        limiter = Limiter(
+            key_func=app.config.get("RATELIMIT_KEY_FUNC", get_remote_address)
+        )
         limiter.init_app(app)
         return limiter
 
