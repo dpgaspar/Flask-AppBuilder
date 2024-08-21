@@ -63,6 +63,19 @@ class MVCSecurityTestCase(BaseMVCTestCase):
 
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
 
+    def test_sec_login_no_cache(self):
+        """
+        Test Security Login, no cache directives
+        """
+        rv = self.client.get("/login/")
+        assert rv.status_code == 200
+        assert (
+            rv.headers.get("Cache-Control")
+            == "no-store, no-cache, must-revalidate, max-age=0"
+        )
+        assert rv.headers["Pragma"] == "no-cache"
+        assert rv.headers["Expires"] == "0"
+
     def test_sec_login(self):
         """
         Test Security Login, Logout, invalid login, invalid access
