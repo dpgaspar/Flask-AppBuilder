@@ -9,7 +9,7 @@ from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.charts.views import DirectByChartView
 from flask_appbuilder.fieldwidgets import BS3PasswordFieldWidget
-from flask_appbuilder.security.decorators import has_access
+from flask_appbuilder.security.decorators import has_access, no_cache
 from flask_appbuilder.security.forms import (
     DynamicForm,
     LoginForm_db,
@@ -520,6 +520,7 @@ class AuthDBView(AuthView):
     login_template = "appbuilder/general/security/login_db.html"
 
     @expose("/login/", methods=["GET", "POST"])
+    @no_cache
     def login(self):
         if g.user is not None and g.user.is_authenticated:
             return redirect(self.appbuilder.get_url_for_index)
@@ -543,6 +544,7 @@ class AuthLDAPView(AuthView):
     login_template = "appbuilder/general/security/login_ldap.html"
 
     @expose("/login/", methods=["GET", "POST"])
+    @no_cache
     def login(self):
         if g.user is not None and g.user.is_authenticated:
             return redirect(self.appbuilder.get_url_for_index)
@@ -568,6 +570,7 @@ class AuthOIDView(AuthView):
     oid_ask_for_optional: List[str] = []
 
     @expose("/login/", methods=["GET", "POST"])
+    @no_cache
     def login(self, flag=True) -> WerkzeugResponse:
         @self.appbuilder.sm.oid.loginhandler
         def login_handler(self):
