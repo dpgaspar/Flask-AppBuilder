@@ -1,16 +1,12 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
+
 from contextlib import suppress
 import logging
-from typing import Any, Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Iterable, Optional, Tuple, Type
 
-from flask_appbuilder._compat import as_unicode
-from flask_appbuilder.const import (
-    LOGMSG_ERR_DBI_DEL_GENERIC,
-    LOGMSG_WAR_DBI_ADD_INTEGRITY,
-    LOGMSG_WAR_DBI_DEL_INTEGRITY,
-    LOGMSG_WAR_DBI_EDIT_INTEGRITY,
-)
-from flask_appbuilder.exceptions import InterfaceQueryWithoutSession
+from flask import Request
+from flask_appbuilder.exceptions import DatabaseException, FABException
+from flask_appbuilder.extensions import db
 from flask_appbuilder.filemanager import FileManager, ImageManager
 from flask_appbuilder.models.base import BaseInterface
 from flask_appbuilder.models.filters import Filters
@@ -24,15 +20,15 @@ from flask_appbuilder.utils.base import (
 )
 from sqlalchemy import asc, desc
 from sqlalchemy import types as sa_types
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import aliased, class_mapper, ColumnProperty, contains_eager, Load
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.orm.query import Query
-from sqlalchemy.orm.session import Session as SessionBase
 from sqlalchemy.orm.util import AliasedClass
 from sqlalchemy.sql import visitors
 from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.sqltypes import TypeEngine
 from sqlalchemy_utils.types.uuid import UUIDType
 
@@ -55,11 +51,10 @@ class SQLAInterface(BaseInterface):
 
     filter_converter_class = filters.SQLAFilterConverter
 
-    def __init__(self, obj: Type[Model], session: Optional[SessionBase] = None) -> None:
+    def __init__(self, obj: Type[Model]) -> None:
         _include_filters(self)
-        self.list_columns = dict()
-        self.list_properties = dict()
-        self.session = session
+        self.list_columns = {}
+        self.list_properties = {}
         # Collect all SQLA columns and properties
         for prop in class_mapper(obj).iterate_properties:
             if type(prop) != SynonymProperty:
@@ -67,10 +62,10 @@ class SQLAInterface(BaseInterface):
         for col_name in obj.__mapper__.columns.keys():
             if col_name in self.list_properties:
                 self.list_columns[col_name] = obj.__mapper__.columns[col_name]
-        super(SQLAInterface, self).__init__(obj)
+        super().__init__(obj)
 
     @property
-    def model_name(self):
+    def model_name(self) -> str:
         """
         Returns the models class name
         useful for auto title on views
@@ -112,8 +107,12 @@ class SQLAInterface(BaseInterface):
         return False
 
     def _get_base_query(
-        self, query=None, filters=None, order_column="", order_direction=""
-    ):
+        self,
+        query: Query,
+        filters: Filters | None = None,
+        order_column: str = "",
+        order_direction: str = "",
+    ) -> str:
         if filters:
             query = filters.apply_all(query)
         return self.apply_order_by(query, order_column, order_direction)
@@ -122,7 +121,7 @@ class SQLAInterface(BaseInterface):
         self,
         query: Query,
         root_relation: str,
-        aliases_mapping: Dict[str, AliasedClass] = None,
+        aliases_mapping: dict[str, AliasedClass] | None = None,
     ) -> Query:
         """
         Helper function that applies necessary joins for dotted columns on a
@@ -166,7 +165,7 @@ class SQLAInterface(BaseInterface):
             page
             and page_size
             and not order_column
-            and self.session.bind.dialect.name == "mssql"
+            and db.session.get_bind().name == "mssql"
         ):
             pk_name = self.get_pk_name()
             return query.order_by(pk_name)
@@ -177,7 +176,7 @@ class SQLAInterface(BaseInterface):
         query: Query,
         order_column: str,
         order_direction: str,
-        aliases_mapping: Dict[str, AliasedClass] = None,
+        aliases_mapping: dict[str, AliasedClass] | None = None,
     ) -> Query:
         if order_column != "":
             # if Model has custom decorator **renders('<COL_NAME>')**
@@ -221,23 +220,27 @@ class SQLAInterface(BaseInterface):
 
     def _apply_normal_col_select_option(self, query: Query, column: str) -> Query:
         if not self.is_relation(column) and not self.is_property_or_function(column):
-            return query.options(Load(self.obj).load_only(column))
+            return query.options(Load(self.obj).load_only(getattr(self.obj, column)))
         return query
 
-    def _apply_relation_fks_select_options(self, query: Query, relation_name) -> Query:
+    def _apply_relation_fks_select_options(
+        self, query: Query, relation_name: str
+    ) -> Query:
         relation = getattr(self.obj, relation_name)
         if hasattr(relation, "property"):
             local_cols = getattr(self.obj, relation_name).property.local_columns
             for local_fk in local_cols:
-                query = query.options(Load(self.obj).load_only(local_fk.name))
+                query = query.options(
+                    Load(self.obj).load_only(getattr(self.obj, local_fk.name))
+                )
             return query
         return query
 
     def apply_inner_select_joins(
         self,
         query: Query,
-        select_columns: List[str] = None,
-        aliases_mapping: Dict[str, AliasedClass] = None,
+        select_columns: list[str] | None = None,
+        aliases_mapping: dict[str, AliasedClass] | None = None,
     ) -> Query:
         """
         Add select load options to query. The goal
@@ -286,17 +289,33 @@ class SQLAInterface(BaseInterface):
                 # https://docs.sqlalchemy.org/en/13/orm/loading_relationships.html
                 query = query.options(
                     contains_eager(relation.of_type(related_model)).load_only(
-                        leaf_column
+                        getattr(related_model, leaf_column)
                     )
                 )
-                query = query.options(Load(related_model).load_only(leaf_column))
+                query = query.options(
+                    Load(related_model).load_only(getattr(related_model, leaf_column))
+                )
         return query
+
+    def get_outer_query_from_inner_query(
+        self, query: Query, inner_query: Query
+    ) -> Query:
+        subquery = inner_query.subquery()
+        pk = self.get_pk()
+        pk_name = self.get_pk_name()
+        if isinstance(pk_name, str):
+            subquery_pk = getattr(subquery.c, pk_name)
+            return query.join(subquery, pk == subquery_pk)
+        if isinstance(pk_name, Iterable):
+            raise FABException("Composite primary key not supported")
+        raise FABException("No primary key found")
 
     def apply_outer_select_joins(
         self,
         query: Query,
-        select_columns: List[str] = None,
+        select_columns: list[str] | None = None,
         outer_default_load: bool = False,
+        aliases_mapping: dict[str, AliasedClass] | None = None,
     ) -> Query:
         if not select_columns:
             return query
@@ -307,22 +326,30 @@ class SQLAInterface(BaseInterface):
                 continue
 
             root_relation = get_column_root_relation(column)
-            leaf_column = get_column_leaf(column)
+            related_model = self.get_related_model(root_relation)
+            leaf_column = getattr(related_model, get_column_leaf(column))
 
             if self.is_relation_many_to_many(
                 root_relation
             ) or self.is_relation_one_to_many(root_relation):
                 if outer_default_load:
                     query = query.options(
-                        Load(self.obj).defaultload(root_relation).load_only(leaf_column)
+                        Load(self.obj)
+                        .defaultload(self.obj, root_relation)
+                        .load_only(leaf_column)
                     )
                 else:
                     query = query.options(
-                        Load(self.obj).joinedload(root_relation).load_only(leaf_column)
+                        Load(self.obj)
+                        .joinedload(getattr(self.obj, root_relation))
+                        .load_only(leaf_column)
                     )
             else:
-                related_model = self.get_related_model(root_relation)
-                query = query.options(Load(related_model).load_only(leaf_column))
+                query = query.options(
+                    Load(self.obj)
+                    .joinedload(getattr(self.obj, root_relation))
+                    .load_only(leaf_column)
+                )
 
         return query
 
@@ -349,19 +376,20 @@ class SQLAInterface(BaseInterface):
             inner_filters.add_filter_list(_filters)
         return inner_filters
 
-    def exists_col_to_many(self, select_columns: List[str]) -> bool:
+    def exists_col_to_many(self, select_columns: list[str]) -> bool:
         for column in select_columns:
-            if is_column_dotted(column):
-                root_relation = get_column_root_relation(column)
-                if self.is_relation_many_to_many(
-                    root_relation
-                ) or self.is_relation_one_to_many(root_relation):
-                    return True
+            if not is_column_dotted(column):
+                continue
+            root_relation = get_column_root_relation(column)
+            if self.is_relation_many_to_many(
+                root_relation
+            ) or self.is_relation_one_to_many(root_relation):
+                return True
         return False
 
     def get_alias_mapping(
-        self, model_name: str, aliases_mapping: Dict[str, AliasedClass]
-    ) -> Union[AliasedClass, Type[Model]]:
+        self, model_name: str, aliases_mapping: dict[str, AliasedClass] | None
+    ) -> AliasedClass | Type[Model]:
         if aliases_mapping is None:
             return self.get_related_model(model_name)
         return aliases_mapping.get(model_name, self.get_related_model(model_name))
@@ -369,13 +397,13 @@ class SQLAInterface(BaseInterface):
     def _apply_inner_all(
         self,
         query: Query,
-        filters: Optional[Filters] = None,
+        filters: Filters | None = None,
         order_column: str = "",
         order_direction: str = "",
-        page: Optional[int] = None,
-        page_size: Optional[int] = None,
-        select_columns: Optional[List[str]] = None,
-        aliases_mapping: Dict[str, AliasedClass] = None,
+        page: int | None = None,
+        page_size: int | None = None,
+        select_columns: list[str] | None = None,
+        aliases_mapping: dict[str, AliasedClass] | None = None,
     ) -> Query:
         inner_filters = self.get_inner_filters(filters)
         query = self.apply_inner_select_joins(query, select_columns, aliases_mapping)
@@ -391,7 +419,7 @@ class SQLAInterface(BaseInterface):
         self,
         query: Query,
         filters: Optional[Filters] = None,
-        select_columns: Optional[List[str]] = None,
+        select_columns: Optional[list[str]] = None,
     ) -> int:
         return self._apply_inner_all(
             query, filters, select_columns=select_columns, aliases_mapping={}
@@ -405,7 +433,7 @@ class SQLAInterface(BaseInterface):
         order_direction: str = "",
         page: Optional[int] = None,
         page_size: Optional[int] = None,
-        select_columns: Optional[List[str]] = None,
+        select_columns: Optional[list[str]] = None,
         outer_default_load: bool = False,
     ) -> Query:
         """
@@ -432,7 +460,7 @@ class SQLAInterface(BaseInterface):
              https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html#sqlalchemy.orm.Load.defaultload
         :return: A SQLAlchemy Query with all the applied logic
         """
-        aliases_mapping = {}
+        aliases_mapping: dict[str, AliasedClass] = {}
         inner_query = self._apply_inner_all(
             query,
             filters,
@@ -447,9 +475,12 @@ class SQLAInterface(BaseInterface):
         if select_columns and self.exists_col_to_many(select_columns):
             if select_columns and order_column:
                 select_columns = select_columns + [order_column]
-            outer_query = inner_query.from_self()
+            outer_query = self.get_outer_query_from_inner_query(query, inner_query)
             outer_query = self.apply_outer_select_joins(
-                outer_query, select_columns, outer_default_load=outer_default_load
+                outer_query,
+                select_columns,
+                outer_default_load=outer_default_load,
+                aliases_mapping=aliases_mapping,
             )
             return self.apply_order_by(outer_query, order_column, order_direction)
         else:
@@ -462,9 +493,9 @@ class SQLAInterface(BaseInterface):
         order_direction: str = "",
         page: Optional[int] = None,
         page_size: Optional[int] = None,
-        select_columns: Optional[List[str]] = None,
+        select_columns: Optional[list[str]] = None,
         outer_default_load: bool = False,
-    ) -> Tuple[int, List[Model]]:
+    ) -> Tuple[int, list[Model]]:
         """
         Returns the results for a model query, applies filters, sorting and pagination
 
@@ -482,9 +513,7 @@ class SQLAInterface(BaseInterface):
              https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html#sqlalchemy.orm.Load.defaultload
         :return: A tuple with the query count (non paginated) and the results
         """
-        if not self.session:
-            raise InterfaceQueryWithoutSession()
-        query = self.session.query(self.obj)
+        query = db.session.query(self.obj)
 
         count = self.query_count(query, filters, select_columns)
         query = self.apply_all(
@@ -507,23 +536,27 @@ class SQLAInterface(BaseInterface):
         return count, result
 
     def query_simple_group(
-        self, group_by="", aggregate_func=None, aggregate_col=None, filters=None
-    ):
-        query = self.session.query(self.obj)
+        self, group_by: str | None = None, filters: Filters | None = None
+    ) -> list[list[Any]]:
+        query = db.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
         group = GroupByCol(group_by, "Group by")
         return group.apply(query_result)
 
-    def query_month_group(self, group_by="", filters=None):
-        query = self.session.query(self.obj)
+    def query_month_group(
+        self, group_by: str | None = None, filters: Filters | None = None
+    ) -> list[list[Any]]:
+        query = db.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
         group = GroupByDateMonth(group_by, "Group by Month")
         return group.apply(query_result)
 
-    def query_year_group(self, group_by="", filters=None):
-        query = self.session.query(self.obj)
+    def query_year_group(
+        self, group_by: str | None = None, filters: Filters | None = None
+    ) -> list[list[Any]]:
+        query = db.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
         group_year = GroupByDateYear(group_by, "Group by Year")
@@ -719,88 +752,47 @@ class SQLAInterface(BaseInterface):
     -------------------------------
     """
 
-    def add(self, item: Model, raise_exception: bool = False) -> bool:
+    def add(self, item: Model, commit: bool = True) -> None:
         try:
-            self.session.add(item)
-            self.session.commit()
-            self.message = (as_unicode(self.add_row_message), "success")
-            return True
-        except IntegrityError as e:
-            self.message = (as_unicode(self.add_integrity_error_message), "warning")
-            log.warning(LOGMSG_WAR_DBI_ADD_INTEGRITY, e)
-            self.session.rollback()
-            if raise_exception:
-                raise e
-            return False
-        except Exception as e:
-            self.message = (as_unicode(self.database_error_message), "danger")
-            log.exception("Database error")
-            self.session.rollback()
-            if raise_exception:
-                raise e
-            return False
+            db.session.add(item)
+            if commit:
+                db.session.commit()
+        except SQLAlchemyError as ex:
+            log.exception("Add item database error")
+            db.session.rollback()
+            raise ex
 
-    def edit(self, item: Model, raise_exception: bool = False) -> bool:
+    def edit(self, item: Model, commit: bool = True) -> None:
         try:
-            self.session.merge(item)
-            self.session.commit()
-            self.message = (as_unicode(self.edit_row_message), "success")
-            return True
-        except IntegrityError as e:
-            self.message = (as_unicode(self.edit_integrity_error_message), "warning")
-            log.warning(LOGMSG_WAR_DBI_EDIT_INTEGRITY, e)
-            self.session.rollback()
-            if raise_exception:
-                raise e
-            return False
-        except Exception as e:
-            self.message = (as_unicode(self.database_error_message), "danger")
-            log.exception("Database error")
-            self.session.rollback()
-            if raise_exception:
-                raise e
-            return False
+            db.session.merge(item)
+            if commit:
+                db.session.commit()
+        except SQLAlchemyError as ex:
+            log.exception("Edit item database error")
+            db.session.rollback()
+            raise DatabaseException from ex
 
-    def delete(self, item: Model, raise_exception: bool = False) -> bool:
+    def delete(self, item: Model, commit: bool = True) -> None:
         try:
             self._delete_files(item)
-            self.session.delete(item)
-            self.session.commit()
-            self.message = (as_unicode(self.delete_row_message), "success")
-            return True
-        except IntegrityError as e:
-            self.message = (as_unicode(self.delete_integrity_error_message), "warning")
-            log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY, e)
-            self.session.rollback()
-            if raise_exception:
-                raise e
-            return False
-        except Exception as e:
-            self.message = (as_unicode(self.database_error_message), "danger")
-            log.exception("Database error")
-            self.session.rollback()
-            if raise_exception:
-                raise e
-            return False
+            db.session.delete(item)
+            if commit:
+                db.session.commit()
+        except SQLAlchemyError as ex:
+            log.exception("Delete item database error")
+            db.session.rollback()
+            raise DatabaseException from ex
 
-    def delete_all(self, items: List[Model]) -> bool:
+    def delete_all(self, items: list[Model]) -> None:
         try:
             for item in items:
                 self._delete_files(item)
-                self.session.delete(item)
-            self.session.commit()
-            self.message = (as_unicode(self.delete_row_message), "success")
-            return True
-        except IntegrityError as e:
-            self.message = (as_unicode(self.delete_integrity_error_message), "warning")
-            log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY, e)
-            self.session.rollback()
-            return False
-        except Exception as e:
-            self.message = (as_unicode(self.database_error_message), "danger")
-            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC, e)
-            self.session.rollback()
-            return False
+                db.session.delete(item)
+            db.session.commit()
+        except SQLAlchemyError as ex:
+            log.exception("Delete items database error")
+            db.session.rollback()
+            raise DatabaseException from ex
 
     """
     -----------------------
@@ -808,17 +800,16 @@ class SQLAInterface(BaseInterface):
     -----------------------
     """
 
-    def _add_files(self, this_request, item: Model):
+    def _add_files(self, this_request: Request, item: Model) -> None:
         fm = FileManager()
         im = ImageManager()
         for file_col in this_request.files:
             if self.is_file(file_col):
                 fm.save_file(this_request.files[file_col], getattr(item, file_col))
-        for file_col in this_request.files:
-            if self.is_image(file_col):
+            elif self.is_image(file_col):
                 im.save_file(this_request.files[file_col], getattr(item, file_col))
 
-    def _delete_files(self, item: Model):
+    def _delete_files(self, item: Model) -> None:
         for file_col in self.get_file_column_list():
             if self.is_file(file_col) and getattr(item, file_col):
                 fm = FileManager()
@@ -856,7 +847,7 @@ class SQLAInterface(BaseInterface):
 
     def get_related_model_and_join(
         self, col_name: str
-    ) -> List[Tuple[Type[Model], object]]:
+    ) -> list[Tuple[Type[Model], BinaryExpression]]:
         relation = self.list_properties[col_name]
         if relation.direction.name == "MANYTOMANY":
             return [
@@ -865,16 +856,14 @@ class SQLAInterface(BaseInterface):
             ]
         return [(relation.mapper.class_, relation.primaryjoin)]
 
-    def get_related_interface(self, col_name: str):
-        return self.__class__(self.get_related_model(col_name), self.session)
+    def get_related_interface(self, col_name: str) -> BaseInterface:
+        return self.__class__(self.get_related_model(col_name))
 
     def get_related_obj(self, col_name: str, value: Any) -> Optional[Type[Model]]:
         rel_model = self.get_related_model(col_name)
-        if self.session:
-            return self.session.query(rel_model).get(value)
-        return None
+        return db.session.query(rel_model).get(value)
 
-    def get_related_fks(self, related_views) -> List[str]:
+    def get_related_fks(self, related_views: Any) -> list[str]:
         return [view.datamodel.get_related_fk(self.obj) for view in related_views]
 
     def get_related_fk(self, model: Type[Model]) -> Optional[str]:
@@ -884,7 +873,7 @@ class SQLAInterface(BaseInterface):
                     return col_name
         return None
 
-    def get_info(self, col_name: str):
+    def get_info(self, col_name: str) -> dict[str, Any]:
         if col_name in self.list_properties:
             return self.list_properties[col_name].info
         return {}
@@ -895,13 +884,13 @@ class SQLAInterface(BaseInterface):
     -------------
     """
 
-    def get_columns_list(self) -> List[str]:
+    def get_columns_list(self) -> list[str]:
         """
         Returns all model's columns on SQLA properties
         """
         return list(self.list_properties.keys())
 
-    def get_user_columns_list(self) -> List[str]:
+    def get_user_columns_list(self) -> list[str]:
         """
         Returns all model's columns except pk or fk
         """
@@ -912,7 +901,7 @@ class SQLAInterface(BaseInterface):
         ]
 
     # TODO get different solution, more integrated with filters
-    def get_search_columns_list(self) -> List[str]:
+    def get_search_columns_list(self) -> list[str]:
         ret_lst = []
         for col_name in self.get_columns_list():
             if not self.is_relation(col_name):
@@ -928,7 +917,7 @@ class SQLAInterface(BaseInterface):
                 ret_lst.append(col_name)
         return ret_lst
 
-    def get_order_columns_list(self, list_columns: List[str] = None) -> List[str]:
+    def get_order_columns_list(self, list_columns: list[str] = None) -> list[str]:
         """
         Returns the columns that can be ordered.
 
@@ -951,14 +940,14 @@ class SQLAInterface(BaseInterface):
 
         return ret_lst
 
-    def get_file_column_list(self) -> List[str]:
+    def get_file_column_list(self) -> list[str]:
         return [
             i.name
             for i in self.obj.__mapper__.columns
             if isinstance(i.type, FileColumn)
         ]
 
-    def get_image_column_list(self) -> List[str]:
+    def get_image_column_list(self) -> list[str]:
         return [
             i.name
             for i in self.obj.__mapper__.columns
@@ -969,15 +958,15 @@ class SQLAInterface(BaseInterface):
         # support for only one col for pk and fk
         return self.list_properties[col_name].columns[0]
 
-    def get_relation_fk(self, col_name: str) -> str:
+    def get_relation_fk(self, col_name: str) -> Column:
         # support for only one col for pk and fk
         return list(self.list_properties[col_name].local_columns)[0]
 
     def get(
         self,
-        id,
+        id: Any,
         filters: Optional[Filters] = None,
-        select_columns: Optional[List[str]] = None,
+        select_columns: Optional[list[str]] = None,
         outer_default_load: bool = False,
     ) -> Optional[Model]:
         """
@@ -996,12 +985,12 @@ class SQLAInterface(BaseInterface):
         else:
             _filters = Filters(self.filter_converter_class, self)
 
-        if self.is_pk_composite():
+        if self.is_pk_composite() and isinstance(pk, Iterable):
             for _pk, _id in zip(pk, id):
                 _filters.add_filter(_pk, self.FilterEqual, _id)
         else:
             _filters.add_filter(pk, self.FilterEqual, id)
-        query = self.session.query(self.obj)
+        query = db.session.query(self.obj)
         item = self.apply_all(
             query,
             _filters,
@@ -1013,13 +1002,13 @@ class SQLAInterface(BaseInterface):
                 return getattr(item, self.obj.__name__)
         return item
 
-    def get_pk_name(self) -> Optional[Union[List[str], str]]:
+    def get_pk_name(self) -> Optional[list[str] | str]:
         """
         Get the model primary key column name.
         """
         return self._get_pk_name(self.obj)
 
-    def get_pk(self, model: Optional[Type[Model]] = None):
+    def get_pk(self, model: Optional[Type[Model]] = None) -> Model | None:
         """
         Get the model primary key SQLAlchemy column.
         Will not support composite keys
@@ -1030,7 +1019,7 @@ class SQLAInterface(BaseInterface):
             return getattr(model_, pk_name)
         return None
 
-    def _get_pk_name(self, model: Type[Model]) -> Optional[Union[List[str], str]]:
+    def _get_pk_name(self, model: Type[Model]) -> Optional[list[str] | str]:
         pk = [pk.name for pk in model.__mapper__.primary_key]
         if pk:
             return pk if self.is_pk_composite() else pk[0]

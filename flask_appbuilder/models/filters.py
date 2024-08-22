@@ -14,7 +14,7 @@ map_args_filter = {}
 """ private map for arg_name and child Filter classes """
 
 
-class BaseFilter(object):
+class BaseFilter:
     """
     Base class for all data filters.
     Sub class to implement your own custom filters

@@ -130,7 +130,7 @@ class RoleApi(ModelRestApi):
             permissions = []
             for id in item["permission_view_menu_ids"]:
                 permission = (
-                    current_app.appbuilder.get_session.query(PermissionView)
+                    current_app.appbuilder.session.query(PermissionView)
                     .filter_by(id=id)
                     .one_or_none()
                 )
@@ -138,7 +138,7 @@ class RoleApi(ModelRestApi):
                     permissions.append(permission)
 
             role.permissions = permissions
-            self.datamodel.edit(role, raise_exception=True)
+            self.datamodel.edit(role)
             return self.response(
                 200,
                 **{

@@ -110,6 +110,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         Test Security Login, Logout, invalid login, invalid access
         """
+        self.browser_logout(self.client)
         test_username = "testuser"
         test_password = "password"
         test_user = self.create_user(
@@ -129,13 +130,13 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         # Using the same session make sure the user is not allowed to access when
         # the user is deactivated
         test_user.active = False
-        self.db.session.merge(test_user)
-        self.db.session.commit()
+        self.appbuilder.session.merge(test_user)
+        self.appbuilder.session.commit()
         rv = self.client.get("/model1view/list/")
         self.assertEqual(rv.status_code, 302)
 
-        self.db.session.delete(test_user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(test_user)
+        self.appbuilder.session.commit()
 
     def test_db_login_no_next_url(self):
         """
@@ -470,12 +471,12 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         self.browser_logout(client)
 
         user = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == "from test 1-1")
             .one_or_none()
         )
-        self.db.session.delete(user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_edit_user(self):
         """
@@ -514,14 +515,14 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         self.assertIn("Changed Row", data)
 
         user = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == _tmp_user.username)
             .one_or_none()
         )
 
         assert user.email == "changed@changed.org"
-        self.db.session.delete(user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_edit_user_email_validation(self):
         """
@@ -531,7 +532,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         read_ony_user: User = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == USERNAME_READONLY)
             .one_or_none()
         )
@@ -562,7 +563,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         read_ony_user: User = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == USERNAME_READONLY)
             .one_or_none()
         )
