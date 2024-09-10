@@ -38,7 +38,7 @@ except Exception as e:
 
 for user in users:
     log.info("Hashing password for {0}".format(user.username))
-    user.password = generate_password_hash(user.password)
+    user.password = generate_password_hash(user.password, method='pbkdf2')
     try:
         db.session.merge(user)
         db.session.commit()

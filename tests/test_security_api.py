@@ -51,7 +51,7 @@ class UserAPITestCase(FABTestCase):
         user.username = username
         user.email = email
         user.roles = roles
-        user.password = generate_password_hash(password)
+        user.password = generate_password_hash(password, method='pbkdf2')
         self.session.commit()
         return user
 

@@ -5,6 +5,7 @@
 
     $ fabmanager --help
 """
+
 from io import BytesIO
 import os
 import shutil
