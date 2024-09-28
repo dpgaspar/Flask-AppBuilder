@@ -263,6 +263,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_REMOTE_USER:
             app.config.setdefault("AUTH_REMOTE_USER_ENV_VAR", "REMOTE_USER")
 
+        if self.auth_type == AUTH_REMOTE_USER:
+            app.config.setdefault("AUTH_REMOTE_USER_ENV_VAR", "REMOTE_USER")
+
         # Rate limiting
         app.config.setdefault("AUTH_RATE_LIMITED", False)
         app.config.setdefault("AUTH_RATE_LIMIT", "10 per 20 second")
