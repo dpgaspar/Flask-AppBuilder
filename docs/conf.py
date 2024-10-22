@@ -15,6 +15,7 @@
 import sys
 import os
 import sphinx_rtd_theme
+from datetime import datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -55,7 +56,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Flask-AppBuilder'
-copyright = u'2013, Daniel Vaz Gaspar'
+current_year = datetime.now().year
+copyright = u'{}, Daniel Vaz Gaspar'.format(current_year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
