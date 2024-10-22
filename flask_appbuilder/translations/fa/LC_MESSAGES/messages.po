@@ -1,0 +1,802 @@
+# Persian translations for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-10-22 12:02+0330\n"
+"PO-Revision-Date: 2024-10-22 12:20+0330\n"
+"Last-Translator: Emad Rad <Codewithemad@gmail.com>\n"
+"Language-Team: fa <LL@li.org>\n"
+"Language: fa\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: examples/extendsecurity/app/sec_forms.py:10
+#: examples/extendsecurity2/app/sec_forms.py:10
+#: flask_appbuilder/security/forms.py:37 flask_appbuilder/security/forms.py:75
+#: flask_appbuilder/security/forms.py:114
+#: flask_appbuilder/security/views.py:155
+msgid "First Name"
+msgstr "نام کوچک"
+
+#: examples/extendsecurity/app/sec_forms.py:13
+#: examples/extendsecurity2/app/sec_forms.py:13
+#: flask_appbuilder/security/forms.py:40
+#: flask_appbuilder/security/views.py:172
+msgid "Write the user first name or names"
+msgstr "نام یا نام‌های کاربر را وارد کنید"
+
+#: examples/extendsecurity/app/sec_forms.py:16
+#: examples/extendsecurity2/app/sec_forms.py:16
+#: flask_appbuilder/security/forms.py:43 flask_appbuilder/security/forms.py:80
+#: flask_appbuilder/security/forms.py:119
+#: flask_appbuilder/security/views.py:156
+msgid "Last Name"
+msgstr "نام خانوادگی"
+
+#: examples/extendsecurity/app/sec_forms.py:19
+#: examples/extendsecurity2/app/sec_forms.py:19
+#: flask_appbuilder/security/forms.py:46
+#: flask_appbuilder/security/views.py:173
+msgid "Write the user last name"
+msgstr "نام خانوادگی کاربر را وارد کنید"
+
+#: examples/extendsecurity/app/sec_forms.py:22
+#: examples/extendsecurity2/app/sec_forms.py:22
+msgid "Emp. Number"
+msgstr "شماره کارمندی"
+
+#: examples/extendsecurity/app/sec_forms.py:25
+#: examples/extendsecurity2/app/sec_forms.py:25
+msgid "Employee Number"
+msgstr "شماره کارمند"
+
+#: examples/extendsecurity/app/sec_views.py:14
+#: examples/extendsecurity/app/sec_views.py:39
+#: examples/extendsecurity2/app/sec_views.py:14
+#: examples/extendsecurity2/app/sec_views.py:39
+#: examples/mongo_extendedsecurity/app/mysecurity.py:37
+#: examples/mongo_extendedsecurity/app/mysecurity.py:62
+#: examples/quickhowto2/app/sec_views.py:14
+#: examples/quickhowto2/app/sec_views.py:39
+#: flask_appbuilder/security/views.py:194
+#: flask_appbuilder/security/views.py:219
+msgid "User info"
+msgstr "اطلاعات کاربر"
+
+#: examples/extendsecurity/app/sec_views.py:18
+#: examples/extendsecurity/app/sec_views.py:43
+#: examples/extendsecurity2/app/sec_views.py:18
+#: examples/extendsecurity2/app/sec_views.py:43
+#: examples/mongo_extendedsecurity/app/mysecurity.py:41
+#: examples/mongo_extendedsecurity/app/mysecurity.py:66
+#: examples/quickhowto2/app/sec_views.py:18
+#: examples/quickhowto2/app/sec_views.py:43
+#: flask_appbuilder/security/views.py:198
+#: flask_appbuilder/security/views.py:223
+msgid "Personal Info"
+msgstr "اطلاعات شخصی"
+
+#: examples/extendsecurity/app/sec_views.py:22
+#: examples/extendsecurity2/app/sec_views.py:22
+#: examples/mongo_extendedsecurity/app/mysecurity.py:45
+#: examples/quickhowto2/app/sec_views.py:22
+#: flask_appbuilder/security/views.py:202
+msgid "Audit Info"
+msgstr "اطلاعات حسابرسی"
+
+#: examples/masterdetail/app/views.py:87 examples/quickhowto3/app/views.py:96
+msgid "List Groups"
+msgstr "لیست گروه‌ها"
+
+#: examples/masterdetail/app/views.py:88
+msgid "Manage Groups"
+msgstr "مدیریت گروه‌ها"
+
+#: examples/masterdetail/app/views.py:89 examples/quickhowto3/app/views.py:97
+msgid "List Contacts"
+msgstr "لیست مخاطبان"
+
+#: examples/masterdetail/app/views.py:90 examples/quickhowto3/app/views.py:98
+msgid "Contacts Chart"
+msgstr "نمودار مخاطبین"
+
+#: examples/masterdetail/app/views.py:91 examples/quickhowto3/app/views.py:99
+msgid "Contacts Birth Chart"
+msgstr "نقشه تولد مخاطبین"
+
+#: examples/oauth/app/forms.py:10
+msgid "Tweet message"
+msgstr "پیام توییت"
+
+#: examples/quickhowto2/app/forms.py:10 examples/quickhowto2/app/forms.py:15
+msgid "Test Field One"
+msgstr "فیلد آزمایشی یک"
+
+#: examples/quickhowto2/app/templates/list_angulajs.html:50
+#: examples/quickhowto2/app/templates/list_angulajs.html:108
+#: examples/quickhowto2/app/templates/list_angulajs.html:187
+#: flask_appbuilder/templates/appbuilder/general/lib.html:382
+msgid "Add a new record"
+msgstr "یک رکورد جدید اضافه کنید"
+
+#: examples/quickhowto2/app/templates/list_angulajs.html:51
+#: examples/quickhowto2/app/templates/list_angulajs.html:131
+#: examples/quickhowto2/app/templates/list_angulajs.html:210
+#: flask_appbuilder/templates/appbuilder/general/lib.html:398
+msgid "Show record"
+msgstr "نمایش رکورد"
+
+#: examples/quickhowto2/app/templates/list_angulajs.html:52
+#: examples/quickhowto2/app/templates/list_angulajs.html:132
+#: examples/quickhowto2/app/templates/list_angulajs.html:211
+#: flask_appbuilder/templates/appbuilder/general/lib.html:390
+msgid "Edit record"
+msgstr "ویرایش رکورد"
+
+#: examples/quickhowto2/app/templates/list_angulajs.html:53
+#: examples/quickhowto2/app/templates/list_angulajs.html:133
+#: examples/quickhowto2/app/templates/list_angulajs.html:212
+#: flask_appbuilder/templates/appbuilder/general/lib.html:410
+msgid "Delete record"
+msgstr "حذف رکورد"
+
+#: examples/quickhowto2/app/templates/list_angulajs.html:54
+#: examples/quickhowto2/app/templates/list_angulajs.html:110
+#: examples/quickhowto2/app/templates/list_angulajs.html:189
+#: flask_appbuilder/templates/appbuilder/general/lib.html:333
+msgid "Record Count"
+msgstr "تعداد رکوردها"
+
+#: examples/quickhowto2/app/templates/list_angulajs.html:55
+#: examples/quickhowto2/app/templates/list_angulajs.html:105
+#: examples/quickhowto2/app/templates/list_angulajs.html:184
+#: flask_appbuilder/templates/appbuilder/general/lib.html:115
+msgid "Page size"
+msgstr "اندازه صفحه"
+
+#: examples/quickhowto2/app/templates/list_angulajs.html:67
+#: examples/quickhowto2/app/templates/list_angulajs.html:149
+#: flask_appbuilder/templates/appbuilder/general/widgets/search.html:8
+msgid "Add Filter"
+msgstr "افزودن فیلتر"
+
+#: examples/quickhowto2/app/templates/widgets/list.html:70
+#: flask_appbuilder/messages.py:14
+#: flask_appbuilder/templates/appbuilder/general/widgets/base_list.html:39
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_carousel.html:50
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:17
+msgid "No records found"
+msgstr "هیچ رکوردی یافت نشد"
+
+#: examples/quickhowto2/app/templates/widgets/list_override.html:9
+#: flask_appbuilder/messages.py:10
+#: flask_appbuilder/templates/appbuilder/general/lib.html:373
+#: flask_appbuilder/templates/appbuilder/general/lib.html:374
+msgid "Back"
+msgstr "بازگشت"
+
+#: examples/quicktemplates/app/templates/mybase.html:44
+#: flask_appbuilder/templates/appbuilder/baselib.html:116
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:38
+msgid "Logout"
+msgstr "خروج"
+
+#: examples/quicktemplates/app/templates/mybase.html:49
+#: flask_appbuilder/templates/appbuilder/baselib.html:122
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:43
+msgid "Login"
+msgstr "ورود"
+
+#: examples/simpleform/app/views.py:26
+msgid "My form View"
+msgstr "نمایش فرم من"
+
+#: examples/simpleform/app/templates/404.html:4
+msgid "Page not found"
+msgstr "صفحه پیدا نشد"
+
+#: flask_appbuilder/const.py:126
+msgid "Access is Denied"
+msgstr "دسترسی برای شما مجاز نیست"
+
+#: flask_appbuilder/fields.py:163 flask_appbuilder/fields.py:165
+#: flask_appbuilder/fields.py:226 flask_appbuilder/fields.py:233
+#: flask_appbuilder/fields.py:292
+msgid "Not a valid choice"
+msgstr "انتخاب نامعتبر است"
+
+#: flask_appbuilder/fieldwidgets.py:159 flask_appbuilder/fieldwidgets.py:179
+msgid "Select Value"
+msgstr "انتخاب مقدار"
+
+#: flask_appbuilder/messages.py:9
+#: flask_appbuilder/templates/appbuilder/general/charts/chart.html:8
+#: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:10
+#: flask_appbuilder/templates/appbuilder/general/charts/jsonchart.html:8
+#: flask_appbuilder/templates/appbuilder/general/lib.html:366
+#: flask_appbuilder/templates/appbuilder/general/model/list.html:8
+msgid "Search"
+msgstr "جستجو"
+
+#: flask_appbuilder/messages.py:11
+#: flask_appbuilder/templates/appbuilder/general/lib.html:313
+msgid "Save"
+msgstr "ذخیره کنید"
+
+#: flask_appbuilder/messages.py:12
+msgid "This field is required."
+msgstr "این فیلد الزامی است."
+
+#: flask_appbuilder/messages.py:13
+msgid "Not a valid date value"
+msgstr "مقدار تاریخ معتبر نیست"
+
+#: flask_appbuilder/upload.py:158 flask_appbuilder/upload.py:210
+msgid "Invalid file extension"
+msgstr "پسوند فایل نامعتبر است"
+
+#: flask_appbuilder/validators.py:52
+msgid "Already exists."
+msgstr "قبلاً وجود دارد."
+
+#: flask_appbuilder/validators.py:87
+msgid ""
+"Must have at least two capital letters, one special character, two digits, "
+"three lower case letters and a minimal length of 10."
+msgstr ""
+"حداقل باید شامل دو حرف بزرگ، یک کاراکتر خاص، دو عدد، سه حرف کوچک و حداقل طول"
+" ۱۰ باشد."
+
+#: flask_appbuilder/charts/views.py:35
+msgid "Group by"
+msgstr "گروه‌بندی بر اساس"
+
+#: flask_appbuilder/models/base.py:30
+msgid "Added Row"
+msgstr "سطر اضافه شد"
+
+#: flask_appbuilder/models/base.py:31
+msgid "Changed Row"
+msgstr "ردیف تغییر یافته"
+
+#: flask_appbuilder/models/base.py:32
+msgid "Deleted Row"
+msgstr "روند حذف شده"
+
+#: flask_appbuilder/models/base.py:33
+msgid "Associated data exists, please delete them first"
+msgstr "داده‌های مرتبط وجود دارد، لطفاً ابتدا آن‌ها را حذف کنید."
+
+#: flask_appbuilder/models/base.py:36 flask_appbuilder/models/base.py:39
+msgid "Integrity error, probably unique constraint"
+msgstr "خطای یکپارچگی، احتمالاً محدودیت یکتایی"
+
+#: flask_appbuilder/models/base.py:42
+msgid "General Error"
+msgstr "خطای عمومی"
+
+#: flask_appbuilder/models/base.py:44
+msgid "Database Error"
+msgstr "خطای پایگاه داده"
+
+#: flask_appbuilder/models/group.py:32
+msgid "Count of"
+msgstr "تعداد"
+
+#: flask_appbuilder/models/group.py:41
+msgid "Sum of"
+msgstr "جمع"
+
+#: flask_appbuilder/models/group.py:50
+msgid "Avg. of"
+msgstr "به‌طور متوسط از"
+
+#: flask_appbuilder/models/generic/filters.py:20
+#: flask_appbuilder/models/mongoengine/filters.py:76
+#: flask_appbuilder/models/sqla/filters.py:120
+msgid "Contains"
+msgstr "شامل می‌شود"
+
+#: flask_appbuilder/models/generic/filters.py:31
+msgid "Contains (insensitive)"
+msgstr "شامل (بی‌احساس)"
+
+#: flask_appbuilder/models/generic/filters.py:38
+#: flask_appbuilder/models/mongoengine/filters.py:84
+#: flask_appbuilder/models/sqla/filters.py:129
+msgid "Not Contains"
+msgstr "شامل نمی‌شود"
+
+#: flask_appbuilder/models/generic/filters.py:45
+#: flask_appbuilder/models/mongoengine/filters.py:22
+#: flask_appbuilder/models/sqla/filters.py:138
+msgid "Equal to"
+msgstr "مساوی با"
+
+#: flask_appbuilder/models/generic/filters.py:52
+#: flask_appbuilder/models/mongoengine/filters.py:33
+#: flask_appbuilder/models/sqla/filters.py:148
+msgid "Not Equal to"
+msgstr "نامساوی با"
+
+#: flask_appbuilder/models/generic/filters.py:59
+#: flask_appbuilder/models/mongoengine/filters.py:44
+#: flask_appbuilder/models/sqla/filters.py:159
+msgid "Greater than"
+msgstr "بیشتر از"
+
+#: flask_appbuilder/models/generic/filters.py:66
+#: flask_appbuilder/models/mongoengine/filters.py:52
+#: flask_appbuilder/models/sqla/filters.py:173
+msgid "Smaller than"
+msgstr "کوچک‌تر از"
+
+#: flask_appbuilder/models/generic/filters.py:73
+msgid "Start with"
+msgstr "شروع کنید با"
+
+#: flask_appbuilder/models/mongoengine/filters.py:60
+#: flask_appbuilder/models/sqla/filters.py:84
+msgid "Starts with"
+msgstr "شروع می‌شود با"
+
+#: flask_appbuilder/models/mongoengine/filters.py:68
+#: flask_appbuilder/models/sqla/filters.py:93
+msgid "Not Starts with"
+msgstr "شروع نمی‌شود با"
+
+#: flask_appbuilder/models/mongoengine/filters.py:92
+#: flask_appbuilder/models/sqla/filters.py:187
+msgid "Relation"
+msgstr "رابطه"
+
+#: flask_appbuilder/models/mongoengine/filters.py:101
+#: flask_appbuilder/models/sqla/filters.py:229
+msgid "Relation as Many"
+msgstr "رابطه به صورت چندین"
+
+#: flask_appbuilder/models/sqla/filters.py:102
+msgid "Ends with"
+msgstr "به پایان می‌رسد با"
+
+#: flask_appbuilder/models/sqla/filters.py:111
+msgid "Not Ends with"
+msgstr "پایان‌نیافته با"
+
+#: flask_appbuilder/models/sqla/filters.py:208
+msgid "No Relation"
+msgstr "هیچ رابطه‌ای"
+
+#: flask_appbuilder/security/forms.py:25
+msgid "OpenID"
+msgstr "اوپن آیدی"
+
+#: flask_appbuilder/security/forms.py:26 flask_appbuilder/security/forms.py:31
+#: flask_appbuilder/security/forms.py:70
+#: flask_appbuilder/security/forms.py:109
+#: flask_appbuilder/security/views.py:157
+#: flask_appbuilder/security/views.py:417
+msgid "User Name"
+msgstr "نام کاربری"
+
+#: flask_appbuilder/security/forms.py:27
+msgid "Remember me"
+msgstr "مرا به خاطر بسپار"
+
+#: flask_appbuilder/security/forms.py:32 flask_appbuilder/security/forms.py:52
+#: flask_appbuilder/security/forms.py:90
+#: flask_appbuilder/security/views.py:158
+#: flask_appbuilder/security/views.py:316
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:30
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:27
+msgid "Password"
+msgstr "رمز عبور"
+
+#: flask_appbuilder/security/forms.py:53 flask_appbuilder/security/forms.py:91
+msgid ""
+"Please use a good password policy, this application does not check this for "
+"you"
+msgstr ""
+"لطفاً از یک سیاست گذرواژه خوب استفاده کنید، این برنامه این مورد را برای شما "
+"بررسی نمی‌کند."
+
+#: flask_appbuilder/security/forms.py:61 flask_appbuilder/security/forms.py:99
+#: flask_appbuilder/security/views.py:322
+msgid "Confirm Password"
+msgstr "تأیید رمز عبور"
+
+#: flask_appbuilder/security/forms.py:62
+#: flask_appbuilder/security/forms.py:100
+msgid "Please rewrite the password to confirm"
+msgstr "لطفاً رمز عبور را دوباره بنویسید تا تأیید شود."
+
+#: flask_appbuilder/security/forms.py:63
+#: flask_appbuilder/security/forms.py:101
+#: flask_appbuilder/security/views.py:326
+msgid "Passwords must match"
+msgstr "کلمات عبور باید مطابقت داشته باشند"
+
+#: flask_appbuilder/security/forms.py:85
+#: flask_appbuilder/security/forms.py:124
+#: flask_appbuilder/security/views.py:160
+msgid "Email"
+msgstr "ایمیل"
+
+#: flask_appbuilder/security/manager.py:831
+#: flask_appbuilder/security/views.py:148
+msgid "List Users"
+msgstr "لیست کاربران"
+
+#: flask_appbuilder/security/manager.py:834
+msgid "Security"
+msgstr "امنیت"
+
+#: flask_appbuilder/security/manager.py:841
+#: flask_appbuilder/security/views.py:453
+msgid "List Roles"
+msgstr "لیست نقش‌ها"
+
+#: flask_appbuilder/security/manager.py:852
+msgid "User's Statistics"
+msgstr "آمار کاربران"
+
+#: flask_appbuilder/security/manager.py:860
+msgid "User Registrations"
+msgstr "ثبت‌نام کاربران"
+
+#: flask_appbuilder/security/manager.py:869
+msgid "Base Permissions"
+msgstr "مجوزهای پایه"
+
+#: flask_appbuilder/security/manager.py:877
+msgid "Views/Menus"
+msgstr "نمایش‌ها/منوها"
+
+#: flask_appbuilder/security/manager.py:887
+msgid "Permission on Views/Menus"
+msgstr "مجوز بر روی نمایه‌ها/منوها"
+
+#: flask_appbuilder/security/registerviews.py:55
+msgid "Account activation"
+msgstr "فعال‌سازی حساب کاربری"
+
+#: flask_appbuilder/security/registerviews.py:59
+msgid "Registration sent to your email"
+msgstr "ثبت نام به ایمیل شما ارسال شد"
+
+#: flask_appbuilder/security/registerviews.py:61
+msgid "Not possible to register you at the moment, try again later"
+msgstr "در حال حاضر امکان ثبت‌نام شما وجود ندارد، لطفاً بعداً تلاش کنید."
+
+#: flask_appbuilder/security/registerviews.py:65
+msgid "Registration not found"
+msgstr "ثبت نام یافت نشد"
+
+#: flask_appbuilder/security/registerviews.py:67
+msgid "Fill out the registration form"
+msgstr "فرم ثبت‌نام را پر کنید"
+
+#: flask_appbuilder/security/views.py:42
+msgid "List Base Permissions"
+msgstr "فهرست مجوزهای پایه"
+
+#: flask_appbuilder/security/views.py:43
+msgid "Show Base Permission"
+msgstr "نمایش مجوز پایه"
+
+#: flask_appbuilder/security/views.py:44
+msgid "Add Base Permission"
+msgstr "اجازه پایه را اضافه کنید"
+
+#: flask_appbuilder/security/views.py:45
+msgid "Edit Base Permission"
+msgstr "ویرایش مجوز پایه"
+
+#: flask_appbuilder/security/views.py:47 flask_appbuilder/security/views.py:59
+#: flask_appbuilder/security/views.py:462
+msgid "Name"
+msgstr "نام"
+
+#: flask_appbuilder/security/views.py:54
+msgid "List View Menus"
+msgstr "منوهای نمای فهرست"
+
+#: flask_appbuilder/security/views.py:55
+msgid "Show View Menu"
+msgstr "نمایش منوی مشاهده"
+
+#: flask_appbuilder/security/views.py:56
+msgid "Add View Menu"
+msgstr "منوی نمایش را اضافه کنید"
+
+#: flask_appbuilder/security/views.py:57
+msgid "Edit View Menu"
+msgstr "ویرایش منوی مشاهده"
+
+#: flask_appbuilder/security/views.py:66
+msgid "List Permissions on Views/Menus"
+msgstr "فهرست مجوزها برای نماها/منوها"
+
+#: flask_appbuilder/security/views.py:67
+msgid "Show Permission on Views/Menus"
+msgstr "نمایش مجوزها بر روی نماها/منوها"
+
+#: flask_appbuilder/security/views.py:68
+msgid "Add Permission on Views/Menus"
+msgstr "اجازه دسترسی بر روی نماها/منوها اضافه کنید"
+
+#: flask_appbuilder/security/views.py:69
+msgid "Edit Permission on Views/Menus"
+msgstr "ویرایش مجوزها برای نماها/منوها"
+
+#: flask_appbuilder/security/views.py:72
+msgid "Permission"
+msgstr "مجوز"
+
+#: flask_appbuilder/security/views.py:73
+msgid "View/Menu"
+msgstr "نمایش/منو"
+
+#: flask_appbuilder/security/views.py:85
+#: flask_appbuilder/security/views.py:101
+msgid "Reset Password Form"
+msgstr "فرم بازنشانی رمز عبور"
+
+#: flask_appbuilder/security/views.py:87
+#: flask_appbuilder/security/views.py:103
+msgid "Password Changed"
+msgstr "رمز عبور تغییر کرد"
+
+#: flask_appbuilder/security/views.py:113
+msgid "Edit User Information"
+msgstr "ویرایش اطلاعات کاربر"
+
+#: flask_appbuilder/security/views.py:115
+msgid "User information changed"
+msgstr "اطلاعات کاربر تغییر یافت"
+
+#: flask_appbuilder/security/views.py:149
+msgid "Show User"
+msgstr "نمایش کاربر"
+
+#: flask_appbuilder/security/views.py:150
+msgid "Add User"
+msgstr "کاربر اضافه کنید"
+
+#: flask_appbuilder/security/views.py:151
+#: flask_appbuilder/security/views.py:260
+msgid "Edit User"
+msgstr "ویرایش کاربر"
+
+#: flask_appbuilder/security/views.py:154
+msgid "Full Name"
+msgstr "نام کامل"
+
+#: flask_appbuilder/security/views.py:159
+msgid "Is Active?"
+msgstr "آیا فعال است؟"
+
+#: flask_appbuilder/security/views.py:161
+msgid "Role"
+msgstr "نقش"
+
+#: flask_appbuilder/security/views.py:162
+msgid "Last login"
+msgstr "آخرین ورود"
+
+#: flask_appbuilder/security/views.py:163
+#: flask_appbuilder/security/views.py:418
+msgid "Login count"
+msgstr "تعداد ورود به سیستم"
+
+#: flask_appbuilder/security/views.py:164
+#: flask_appbuilder/security/views.py:419
+msgid "Failed login count"
+msgstr "تعداد تلاش‌های ناموفق برای ورود"
+
+#: flask_appbuilder/security/views.py:165
+msgid "Created on"
+msgstr "ایجاد شده در"
+
+#: flask_appbuilder/security/views.py:166
+msgid "Created by"
+msgstr "ایجاد شده توسط"
+
+#: flask_appbuilder/security/views.py:167
+msgid "Changed on"
+msgstr "تغییر داده شده در"
+
+#: flask_appbuilder/security/views.py:168
+msgid "Changed by"
+msgstr "تغییر یافته توسط"
+
+#: flask_appbuilder/security/views.py:174
+msgid "Username valid for authentication on DB or LDAP, unused for OID auth"
+msgstr ""
+"نام کاربری معتبر برای احراز هویت در پایگاه داده یا LDAP، برای احراز هویت OID"
+" استفاده نشده است."
+
+#: flask_appbuilder/security/views.py:177
+#: flask_appbuilder/security/views.py:317
+msgid "The user's password for authentication"
+msgstr "رمز عبور کاربر برای احراز هویت"
+
+#: flask_appbuilder/security/views.py:178
+msgid "It's not a good policy to remove a user, just make it inactive"
+msgstr ""
+"این یک سیاست خوب نیست که یک کاربر را حذف کنید، فقط آن را غیرفعال کنید."
+
+#: flask_appbuilder/security/views.py:181
+msgid "The user's email, this will also be used for OID auth"
+msgstr "ایمیل کاربر، این ایمیل همچنین برای احراز هویت OID استفاده خواهد شد."
+
+#: flask_appbuilder/security/views.py:187
+#: flask_appbuilder/security/views.py:323
+msgid "Please rewrite the user's password to confirm"
+msgstr "لطفاً رمز عبور کاربر را برای تأیید دوباره بنویسید."
+
+#: flask_appbuilder/security/views.py:243
+msgid "Your user information"
+msgstr "اطلاعات کاربری شما"
+
+#: flask_appbuilder/security/views.py:385
+msgid "Reset my password"
+msgstr "رمز عبور من را بازنشانی کنید"
+
+#: flask_appbuilder/security/views.py:396
+msgid "Reset Password"
+msgstr "تنظیم مجدد رمز عبور"
+
+#: flask_appbuilder/security/views.py:415
+msgid "User Statistics"
+msgstr "آمار کاربران"
+
+#: flask_appbuilder/security/views.py:454
+msgid "Show Role"
+msgstr "نمایش نقش"
+
+#: flask_appbuilder/security/views.py:455
+msgid "Add Role"
+msgstr "اضافه کردن نقش"
+
+#: flask_appbuilder/security/views.py:456
+msgid "Edit Role"
+msgstr "ویرایش نقش"
+
+#: flask_appbuilder/security/views.py:463
+msgid "Permissions"
+msgstr "مجوزها"
+
+#: flask_appbuilder/security/views.py:473
+msgid "Copy Role"
+msgstr "کپی نقش"
+
+#: flask_appbuilder/security/views.py:474
+msgid "Copy the selected roles?"
+msgstr "رول‌های انتخاب‌شده را کپی کنید؟"
+
+#: flask_appbuilder/security/views.py:492
+msgid "List of Registration Requests"
+msgstr "لیست درخواست‌های ثبت‌نام"
+
+#: flask_appbuilder/security/views.py:493
+msgid "Show Registration"
+msgstr "نمایش ثبت‌نام"
+
+#: flask_appbuilder/security/views.py:502
+msgid "Invalid login. Please try again."
+msgstr "ورود نامعتبر. لطفاً دوباره تلاش کنید."
+
+#: flask_appbuilder/security/views.py:503
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:46
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:40
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:48
+msgid "Sign In"
+msgstr "ورود"
+
+#: flask_appbuilder/templates/appbuilder/baselib.html:115
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:37
+msgid "Profile"
+msgstr "پروفایل"
+
+#: flask_appbuilder/templates/appbuilder/general/security/activation.html:5
+#: flask_appbuilder/templates/appbuilder/index.html:4
+msgid "Welcome"
+msgstr "خوش آمدید"
+
+#: flask_appbuilder/templates/appbuilder/general/confirm.html:6
+msgid "User confirmation needed"
+msgstr "نیاز به تأیید کاربر است."
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:76
+msgid "Actions"
+msgstr "عملیات"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:135
+msgid "Order by"
+msgstr "ترتیب بر اساس"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:383
+msgid "Add"
+msgstr "اضافه کردن"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:391
+msgid "Edit"
+msgstr "ویرایش"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:399
+msgid "Show"
+msgstr "نمایش بده"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:412
+msgid "Delete"
+msgstr "حذف کنید"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:419
+msgid "Are you sure you want to delete this item?"
+msgstr "آیا مطمئن هستید که می‌خواهید این مورد را حذف کنید؟"
+
+#: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:17
+msgid "Group by fields"
+msgstr "گروه‌بندی بر اساس فیلدها"
+
+#: flask_appbuilder/templates/appbuilder/general/model/edit.html:9
+#: flask_appbuilder/templates/appbuilder/general/model/show.html:9
+msgid "Detail"
+msgstr "جزئیات"
+
+#: flask_appbuilder/templates/appbuilder/general/security/activation.html:7
+msgid "Your user is activated you can now proceed to login"
+msgstr "کاربر شما فعال شده است، حالا می‌توانید به ورود به سیستم ادامه دهید."
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:18
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:16
+msgid "Enter your login and password below"
+msgstr "نام کاربری و رمز عبور خود را در زیر وارد کنید"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:20
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:18
+msgid "Username"
+msgstr "نام کاربری"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:49
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:56
+msgid "If you are not already a user, please register"
+msgstr "اگر در حال حاضر کاربر نیستید، لطفاً ثبت‌نام کنید."
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:50
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:57
+msgid "Register"
+msgstr "ثبت نام"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:20
+msgid "Sign In with "
+msgstr "ورود با"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:15
+msgid "Click on your OpenID provider below"
+msgstr "روی ارائه‌دهنده OpenID خود در زیر کلیک کنید"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:29
+msgid "Or enter your OpenID here"
+msgstr "یا OpenID خود را در اینجا وارد کنید"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:33
+msgid "Please choose a provider"
+msgstr "لطفاً یک ارائه‌دهنده را انتخاب کنید."
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:37
+msgid "Enter your OpenID Username"
+msgstr "نام کاربری OpenID خود را وارد کنید"
+
+#: flask_appbuilder/templates/appbuilder/general/security/register_oauth.html:15
+msgid "Sign in using:"
+msgstr "با استفاده از وارد شوید:"
