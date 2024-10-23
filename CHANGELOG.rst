@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.5.2
+-----------------------------------
+
+- fix: wtforms 3.2 breaking field_flags (#2279) [Daniel Vaz Gaspar]
+- fix: hardcoded year removed from copyright (#2277) [Emad Rad]
+
 Improvements and Bug fixes on 4.5.1
 -----------------------------------
 
