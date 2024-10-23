@@ -135,7 +135,7 @@ werkzeug==3.0.3
     #   flask-login
 wrapt==1.15.0
     # via deprecated
-wtforms==3.1.0
+wtforms==3.2.1
     # via
     #   flask-appbuilder
     #   flask-wtf
