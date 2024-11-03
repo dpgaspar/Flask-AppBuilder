@@ -1066,7 +1066,7 @@ class BaseCRUDView(BaseModelView):
         page=None,
         page_size=None,
         widgets=None,
-        **args,
+        **kwargs,
     ):
         """get joined base filter and current active filter for query"""
         widgets = widgets or {}
@@ -1100,6 +1100,7 @@ class BaseCRUDView(BaseModelView):
             actions=actions,
             filters=filters,
             modelview_name=self.__class__.__name__,
+            **kwargs,
         )
         return widgets
 
@@ -1162,7 +1163,7 @@ class BaseCRUDView(BaseModelView):
     -----------------------------------------------------
     """
 
-    def _list(self):
+    def _list(self, **kwargs):
         """
         list function logic, override to implement different logic
         returns list and search widget
@@ -1182,6 +1183,7 @@ class BaseCRUDView(BaseModelView):
             order_direction=order_direction,
             page=page,
             page_size=page_size,
+            **kwargs,
         )
         form = self.search_form.refresh()
         self.update_redirect()
