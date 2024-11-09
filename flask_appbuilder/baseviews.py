@@ -1222,7 +1222,7 @@ class BaseCRUDView(BaseModelView):
                 item = self.datamodel.obj()
 
                 try:
-                    form.populate_obj(item)
+                    self.populate_item_from_form(form, item, True)
                     self.pre_add(item)
                 except Exception as e:
                     flash(str(e), "danger")
@@ -1266,7 +1266,7 @@ class BaseCRUDView(BaseModelView):
                 self.process_form(form, False)
 
                 try:
-                    form.populate_obj(item)
+                    self.populate_item_from_form(form, item, False)
                     self.pre_update(item)
                 except Exception as e:
                     flash(str(e), "danger")
@@ -1379,6 +1379,13 @@ class BaseCRUDView(BaseModelView):
         return not (
             request.method == "GET" and self.appbuilder.app.extensions.get("csrf")
         )
+
+    def populate_item_from_form(self, form, item, is_created):
+        """
+        Populate the properties of the item to be created or updated based
+        on the content of the form.
+        """
+        form.populate_obj(item)
 
     def prefill_form(self, form, pk):
         """
