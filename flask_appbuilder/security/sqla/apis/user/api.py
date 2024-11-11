@@ -69,10 +69,10 @@ class UserApi(ModelRestApi):
         item.changed_on = datetime.now()
         item.changed_by_fk = g.user.id
         if item.password:
-            item.password = generate_password_hash(item.password)
+            item.password = generate_password_hash(item.password, method="pbkdf2")
 
     def pre_add(self, item):
-        item.password = generate_password_hash(item.password)
+        item.password = generate_password_hash(item.password, method="pbkdf2")
 
     @expose("/", methods=["POST"])
     @protect()

@@ -408,7 +408,7 @@ class UserDBModelView(UserModelView):
         item.changed_by_fk = g.user.id
 
     def pre_add(self, item: Any) -> None:
-        item.password = generate_password_hash(item.password)
+        item.password = generate_password_hash(item.password, method="pbkdf2")
 
 
 class UserStatsChartView(DirectByChartView):
