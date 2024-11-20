@@ -1175,7 +1175,7 @@ class BaseCRUDView(BaseModelView):
             order_column, order_direction = "", ""
         page = get_page_args().get(self.__class__.__name__)
         page_size = get_page_size_args().get(self.__class__.__name__)
-        get_filter_args(self._filters)
+        get_filter_args(self._filters, disallow_if_not_in_search=False)
         widgets = self._get_list_widget(
             filters=self._filters,
             order_column=order_column,
