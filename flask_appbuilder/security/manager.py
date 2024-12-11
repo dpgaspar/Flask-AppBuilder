@@ -335,7 +335,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.limiter = self.create_limiter(app)
 
     def create_limiter(self, app: Flask) -> Limiter:
-        limiter = Limiter(key_func=get_remote_address)
+        limiter = Limiter(
+            key_func=app.config.get("RATELIMIT_KEY_FUNC", get_remote_address)
+        )
         limiter.init_app(app)
         return limiter
 
@@ -731,11 +733,26 @@ class BaseSecurityManager(AbstractSecurityManager):
             me = self.appbuilder.sm.oauth_remotes[provider].get("userinfo")
             data = me.json()
             log.debug("User info from Okta: %s", data)
+            if "error" not in data:
+                return {
+                    "username": f"{provider}_{data['sub']}",
+                    "first_name": data.get("given_name", ""),
+                    "last_name": data.get("family_name", ""),
+                    "email": data["email"],
+                    "role_keys": data.get("groups", []),
+                }
+            else:
+                log.error(data.get("error_description"))
+                return {}
+        # for Auth0
+        if provider == "auth0":
+            data = self.appbuilder.sm.oauth_remotes[provider].userinfo()
+            log.debug("User info from Auth0: %s", data)
             return {
-                "username": "okta_" + data.get("sub", ""),
+                "username": f"{provider}_{data['sub']}",
                 "first_name": data.get("given_name", ""),
                 "last_name": data.get("family_name", ""),
-                "email": data.get("email", ""),
+                "email": data["email"],
                 "role_keys": data.get("groups", []),
             }
         # for Keycloak
@@ -751,6 +768,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "first_name": data.get("given_name", ""),
                 "last_name": data.get("family_name", ""),
                 "email": data.get("email", ""),
+                "role_keys": data.get("groups", []),
             }
         else:
             return {}

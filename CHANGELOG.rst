@@ -1,6 +1,30 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.5.2
+-----------------------------------
+
+- fix: wtforms 3.2 breaking field_flags (#2279) [Daniel Vaz Gaspar]
+- fix: hardcoded year removed from copyright (#2277) [Emad Rad]
+
+Improvements and Bug fixes on 4.5.1
+-----------------------------------
+
+- feat: add no cache directive to login forms (#2266) [Daniel Vaz Gaspar]
+- chore: bump cryptography to 42.0.4 (#2238) [Daniel Vaz Gaspar]
+- docs: Fixing broken link (#2252) [Chase Jones]
+- fix: rate limiter key function (#2254) [Daniel Vaz Gaspar]
+- chore: bump dnspython to fix vulnerability (#2255) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.5.0
+-----------------------------------
+
+- feat: REST API new select columns query param (#2242) [Daniel Vaz Gaspar]
+- chore: bump werkzeug to 3.0.3 (#2237) [Daniel Vaz Gaspar]
+- fix: Keycloak OAuth2, get groups as role_keys per default (#2235) [Andreas 'count' Kotes]
+- fix: Check if Oauth login with OKTA is correct (#1926) [Hojjat Ali Mohammadi]
+- docs: Update quickcharts.rst for typo gold to goal (#2217) [Abhinav Pareek]
+
 Improvements and Bug fixes on 4.4.1
 -----------------------------------
 

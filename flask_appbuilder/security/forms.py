@@ -18,7 +18,7 @@ class SelectDataRequired(DataRequired):
     select fields
     """
 
-    field_flags = ()
+    field_flags = {}
 
 
 class LoginForm_oid(DynamicForm):

@@ -30,6 +30,20 @@ R = TypeVar("R")
 P = ParamSpec("P")
 
 
+def no_cache(view: Callable[..., Response]) -> Callable[..., Response]:
+    @functools.wraps(view)
+    def wrapped_view(*args, **kwargs) -> Response:
+        response = make_response(view(*args, **kwargs))
+        response.headers[
+            "Cache-Control"
+        ] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
+
+    return wrapped_view
+
+
 def response_unauthorized_mvc(status_code: int) -> Response:
     response = make_response(
         jsonify({"message": str(FLAMSG_ERR_SEC_ACCESS_DENIED), "severity": "danger"}),

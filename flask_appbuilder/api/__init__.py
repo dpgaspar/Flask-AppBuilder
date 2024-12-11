@@ -65,6 +65,7 @@ from ..const import (
     API_PERMISSIONS_RIS_KEY,
     API_RESULT_RES_KEY,
     API_SELECT_COLUMNS_RIS_KEY,
+    API_SELECT_SEL_COLUMNS_RIS_KEY,
     API_SHOW_COLUMNS_RES_KEY,
     API_SHOW_COLUMNS_RIS_KEY,
     API_SHOW_TITLE_RES_KEY,
@@ -1572,8 +1573,23 @@ class ModelRestApi(BaseModelApi):
         response = dict()
         args = kwargs.get("rison", {})
         # handle select columns
-        select_cols = args.get(API_SELECT_COLUMNS_RIS_KEY, [])
-        pruned_select_cols = [col for col in select_cols if col in self.list_columns]
+        output_select_cols = args.get(API_SELECT_COLUMNS_RIS_KEY, [])
+        select_cols = args.get(API_SELECT_SEL_COLUMNS_RIS_KEY, [])
+        if select_cols and output_select_cols:
+            return self.response_400(message="Cannot use both select and sel columns")
+        list_select_columns = self.list_select_columns
+        pruned_select_cols = []
+        if output_select_cols:
+            pruned_select_cols = [
+                col for col in output_select_cols if col in self.list_columns
+            ]
+        if select_cols:
+            pruned_select_cols = [
+                col for col in select_cols if col in self.list_columns
+            ]
+            list_select_columns = [
+                col for col in select_cols if col in self.list_select_columns
+            ]
         # map decorated metadata
         self.set_response_key_mappings(
             response,
@@ -1606,7 +1622,7 @@ class ModelRestApi(BaseModelApi):
             order_direction,
             page=page_index,
             page_size=page_size,
-            select_columns=self.list_select_columns,
+            select_columns=list_select_columns,
             outer_default_load=self.list_outer_default_load,
         )
         pks = self.datamodel.get_keys(lst)
