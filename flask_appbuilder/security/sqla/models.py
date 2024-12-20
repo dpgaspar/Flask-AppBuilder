@@ -6,6 +6,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     Sequence,
     String,
@@ -52,6 +53,8 @@ assoc_permissionview_role = Table(
     Column("permission_view_id", Integer, ForeignKey("ab_permission_view.id")),
     Column("role_id", Integer, ForeignKey("ab_role.id")),
     UniqueConstraint("permission_view_id", "role_id"),
+    Index("idx_permission_view_id", "permission_view_id"),
+    Index("idx_role_id", "role_id"),
 )
 
 
@@ -72,7 +75,11 @@ class Role(Model):
 
 class PermissionView(Model):
     __tablename__ = "ab_permission_view"
-    __table_args__ = (UniqueConstraint("permission_id", "view_menu_id"),)
+    __table_args__ = (
+        UniqueConstraint("permission_id", "view_menu_id"),
+        Index("idx_permission_id", "permission_id"),
+        Index("idx_view_menu_id", "view_menu_id"),
+    )
     id = Column(Integer, Sequence("ab_permission_view_id_seq"), primary_key=True)
     permission_id = Column(Integer, ForeignKey("ab_permission.id"))
     permission = relationship("Permission", lazy="joined")
