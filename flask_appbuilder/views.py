@@ -831,9 +831,9 @@ class CompactCRUDMixin(BaseCRUDView):
         k = cls.__name__ + "__" + k
         session.pop(k)
 
-    def _get_list_widget(self, **args):
+    def _get_list_widget(self, **kwargs):
         """get joined base filter and current active filter for query"""
-        widgets = super(CompactCRUDMixin, self)._get_list_widget(**args)
+        widgets = super(CompactCRUDMixin, self)._get_list_widget(**kwargs)
         session_form_widget = self.get_key("session_form_widget", None)
 
         form_widget = None
