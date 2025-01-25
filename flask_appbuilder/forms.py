@@ -48,19 +48,150 @@ class FieldConverter(object):
     """
 
     conversion_table = (
-        ("is_image", ImageUploadField, BS3ImageUploadFieldWidget),
-        ("is_file", FileUploadField, BS3FileUploadFieldWidget),
-        ("is_gridfs_file", MongoFileField, BS3FileUploadFieldWidget),
-        ("is_gridfs_image", MongoImageField, BS3ImageUploadFieldWidget),
-        ("is_text", TextAreaField, BS3TextAreaFieldWidget),
-        ("is_binary", TextAreaField, BS3TextAreaFieldWidget),
-        ("is_string", StringField, BS3TextFieldWidget),
-        ("is_integer", IntegerField, BS3TextFieldWidget),
-        ("is_numeric", DecimalField, BS3TextFieldWidget),
-        ("is_float", FloatField, BS3TextFieldWidget),
-        ("is_boolean", BooleanField, None),
-        ("is_date", DateField, DatePickerWidget),
-        ("is_datetime", DateTimeField, DateTimePickerWidget),
+        # sqlalchemy.types.Enum inherits from String, therefore `is_enum` must be
+        # checked before checking for `is_string`:
+        (
+            "is_enum",
+            lambda conv, col_type: EnumField(
+                enum_class=col_type.enum_class,
+                enums=col_type.enums,
+                label=conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=Select2Widget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_image",
+            lambda conv, _: ImageUploadField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=BS3ImageUploadFieldWidget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_file",
+            lambda conv, _: FileUploadField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=BS3FileUploadFieldWidget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_gridfs_file",
+            lambda conv, _: MongoFileField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=BS3FileUploadFieldWidget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_gridfs_image",
+            lambda conv, _: MongoImageField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=BS3ImageUploadFieldWidget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_text",
+            lambda conv, _: TextAreaField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=BS3TextAreaFieldWidget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_binary",
+            lambda conv, _: TextAreaField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=BS3TextAreaFieldWidget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_string",
+            lambda conv, _: StringField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=BS3TextFieldWidget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_integer",
+            lambda conv, _: IntegerField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=BS3TextFieldWidget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_float",
+            lambda conv, _: FloatField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=BS3TextFieldWidget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_numeric",
+            lambda conv, col_type: DecimalField(
+                conv.label,
+                places=col_type.scale,
+                description=conv.description,
+                validators=conv.validators,
+                widget=BS3TextFieldWidget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_boolean",
+            lambda conv, _: BooleanField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_date",
+            lambda conv, _: DateField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=DatePickerWidget(),
+                default=conv.default,
+            ),
+        ),
+        (
+            "is_datetime",
+            lambda conv, _: DateTimeField(
+                conv.label,
+                description=conv.description,
+                validators=conv.validators,
+                widget=DateTimePickerWidget(),
+                default=conv.default,
+            ),
+        ),
     )
 
     def __init__(
@@ -74,36 +205,14 @@ class FieldConverter(object):
         self.default = default
 
     def convert(self):
-        # sqlalchemy.types.Enum inherits from String, therefore `is_enum` must be
-        # checked before checking for `is_string`:
-        if getattr(self.datamodel, "is_enum")(self.colname):
-            col_type = self.datamodel.list_columns[self.colname].type
-            return EnumField(
-                enum_class=col_type.enum_class,
-                enums=col_type.enums,
-                label=self.label,
-                description=self.description,
-                validators=self.validators,
-                widget=Select2Widget(),
-                default=self.default,
-            )
-        for type_marker, field, widget in self.conversion_table:
+        for type_marker, field in self.conversion_table:
             if getattr(self.datamodel, type_marker)(self.colname):
-                if widget:
-                    return field(
-                        self.label,
-                        description=self.description,
-                        validators=self.validators,
-                        widget=widget(),
-                        default=self.default,
-                    )
-                else:
-                    return field(
-                        self.label,
-                        description=self.description,
-                        validators=self.validators,
-                        default=self.default,
-                    )
+                col_type = (
+                    self.datamodel.list_columns[self.colname].type
+                    if type_marker in ["is_enum", "is_numeric"]
+                    else None
+                )
+                return field(self, col_type)
         log.error("Column %s Type not supported", self.colname)
 
 
