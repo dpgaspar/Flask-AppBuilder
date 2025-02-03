@@ -13,6 +13,7 @@ from werkzeug.security import generate_password_hash
 from .apis import PermissionApi, PermissionViewMenuApi, RoleApi, UserApi, ViewMenuApi
 from .models import (
     assoc_permissionview_role,
+    Group,
     Permission,
     PermissionView,
     RegisterUser,
@@ -41,6 +42,7 @@ class SecurityManager(BaseSecurityManager):
     """ Override to set your own User Model """
     role_model = Role
     """ Override to set your own Role Model """
+    group_model = Group
     permission_model = Permission
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
@@ -80,6 +82,7 @@ class SecurityManager(BaseSecurityManager):
             )
 
         self.rolemodelview.datamodel = SQLAInterface(self.role_model)
+        self.groupmodelview.datamodel = SQLAInterface(self.group_model)
         self.permissionmodelview.datamodel = SQLAInterface(self.permission_model)
         self.viewmenumodelview.datamodel = SQLAInterface(self.viewmenu_model)
         self.permissionviewmodelview.datamodel = SQLAInterface(
@@ -410,12 +413,16 @@ class SecurityManager(BaseSecurityManager):
         }
         ```
         """
-        if not user.roles:
-            raise AttributeError("User object does not have roles")
+        if not user.roles and not user.groups:
+            raise AttributeError("User object does not have roles or groups")
 
         result: Dict[str, List[Tuple[str, str]]] = {}
         db_roles_ids = []
-        for role in user.roles:
+        roles = []
+        roles.extend(user.roles)
+        for group in user.groups:
+            roles.extend(group.roles)
+        for role in roles:
             # Make sure all db roles are included on the result
             result[role.name] = []
             if role.name in self.builtin_roles:

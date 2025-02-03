@@ -15,7 +15,6 @@ from flask_appbuilder.security.forms import (
     LoginForm_db,
     LoginForm_oid,
     ResetPasswordForm,
-    SelectDataRequired,
     UserInfoEdit,
 )
 from flask_appbuilder.security.utils import generate_random_string
@@ -159,6 +158,7 @@ class UserModelView(ModelView):
         "active": lazy_gettext("Is Active?"),
         "email": lazy_gettext("Email"),
         "roles": lazy_gettext("Role"),
+        "groups": lazy_gettext("Groups"),
         "last_login": lazy_gettext("Last login"),
         "login_count": lazy_gettext("Login count"),
         "fail_login_count": lazy_gettext("Failed login count"),
@@ -184,10 +184,23 @@ class UserModelView(ModelView):
             " this will associate with a list of permissions",
             _roles_custom_formatter,
         ),
+        "groups": lazy_formatter_gettext(
+            "The user group on the application,"
+            " this will associate with a list of roles associated with the group",
+            _roles_custom_formatter,
+        ),
         "conf_password": lazy_gettext("Please rewrite the user's password to confirm"),
     }
 
-    list_columns = ["first_name", "last_name", "username", "email", "active", "roles"]
+    list_columns = [
+        "first_name",
+        "last_name",
+        "username",
+        "email",
+        "active",
+        "roles",
+        "groups",
+    ]
 
     show_fieldsets = [
         (
@@ -238,8 +251,24 @@ class UserModelView(ModelView):
         "fail_login_count",
     ]
 
-    add_columns = ["first_name", "last_name", "username", "active", "email", "roles"]
-    edit_columns = ["first_name", "last_name", "username", "active", "email", "roles"]
+    add_columns = [
+        "first_name",
+        "last_name",
+        "username",
+        "active",
+        "email",
+        "roles",
+        "groups",
+    ]
+    edit_columns = [
+        "first_name",
+        "last_name",
+        "username",
+        "active",
+        "email",
+        "roles",
+        "groups",
+    ]
     user_info_title = lazy_gettext("Your user information")
 
     @expose("/userinfo/")
@@ -339,8 +368,6 @@ class UserDBModelView(UserModelView):
         "password",
         "conf_password",
     ]
-
-    validators_columns = {"roles": [SelectDataRequired()]}
 
     @expose("/show/<pk>", methods=["GET"])
     @has_access
@@ -484,6 +511,21 @@ class RoleModelView(ModelView):
             new_role.name = new_role.name + " copy"
             self.datamodel.add(new_role)
         return redirect(self.get_redirect())
+
+
+class UserGroupModelView(ModelView):
+    route_base = "/groups"
+
+    list_title = lazy_gettext("List Groups")
+    show_title = lazy_gettext("Show Group")
+    add_title = lazy_gettext("Add Group")
+    edit_title = lazy_gettext("Edit Group")
+
+    list_columns = ["name", "roles"]
+    show_columns = ["name", "users", "roles"]
+    edit_columns = ["name", "users", "roles"]
+    add_columns = edit_columns
+    order_columns = ["name"]
 
 
 class RegisterUserModelView(ModelView):

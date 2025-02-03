@@ -33,6 +33,7 @@ from .views import (
     ResetPasswordView,
     RoleModelView,
     UserDBModelView,
+    UserGroupModelView,
     UserInfoEditView,
     UserLDAPModelView,
     UserOAuthModelView,
@@ -158,6 +159,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override to set your own User Model """
     role_model = None
     """ Override to set your own Role Model """
+    group_model = None
+    """ Override to set your own Group Model """
     permission_model = None
     """ Override to set your own Permission Model """
     viewmenu_model = None
@@ -209,6 +212,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Security API login endpoint """
 
     rolemodelview = RoleModelView
+    groupmodelview = UserGroupModelView
     permissionmodelview = PermissionModelView
     userstatschartview = UserStatsChartView
     viewmenumodelview = ViewMenuModelView
@@ -843,12 +847,21 @@ class BaseSecurityManager(AbstractSecurityManager):
         role_view = self.appbuilder.add_view(
             self.rolemodelview,
             "List Roles",
-            icon="fa-group",
+            icon="fa-user-gear",
             label=_("List Roles"),
             category="Security",
             category_icon="fa-cogs",
         )
         role_view.related_views = [self.user_view.__class__]
+
+        self.appbuilder.add_view(
+            self.groupmodelview,
+            "List Groups",
+            icon="fa-group",
+            label=_("List Groups"),
+            category="Security",
+            category_icon="fa-cogs",
+        )
 
         if self.userstatschartview:
             self.appbuilder.add_view(
@@ -1511,8 +1524,12 @@ class BaseSecurityManager(AbstractSecurityManager):
     def _has_view_access(
         self, user: object, permission_name: str, view_name: str
     ) -> bool:
-        roles = user.roles
-        db_role_ids = list()
+        db_role_ids = []
+        roles = []
+        roles.extend(user.roles)
+        for group in user.groups:
+            roles.extend(group.roles)
+
         # First check against builtin (statically configured) roles
         # because no database query is needed
         for role in roles:
@@ -1582,11 +1599,15 @@ class BaseSecurityManager(AbstractSecurityManager):
         on a single db call, will also check public permissions and builtin roles
         """
         db_role_ids = list()
+
         if user is None:
             # include public role
             roles = [self.get_public_role()]
         else:
-            roles = user.roles
+            roles = []
+            roles.extend(user.roles)
+            for group in user.groups:
+                roles.extend(group.roles)
         # First check against builtin (statically configured) roles
         # because no database query is needed
         result = set()
