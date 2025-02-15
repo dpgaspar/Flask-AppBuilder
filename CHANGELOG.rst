@@ -1,6 +1,29 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.5.3
+-----------------------------------
+
+- feat: Persian translations (#2278) [Emad Rad]
+- refactor: enhance _get_list_widget and _list methods to accept additional keyword arguments (#2285) [Gughanathan M]
+- feat: make fake password hash check configurable (#2301) [Daniel Vaz Gaspar]
+- chore: improve security models performance (#2293) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.5.2
+-----------------------------------
+
+- fix: wtforms 3.2 breaking field_flags (#2279) [Daniel Vaz Gaspar]
+- fix: hardcoded year removed from copyright (#2277) [Emad Rad]
+
+Improvements and Bug fixes on 4.5.1
+-----------------------------------
+
+- feat: add no cache directive to login forms (#2266) [Daniel Vaz Gaspar]
+- chore: bump cryptography to 42.0.4 (#2238) [Daniel Vaz Gaspar]
+- docs: Fixing broken link (#2252) [Chase Jones]
+- fix: rate limiter key function (#2254) [Daniel Vaz Gaspar]
+- chore: bump dnspython to fix vulnerability (#2255) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.5.0
 -----------------------------------
 

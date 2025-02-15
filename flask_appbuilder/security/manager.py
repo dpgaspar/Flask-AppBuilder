@@ -229,6 +229,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault("AUTH_ROLES_MAPPING", {})
         app.config.setdefault("AUTH_ROLES_SYNC_AT_LOGIN", False)
         app.config.setdefault("AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS", False)
+        app.config.setdefault(
+            "AUTH_DB_FAKE_PASSWORD_HASH_CHECK",
+            "scrypt:32768:8:1$wiDa0ruWlIPhp9LM$6e409d093e62ad54df2af895d0e125b05ff6cf6414"
+            "8350189ffc4bcc71286edf1b8ad94a442c00f890224bf2b32153d0750c89ee9"
+            "401e62f9dcee5399065e4e5",
+        )
 
         # LDAP Config
         if self.auth_type == AUTH_LDAP:
@@ -304,7 +310,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.limiter = self.create_limiter(app)
 
     def create_limiter(self, app: Flask) -> Limiter:
-        limiter = Limiter(key_func=get_remote_address)
+        limiter = Limiter(
+            key_func=app.config.get("RATELIMIT_KEY_FUNC", get_remote_address)
+        )
         limiter.init_app(app)
         return limiter
 
@@ -966,8 +974,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if user is None or (not user.is_active):
             # Balance failure and success
             check_password_hash(
-                "pbkdf2:sha256:150000$Z3t6fmj2$22da622d94a1f8118"
-                "c0976a03d2f18f680bfff877c9a965db9eedc51bc0be87c",
+                self.appbuilder.get_app.config["AUTH_DB_FAKE_PASSWORD_HASH_CHECK"],
                 "password",
             )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED, username)
