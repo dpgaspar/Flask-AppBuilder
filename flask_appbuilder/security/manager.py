@@ -12,6 +12,8 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_login import current_user, LoginManager
 import jwt
+from packaging.version import Version
+from pkg_resources import get_distribution
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .api import SecurityApi
@@ -230,10 +232,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault("AUTH_ROLES_SYNC_AT_LOGIN", False)
         app.config.setdefault("AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS", False)
 
-        from packaging.version import Version
-        from werkzeug import __version__ as werkzeug_version
-
-        parsed_werkzeug_version = Version(werkzeug_version)
+        # Werkzeug prior to 3.0.0 does not support scrypt
+        parsed_werkzeug_version = Version(get_distribution("werkzeug").version)
         if parsed_werkzeug_version < Version("3.0.0"):
             app.config.setdefault(
                 "AUTH_DB_FAKE_PASSWORD_HASH_CHECK",
