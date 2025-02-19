@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.5.4rc1
+-----------------------------------
+
+- fix: Default password hashing algorithm depends on Werkzeug version (#2306) [Jarek Potiuk]
+
 Improvements and Bug fixes on 4.5.3
 -----------------------------------
 
