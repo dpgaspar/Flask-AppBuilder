@@ -7,7 +7,9 @@
 alabaster==0.7.16
     # via sphinx
 apispec[yaml]==6.3.0
-    # via -r requirements/base.txt
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 attrs==23.1.0
     # via
     #   -r requirements/base.txt
@@ -32,13 +34,16 @@ click==8.1.7
     # via
     #   -r requirements/base.txt
     #   flask
+    #   flask-appbuilder
 colorama==0.4.6
-    # via -r requirements/base.txt
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 deprecated==1.2.14
     # via
     #   -r requirements/base.txt
     #   limits
-dnspython==2.4.2
+dnspython==2.6.1
     # via
     #   -r requirements/base.txt
     #   email-validator
@@ -47,10 +52,13 @@ docutils==0.20.1
     #   sphinx
     #   sphinx-rtd-theme
 email-validator==1.3.1
-    # via -r requirements/base.txt
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 flask==2.3.3
     # via
     #   -r requirements/base.txt
+    #   flask-appbuilder
     #   flask-babel
     #   flask-jwt-extended
     #   flask-limiter
@@ -58,20 +66,36 @@ flask==2.3.3
     #   flask-sqlalchemy
     #   flask-wtf
 flask-babel==2.0.0
-    # via -r requirements/base.txt
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 flask-jwt-extended==4.5.3
-    # via -r requirements/base.txt
-flask-limiter==3.5.0
-    # via -r requirements/base.txt
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
+flask-limiter==3.7.0
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 flask-login==0.6.3
-    # via -r requirements/base.txt
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 flask-sqlalchemy==2.5.1
-    # via -r requirements/base.txt
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 flask-wtf==1.2.1
-    # via -r requirements/base.txt
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 funcparserlib==2.0.0a0
     # via blockdiag
-idna==3.4
+greenlet==3.1.1
+    # via
+    #   -r requirements/base.txt
+    #   sqlalchemy
+idna==3.6
     # via
     #   -r requirements/base.txt
     #   email-validator
@@ -87,14 +111,16 @@ itsdangerous==2.1.2
     #   -r requirements/base.txt
     #   flask
     #   flask-wtf
-jinja2==3.1.2
+jinja2==3.1.3
     # via
     #   -r requirements/base.txt
     #   flask
     #   flask-babel
     #   sphinx
 jsonschema==4.19.1
-    # via -r requirements/base.txt
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 jsonschema-specifications==2023.7.1
     # via
     #   -r requirements/base.txt
@@ -113,12 +139,15 @@ markupsafe==2.1.3
     #   jinja2
     #   werkzeug
     #   wtforms
-marshmallow==3.20.1
+marshmallow==3.24.1
     # via
     #   -r requirements/base.txt
+    #   flask-appbuilder
     #   marshmallow-sqlalchemy
-marshmallow-sqlalchemy==0.26.1
-    # via -r requirements/base.txt
+marshmallow-sqlalchemy==1.1.1
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 mdurl==0.1.2
     # via
     #   -r requirements/base.txt
@@ -137,7 +166,9 @@ packaging==23.2
 pillow==10.2.0
     # via blockdiag
 prison==0.2.1
-    # via -r requirements/base.txt
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 pygments==2.16.1
     # via
     #   -r requirements/base.txt
@@ -146,9 +177,12 @@ pygments==2.16.1
 pyjwt==2.8.0
     # via
     #   -r requirements/base.txt
+    #   flask-appbuilder
     #   flask-jwt-extended
 python-dateutil==2.8.2
-    # via -r requirements/base.txt
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
 pytz==2023.3.post1
     # via
     #   -r requirements/base.txt
@@ -206,12 +240,15 @@ sphinxcontrib-serializinghtml==1.1.10
 sqlalchemy==1.4.49
     # via
     #   -r requirements/base.txt
+    #   flask-appbuilder
     #   flask-sqlalchemy
     #   marshmallow-sqlalchemy
     #   sqlalchemy-utils
 sqlalchemy-utils==0.41.1
-    # via -r requirements/base.txt
-typing-extensions==4.8.0
+    # via
+    #   -r requirements/base.txt
+    #   flask-appbuilder
+typing-extensions==4.12.2
     # via
     #   -r requirements/base.txt
     #   flask-limiter
@@ -220,19 +257,21 @@ urllib3==2.2.0
     # via requests
 webcolors==1.13
     # via blockdiag
-werkzeug==3.0.1
+werkzeug==3.0.3
     # via
     #   -r requirements/base.txt
     #   flask
+    #   flask-appbuilder
     #   flask-jwt-extended
     #   flask-login
 wrapt==1.15.0
     # via
     #   -r requirements/base.txt
     #   deprecated
-wtforms==3.1.0
+wtforms==3.2.1
     # via
     #   -r requirements/base.txt
+    #   flask-appbuilder
     #   flask-wtf
 
 # The following packages are considered to be unsafe in a requirements file:
