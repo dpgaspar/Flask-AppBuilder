@@ -4,7 +4,7 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.security.sqla.models import User, Group
+from flask_appbuilder.security.sqla.models import Group, User
 from tests.base import BaseMVCTestCase
 from tests.const import (
     INVALID_LOGIN_STRING,
@@ -706,13 +706,10 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("Added Row", data)
         group = (
-            self.db.session.query(Group)
-            .filter(Group.name == "group1")
-            .one_or_none()
+            self.db.session.query(Group).filter(Group.name == "group1").one_or_none()
         )
         self.db.session.delete(group)
         self.db.session.commit()
-
 
     def test_add_group_unique_name(self):
         """
