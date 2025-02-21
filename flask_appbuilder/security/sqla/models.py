@@ -204,6 +204,8 @@ class Group(Model):
     __tablename__ = "ab_group"
     id = Column(Integer, Sequence("ab_group_id_seq"), primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
+    label = Column(String(150))
+    description = Column(String(512))
     users = relationship("User", secondary=assoc_user_group, backref="groups")
     roles = relationship("Role", secondary=assoc_group_role, backref="groups")
 

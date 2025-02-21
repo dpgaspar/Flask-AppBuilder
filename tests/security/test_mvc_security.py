@@ -420,9 +420,9 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         self.browser_logout(client)
 
-    def test_register_user(self):
+    def test_register_user_with_role(self):
         """
-        Test register user
+        Test register user with role
         """
         client = self.app.test_client()
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -439,6 +439,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
                 username="from test 1-1",
                 email="test1@fromtest1.com",
                 roles=[1],
+                groups=[],
                 password="password",
                 conf_password="password",
             ),
@@ -446,8 +447,59 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         data = rv.data.decode("utf-8")
         self.assertIn("Added Row", data)
+        user = (
+            self.db.session.query(User)
+            .filter(User.username == "from test 1-1")
+            .one_or_none()
+        )
+        self.db.session.delete(user)
+        self.db.session.commit()
 
-        # don't set roles
+    def test_register_user_with_group(self):
+        """
+        Test register user with group
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        group = self.create_group(self.appbuilder)
+
+        # use all required params
+        rv = client.get("/users/add", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Add User", data)
+        rv = client.post(
+            "/users/add",
+            data=dict(
+                first_name="first",
+                last_name="last",
+                username="from test 1-1",
+                email="test1@fromtest1.com",
+                roles=[],
+                groups=[group.id],
+                password="password",
+                conf_password="password",
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Added Row", data)
+        user = (
+            self.db.session.query(User)
+            .filter(User.username == "from test 1-1")
+            .one_or_none()
+        )
+        self.db.session.delete(user)
+        self.db.session.delete(group)
+        self.db.session.commit()
+
+    def test_register_user_missing_roles_or_groups(self):
+        """
+        Test register user with missing roles or groups
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # don't set roles or groups
         rv = client.get("/users/add", follow_redirects=True)
         data = rv.data.decode("utf-8")
         self.assertIn("Add User", data)
@@ -459,6 +511,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
                 username="from test 2-1",
                 email="test2@fromtest2.com",
                 roles=[],
+                groups=[],
                 password="password",
                 conf_password="password",
             ),
@@ -466,20 +519,58 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         data = rv.data.decode("utf-8")
         self.assertNotIn("Added Row", data)
-        self.assertIn("This field is required", data)
+        self.assertIn("Either select a role or a group", data)
         self.browser_logout(client)
+
+    def test_edit_user_with_role(self):
+        """
+        Test edit user with role
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        _tmp_user = self.create_user(
+            self.appbuilder,
+            "tmp_user",
+            "password1",
+            "",
+            first_name="tmp",
+            last_name="user",
+            email="tmp@fab.org",
+            role_names=["Admin"],
+        )
+
+        # use all required params
+        rv = client.get(f"/users/edit/{_tmp_user.id}", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Edit User", data)
+        rv = client.post(
+            f"/users/edit/{_tmp_user.id}",
+            data=dict(
+                first_name=_tmp_user.first_name,
+                last_name=_tmp_user.last_name,
+                username=_tmp_user.username,
+                email="changed@changed.org",
+                roles=_tmp_user.roles[0].id,
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Changed Row", data)
 
         user = (
             self.db.session.query(User)
-            .filter(User.username == "from test 1-1")
+            .filter(User.username == _tmp_user.username)
             .one_or_none()
         )
+
+        assert user.email == "changed@changed.org"
         self.db.session.delete(user)
         self.db.session.commit()
 
-    def test_edit_user(self):
+    def test_edit_user_with_group(self):
         """
-        Test edit user
+        Test edit user with group
         """
         client = self.app.test_client()
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)

@@ -16,6 +16,7 @@ from flask_appbuilder.security.forms import (
     LoginForm_oid,
     ResetPasswordForm,
     UserInfoEdit,
+    roles_or_groups_required,
 )
 from flask_appbuilder.security.utils import generate_random_string
 from flask_appbuilder.utils.base import get_safe_redirect, lazy_formatter_gettext
@@ -270,6 +271,10 @@ class UserModelView(ModelView):
         "groups",
     ]
     user_info_title = lazy_gettext("Your user information")
+    validators_columns = {
+        "roles": [roles_or_groups_required],
+        "groups": [roles_or_groups_required],
+    }
 
     @expose("/userinfo/")
     @has_access
@@ -335,7 +340,7 @@ class UserRemoteUserModelView(UserModelView):
 
 class UserDBModelView(UserModelView):
     """
-    View that add DB specifics to User view.
+    View that adds DB specifics to User view.
     Override to implement your own custom view.
     Then override userdbmodelview property on SecurityManager
     """
@@ -365,6 +370,7 @@ class UserDBModelView(UserModelView):
         "active",
         "email",
         "roles",
+        "groups",
         "password",
         "conf_password",
     ]
@@ -521,11 +527,11 @@ class UserGroupModelView(ModelView):
     add_title = lazy_gettext("Add Group")
     edit_title = lazy_gettext("Edit Group")
 
-    list_columns = ["name", "roles"]
-    show_columns = ["name", "users", "roles"]
-    edit_columns = ["name", "users", "roles"]
+    list_columns = ["name", "label", "roles"]
+    show_columns = ["name", "label", "description", "users", "roles"]
+    edit_columns = ["name", "label", "description", "users", "roles"]
     add_columns = edit_columns
-    order_columns = ["name"]
+    order_columns = ["name", "label", "description"]
 
 
 class RegisterUserModelView(ModelView):

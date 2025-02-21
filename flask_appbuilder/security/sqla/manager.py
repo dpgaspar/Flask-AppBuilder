@@ -418,10 +418,7 @@ class SecurityManager(BaseSecurityManager):
 
         result: Dict[str, List[Tuple[str, str]]] = {}
         db_roles_ids = []
-        roles = []
-        roles.extend(user.roles)
-        for group in user.groups:
-            roles.extend(group.roles)
+        roles = self.get_user_roles(user)
         for role in roles:
             # Make sure all db roles are included on the result
             result[role.name] = []
