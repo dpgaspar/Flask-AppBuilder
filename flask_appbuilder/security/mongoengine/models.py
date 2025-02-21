@@ -110,6 +110,16 @@ class User(Document):
         return self.get_full_name()
 
 
+class Group(Document):
+    name = StringField(max_length=100, required=True, unique=True)
+    label = StringField(max_length=150)
+    description = StringField(max_length=512)
+    roles = ListField(ReferenceField(Role))
+
+    def __unicode__(self):
+        return self.name
+
+
 class RegisterUser(Document):
     first_name = StringField(max_length=64, required=True)
     last_name = StringField(max_length=64, required=True)

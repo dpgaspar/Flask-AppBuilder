@@ -4,7 +4,7 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.security.sqla.models import User
+from flask_appbuilder.security.sqla.models import User, Group
 from tests.base import BaseMVCTestCase
 from tests.const import (
     INVALID_LOGIN_STRING,
@@ -681,3 +681,62 @@ class MVCSecurityTestCase(BaseMVCTestCase):
 
                 data = rv.data.decode("utf-8")
                 self.assertIn("Database Error", data)
+
+    def test_add_group(self):
+        """
+        Test add group
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # use all required params
+        rv = client.get("/groups/add", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Add Group", data)
+        rv = client.post(
+            "/groups/add",
+            data=dict(
+                name="group1",
+                label="group1",
+                description="some description",
+                roles=[1],
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Added Row", data)
+        group = (
+            self.db.session.query(Group)
+            .filter(Group.name == "group1")
+            .one_or_none()
+        )
+        self.db.session.delete(group)
+        self.db.session.commit()
+
+
+    def test_add_group_unique_name(self):
+        """
+        Test add group unique name
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        group = self.create_group(self.appbuilder)
+        self.db.session.refresh(group)
+        # use all required params
+        rv = client.get("/groups/add", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Add Group", data)
+        rv = client.post(
+            "/groups/add",
+            data=dict(
+                name=group.name,
+                label="group1",
+                description="some description",
+                roles=[1],
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Already exists.", data)
+        self.db.session.delete(group)
+        self.db.session.commit()
