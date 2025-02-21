@@ -743,7 +743,7 @@ class MVCTestCase(BaseMVCTestCase):
         """
         Test views creation and registration
         """
-        self.assertEqual(len(self.appbuilder.baseviews), 38)
+        self.assertEqual(len(self.appbuilder.baseviews), 39)
 
     def test_back(self):
         """

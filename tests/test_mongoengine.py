@@ -229,7 +229,7 @@ class FlaskTestCase(FABTestCase):
         Test views creation and registration
         """
         self.assertEqual(
-            len(self.appbuilder.baseviews), 26
+            len(self.appbuilder.baseviews), 27
         )  # current minimal views are 26
 
     def test_index(self):

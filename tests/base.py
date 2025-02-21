@@ -14,7 +14,7 @@ from flask_appbuilder.const import (
     API_SECURITY_USERNAME_KEY,
     API_SECURITY_VERSION,
 )
-from flask_appbuilder.security.sqla.models import User
+from flask_appbuilder.security.sqla.models import Group, User
 from hiro import Timeline
 import jinja2
 from tests.const import (
@@ -120,6 +120,19 @@ class FABTestCase(unittest.TestCase):
 
     def create_admin_user(self, appbuilder, username, password):
         self.create_user(appbuilder, username, password, "Admin")
+
+    @staticmethod
+    def create_group(
+        appbuilder: AppBuilder,
+        name: str = "group1",
+        label: str = "group1",
+        description: str = "group1",
+    ):
+        group = Group(name=name, label=label, description=description)
+        appbuilder.session.add(group)
+        appbuilder.session.flush()
+        appbuilder.session.commit()
+        return group
 
     @staticmethod
     def create_user(
