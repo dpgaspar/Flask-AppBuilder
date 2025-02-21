@@ -72,6 +72,7 @@ class Group(Document):
     label = StringField(max_length=150)
     description = StringField(max_length=512)
     roles = ListField(ReferenceField(Role))
+    users = ListField(ReferenceField("User"))
 
     def __unicode__(self):
         return self.name
