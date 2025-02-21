@@ -15,8 +15,8 @@ from flask_appbuilder.security.forms import (
     LoginForm_db,
     LoginForm_oid,
     ResetPasswordForm,
-    UserInfoEdit,
     roles_or_groups_required,
+    UserInfoEdit,
 )
 from flask_appbuilder.security.utils import generate_random_string
 from flask_appbuilder.utils.base import get_safe_redirect, lazy_formatter_gettext
