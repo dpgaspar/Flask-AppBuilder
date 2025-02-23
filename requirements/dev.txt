@@ -50,7 +50,7 @@ parameterized==0.8.1
     # via -r requirements/tests.in
 pathspec==0.12.1
     # via black
-pip-tools==6.8.0
+pip-tools==7.4.1
     # via -r requirements/dev.in
 platformdirs==4.2.0
     # via
@@ -80,7 +80,7 @@ tox==3.24.3
     # via -r requirements/dev.in
 types-pyyaml==6.0.12.2
     # via -r requirements/dev.in
-typing-extensions==4.9.0
+typing-extensions==4.12.2
     # via mypy
 virtualenv==20.25.0
     # via tox
