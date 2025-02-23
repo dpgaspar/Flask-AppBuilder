@@ -205,17 +205,19 @@ class SecurityManager(BaseSecurityManager):
 
     def add_user(
         self,
-        username,
-        first_name,
-        last_name,
-        email,
-        role,
-        password="",
-        hashed_password="",
+        username: str,
+        first_name: str,
+        last_name: str,
+        email: str,
+        roles: Union[List[Role], Role | None] = None,
+        password: str = "",
+        hashed_password: str = "",
+        groups: Optional[List[Group]] = None,
     ):
         """
         Generic function to create user
         """
+        roles = roles if isinstance(roles, list) else [roles] or []
         try:
             user = self.user_model()
             user.first_name = first_name
@@ -223,7 +225,8 @@ class SecurityManager(BaseSecurityManager):
             user.username = username
             user.email = email
             user.active = True
-            user.roles = role if isinstance(role, list) else [role]
+            user.roles = roles
+            user.groups = groups or []
             if hashed_password:
                 user.password = hashed_password
             else:
@@ -320,6 +323,38 @@ class SecurityManager(BaseSecurityManager):
             .filter_by(name=self.auth_role_public)
             .one_or_none()
         )
+
+    def find_group(self, name: str) -> Group:
+        return (
+            self.get_session.query(self.group_model).filter_by(name=name).one_or_none()
+        )
+
+    def add_group(
+        self,
+        name: str,
+        label: str,
+        description: str,
+        roles: Optional[List[Role]] = None,
+        users: Optional[List[User]] = None,
+    ) -> Optional[Group]:
+        group = self.find_group(name)
+        if group is not None:
+            return group
+        try:
+            group = self.group_model()
+            group.name = name
+            group.label = label
+            group.description = description
+            group.roles = roles or []
+            group.users = users or []
+
+            self.get_session.add(group)
+            self.get_session.commit()
+            log.info(c.LOGMSG_INF_SEC_ADD_ROLE, name)
+            return group
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_ADD_GROUP, e)
+            self.get_session.rollback()
 
     def get_public_permissions(self):
         role = self.get_public_role()

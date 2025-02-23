@@ -1994,7 +1994,15 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def add_user(self, username, first_name, last_name, email, role, password=""):
+    def add_user(
+        self,
+        username: str,
+        first_name: str,
+        last_name: str,
+        email: str,
+        role,
+        **kwargs: Any,
+    ):
         """
         Generic function to create user
         """
@@ -2030,6 +2038,20 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def get_all_roles(self):
+        raise NotImplementedError
+
+    """
+    ----------------------
+     PRIMITIVES FOR Groups
+    ----------------------
+    """
+
+    def find_group(self, name: str):
+        raise NotImplementedError
+
+    def add_group(
+        self, name: str, label: str, description: str, roles=None, users=None
+    ):
         raise NotImplementedError
 
     """

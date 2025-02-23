@@ -144,18 +144,26 @@ class FABTestCase(unittest.TestCase):
         last_name="user",
         email="admin@fab.org",
         role_names=None,
+        group_names=None,
     ) -> User:
         user = appbuilder.sm.find_user(username=username)
         if user:
             appbuilder.session.delete(user)
             appbuilder.session.commit()
-        roles = (
-            [appbuilder.sm.find_role(role_name) for role_name in role_names]
-            if role_names
-            else [appbuilder.sm.find_role(role_name)]
+        roles = [appbuilder.sm.find_role(role_name) for role_name in (role_names or [])]
+        groups = (
+            [appbuilder.sm.find_group(group_name) for group_name in group_names]
+            if group_names
+            else []
         )
         return appbuilder.sm.add_user(
-            username, first_name, last_name, email, roles, password
+            username,
+            first_name,
+            last_name,
+            email,
+            roles=roles,
+            password=password,
+            groups=groups,
         )
 
 
