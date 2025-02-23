@@ -209,7 +209,7 @@ class SecurityManager(BaseSecurityManager):
         first_name: str,
         last_name: str,
         email: str,
-        role: Union[List[Role], Role | None] = None,
+        role: Union[List[Role], Role, None] = None,
         password: str = "",
         hashed_password: str = "",
         groups: Optional[List[Group]] = None,
