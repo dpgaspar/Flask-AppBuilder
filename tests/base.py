@@ -106,8 +106,6 @@ class FABTestCase(unittest.TestCase):
     def create_default_users(self, appbuilder) -> None:
         with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
             self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
             self.create_user(
                 self.appbuilder,
                 USERNAME_READONLY,
@@ -150,7 +148,12 @@ class FABTestCase(unittest.TestCase):
         if user:
             appbuilder.session.delete(user)
             appbuilder.session.commit()
-        roles = [appbuilder.sm.find_role(role_name) for role_name in (role_names or [])]
+        if role_name:
+            roles = [appbuilder.sm.find_role(role_name)]
+        else:
+            roles = [
+                appbuilder.sm.find_role(role_name) for role_name in (role_names or [])
+            ]
         groups = (
             [appbuilder.sm.find_group(group_name) for group_name in group_names]
             if group_names
