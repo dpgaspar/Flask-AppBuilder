@@ -209,7 +209,7 @@ class SecurityManager(BaseSecurityManager):
         first_name: str,
         last_name: str,
         email: str,
-        roles: Union[List[Role], Role | None] = None,
+        role: Union[List[Role], Role | None] = None,
         password: str = "",
         hashed_password: str = "",
         groups: Optional[List[Group]] = None,
@@ -217,7 +217,7 @@ class SecurityManager(BaseSecurityManager):
         """
         Generic function to create user
         """
-        roles = roles if isinstance(roles, list) else [roles] or []
+        roles = role if isinstance(role, list) else [role] or []
         try:
             user = self.user_model()
             user.first_name = first_name
