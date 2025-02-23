@@ -161,7 +161,7 @@ class FABTestCase(unittest.TestCase):
             first_name,
             last_name,
             email,
-            roles=roles,
+            role=roles,
             password=password,
             groups=groups,
         )
