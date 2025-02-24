@@ -8,6 +8,10 @@ from flask_appbuilder._compat import as_unicode
 from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.charts.views import DirectByChartView
+from flask_appbuilder.exceptions import (
+    DeleteGroupWithUsersException,
+    DeleteRoleWithUsersException,
+)
 from flask_appbuilder.fieldwidgets import BS3PasswordFieldWidget
 from flask_appbuilder.security.decorators import has_access, no_cache
 from flask_appbuilder.security.forms import (
@@ -245,6 +249,7 @@ class UserModelView(ModelView):
         "email",
         "active",
         "roles",
+        "groups",
         "created_on",
         "changed_on",
         "last_login",
@@ -518,6 +523,13 @@ class RoleModelView(ModelView):
             self.datamodel.add(new_role)
         return redirect(self.get_redirect())
 
+    def pre_delete(self, item):
+        if item.user:
+            self.update_redirect()
+            raise DeleteRoleWithUsersException(
+                lazy_gettext("User(s) exists in the role, cannot delete")
+            )
+
 
 class UserGroupModelView(ModelView):
     route_base = "/groups"
@@ -532,6 +544,13 @@ class UserGroupModelView(ModelView):
     edit_columns = ["name", "label", "description", "users", "roles"]
     add_columns = edit_columns
     order_columns = ["name", "label", "description"]
+
+    def pre_delete(self, item):
+        if item.users:
+            self.update_redirect()
+            raise DeleteGroupWithUsersException(
+                lazy_gettext("User(s) exists in the group, cannot delete")
+            )
 
 
 class RegisterUserModelView(ModelView):

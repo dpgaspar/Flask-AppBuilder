@@ -719,7 +719,6 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         group = self.create_group(self.appbuilder)
         self.db.session.refresh(group)
-        # use all required params
         rv = client.get("/groups/add", follow_redirects=True)
         data = rv.data.decode("utf-8")
         self.assertIn("Add Group", data)
@@ -735,5 +734,48 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         data = rv.data.decode("utf-8")
         self.assertIn("Already exists.", data)
+        self.db.session.delete(group)
+        self.db.session.commit()
+
+    def test_delete_group(self):
+        """
+        Test delete group
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        group = self.create_group(self.appbuilder)
+        rv = client.post(
+            f"/groups/delete/{group.id}",
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Deleted Row", data)
+        assert self.appbuilder.sm.find_group(name="group1") is None
+
+    def test_delete_group_with_users(self):
+        """
+        Test delete group with users
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        group = self.create_group(self.appbuilder)
+        user = self.create_user(
+            self.appbuilder,
+            "test_user",
+            "password",
+            None,
+            first_name="test",
+            last_name="user",
+            email="test_user@fab.org",
+            group_names=["group1"],
+        )
+        rv = client.post(
+            f"/groups/delete/{group.id}",
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("User(s) exists in the group, cannot delete", data)
+        assert self.appbuilder.sm.find_group(name="group1") is not None
+        self.db.session.delete(user)
         self.db.session.delete(group)
         self.db.session.commit()
