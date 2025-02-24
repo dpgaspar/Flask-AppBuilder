@@ -6,7 +6,15 @@ import uuid
 
 from werkzeug.security import generate_password_hash
 
-from .models import Permission, PermissionView, RegisterUser, Role, User, ViewMenu
+from .models import (
+    Group,
+    Permission,
+    PermissionView,
+    RegisterUser,
+    Role,
+    User,
+    ViewMenu,
+)
 from ..manager import BaseSecurityManager
 from ... import const as c
 from ...models.mongoengine.interface import MongoEngineInterface
@@ -27,6 +35,7 @@ class SecurityManager(BaseSecurityManager):
     """ Override to set your own User Model """
     role_model = Role
     """ Override to set your own User Model """
+    group_model = Group
     permission_model = Permission
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
@@ -59,6 +68,7 @@ class SecurityManager(BaseSecurityManager):
                 self.registeruser_model
             )
 
+        self.groupmodelview.datamodel = MongoEngineInterface(self.group_model)
         self.rolemodelview.datamodel = MongoEngineInterface(self.role_model)
         self.permissionmodelview.datamodel = MongoEngineInterface(self.permission_model)
         self.viewmenumodelview.datamodel = MongoEngineInterface(self.viewmenu_model)
