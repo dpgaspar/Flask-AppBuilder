@@ -271,7 +271,6 @@ class SecurityPermissionsTestCase(FABTestCase):
             assert self.appbuilder.sm.has_access("can_show", "ModelDBView")
             assert self.appbuilder.sm.has_access("can_delete", "ModelDBView")
 
-
     def test_get_user_permissions_builtin(self):
         """
         Security Permissions: Get user permissions builtin role type
