@@ -1,5 +1,6 @@
+from flask import g
 from flask_appbuilder import SQLA
-from flask_login import AnonymousUserMixin
+from flask_login import AnonymousUserMixin, login_user
 from tests.base import FABTestCase
 
 
@@ -126,21 +127,52 @@ class SecurityPermissionsTestCase(FABTestCase):
             group_names=["group_builtin_role"],
         )
 
+        self._user_multiple_groups = self.create_user(
+            self.appbuilder,
+            "user_group_multiple_groups",
+            "password1",
+            "",
+            first_name="user_group_multiple_groups",
+            last_name="user",
+            email="user_group_multiple_groups@fab.org",
+            role_names=[],
+            group_names=["group_builtin_role", "group_db_role"],
+        )
+
     def tearDown(self):
+        self._group_db_role = self.appbuilder.sm.find_group("group_db_role")
+        self._group_mix_roles = self.appbuilder.sm.find_group("group_mix_roles")
+        self._group_builtin_role = self.appbuilder.sm.find_group("group_builtin_role")
+        self._user_group_db_role = self.appbuilder.sm.find_user(
+            username="user_group_db_role"
+        )
+        self._user_group_builtin_role = self.appbuilder.sm.find_user(
+            username="user_group_builtin_role"
+        )
+        self._user_multiple_groups = self.appbuilder.sm.find_user(
+            username="user_group_multiple_groups"
+        )
+        self._db_role_1 = self.appbuilder.sm.find_role("DB_ROLE1")
         self.appbuilder.session.delete(self._user01)
         self.appbuilder.session.delete(self._user02)
         self.appbuilder.session.delete(self._user03)
         self.appbuilder.session.delete(self._user04)
-        self.appbuilder.session.delete(self._pvm1)
-        self.appbuilder.session.delete(self._pvm2)
-        self.appbuilder.session.delete(self._db_role_1)
-        self.appbuilder.session.delete(self._group_db_role)
-        self.appbuilder.session.delete(self._group_builtin_role)
-        self.appbuilder.session.delete(self._group_mix_roles)
         self.appbuilder.session.delete(self._user_group_db_role)
         self.appbuilder.session.delete(self._user_group_builtin_role)
         self.appbuilder.session.delete(self._user_group_mix_roles)
+        self.appbuilder.session.delete(self._user_multiple_groups)
+        self.appbuilder.session.delete(self._pvm1)
+        self.appbuilder.session.delete(self._pvm2)
+        self.appbuilder.session.delete(self._group_db_role)
+        self.appbuilder.session.delete(self._group_builtin_role)
+        self.appbuilder.session.delete(self._group_mix_roles)
+        self.appbuilder.session.delete(self._db_role_1)
         self.appbuilder.get_session.commit()
+
+    def login_user(self, user):
+        user = self.appbuilder.sm.find_user(username=user.username)
+        g.user = user
+        login_user(user)
 
     def test_get_user_permissions_mixed(self):
         """
@@ -190,6 +222,55 @@ class SecurityPermissionsTestCase(FABTestCase):
             ("can_list", "Model1View"),
             ("can_list", "Model2View"),
         } == self.appbuilder.sm.get_user_permissions(self._user_group_builtin_role)
+
+    def test_has_access_user_builtin_role(self):
+        with self.app.test_request_context("/"):
+            self.login_user(self._user_group_builtin_role)
+            assert self.appbuilder.sm.has_access("can_list", "Model1View")
+            assert self.appbuilder.sm.has_access("can_list", "Model2View")
+            assert not self.appbuilder.sm.has_access("can_show", "ModelDBView")
+            assert not self.appbuilder.sm.has_access("can_delete", "ModelDBView")
+
+    def test_has_access_user_db_role(self):
+        with self.app.test_request_context("/"):
+            self.login_user(self._user_group_db_role)
+            assert not self.appbuilder.sm.has_access("can_list", "Model1View")
+            assert not self.appbuilder.sm.has_access("can_list", "Model2View")
+            assert self.appbuilder.sm.has_access("can_show", "ModelDBView")
+            assert self.appbuilder.sm.has_access("can_delete", "ModelDBView")
+
+    def test_has_access_user_mix_role(self):
+        with self.app.test_request_context("/"):
+            self.login_user(self._user_group_mix_roles)
+            assert self.appbuilder.sm.has_access("can_list", "Model1View")
+            assert self.appbuilder.sm.has_access("can_list", "Model2View")
+            assert self.appbuilder.sm.has_access("can_show", "ModelDBView")
+            assert self.appbuilder.sm.has_access("can_delete", "ModelDBView")
+
+    def test_has_access_user_multiple_groups(self):
+        with self.app.test_request_context("/"):
+            self.login_user(self._user_multiple_groups)
+            assert self.appbuilder.sm.has_access("can_list", "Model1View")
+            assert self.appbuilder.sm.has_access("can_list", "Model2View")
+            assert self.appbuilder.sm.has_access("can_show", "ModelDBView")
+            assert self.appbuilder.sm.has_access("can_delete", "ModelDBView")
+
+    def test_has_access_user_multiple_roles(self):
+        with self.app.test_request_context("/"):
+            self.login_user(self._user01)
+            assert self.appbuilder.sm.has_access("can_list", "Model1View")
+            assert self.appbuilder.sm.has_access("can_list", "Model2View")
+            assert self.appbuilder.sm.has_access("can_show", "ModelDBView")
+            assert self.appbuilder.sm.has_access("can_delete", "ModelDBView")
+
+    def test_has_access_user_db_roles(self):
+        with self.app.test_request_context("/"):
+            self.login_user(self._user02)
+            assert not self.appbuilder.sm.has_access("can_list", "Model1View")
+            assert not self.appbuilder.sm.has_access("can_list", "Model2View")
+            assert self.appbuilder.sm.has_access("can_show", "ModelDBView")
+            assert self.appbuilder.sm.has_access("can_delete", "ModelDBView")
+
 
     def test_get_user_permissions_builtin(self):
         """

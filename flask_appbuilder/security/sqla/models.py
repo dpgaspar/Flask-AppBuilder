@@ -67,6 +67,7 @@ class Role(Model):
         "PermissionView",
         secondary=assoc_permissionview_role,
         backref="role",
+        passive_deletes=True,
     )
 
     def __repr__(self):
@@ -94,8 +95,8 @@ assoc_user_role = Table(
     "ab_user_role",
     Model.metadata,
     Column("id", Integer, Sequence("ab_user_role_id_seq"), primary_key=True),
-    Column("user_id", Integer, ForeignKey("ab_user.id")),
-    Column("role_id", Integer, ForeignKey("ab_role.id")),
+    Column("user_id", Integer, ForeignKey("ab_user.id", ondelete="CASCADE")),
+    Column("role_id", Integer, ForeignKey("ab_role.id", ondelete="CASCADE")),
     UniqueConstraint("user_id", "role_id"),
 )
 
@@ -112,7 +113,9 @@ class User(Model):
     last_login = Column(DateTime)
     login_count = Column(Integer)
     fail_login_count = Column(Integer)
-    roles = relationship("Role", secondary=assoc_user_role, backref="user")
+    roles = relationship(
+        "Role", secondary=assoc_user_role, backref="user", passive_deletes=True
+    )
     created_on = Column(
         DateTime, default=lambda: datetime.datetime.now(), nullable=True
     )
@@ -180,8 +183,8 @@ assoc_user_group = Table(
     "ab_user_group",
     Model.metadata,
     Column("id", Integer, Sequence("ab_user_group_id_seq"), primary_key=True),
-    Column("user_id", Integer, ForeignKey("ab_user.id")),
-    Column("group_id", Integer, ForeignKey("ab_group.id")),
+    Column("user_id", Integer, ForeignKey("ab_user.id", ondelete="CASCADE")),
+    Column("group_id", Integer, ForeignKey("ab_group.id", ondelete="CASCADE")),
     UniqueConstraint("user_id", "group_id"),
     Index("idx_user_id", "user_id"),
     Index("idx_user_group_id", "group_id"),
@@ -192,8 +195,8 @@ assoc_group_role = Table(
     "ab_group_role",
     Model.metadata,
     Column("id", Integer, Sequence("ab_group_role_id_seq"), primary_key=True),
-    Column("group_id", Integer, ForeignKey("ab_group.id")),
-    Column("role_id", Integer, ForeignKey("ab_role.id")),
+    Column("group_id", Integer, ForeignKey("ab_group.id", ondelete="CASCADE")),
+    Column("role_id", Integer, ForeignKey("ab_role.id", ondelete="CASCADE")),
     UniqueConstraint("group_id", "role_id"),
     Index("idx_group_id", "group_id"),
     Index("idx_group_role_id", "role_id"),
@@ -206,8 +209,12 @@ class Group(Model):
     name = Column(String(100), unique=True, nullable=False)
     label = Column(String(150))
     description = Column(String(512))
-    users = relationship("User", secondary=assoc_user_group, backref="groups")
-    roles = relationship("Role", secondary=assoc_group_role, backref="groups")
+    users = relationship(
+        "User", secondary=assoc_user_group, backref="groups", passive_deletes=True
+    )
+    roles = relationship(
+        "Role", secondary=assoc_group_role, backref="groups", passive_deletes=True
+    )
 
     def __repr__(self):
         return self.name
