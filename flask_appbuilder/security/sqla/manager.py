@@ -218,7 +218,10 @@ class SecurityManager(BaseSecurityManager):
         """
         Generic function to create user
         """
-        roles = role if isinstance(role, list) else [role] or []
+        roles = []
+        if role:
+            roles = role if isinstance(role, list) else [role]
+
         try:
             user = self.user_model()
             user.first_name = first_name
