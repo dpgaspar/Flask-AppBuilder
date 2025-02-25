@@ -108,7 +108,8 @@ class SecurityManager(BaseSecurityManager):
         try:
             engine = self.get_session.get_bind(mapper=None, clause=None)
             inspector = Inspector.from_engine(engine)
-            if "ab_user" not in inspector.get_table_names():
+            existing_tables = inspector.get_table_names()
+            if "ab_user" not in existing_tables or "ab_group" not in existing_tables:
                 log.info(c.LOGMSG_INF_SEC_NO_DB)
                 Base.metadata.create_all(engine)
                 log.info(c.LOGMSG_INF_SEC_ADD_DB)
