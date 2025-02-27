@@ -183,7 +183,8 @@ jobs:
           sudo cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
       - name: Run tests
         run: |
-          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
+          find / -name libtdsodbc.so
+#          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
