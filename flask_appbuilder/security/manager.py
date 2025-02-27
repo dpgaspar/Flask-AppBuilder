@@ -1,4 +1,5 @@
 import datetime
+import importlib
 import logging
 import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
@@ -12,6 +13,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_login import current_user, LoginManager
 import jwt
+from packaging.version import Version
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .api import SecurityApi
@@ -229,12 +231,23 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault("AUTH_ROLES_MAPPING", {})
         app.config.setdefault("AUTH_ROLES_SYNC_AT_LOGIN", False)
         app.config.setdefault("AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS", False)
-        app.config.setdefault(
-            "AUTH_DB_FAKE_PASSWORD_HASH_CHECK",
-            "scrypt:32768:8:1$wiDa0ruWlIPhp9LM$6e409d093e62ad54df2af895d0e125b05ff6cf6414"
-            "8350189ffc4bcc71286edf1b8ad94a442c00f890224bf2b32153d0750c89ee9"
-            "401e62f9dcee5399065e4e5",
-        )
+
+        # Werkzeug prior to 3.0.0 does not support scrypt
+        parsed_werkzeug_version = Version(importlib.metadata.version("werkzeug"))
+        if parsed_werkzeug_version < Version("3.0.0"):
+            app.config.setdefault(
+                "AUTH_DB_FAKE_PASSWORD_HASH_CHECK",
+                "pbkdf2:sha256:150000$Z3t6fmj2$22da622d94a1f8118"
+                "c0976a03d2f18f680bfff877c9a965db9eedc51bc0be87c",
+            )
+        else:
+            app.config.setdefault(
+                "AUTH_DB_FAKE_PASSWORD_HASH_CHECK",
+                "scrypt:32768:8:1$wiDa0ruWlIPhp9LM$6e40"
+                "9d093e62ad54df2af895d0e125b05ff6cf6414"
+                "8350189ffc4bcc71286edf1b8ad94a442c00f8"
+                "90224bf2b32153d0750c89ee9401e62f9dcee5399065e4e5",
+            )
 
         # LDAP Config
         if self.auth_type == AUTH_LDAP:
