@@ -148,7 +148,7 @@ jobs:
         mssql+pyodbc://sa:Password_123@localhost:11433/master?driver=FreeTDS
     services:
       mssql:
-        image: mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
+        image: mcr.microsoft.com/mssql/server:2019-CU31-ubuntu-20.04
         env:
           SA_PASSWORD: Password_123
           ACCEPT_EULA: Y
