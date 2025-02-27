@@ -181,10 +181,12 @@ jobs:
           pip install -r requirements/tests.txt
           pip install -r requirements/extra.txt
           sudo cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
+      - name: MSSQL Logs
+        run: docker logs $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2017-CU8-ubuntu")
+
       - name: Run tests
         run: |
-          find / -name libtdsodbc.so
-#          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
+          - name: Check SQL Server logs
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
