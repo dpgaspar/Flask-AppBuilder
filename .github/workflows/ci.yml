@@ -181,9 +181,6 @@ jobs:
           pip install -r requirements/tests.txt
           pip install -r requirements/extra.txt
           sudo cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
-      - name: MSSQL Logs
-        run: docker logs $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2017-CU8-ubuntu")
-
       - name: Run tests
         run: |
           - name: Check SQL Server logs
