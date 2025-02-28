@@ -13,6 +13,7 @@ from werkzeug.security import generate_password_hash
 from .apis import PermissionApi, PermissionViewMenuApi, RoleApi, UserApi, ViewMenuApi
 from .models import (
     assoc_permissionview_role,
+    Group,
     Permission,
     PermissionView,
     RegisterUser,
@@ -41,6 +42,7 @@ class SecurityManager(BaseSecurityManager):
     """ Override to set your own User Model """
     role_model = Role
     """ Override to set your own Role Model """
+    group_model = Group
     permission_model = Permission
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
@@ -80,6 +82,7 @@ class SecurityManager(BaseSecurityManager):
             )
 
         self.rolemodelview.datamodel = SQLAInterface(self.role_model)
+        self.groupmodelview.datamodel = SQLAInterface(self.group_model)
         self.permissionmodelview.datamodel = SQLAInterface(self.permission_model)
         self.viewmenumodelview.datamodel = SQLAInterface(self.viewmenu_model)
         self.permissionviewmodelview.datamodel = SQLAInterface(
@@ -105,7 +108,8 @@ class SecurityManager(BaseSecurityManager):
         try:
             engine = self.get_session.get_bind(mapper=None, clause=None)
             inspector = Inspector.from_engine(engine)
-            if "ab_user" not in inspector.get_table_names():
+            existing_tables = inspector.get_table_names()
+            if "ab_user" not in existing_tables or "ab_group" not in existing_tables:
                 log.info(c.LOGMSG_INF_SEC_NO_DB)
                 Base.metadata.create_all(engine)
                 log.info(c.LOGMSG_INF_SEC_ADD_DB)
@@ -202,17 +206,22 @@ class SecurityManager(BaseSecurityManager):
 
     def add_user(
         self,
-        username,
-        first_name,
-        last_name,
-        email,
-        role,
-        password="",
-        hashed_password="",
+        username: str,
+        first_name: str,
+        last_name: str,
+        email: str,
+        role: Union[List[Role], Role, None] = None,
+        password: str = "",
+        hashed_password: str = "",
+        groups: Optional[List[Group]] = None,
     ):
         """
         Generic function to create user
         """
+        roles = []
+        if role:
+            roles = role if isinstance(role, list) else [role]
+
         try:
             user = self.user_model()
             user.first_name = first_name
@@ -220,7 +229,8 @@ class SecurityManager(BaseSecurityManager):
             user.username = username
             user.email = email
             user.active = True
-            user.roles = role if isinstance(role, list) else [role]
+            user.roles = roles
+            user.groups = groups or []
             if hashed_password:
                 user.password = hashed_password
             else:
@@ -318,6 +328,38 @@ class SecurityManager(BaseSecurityManager):
             .one_or_none()
         )
 
+    def find_group(self, name: str) -> Group:
+        return (
+            self.get_session.query(self.group_model).filter_by(name=name).one_or_none()
+        )
+
+    def add_group(
+        self,
+        name: str,
+        label: str,
+        description: str,
+        roles: Optional[List[Role]] = None,
+        users: Optional[List[User]] = None,
+    ) -> Optional[Group]:
+        group = self.find_group(name)
+        if group is not None:
+            return group
+        try:
+            group = self.group_model()
+            group.name = name
+            group.label = label
+            group.description = description
+            group.roles = roles or []
+            group.users = users or []
+
+            self.get_session.add(group)
+            self.get_session.commit()
+            log.info(c.LOGMSG_INF_SEC_ADD_ROLE, name)
+            return group
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_ADD_GROUP, e)
+            self.get_session.rollback()
+
     def get_public_permissions(self):
         role = self.get_public_role()
         if role:
@@ -410,12 +452,13 @@ class SecurityManager(BaseSecurityManager):
         }
         ```
         """
-        if not user.roles:
-            raise AttributeError("User object does not have roles")
+        if not user.roles and not user.groups:
+            raise AttributeError("User object does not have roles or groups")
 
         result: Dict[str, List[Tuple[str, str]]] = {}
         db_roles_ids = []
-        for role in user.roles:
+        roles = self.get_user_roles(user)
+        for role in roles:
             # Make sure all db roles are included on the result
             result[role.name] = []
             if role.name in self.builtin_roles:

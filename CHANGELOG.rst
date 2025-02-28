@@ -1,6 +1,7 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+
 Improvements and Bug fixes on 4.5.4
 -----------------------------------
 
