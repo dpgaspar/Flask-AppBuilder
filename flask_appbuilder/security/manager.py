@@ -35,6 +35,7 @@ from .views import (
     ResetPasswordView,
     RoleModelView,
     UserDBModelView,
+    UserGroupModelView,
     UserInfoEditView,
     UserLDAPModelView,
     UserOAuthModelView,
@@ -160,6 +161,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override to set your own User Model """
     role_model = None
     """ Override to set your own Role Model """
+    group_model = None
+    """ Override to set your own Group Model """
     permission_model = None
     """ Override to set your own Permission Model """
     viewmenu_model = None
@@ -211,6 +214,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Security API login endpoint """
 
     rolemodelview = RoleModelView
+    groupmodelview = UserGroupModelView
     permissionmodelview = PermissionModelView
     userstatschartview = UserStatsChartView
     viewmenumodelview = ViewMenuModelView
@@ -856,12 +860,21 @@ class BaseSecurityManager(AbstractSecurityManager):
         role_view = self.appbuilder.add_view(
             self.rolemodelview,
             "List Roles",
-            icon="fa-group",
+            icon="fa-user-gear",
             label=_("List Roles"),
             category="Security",
             category_icon="fa-cogs",
         )
         role_view.related_views = [self.user_view.__class__]
+
+        self.appbuilder.add_view(
+            self.groupmodelview,
+            "List Groups",
+            icon="fa-group",
+            label=_("List Groups"),
+            category="Security",
+            category_icon="fa-cogs",
+        )
 
         if self.userstatschartview:
             self.appbuilder.add_view(
@@ -1524,19 +1537,22 @@ class BaseSecurityManager(AbstractSecurityManager):
     def _has_view_access(
         self, user: object, permission_name: str, view_name: str
     ) -> bool:
-        roles = user.roles
-        db_role_ids = list()
-        # First check against builtin (statically configured) roles
-        # because no database query is needed
-        for role in roles:
-            if role.name in self.builtin_roles:
-                if self._has_access_builtin_roles(role, permission_name, view_name):
-                    return True
-            else:
-                db_role_ids.append(role.id)
+        roles = self.get_user_roles(user)
 
-        # If it's not a builtin role check against database store roles
-        return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
+        # First check against built-in roles (avoiding unnecessary DB queries)
+        if any(
+            role.name in self.builtin_roles
+            and self._has_access_builtin_roles(role, permission_name, view_name)
+            for role in roles
+        ):
+            return True
+
+        db_role_ids = [role.id for role in roles if role.name not in self.builtin_roles]
+
+        # Check database-stored roles if no match was found in built-in roles
+        return bool(db_role_ids) and self.exist_permission_on_roles(
+            view_name, permission_name, db_role_ids
+        )
 
     def get_oid_identity_url(self, provider_name: str) -> Optional[str]:
         """
@@ -1552,7 +1568,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         if not user.is_authenticated:
             return [self.get_public_role()]
-        return user.roles
+        return user.roles + [role for group in user.groups for role in group.roles]
 
     def get_user_roles_permissions(self, user) -> Dict[str, List[Tuple[str, str]]]:
         """
@@ -1594,32 +1610,30 @@ class BaseSecurityManager(AbstractSecurityManager):
         that a user has access to. Mainly used to fetch all menu permissions
         on a single db call, will also check public permissions and builtin roles
         """
-        db_role_ids = list()
-        if user is None:
-            # include public role
-            roles = [self.get_public_role()]
-        else:
-            roles = user.roles
-        # First check against builtin (statically configured) roles
-        # because no database query is needed
-        result = set()
-        for role in roles:
-            if role.name in self.builtin_roles:
-                for view_menu_name in view_menus_name:
-                    if self._has_access_builtin_roles(
-                        role, permission_name, view_menu_name
-                    ):
-                        result.add(view_menu_name)
-            else:
-                db_role_ids.append(role.id)
-        # Then check against database-stored roles
-        pvms_names = [
-            pvm.view_menu.name
-            for pvm in self.find_roles_permission_view_menus(
-                permission_name, db_role_ids
+        # Determine user roles (use public role if user is None)
+        roles = [self.get_public_role()] if user is None else self.get_user_roles(user)
+
+        # First, check built-in roles (avoiding unnecessary DB queries)
+        result = {
+            view_menu_name
+            for role in roles
+            if role.name in self.builtin_roles
+            for view_menu_name in view_menus_name
+            if self._has_access_builtin_roles(role, permission_name, view_menu_name)
+        }
+
+        # Collect database role IDs for further checking
+        db_role_ids = [role.id for role in roles if role.name not in self.builtin_roles]
+
+        # Check database-stored roles if needed
+        if db_role_ids:
+            result.update(
+                pvm.view_menu.name
+                for pvm in self.find_roles_permission_view_menus(
+                    permission_name, db_role_ids
+                )
             )
-        ]
-        result.update(pvms_names)
+
         return result
 
     def has_access(self, permission_name: str, view_name: str) -> bool:
@@ -1980,7 +1994,15 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def add_user(self, username, first_name, last_name, email, role, password=""):
+    def add_user(
+        self,
+        username: str,
+        first_name: str,
+        last_name: str,
+        email: str,
+        role,
+        **kwargs: Any,
+    ):
         """
         Generic function to create user
         """
@@ -2016,6 +2038,20 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def get_all_roles(self):
+        raise NotImplementedError
+
+    """
+    ----------------------
+     PRIMITIVES FOR Groups
+    ----------------------
+    """
+
+    def find_group(self, name: str):
+        raise NotImplementedError
+
+    def add_group(
+        self, name: str, label: str, description: str, roles=None, users=None
+    ):
         raise NotImplementedError
 
     """
