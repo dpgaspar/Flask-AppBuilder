@@ -1,6 +1,14 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.6.0rc1
+-----------------------------------
+
+- fix: relax marshmallow-sqlalchemy version constraint to fix compatibility with marshmallow>=3.24 (#2298) [Steven Loria]
+- docs: Fix edit template code example (#2308) [Matthew Schmoyer]
+- feat: security user groups (#2305) [Daniel Vaz Gaspar]
+- ci: fix mssql on CI (#2316) [Daniel Vaz Gaspar]
+- doc: update `requirements` paths in contributing doc (#2313) [Đỗ Trọng Hải]
 
 Improvements and Bug fixes on 4.5.4
 -----------------------------------
