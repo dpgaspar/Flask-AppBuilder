@@ -8,6 +8,10 @@ from flask_appbuilder._compat import as_unicode
 from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.charts.views import DirectByChartView
+from flask_appbuilder.exceptions import (
+    DeleteGroupWithUsersException,
+    DeleteRoleWithUsersException,
+)
 from flask_appbuilder.fieldwidgets import BS3PasswordFieldWidget
 from flask_appbuilder.security.decorators import has_access, no_cache
 from flask_appbuilder.security.forms import (
@@ -15,7 +19,7 @@ from flask_appbuilder.security.forms import (
     LoginForm_db,
     LoginForm_oid,
     ResetPasswordForm,
-    SelectDataRequired,
+    roles_or_groups_required,
     UserInfoEdit,
 )
 from flask_appbuilder.security.utils import generate_random_string
@@ -158,6 +162,7 @@ class UserModelView(ModelView):
         "active": lazy_gettext("Is Active?"),
         "email": lazy_gettext("Email"),
         "roles": lazy_gettext("Role"),
+        "groups": lazy_gettext("Groups"),
         "last_login": lazy_gettext("Last login"),
         "login_count": lazy_gettext("Login count"),
         "fail_login_count": lazy_gettext("Failed login count"),
@@ -183,10 +188,23 @@ class UserModelView(ModelView):
             " this will associate with a list of permissions",
             _roles_custom_formatter,
         ),
+        "groups": lazy_formatter_gettext(
+            "The user group on the application,"
+            " this will associate with a list of roles associated with the group",
+            _roles_custom_formatter,
+        ),
         "conf_password": lazy_gettext("Please rewrite the user's password to confirm"),
     }
 
-    list_columns = ["first_name", "last_name", "username", "email", "active", "roles"]
+    list_columns = [
+        "first_name",
+        "last_name",
+        "username",
+        "email",
+        "active",
+        "roles",
+        "groups",
+    ]
 
     show_fieldsets = [
         (
@@ -230,6 +248,7 @@ class UserModelView(ModelView):
         "email",
         "active",
         "roles",
+        "groups",
         "created_on",
         "changed_on",
         "last_login",
@@ -237,9 +256,29 @@ class UserModelView(ModelView):
         "fail_login_count",
     ]
 
-    add_columns = ["first_name", "last_name", "username", "active", "email", "roles"]
-    edit_columns = ["first_name", "last_name", "username", "active", "email", "roles"]
+    add_columns = [
+        "first_name",
+        "last_name",
+        "username",
+        "active",
+        "email",
+        "roles",
+        "groups",
+    ]
+    edit_columns = [
+        "first_name",
+        "last_name",
+        "username",
+        "active",
+        "email",
+        "roles",
+        "groups",
+    ]
     user_info_title = lazy_gettext("Your user information")
+    validators_columns = {
+        "roles": [roles_or_groups_required],
+        "groups": [roles_or_groups_required],
+    }
 
     @expose("/userinfo/")
     @has_access
@@ -315,7 +354,7 @@ class UserADFSModelView(UserModelView):
 
 class UserDBModelView(UserModelView):
     """
-    View that add DB specifics to User view.
+    View that adds DB specifics to User view.
     Override to implement your own custom view.
     Then override userdbmodelview property on SecurityManager
     """
@@ -345,11 +384,10 @@ class UserDBModelView(UserModelView):
         "active",
         "email",
         "roles",
+        "groups",
         "password",
         "conf_password",
     ]
-
-    validators_columns = {"roles": [SelectDataRequired()]}
 
     @expose("/show/<pk>", methods=["GET"])
     @has_access
@@ -493,6 +531,35 @@ class RoleModelView(ModelView):
             new_role.name = new_role.name + " copy"
             self.datamodel.add(new_role)
         return redirect(self.get_redirect())
+
+    def pre_delete(self, item):
+        if item.user:
+            self.update_redirect()
+            raise DeleteRoleWithUsersException(
+                lazy_gettext("User(s) exists in the role, cannot delete")
+            )
+
+
+class UserGroupModelView(ModelView):
+    route_base = "/groups"
+
+    list_title = lazy_gettext("List Groups")
+    show_title = lazy_gettext("Show Group")
+    add_title = lazy_gettext("Add Group")
+    edit_title = lazy_gettext("Edit Group")
+
+    list_columns = ["name", "label", "roles"]
+    show_columns = ["name", "label", "description", "users", "roles"]
+    edit_columns = ["name", "label", "description", "users", "roles"]
+    add_columns = edit_columns
+    order_columns = ["name", "label", "description"]
+
+    def pre_delete(self, item):
+        if item.users:
+            self.update_redirect()
+            raise DeleteGroupWithUsersException(
+                lazy_gettext("User(s) exists in the group, cannot delete")
+            )
 
 
 class RegisterUserModelView(ModelView):

@@ -14,7 +14,7 @@ from flask_appbuilder.const import (
     API_SECURITY_USERNAME_KEY,
     API_SECURITY_VERSION,
 )
-from flask_appbuilder.security.sqla.models import User
+from flask_appbuilder.security.sqla.models import Group, User
 from hiro import Timeline
 import jinja2
 from tests.const import (
@@ -106,8 +106,6 @@ class FABTestCase(unittest.TestCase):
     def create_default_users(self, appbuilder) -> None:
         with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
             self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
             self.create_user(
                 self.appbuilder,
                 USERNAME_READONLY,
@@ -122,6 +120,19 @@ class FABTestCase(unittest.TestCase):
         self.create_user(appbuilder, username, password, "Admin")
 
     @staticmethod
+    def create_group(
+        appbuilder: AppBuilder,
+        name: str = "group1",
+        label: str = "group1",
+        description: str = "group1",
+    ):
+        group = Group(name=name, label=label, description=description)
+        appbuilder.session.add(group)
+        appbuilder.session.flush()
+        appbuilder.session.commit()
+        return group
+
+    @staticmethod
     def create_user(
         appbuilder,
         username,
@@ -131,18 +142,31 @@ class FABTestCase(unittest.TestCase):
         last_name="user",
         email="admin@fab.org",
         role_names=None,
+        group_names=None,
     ) -> User:
         user = appbuilder.sm.find_user(username=username)
         if user:
             appbuilder.session.delete(user)
             appbuilder.session.commit()
-        roles = (
-            [appbuilder.sm.find_role(role_name) for role_name in role_names]
-            if role_names
-            else [appbuilder.sm.find_role(role_name)]
+        if role_name:
+            roles = [appbuilder.sm.find_role(role_name)]
+        else:
+            roles = [
+                appbuilder.sm.find_role(role_name) for role_name in (role_names or [])
+            ]
+        groups = (
+            [appbuilder.sm.find_group(group_name) for group_name in group_names]
+            if group_names
+            else []
         )
         return appbuilder.sm.add_user(
-            username, first_name, last_name, email, roles, password
+            username,
+            first_name,
+            last_name,
+            email,
+            role=roles,
+            password=password,
+            groups=groups,
         )
 
 
