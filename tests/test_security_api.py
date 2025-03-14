@@ -1037,7 +1037,7 @@ class RolePermissionAPITestCase(FABTestCase):
         payload = {"user_ids": [invalid_user_id]}
 
         response = self.auth_client_put(client, token, uri, payload)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
 
         role = self.appbuilder.sm.find_role(role_name)
         self.assertEqual(len(role.user), 0)

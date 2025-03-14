@@ -209,8 +209,9 @@ class RoleApi(ModelRestApi):
                     .filter_by(id=id)
                     .one_or_none()
                 )
-                if user:
-                    users.append(user)
+                if not user:
+                    return self.response_404()
+                users.append(user)
 
             role.user = users
             self.datamodel.edit(role, raise_exception=True)
