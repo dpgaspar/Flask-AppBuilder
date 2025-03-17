@@ -159,7 +159,7 @@ class RoleApi(ModelRestApi):
     @expose("/<int:pk>/users", methods=["PUT"])
     @protect()
     @safe
-    @permission_name("update_roles_users")
+    @permission_name("update_role_users")
     def update_role_users(self, pk):
         """update role users
         ---
