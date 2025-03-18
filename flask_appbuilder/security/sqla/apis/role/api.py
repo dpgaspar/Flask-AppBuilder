@@ -7,8 +7,9 @@ from flask_appbuilder.security.decorators import permission_name, protect
 from flask_appbuilder.security.sqla.apis.role.schema import (
     RolePermissionListSchema,
     RolePermissionPostSchema,
+    RoleUserPutSchema,
 )
-from flask_appbuilder.security.sqla.models import PermissionView, Role
+from flask_appbuilder.security.sqla.models import PermissionView, Role, User
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
 
@@ -28,9 +29,11 @@ class RoleApi(ModelRestApi):
 
     list_role_permission_schema = RolePermissionListSchema()
     add_role_permission_schema = RolePermissionPostSchema()
+    update_role_user_schema = RoleUserPutSchema()
     openapi_spec_component_schemas = (
         RolePermissionListSchema,
         RolePermissionPostSchema,
+        RoleUserPutSchema,
     )
 
     @expose("/<int:pk>/permissions/", methods=["GET"])
@@ -143,6 +146,79 @@ class RoleApi(ModelRestApi):
                 200,
                 **{
                     API_RESULT_RES_KEY: self.add_role_permission_schema.dump(
+                        item, many=False
+                    )
+                },
+            )
+
+        except ValidationError as error:
+            return self.response_400(message=error.messages)
+        except IntegrityError as e:
+            return self.response_422(message=str(e.orig))
+
+    @expose("/<int:pk>/users", methods=["PUT"])
+    @protect()
+    @safe
+    @permission_name("update_role_users")
+    def update_role_users(self, pk):
+        """update role users
+        ---
+        post:
+          parameters:
+          - in: path
+            schema:
+              type: integer
+            name: role_id
+          requestBody:
+            description: Update role users schema
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/RoleUserPutSchema'
+          responses:
+            200:
+              description: Role users updated
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      result:
+                        $ref: '#/components/schemas/RoleUserPutSchema'
+            400:
+              $ref: '#/components/responses/400'
+            401:
+              $ref: '#/components/responses/401'
+            404:
+              $ref: '#/components/responses/404'
+            422:
+              $ref: '#/components/responses/422'
+            500:
+              $ref: '#/components/responses/500'
+        """
+        try:
+            item = self.update_role_user_schema.load(request.json)
+            role = self.datamodel.get(pk)
+            if not role:
+                return self.response_404()
+            users = []
+            for id in item["user_ids"]:
+                user = (
+                    current_app.appbuilder.get_session.query(User)
+                    .filter_by(id=id)
+                    .one_or_none()
+                )
+                if not user:
+                    return self.response_404()
+                users.append(user)
+
+            role.user = users
+            self.datamodel.edit(role, raise_exception=True)
+            return self.response(
+                200,
+                **{
+                    API_RESULT_RES_KEY: self.update_role_user_schema.dump(
                         item, many=False
                     )
                 },
