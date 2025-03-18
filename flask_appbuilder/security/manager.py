@@ -682,8 +682,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             return {"username": "openshift_" + data.get("metadata").get("name")}
         # for Okta
         if provider == "okta":
-            me = self.appbuilder.sm.oauth_remotes[provider].get("userinfo")
-            data = me.json()
+            data = self.appbuilder.sm.oauth_remotes[provider].userinfo()
             log.debug("User info from Okta: %s", data)
             if "error" not in data:
                 return {
