@@ -963,6 +963,88 @@ class RolePermissionAPITestCase(FABTestCase):
             permission_2_name, view_menu_name, cascade=True
         )
 
+    def test_update_role_users_valid_user(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        role_name = "test_user_role"
+        user_name = "test_user_test"
+        test_role = self.appbuilder.sm.add_role(name=role_name)
+        test_user = self.appbuilder.sm.add_user(
+            username=user_name,
+            first_name=user_name,
+            last_name=user_name,
+            email="test@t3t.com",
+            role=None,
+        )
+
+        uri = f"api/v1/security/roles/{test_role.id}/users"
+        payload = {"user_ids": [test_user.id]}
+
+        response = self.auth_client_put(client, token, uri, payload)
+        self.assertEqual(response.status_code, 200)
+
+        role = self.appbuilder.sm.find_role(role_name)
+        user = self.appbuilder.sm.find_user(username=user_name)
+
+        self.assertEqual(len(user.roles), 1)
+        self.assertEqual(role.user[0].id, user.id)
+        self.assertEqual(user.roles[0].id, role.id)
+        self.session.delete(role)
+        self.session.delete(user)
+        self.session.commit()
+
+    def test_update_role_users_invalid_role(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        invalid_role_id = 9999999
+        uri = f"api/v1/security/roles/{invalid_role_id}/users"
+
+        payload = {"user_ids": [1, 2]}
+
+        response = self.auth_client_put(client, token, uri, payload)
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_role_users_invalid_payload(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        role_name = "test_invalid_user_role"
+        test_role = self.appbuilder.sm.add_role(name=role_name)
+
+        uri = f"api/v1/security/roles/{test_role.id}/users"
+        payload = {}
+
+        response = self.auth_client_put(client, token, uri, payload)
+        self.assertEqual(response.status_code, 400)
+
+        role = self.appbuilder.sm.find_role(role_name)
+        self.session.delete(role)
+        self.session.commit()
+
+    def test_update_role_users_invalid_user(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        role_name = "test_invalid_user_role"
+        test_role = self.appbuilder.sm.add_role(name=role_name)
+        self.session.commit()
+
+        invalid_user_id = 999999
+
+        uri = f"api/v1/security/roles/{test_role.id}/users"
+        payload = {"user_ids": [invalid_user_id]}
+
+        response = self.auth_client_put(client, token, uri, payload)
+        self.assertEqual(response.status_code, 404)
+
+        role = self.appbuilder.sm.find_role(role_name)
+        self.assertEqual(len(role.user), 0)
+
+        self.session.delete(role)
+        self.session.commit()
+
     def test_list_view_menu_permissions_of_role(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)

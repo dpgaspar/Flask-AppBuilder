@@ -1,4 +1,5 @@
 import datetime
+import importlib
 import logging
 import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
@@ -12,6 +13,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_login import current_user, LoginManager
 import jwt
+from packaging.version import Version
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .api import SecurityApi
@@ -33,6 +35,7 @@ from .views import (
     ResetPasswordView,
     RoleModelView,
     UserDBModelView,
+    UserGroupModelView,
     UserInfoEditView,
     UserLDAPModelView,
     UserOAuthModelView,
@@ -158,6 +161,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override to set your own User Model """
     role_model = None
     """ Override to set your own Role Model """
+    group_model = None
+    """ Override to set your own Group Model """
     permission_model = None
     """ Override to set your own Permission Model """
     viewmenu_model = None
@@ -209,6 +214,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Security API login endpoint """
 
     rolemodelview = RoleModelView
+    groupmodelview = UserGroupModelView
     permissionmodelview = PermissionModelView
     userstatschartview = UserStatsChartView
     viewmenumodelview = ViewMenuModelView
@@ -229,6 +235,23 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault("AUTH_ROLES_MAPPING", {})
         app.config.setdefault("AUTH_ROLES_SYNC_AT_LOGIN", False)
         app.config.setdefault("AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS", False)
+
+        # Werkzeug prior to 3.0.0 does not support scrypt
+        parsed_werkzeug_version = Version(importlib.metadata.version("werkzeug"))
+        if parsed_werkzeug_version < Version("3.0.0"):
+            app.config.setdefault(
+                "AUTH_DB_FAKE_PASSWORD_HASH_CHECK",
+                "pbkdf2:sha256:150000$Z3t6fmj2$22da622d94a1f8118"
+                "c0976a03d2f18f680bfff877c9a965db9eedc51bc0be87c",
+            )
+        else:
+            app.config.setdefault(
+                "AUTH_DB_FAKE_PASSWORD_HASH_CHECK",
+                "scrypt:32768:8:1$wiDa0ruWlIPhp9LM$6e40"
+                "9d093e62ad54df2af895d0e125b05ff6cf6414"
+                "8350189ffc4bcc71286edf1b8ad94a442c00f8"
+                "90224bf2b32153d0750c89ee9401e62f9dcee5399065e4e5",
+            )
 
         # LDAP Config
         if self.auth_type == AUTH_LDAP:
@@ -304,7 +327,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.limiter = self.create_limiter(app)
 
     def create_limiter(self, app: Flask) -> Limiter:
-        limiter = Limiter(key_func=get_remote_address)
+        limiter = Limiter(
+            key_func=app.config.get("RATELIMIT_KEY_FUNC", get_remote_address)
+        )
         limiter.init_app(app)
         return limiter
 
@@ -695,6 +720,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "first_name": data.get("given_name", ""),
                 "last_name": data.get("family_name", ""),
                 "email": data.get("email", ""),
+                "role_keys": data.get("groups", []),
             }
         # for Authentik
         if provider == "authentik":
@@ -834,12 +860,21 @@ class BaseSecurityManager(AbstractSecurityManager):
         role_view = self.appbuilder.add_view(
             self.rolemodelview,
             "List Roles",
-            icon="fa-group",
+            icon="fa-user-gear",
             label=_("List Roles"),
             category="Security",
             category_icon="fa-cogs",
         )
         role_view.related_views = [self.user_view.__class__]
+
+        self.appbuilder.add_view(
+            self.groupmodelview,
+            "List Groups",
+            icon="fa-group",
+            label=_("List Groups"),
+            category="Security",
+            category_icon="fa-cogs",
+        )
 
         if self.userstatschartview:
             self.appbuilder.add_view(
@@ -965,8 +1000,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if user is None or (not user.is_active):
             # Balance failure and success
             check_password_hash(
-                "pbkdf2:sha256:150000$Z3t6fmj2$22da622d94a1f8118"
-                "c0976a03d2f18f680bfff877c9a965db9eedc51bc0be87c",
+                self.appbuilder.get_app.config["AUTH_DB_FAKE_PASSWORD_HASH_CHECK"],
                 "password",
             )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED, username)
@@ -1503,19 +1537,22 @@ class BaseSecurityManager(AbstractSecurityManager):
     def _has_view_access(
         self, user: object, permission_name: str, view_name: str
     ) -> bool:
-        roles = user.roles
-        db_role_ids = list()
-        # First check against builtin (statically configured) roles
-        # because no database query is needed
-        for role in roles:
-            if role.name in self.builtin_roles:
-                if self._has_access_builtin_roles(role, permission_name, view_name):
-                    return True
-            else:
-                db_role_ids.append(role.id)
+        roles = self.get_user_roles(user)
 
-        # If it's not a builtin role check against database store roles
-        return self.exist_permission_on_roles(view_name, permission_name, db_role_ids)
+        # First check against built-in roles (avoiding unnecessary DB queries)
+        if any(
+            role.name in self.builtin_roles
+            and self._has_access_builtin_roles(role, permission_name, view_name)
+            for role in roles
+        ):
+            return True
+
+        db_role_ids = [role.id for role in roles if role.name not in self.builtin_roles]
+
+        # Check database-stored roles if no match was found in built-in roles
+        return bool(db_role_ids) and self.exist_permission_on_roles(
+            view_name, permission_name, db_role_ids
+        )
 
     def get_oid_identity_url(self, provider_name: str) -> Optional[str]:
         """
@@ -1531,7 +1568,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         if not user.is_authenticated:
             return [self.get_public_role()]
-        return user.roles
+        return user.roles + [role for group in user.groups for role in group.roles]
 
     def get_user_roles_permissions(self, user) -> Dict[str, List[Tuple[str, str]]]:
         """
@@ -1573,32 +1610,30 @@ class BaseSecurityManager(AbstractSecurityManager):
         that a user has access to. Mainly used to fetch all menu permissions
         on a single db call, will also check public permissions and builtin roles
         """
-        db_role_ids = list()
-        if user is None:
-            # include public role
-            roles = [self.get_public_role()]
-        else:
-            roles = user.roles
-        # First check against builtin (statically configured) roles
-        # because no database query is needed
-        result = set()
-        for role in roles:
-            if role.name in self.builtin_roles:
-                for view_menu_name in view_menus_name:
-                    if self._has_access_builtin_roles(
-                        role, permission_name, view_menu_name
-                    ):
-                        result.add(view_menu_name)
-            else:
-                db_role_ids.append(role.id)
-        # Then check against database-stored roles
-        pvms_names = [
-            pvm.view_menu.name
-            for pvm in self.find_roles_permission_view_menus(
-                permission_name, db_role_ids
+        # Determine user roles (use public role if user is None)
+        roles = [self.get_public_role()] if user is None else self.get_user_roles(user)
+
+        # First, check built-in roles (avoiding unnecessary DB queries)
+        result = {
+            view_menu_name
+            for role in roles
+            if role.name in self.builtin_roles
+            for view_menu_name in view_menus_name
+            if self._has_access_builtin_roles(role, permission_name, view_menu_name)
+        }
+
+        # Collect database role IDs for further checking
+        db_role_ids = [role.id for role in roles if role.name not in self.builtin_roles]
+
+        # Check database-stored roles if needed
+        if db_role_ids:
+            result.update(
+                pvm.view_menu.name
+                for pvm in self.find_roles_permission_view_menus(
+                    permission_name, db_role_ids
+                )
             )
-        ]
-        result.update(pvms_names)
+
         return result
 
     def has_access(self, permission_name: str, view_name: str) -> bool:
@@ -1959,7 +1994,15 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def add_user(self, username, first_name, last_name, email, role, password=""):
+    def add_user(
+        self,
+        username: str,
+        first_name: str,
+        last_name: str,
+        email: str,
+        role,
+        **kwargs: Any,
+    ):
         """
         Generic function to create user
         """
@@ -1995,6 +2038,20 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def get_all_roles(self):
+        raise NotImplementedError
+
+    """
+    ----------------------
+     PRIMITIVES FOR Groups
+    ----------------------
+    """
+
+    def find_group(self, name: str):
+        raise NotImplementedError
+
+    def add_group(
+        self, name: str, label: str, description: str, roles=None, users=None
+    ):
         raise NotImplementedError
 
     """

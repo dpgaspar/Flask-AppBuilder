@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: ["3.10"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
     env:
       SQLALCHEMY_DATABASE_URI:
         postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
@@ -91,7 +91,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: ["3.10"]
     env:
       SQLALCHEMY_DATABASE_URI: |
         mysql+mysqldb://mysqluser:mysqluserpassword@127.0.0.1:13306/app?charset=utf8mb4&binary_prefix=true
@@ -142,13 +142,13 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: ["3.10"]
     env:
       SQLALCHEMY_DATABASE_URI: |
         mssql+pyodbc://sa:Password_123@localhost:11433/master?driver=FreeTDS
     services:
       mssql:
-        image: mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
+        image: mcr.microsoft.com/mssql/server:2019-CU31-ubuntu-20.04
         env:
           SA_PASSWORD: Password_123
           ACCEPT_EULA: Y
@@ -175,7 +175,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev freetds-bin unixodbc-dev tdsodbc
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev freetds-bin freetds-dev unixodbc-dev tdsodbc
           pip install --upgrade pip
           pip install -r requirements/base.txt
           pip install -r requirements/tests.txt
@@ -183,7 +183,7 @@ jobs:
           sudo cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
       - name: Run tests
         run: |
-          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid'
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -192,7 +192,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: ["3.10"]
     services:
       mongo:
         image: mongo:4.4.1-bionic
@@ -224,7 +224,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: ["3.10"]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
