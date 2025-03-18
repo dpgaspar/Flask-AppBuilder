@@ -1,7 +1,7 @@
 from flask_babel import lazy_gettext
 from flask_wtf.recaptcha import RecaptchaField
 from wtforms import BooleanField, PasswordField, StringField
-from wtforms.validators import DataRequired, Email, EqualTo
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 
 from ..fieldwidgets import BS3PasswordFieldWidget, BS3TextFieldWidget
 from ..forms import DynamicForm
@@ -18,7 +18,12 @@ class SelectDataRequired(DataRequired):
     select fields
     """
 
-    field_flags = ()
+    field_flags = {}
+
+
+def roles_or_groups_required(form, field):
+    if not form["roles"].data and not form["groups"].data:
+        raise ValidationError(lazy_gettext("Either select a role or a group"))
 
 
 class LoginForm_oid(DynamicForm):

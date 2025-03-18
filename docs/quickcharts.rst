@@ -17,7 +17,7 @@ Direct Data Charts
 These charts can display multiple series, based on columns or methods defined on models.
 You can display multiple charts on the same view.
 
-Let's create a simple model first, the gold is to display a chart showing the unemployment evolution
+Let's create a simple model first, the goal is to display a chart showing the unemployment evolution
 versus the percentage of the population with higher education, our model will be::
 
     class CountryStats(Model):
@@ -126,7 +126,7 @@ You can display multiple charts on the same view. This data can be grouped and a
 
 Let's create some simple models first, base on the prior example but this time lets make our models
 support has many countries has we like.
-The gold is to display a chart showing the unemployment
+The goal is to display a chart showing the unemployment
 versus the percentage of the population with higher education per country::
 
     from flask_appbuilder import Model

@@ -58,3 +58,23 @@ class OAuthProviderUnknown(FABException):
     """
 
     ...
+
+
+class InvalidLoginAttempt(FABException):
+    """
+    When the credentials entered could not be verified
+    """
+
+    ...
+
+
+class DeleteGroupWithUsersException(FABException):
+    """
+    When trying to delete a group with users
+    """
+
+
+class DeleteRoleWithUsersException(FABException):
+    """
+    When trying to delete a role with users
+    """

@@ -1,6 +1,87 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.6.0
+-----------------------------------
+
+- fix: relax marshmallow-sqlalchemy version constraint to fix compatibility with marshmallow>=3.24 (#2298) [Steven Loria]
+- docs: Fix edit template code example (#2308) [Matthew Schmoyer]
+- feat: security user groups (#2305) [Daniel Vaz Gaspar]
+- ci: fix mssql on CI (#2316) [Daniel Vaz Gaspar]
+- doc: update `requirements` paths in contributing doc (#2313) [Đỗ Trọng Hải]
+
+
+Improvements and Bug fixes on 4.5.4
+-----------------------------------
+
+- fix: werkzeug version check (#2310) [Daniel Vaz Gaspar]
+- fix: Default password hashing algorithm depends on Werkzeug version (#2306) [Jarek Potiuk]
+
+Improvements and Bug fixes on 4.5.3
+-----------------------------------
+
+- feat: Persian translations (#2278) [Emad Rad]
+- refactor: enhance _get_list_widget and _list methods to accept additional keyword arguments (#2285) [Gughanathan M]
+- feat: make fake password hash check configurable (#2301) [Daniel Vaz Gaspar]
+- chore: improve security models performance (#2293) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.5.2
+-----------------------------------
+
+- fix: wtforms 3.2 breaking field_flags (#2279) [Daniel Vaz Gaspar]
+- fix: hardcoded year removed from copyright (#2277) [Emad Rad]
+
+Improvements and Bug fixes on 4.5.1
+-----------------------------------
+
+- feat: add no cache directive to login forms (#2266) [Daniel Vaz Gaspar]
+- chore: bump cryptography to 42.0.4 (#2238) [Daniel Vaz Gaspar]
+- docs: Fixing broken link (#2252) [Chase Jones]
+- fix: rate limiter key function (#2254) [Daniel Vaz Gaspar]
+- chore: bump dnspython to fix vulnerability (#2255) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.5.0
+-----------------------------------
+
+- feat: REST API new select columns query param (#2242) [Daniel Vaz Gaspar]
+- chore: bump werkzeug to 3.0.3 (#2237) [Daniel Vaz Gaspar]
+- fix: Keycloak OAuth2, get groups as role_keys per default (#2235) [Andreas 'count' Kotes]
+- fix: Check if Oauth login with OKTA is correct (#1926) [Hojjat Ali Mohammadi]
+- docs: Update quickcharts.rst for typo gold to goal (#2217) [Abhinav Pareek]
+
+Improvements and Bug fixes on 4.4.1
+-----------------------------------
+
+- fix: user search list on stats (#2211) [Daniel Vaz Gaspar]
+- fix: performance issues on user and roles list (#2209) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.4.0
+-----------------------------------
+
+- chore(deps): bump the github-actions group with 4 updates (#2201) [dependabot[bot]]
+- fix: python versions setup.py (#2204) [Daniel Vaz Gaspar]
+- ci: refactor requirements structure and improve dependabot config (#2198) [Daniel Vaz Gaspar]
+- chore(deps): bump jinja2 from 3.0.3 to 3.1.3 (#2180) [dependabot[bot]]
+- fix: authentik test (#2199) [Daniel Vaz Gaspar]
+- feat: Added authentik as new identity provider (#2168) [Jasper Schoenmaker]
+- chore(deps): bump requests from 2.26.0 to 2.31.0 (#2050) [dependabot[bot]]
+- docs: updated Flask-Babel link and fix typo (#2166) [Gughanathan M]
+- chore: bump several non base dependencies (#2197) [Daniel Vaz Gaspar]
+- fix: Increase upper bound on marshmallow-sqlalchemy (#2191) [spike77453]
+- chore: remove email_validator constraint (#2167) [Marcus Lim]
+- chore: Upgrade to Pillow 10.0.1 (#2136) [Dosenpfand]
+- chore(docs): Update i18n.rst for Turkish (#2187) [coteli]
+- chore: upgrade werkzeug and Flask, deprecate OpenID and MongoEngine (#2196) [Daniel Vaz Gaspar]
+- feat: Turkish translations (#2185) [coteli]
+- feat: AUTH_REMOTE_USER_ENV_VAR config key for auth REMOTE_USER type (#2193) [Daniel Vaz Gaspar]
+- fix: don't load inactive users with sessions (#2192) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.3.11
+-----------------------------------
+
+- fix: openID provider validation flow (#2186) [Daniel Vaz Gaspar]
+- feat: support Auth0 OAuth2 (#2171) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.3.10
 -----------------------------------
 

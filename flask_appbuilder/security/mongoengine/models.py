@@ -67,6 +67,17 @@ class Role(Document):
         return self.name
 
 
+class Group(Document):
+    name = StringField(max_length=100, required=True, unique=True)
+    label = StringField(max_length=150)
+    description = StringField(max_length=512)
+    roles = ListField(ReferenceField(Role))
+    users = ListField(ReferenceField("User"))
+
+    def __unicode__(self):
+        return self.name
+
+
 class User(Document):
     meta = {
         "allow_inheritance": True
@@ -82,6 +93,7 @@ class User(Document):
     login_count = IntField()
     fail_login_count = IntField()
     roles = ListField(ReferenceField(Role))
+    groups = ListField(ReferenceField(Group))
     created_on = DateTimeField(default=datetime.datetime.now)
     changed_on = DateTimeField(default=datetime.datetime.now)
 
