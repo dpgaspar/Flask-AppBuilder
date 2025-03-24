@@ -205,9 +205,7 @@ class RoleApi(ModelRestApi):
 
             users = (
                 current_app.appbuilder.get_session.query(User)
-                .filter(
-                    User.id.in_(item["user_ids"])
-                )
+                .filter(User.id.in_(item["user_ids"]))
                 .all()
             )
 
