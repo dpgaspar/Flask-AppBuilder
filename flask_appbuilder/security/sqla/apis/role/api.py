@@ -163,7 +163,7 @@ class RoleApi(ModelRestApi):
     def update_role_users(self, pk):
         """update role users
         ---
-        post:
+        put:
           parameters:
           - in: path
             schema:
