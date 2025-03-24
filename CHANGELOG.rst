@@ -1,6 +1,13 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.6.1rc2
+-----------------------------------
+
+- fix: openAPI spec for security update role users (#2326) [Daniel Vaz Gaspar]
+- feat(RoleApi): Add role/:id/users endpoint (#2319) [Enzo Martellucci]
+- fix: Ensure sub is a string when generating JWT tokens (#2321) [Paul Rhodes]
+
 Improvements and Bug fixes on 4.6.0
 -----------------------------------
 
