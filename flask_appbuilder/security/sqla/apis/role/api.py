@@ -203,16 +203,14 @@ class RoleApi(ModelRestApi):
             if not role:
                 return self.response_404()
 
-            # Fetch all users in a single query
             users = (
                 current_app.appbuilder.get_session.query(User)
                 .filter(
                     User.id.in_(item["user_ids"])
-                )  # Use IN to fetch all users at once
+                )
                 .all()
             )
 
-            # Validate that all requested users exist
             if len(users) != len(item["user_ids"]):
                 return self.response_404()  # Some users were not found
 
