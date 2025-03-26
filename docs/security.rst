@@ -407,7 +407,7 @@ To customize the userinfo retrieval, you can create your own method like this::
         response: Dict[str, Any]
     ) -> Dict[str, Any]:
         if provider == "okta":
-            me = sm.oauth_remotes[provider].get("userinfo")
+            me = sm.oauth_remotes[provider].userinfo()
             return {
                 "username": "okta_" + me.data.get("sub", ""),
                 "first_name": me.data.get("given_name", ""),
