@@ -213,7 +213,7 @@ class RoleApi(ModelRestApi):
                 return self.response_404()  # Some users were not found
 
             role.user = users
-            self.datamodel.edit(role, raise_exception=True)
+            self.datamodel.edit(role)
             return self.response(
                 200,
                 **{
