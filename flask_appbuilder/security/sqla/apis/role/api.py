@@ -204,7 +204,7 @@ class RoleApi(ModelRestApi):
                 return self.response_404()
 
             users = (
-                current_app.appbuilder.get_session.query(User)
+                current_app.appbuilder.session.query(User)
                 .filter(User.id.in_(item["user_ids"]))
                 .all()
             )
