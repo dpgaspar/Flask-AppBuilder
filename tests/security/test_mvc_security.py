@@ -449,12 +449,12 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("Added Row", data)
         user = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == "from test 1-1")
             .one_or_none()
         )
-        self.db.session.delete(user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_register_user_with_group(self):
         """
@@ -485,13 +485,13 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("Added Row", data)
         user = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == "from test 1-1")
             .one_or_none()
         )
-        self.db.session.delete(user)
-        self.db.session.delete(group)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
 
     def test_register_user_missing_roles_or_groups(self):
         """
@@ -707,7 +707,9 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("Added Row", data)
         group = (
-            self.appbuilder.session.query(Group).filter(Group.name == "group1").one_or_none()
+            self.appbuilder.session.query(Group)
+            .filter(Group.name == "group1")
+            .one_or_none()
         )
         self.appbuilder.session.delete(group)
         self.appbuilder.session.commit()
