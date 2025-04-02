@@ -966,9 +966,9 @@ class RolePermissionAPITestCase(FABTestCase):
         self.assertEqual(len(user.roles), 1)
         self.assertEqual(role.user[0].id, user.id)
         self.assertEqual(user.roles[0].id, role.id)
-        self.session.delete(role)
-        self.session.delete(user)
-        self.session.commit()
+        self.appbuilder.session.delete(role)
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_update_role_users_invalid_role(self):
         client = self.app.test_client()
@@ -996,8 +996,8 @@ class RolePermissionAPITestCase(FABTestCase):
         self.assertEqual(response.status_code, 400)
 
         role = self.appbuilder.sm.find_role(role_name)
-        self.session.delete(role)
-        self.session.commit()
+        self.appbuilder.session.delete(role)
+        self.appbuilder.session.commit()
 
     def test_update_role_users_invalid_user(self):
         client = self.app.test_client()
@@ -1005,7 +1005,7 @@ class RolePermissionAPITestCase(FABTestCase):
 
         role_name = "test_invalid_user_role"
         test_role = self.appbuilder.sm.add_role(name=role_name)
-        self.session.commit()
+        self.appbuilder.session.commit()
 
         invalid_user_id = 999999
 
@@ -1018,8 +1018,8 @@ class RolePermissionAPITestCase(FABTestCase):
         role = self.appbuilder.sm.find_role(role_name)
         self.assertEqual(len(role.user), 0)
 
-        self.session.delete(role)
-        self.session.commit()
+        self.appbuilder.session.delete(role)
+        self.appbuilder.session.commit()
 
     def test_list_view_menu_permissions_of_role(self):
         client = self.app.test_client()
