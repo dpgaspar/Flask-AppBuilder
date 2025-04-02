@@ -72,10 +72,10 @@ assoc_permissionview_role = db.Table(
         primary_key=True,
     ),
     Column(
-    "permission_view_id",
+        "permission_view_id",
         Integer,
-        ForeignKey("ab_permission_view.id", ondelete="CASCADE"))
-    ,
+        ForeignKey("ab_permission_view.id", ondelete="CASCADE"),
+    ),
     Column("role_id", Integer, ForeignKey("ab_role.id", ondelete="CASCADE")),
     UniqueConstraint("permission_view_id", "role_id"),
     Index("idx_permission_view_id", "permission_view_id"),
@@ -141,8 +141,6 @@ class PermissionView(Model):
 
     def __repr__(self):
         return str(self.permission).replace("_", " ") + f" on {str(self.view_menu)}"
-
-
 
 
 class User(Model):

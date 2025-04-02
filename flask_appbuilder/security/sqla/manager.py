@@ -355,7 +355,9 @@ class SecurityManager(BaseSecurityManager):
 
     def find_group(self, name: str) -> Group:
         return (
-            self.get_session.query(self.group_model).filter_by(name=name).one_or_none()
+            self.appbuilder.session.query(self.group_model)
+            .filter_by(name=name)
+            .one_or_none()
         )
 
     def add_group(
