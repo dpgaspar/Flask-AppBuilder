@@ -71,8 +71,12 @@ assoc_permissionview_role = db.Table(
         ),
         primary_key=True,
     ),
-    Column("permission_view_id", Integer, ForeignKey("ab_permission_view.id")),
-    Column("role_id", Integer, ForeignKey("ab_role.id")),
+    Column(
+    "permission_view_id",
+        Integer,
+        ForeignKey("ab_permission_view.id", ondelete="CASCADE"))
+    ,
+    Column("role_id", Integer, ForeignKey("ab_role.id", ondelete="CASCADE")),
     UniqueConstraint("permission_view_id", "role_id"),
     Index("idx_permission_view_id", "permission_view_id"),
     Index("idx_role_id", "role_id"),
@@ -87,8 +91,8 @@ assoc_user_role = db.Table(
         Sequence("ab_user_role_id_seq", start=1, increment=1, minvalue=1, cycle=False),
         primary_key=True,
     ),
-    Column("user_id", Integer, ForeignKey("ab_user.id")),
-    Column("role_id", Integer, ForeignKey("ab_role.id")),
+    Column("user_id", Integer, ForeignKey("ab_user.id", ondelete="CASCADE")),
+    Column("role_id", Integer, ForeignKey("ab_role.id", ondelete="CASCADE")),
     UniqueConstraint("user_id", "role_id"),
 )
 
