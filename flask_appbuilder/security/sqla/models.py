@@ -226,8 +226,12 @@ class User(Model):
 
 assoc_user_group = db.Table(
     "ab_user_group",
-    Model.metadata,
-    Column("id", Integer, Sequence("ab_user_group_id_seq"), primary_key=True),
+    Column(
+        "id",
+        Integer,
+        Sequence("ab_user_group_id_seq", start=1, increment=1, minvalue=1, cycle=False),
+        primary_key=True,
+    ),
     Column("user_id", Integer, ForeignKey("ab_user.id", ondelete="CASCADE")),
     Column("group_id", Integer, ForeignKey("ab_group.id", ondelete="CASCADE")),
     UniqueConstraint("user_id", "group_id"),
@@ -238,8 +242,12 @@ assoc_user_group = db.Table(
 
 assoc_group_role = db.Table(
     "ab_group_role",
-    Model.metadata,
-    Column("id", Integer, Sequence("ab_group_role_id_seq"), primary_key=True),
+    Column(
+        "id",
+        Integer,
+        Sequence("ab_group_role_id_seq", start=1, increment=1, minvalue=1, cycle=False),
+        primary_key=True,
+    ),
     Column("group_id", Integer, ForeignKey("ab_group.id", ondelete="CASCADE")),
     Column("role_id", Integer, ForeignKey("ab_role.id", ondelete="CASCADE")),
     UniqueConstraint("group_id", "role_id"),
@@ -250,14 +258,18 @@ assoc_group_role = db.Table(
 
 class Group(Model):
     __tablename__ = "ab_group"
-    id = Column(Integer, Sequence("ab_group_id_seq"), primary_key=True)
-    name = Column(String(100), unique=True, nullable=False)
-    label = Column(String(150))
-    description = Column(String(512))
-    users = relationship(
+    id: Mapped[int] = mapped_column(
+        Integer,
+        Sequence("ab_group_id_seq", start=1, increment=1, minvalue=1, cycle=False),
+        primary_key=True,
+    )
+    name: Mapped[str] = Column(String(100), unique=True, nullable=False)
+    label: Mapped[str] = Column(String(150))
+    description: Mapped[str] = Column(String(512))
+    users: Mapped[list[User]] = relationship(
         "User", secondary=assoc_user_group, backref="groups", passive_deletes=True
     )
-    roles = relationship(
+    roles: Mapped[list[Role]] = relationship(
         "Role", secondary=assoc_group_role, backref="groups", passive_deletes=True
     )
 
