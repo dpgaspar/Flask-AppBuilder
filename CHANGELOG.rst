@@ -1,6 +1,53 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.6.1
+-----------------------------------
+
+- fix: improve API for role users update (#2328) [Daniel Vaz Gaspar]
+- fix: openAPI spec for security update role users (#2326) [Daniel Vaz Gaspar]
+- feat(RoleApi): Add role/:id/users endpoint (#2319) [Enzo Martellucci]
+- fix: Ensure sub is a string when generating JWT tokens (#2321) [Paul Rhodes]
+
+Improvements and Bug fixes on 4.6.0
+-----------------------------------
+
+- fix: relax marshmallow-sqlalchemy version constraint to fix compatibility with marshmallow>=3.24 (#2298) [Steven Loria]
+- docs: Fix edit template code example (#2308) [Matthew Schmoyer]
+- feat: security user groups (#2305) [Daniel Vaz Gaspar]
+- ci: fix mssql on CI (#2316) [Daniel Vaz Gaspar]
+- doc: update `requirements` paths in contributing doc (#2313) [Đỗ Trọng Hải]
+
+
+Improvements and Bug fixes on 4.5.4
+-----------------------------------
+
+- fix: werkzeug version check (#2310) [Daniel Vaz Gaspar]
+- fix: Default password hashing algorithm depends on Werkzeug version (#2306) [Jarek Potiuk]
+
+Improvements and Bug fixes on 4.5.3
+-----------------------------------
+
+- feat: Persian translations (#2278) [Emad Rad]
+- refactor: enhance _get_list_widget and _list methods to accept additional keyword arguments (#2285) [Gughanathan M]
+- feat: make fake password hash check configurable (#2301) [Daniel Vaz Gaspar]
+- chore: improve security models performance (#2293) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.5.2
+-----------------------------------
+
+- fix: wtforms 3.2 breaking field_flags (#2279) [Daniel Vaz Gaspar]
+- fix: hardcoded year removed from copyright (#2277) [Emad Rad]
+
+Improvements and Bug fixes on 4.5.1
+-----------------------------------
+
+- feat: add no cache directive to login forms (#2266) [Daniel Vaz Gaspar]
+- chore: bump cryptography to 42.0.4 (#2238) [Daniel Vaz Gaspar]
+- docs: Fixing broken link (#2252) [Chase Jones]
+- fix: rate limiter key function (#2254) [Daniel Vaz Gaspar]
+- chore: bump dnspython to fix vulnerability (#2255) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.5.0
 -----------------------------------
 
