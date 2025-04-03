@@ -51,11 +51,8 @@ def upsert_test_data():
         db.session.rollback()
         exit(1)
 
-    f = open("NAMES.DIC", "rb")
-    names_list = [x.strip() for x in f.readlines()]
-
-    f.close()
-
+    with open("NAMES.DIC", "rb") as f:
+        names_list = [x.strip() for x in f.readlines()]
     j = 1
     for i in range(1, 100):
         c = Contact()
