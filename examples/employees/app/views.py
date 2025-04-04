@@ -1,9 +1,9 @@
 from flask_appbuilder import ModelView
+from flask_appbuilder.extensions import db
 from flask_appbuilder.fields import QuerySelectField
 from flask_appbuilder.fieldwidgets import Select2Widget
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from . import appbuilder, db
 from .models import Benefit, Department, Employee, EmployeeHistory, Function
 
 
@@ -49,21 +49,3 @@ class BenefitView(ModelView):
     edit_columns = ["name"]
     show_columns = ["name"]
     list_columns = ["name"]
-
-
-db.create_all()
-
-appbuilder.add_view_no_menu(EmployeeHistoryView, "EmployeeHistoryView")
-appbuilder.add_view(
-    EmployeeView, "Employees", icon="fa-folder-open-o", category="Company"
-)
-appbuilder.add_separator("Company")
-appbuilder.add_view(
-    DepartmentView, "Departments", icon="fa-folder-open-o", category="Company"
-)
-appbuilder.add_view(
-    FunctionView, "Functions", icon="fa-folder-open-o", category="Company"
-)
-appbuilder.add_view(
-    BenefitView, "Benefits", icon="fa-folder-open-o", category="Company"
-)

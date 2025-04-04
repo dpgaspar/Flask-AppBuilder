@@ -110,6 +110,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         Test Security Login, Logout, invalid login, invalid access
         """
+        self.browser_logout(self.client)
         test_username = "testuser"
         test_password = "password"
         test_user = self.create_user(
@@ -129,13 +130,13 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         # Using the same session make sure the user is not allowed to access when
         # the user is deactivated
         test_user.active = False
-        self.db.session.merge(test_user)
-        self.db.session.commit()
+        self.appbuilder.session.merge(test_user)
+        self.appbuilder.session.commit()
         rv = self.client.get("/model1view/list/")
         self.assertEqual(rv.status_code, 302)
 
-        self.db.session.delete(test_user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(test_user)
+        self.appbuilder.session.commit()
 
     def test_db_login_no_next_url(self):
         """
@@ -448,12 +449,12 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("Added Row", data)
         user = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == "from test 1-1")
             .one_or_none()
         )
-        self.db.session.delete(user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_register_user_with_group(self):
         """
@@ -484,13 +485,13 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("Added Row", data)
         user = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == "from test 1-1")
             .one_or_none()
         )
-        self.db.session.delete(user)
-        self.db.session.delete(group)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
 
     def test_register_user_missing_roles_or_groups(self):
         """
@@ -559,14 +560,14 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         self.assertIn("Changed Row", data)
 
         user = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == _tmp_user.username)
             .one_or_none()
         )
 
         assert user.email == "changed@changed.org"
-        self.db.session.delete(user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_edit_user_with_group(self):
         """
@@ -605,14 +606,14 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         self.assertIn("Changed Row", data)
 
         user = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == _tmp_user.username)
             .one_or_none()
         )
 
         assert user.email == "changed@changed.org"
-        self.db.session.delete(user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_edit_user_email_validation(self):
         """
@@ -622,7 +623,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         read_ony_user: User = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == USERNAME_READONLY)
             .one_or_none()
         )
@@ -653,7 +654,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         read_ony_user: User = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == USERNAME_READONLY)
             .one_or_none()
         )
@@ -706,10 +707,12 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("Added Row", data)
         group = (
-            self.db.session.query(Group).filter(Group.name == "group1").one_or_none()
+            self.appbuilder.session.query(Group)
+            .filter(Group.name == "group1")
+            .one_or_none()
         )
-        self.db.session.delete(group)
-        self.db.session.commit()
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
 
     def test_add_group_unique_name(self):
         """
@@ -718,7 +721,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         group = self.create_group(self.appbuilder)
-        self.db.session.refresh(group)
+        self.appbuilder.session.refresh(group)
         rv = client.get("/groups/add", follow_redirects=True)
         data = rv.data.decode("utf-8")
         self.assertIn("Add Group", data)
@@ -734,8 +737,8 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         data = rv.data.decode("utf-8")
         self.assertIn("Already exists.", data)
-        self.db.session.delete(group)
-        self.db.session.commit()
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
 
     def test_delete_group(self):
         """
@@ -776,6 +779,6 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("User(s) exists in the group, cannot delete", data)
         assert self.appbuilder.sm.find_group(name="group1") is not None
-        self.db.session.delete(user)
-        self.db.session.delete(group)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()

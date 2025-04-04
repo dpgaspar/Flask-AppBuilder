@@ -51,7 +51,7 @@ def custom_password_validator(password: str) -> None:
 
 # FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
 
-FAB_PASSWORD_COMPLEXITY_ENABLED = True
+FAB_PASSWORD_COMPLEXITY_ENABLED = False
 
 # ------------------------------
 # GLOBALS FOR GENERAL APP's

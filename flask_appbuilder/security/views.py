@@ -577,7 +577,7 @@ class AuthView(BaseView):
     def logout(self):
         logout_user()
         return redirect(
-            self.appbuilder.app.config.get(
+            current_app.config.get(
                 "LOGOUT_REDIRECT_URL", self.appbuilder.get_url_for_index
             )
         )
