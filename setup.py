@@ -52,7 +52,7 @@ setup(
         "Flask-Babel>=1, <3",
         "Flask-Limiter>3,<4",
         "Flask-Login>=0.3, <0.7",
-        "Flask-SQLAlchemy>=3",
+        "Flask-SQLAlchemy>=2.4.0, <4",
         "Flask-WTF>=0.14.2, <2",
         "Flask-JWT-Extended>=4.0.0, <5.0.0",
         "jsonschema>=3, <5",
@@ -61,8 +61,7 @@ setup(
         "python-dateutil>=2.3, <3",
         "prison>=0.2.1, <1.0.0",
         "PyJWT>=2.0.0, <3.0.0",
-        # Cautious cap
-        "SQLAlchemy>=2.0",
+        "SQLAlchemy>=1.4.0, <3",
         "sqlalchemy-utils>=0.32.21, <1",
         "WTForms<4",
         "werkzeug<4",

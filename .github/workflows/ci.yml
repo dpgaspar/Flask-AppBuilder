@@ -87,6 +87,56 @@ jobs:
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
 
+  test-postgres-sqlalchemy1:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+    env:
+      SQLALCHEMY_DATABASE_URI:
+        postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_USER: pguser
+          POSTGRES_PASSWORD: pguserpassword
+          POSTGRES_DB: app
+        ports:
+          - 15432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run openldap
+        run: |
+          docker run -d \
+            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+            -e LDAP_URI=ldap://openldap:1389 \
+            -e LDAP_BASE=dc=example,dc=org \
+            -e LDAP_ADMIN_USERNAME=admin \
+            -e LDAP_ADMIN_PASSWORD=admin_password \
+            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+            -p 1389:1389 \
+            bitnami/openldap:2.6.4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
+          pip install --upgrade pip
+          pip install -r requirements/base_legacy.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
+      - name: Run tests
+        run: |
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
+      - name: Upload code coverage
+        run: |
+          bash <(curl -s https://codecov.io/bash) -cF python
+
   test-mysql:
     runs-on: ubuntu-22.04
     strategy:

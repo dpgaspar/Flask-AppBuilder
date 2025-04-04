@@ -6,8 +6,15 @@ from typing import Optional
 from flask_appbuilder import Model
 from sqlalchemy import Date, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
+
+try:
+    from sqlalchemy.orm import mapped_column
+except ImportError:
+    # fallback for SQLAlchemy < 2.0
+    def mapped_column(*args, **kwargs):
+        from sqlalchemy import Column
+        return Column(*args, **kwargs)
 
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)

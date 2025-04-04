@@ -17,7 +17,16 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import backref, Mapped, mapped_column, relationship
+from sqlalchemy.orm import backref, Mapped, relationship
+
+try:
+    from sqlalchemy.orm import mapped_column
+except ImportError:
+    # fallback for SQLAlchemy < 2.0
+    def mapped_column(*args, **kwargs):
+        from sqlalchemy import Column
+
+        return Column(*args, **kwargs)
 
 
 _dont_audit = False
