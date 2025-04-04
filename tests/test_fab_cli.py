@@ -4,7 +4,6 @@ import logging
 import os
 import tempfile
 from unittest.mock import ANY, patch
-
 from click.testing import CliRunner
 from flask import Flask
 from flask_appbuilder import AppBuilder
@@ -262,7 +261,18 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                         (pvm.permission.name, pvm.view_menu.name)
                         for pvm in resulting_role.permissions
                     }
-                    self.assertEqual(
-                        resulting_role_permission_view_menus,
-                        expected_role_permission_view_menus,
-                    )
+                    try:
+                        self.assertEqual(
+                            resulting_role_permission_view_menus,
+                            expected_role_permission_view_menus,
+                        )
+                    except AssertionError:
+                        log.error(
+                            "resulting_role_permission_view_menus: %s",
+                            resulting_role_permission_view_menus,
+                        )
+                        log.error(
+                            "expected_role_permission_view_menus: %s",
+                            expected_role_permission_view_menus,
+                        )
+                        raise
