@@ -174,6 +174,12 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                         (pvm["permission"]["name"], pvm["view_menu"]["name"])
                         for pvm in expected_role["permissions"]
                     }
+                    raise Exception(
+                        resulting_role_permission_view_menus
+                        - expected_role_permission_view_menus,
+                        expected_role_permission_view_menus
+                        - resulting_role_permission_view_menus,
+                    )
                     self.assertEqual(
                         resulting_role_permission_view_menus,
                         expected_role_permission_view_menus,
