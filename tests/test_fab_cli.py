@@ -4,6 +4,7 @@ import logging
 import os
 import tempfile
 from unittest.mock import ANY, patch
+
 from click.testing import CliRunner
 from flask import Flask
 from flask_appbuilder import AppBuilder
@@ -173,10 +174,16 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                         (pvm["permission"]["name"], pvm["view_menu"]["name"])
                         for pvm in expected_role["permissions"]
                     }
-                    self.assertEqual(
-                        resulting_role_permission_view_menus,
-                        expected_role_permission_view_menus,
-                    )
+                    try:
+                        self.assertEqual(
+                            resulting_role_permission_view_menus,
+                            expected_role_permission_view_menus,
+                        )
+                    except AssertionError:
+                        raise Exception(
+                            resulting_role_permission_view_menus,
+                            expected_role_permission_view_menus,
+                        )
 
     def test_export_roles_filename(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -261,13 +268,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                         (pvm.permission.name, pvm.view_menu.name)
                         for pvm in resulting_role.permissions
                     }
-                    try:
-                        assert (
-                            resulting_role_permission_view_menus
-                            == expected_role_permission_view_menus
-                        )
-                    except AssertionError:
-                        raise Exception(
-                            resulting_role_permission_view_menus,
-                            expected_role_permission_view_menus,
-                        )
+                    self.assertEqual(
+                        resulting_role_permission_view_menus,
+                        expected_role_permission_view_menus,
+                    )
