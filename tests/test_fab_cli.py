@@ -262,9 +262,9 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                         for pvm in resulting_role.permissions
                     }
                     try:
-                        self.assertEqual(
-                            resulting_role_permission_view_menus,
-                            expected_role_permission_view_menus,
+                        assert (
+                            resulting_role_permission_view_menus
+                            == expected_role_permission_view_menus
                         )
                     except AssertionError:
                         raise Exception(
