@@ -267,12 +267,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                             expected_role_permission_view_menus,
                         )
                     except AssertionError:
-                        log.error(
-                            "resulting_role_permission_view_menus: %s",
+                        raise Exception(
                             resulting_role_permission_view_menus,
-                        )
-                        log.error(
-                            "expected_role_permission_view_menus: %s",
                             expected_role_permission_view_menus,
                         )
-                        raise
