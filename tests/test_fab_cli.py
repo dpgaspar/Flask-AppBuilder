@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import tempfile
+from typing import List
 from unittest.mock import ANY, patch
 
 from click.testing import CliRunner
@@ -158,8 +159,14 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                 self.assertTrue(os.path.exists(path))
 
                 with open(path, "r") as fd:
-                    resulting_roles = json.loads(fd.read())
-
+                    resulting_roles: List = json.loads(fd.read())
+                # sort to get consistent order and consistent tests
+                self.expected_roles = sorted(
+                    self.expected_roles, key=lambda role_name: role_name["name"]
+                )
+                resulting_roles = sorted(
+                    resulting_roles, key=lambda role_name: role_name["name"]
+                )
                 for expected_role in self.expected_roles:
                     match = [
                         r for r in resulting_roles if r["name"] == expected_role["name"]
@@ -174,16 +181,10 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                         (pvm["permission"]["name"], pvm["view_menu"]["name"])
                         for pvm in expected_role["permissions"]
                     }
-                    try:
-                        self.assertEqual(
-                            resulting_role_permission_view_menus,
-                            expected_role_permission_view_menus,
-                        )
-                    except AssertionError:
-                        raise Exception(
-                            len(resulting_role_permission_view_menus),
-                            len(expected_role_permission_view_menus),
-                        )
+                    self.assertEqual(
+                        resulting_role_permission_view_menus,
+                        expected_role_permission_view_menus,
+                    )
 
     def test_export_roles_filename(self):
         with tempfile.TemporaryDirectory() as tmp_dir:

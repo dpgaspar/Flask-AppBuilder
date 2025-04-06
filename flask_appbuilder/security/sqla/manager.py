@@ -798,7 +798,7 @@ class SecurityManager(BaseSecurityManager):
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         filename = path or f"roles_export_{timestamp}.json"
 
-        serialized_roles = []
+        serialized_roles: List[Dict[str, List[Dict[str, str]]]] = []
 
         for role in self.get_all_roles():
             serialized_role = {"name": role.name, "permissions": []}
