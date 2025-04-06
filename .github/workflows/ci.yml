@@ -94,16 +94,16 @@ jobs:
         python-version: ["3.10"]
     env:
       SQLALCHEMY_DATABASE_URI:
-        postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
+        postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15433/app
     services:
-      postgres:
+      postgres-1:
         image: postgres:14-alpine
         env:
           POSTGRES_USER: pguser
           POSTGRES_PASSWORD: pguserpassword
           POSTGRES_DB: app
         ports:
-          - 15432:5432
+          - 15433:5432
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
