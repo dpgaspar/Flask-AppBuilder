@@ -181,8 +181,8 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                         )
                     except AssertionError:
                         raise Exception(
-                            resulting_role_permission_view_menus,
-                            expected_role_permission_view_menus,
+                            len(resulting_role_permission_view_menus),
+                            len(expected_role_permission_view_menus),
                         )
 
     def test_export_roles_filename(self):
