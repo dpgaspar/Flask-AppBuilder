@@ -147,10 +147,10 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config[
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+            # delete if exists
+            if os.path.exists(os.path.join(tmp_dir, "src.db")):
+                os.remove(os.path.join(tmp_dir, "src.db"))
             with app.app_context():
-                from flask_sqlalchemy import SQLAlchemy
-                # drop database
-                SQLAlchemy(app).drop_all()
                 app_builder = AppBuilder(app)  # noqa: F841
                 cli_runner = app.test_cli_runner()
 
