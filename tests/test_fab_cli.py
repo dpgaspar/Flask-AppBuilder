@@ -148,6 +148,9 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
             with app.app_context():
+                from flask_sqlalchemy import SQLAlchemy
+                # drop database
+                SQLAlchemy(app).drop_all()
                 app_builder = AppBuilder(app)  # noqa: F841
                 cli_runner = app.test_cli_runner()
 
