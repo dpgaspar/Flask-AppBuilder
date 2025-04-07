@@ -8,7 +8,7 @@ from .utils import fill_gender
 
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.INFO)
 
 def create_app() -> Flask:
     app = Flask(__name__)

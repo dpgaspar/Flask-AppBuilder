@@ -169,13 +169,10 @@ class AppBuilder:
 
         self._init_extension(app)
         # init flask-sqlalchemy if needed
-        log.error("Base: CONFIG URL 5: %s", app.config["SQLALCHEMY_DATABASE_URI"])
         if "sqlalchemy" not in app.extensions:
             self.session.remove()
-            log.error("Base: SQLAlchemy not in app.extensions")
+            log.debug("Base: SQLAlchemy not in app.extensions")
             db.init_app(app)
-        log.error("Base: CONFIG URL 7: %s", app.config["SQLALCHEMY_DATABASE_URI"])
-        log.error("Base: SQLAlchemy BIND 8: %s", db.session.get_bind())
         self.base_template = app.config.get("FAB_BASE_TEMPLATE", self.base_template)
         self.static_folder = app.config.get("FAB_STATIC_FOLDER", self.static_folder)
         self.static_url_path = app.config.get(
