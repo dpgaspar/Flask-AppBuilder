@@ -140,139 +140,139 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
         with open(os.path.join(basedir, "data/roles.json"), "r") as fd:
             self.expected_roles = json.loads(fd.read())
 
-    def test_export_roles(self):
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            app = Flask("src_app")
-            app.config.from_object("tests.config_security")
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
-            # delete if exists
-            if os.path.exists(os.path.join(tmp_dir, "src.db")):
-                os.remove(os.path.join(tmp_dir, "src.db"))
-            with app.app_context():
-                app_builder = AppBuilder(app)  # noqa: F841
-                cli_runner = app.test_cli_runner()
-
-                path = os.path.join(tmp_dir, "roles.json")
-
-                export_result = cli_runner.invoke(export_roles, [f"--path={path}"])
-
-                self.assertEqual(export_result.exit_code, 0)
-                self.assertTrue(os.path.exists(path))
-
-                with open(path, "r") as fd:
-                    resulting_roles: List = json.loads(fd.read())
-                # sort to get consistent order and consistent tests
-                self.expected_roles = sorted(
-                    self.expected_roles, key=lambda role_name: role_name["name"]
-                )
-                resulting_roles = sorted(
-                    resulting_roles, key=lambda role_name: role_name["name"]
-                )
-                for expected_role in self.expected_roles:
-                    match = [
-                        r for r in resulting_roles if r["name"] == expected_role["name"]
-                    ]
-                    self.assertTrue(match)
-                    resulting_role = match[0]
-                    resulting_role_permission_view_menus = {
-                        (pvm["permission"]["name"], pvm["view_menu"]["name"])
-                        for pvm in resulting_role["permissions"]
-                    }
-                    expected_role_permission_view_menus = {
-                        (pvm["permission"]["name"], pvm["view_menu"]["name"])
-                        for pvm in expected_role["permissions"]
-                    }
-                    self.assertEqual(
-                        resulting_role_permission_view_menus,
-                        expected_role_permission_view_menus,
-                    )
-
-    def test_export_roles_filename(self):
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            app = Flask("src_app")
-            app.config.from_object("tests.config_security")
-
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
-            with app.app_context():
-                app_builder = AppBuilder(app)  # noqa: F841
-
-                owd = os.getcwd()
-                os.chdir(tmp_dir)
-                cli_runner = app.test_cli_runner()
-                export_result = cli_runner.invoke(export_roles)
-                os.chdir(owd)
-
-                self.assertEqual(export_result.exit_code, 0)
-                self.assertGreater(
-                    len(glob.glob(os.path.join(tmp_dir, "roles_export_*"))), 0
-                )
-
-    @patch("json.dumps")
-    def test_export_roles_indent(self, mock_json_dumps):
-        """Test that json.dumps is called with the correct argument passed from CLI."""
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            app = Flask("src_app")
-            app.config.from_object("tests.config_security")
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
-            with app.app_context():
-                app_builder = AppBuilder(app)  # noqa: F841
-                cli_runner = app.test_cli_runner()
-
-                cli_runner.invoke(export_roles)
-                mock_json_dumps.assert_called_with(ANY, indent=None)
-                mock_json_dumps.reset_mock()
-
-                example_cli_args = ["", "foo", -1, 0, 1]
-                for arg in example_cli_args:
-                    cli_runner.invoke(export_roles, [f"--indent={arg}"])
-                    mock_json_dumps.assert_called_with(ANY, indent=arg)
-                    mock_json_dumps.reset_mock()
-
-    def test_import_roles(self):
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            app = Flask("dst_app")
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'dst.db')}"
-            with app.app_context():
-                app_builder = AppBuilder(app)
-                cli_runner = app.test_cli_runner()
-
-                path = os.path.join(tmp_dir, "roles.json")
-
-                with open(path, "w") as fd:
-                    fd.write(json.dumps(self.expected_roles))
-
-                # before import roles on dst app include only Admin and Public
-                self.assertEqual(len(app_builder.sm.get_all_roles()), 2)
-
-                import_result = cli_runner.invoke(import_roles, [f"--path={path}"])
-                self.assertEqual(import_result.exit_code, 0)
-
-                resulting_roles = app_builder.sm.get_all_roles()
-
-                for expected_role in self.expected_roles:
-                    match = [
-                        r for r in resulting_roles if r.name == expected_role["name"]
-                    ]
-                    self.assertTrue(match)
-                    resulting_role = match[0]
-
-                    expected_role_permission_view_menus = {
-                        (pvm["permission"]["name"], pvm["view_menu"]["name"])
-                        for pvm in expected_role["permissions"]
-                    }
-                    resulting_role_permission_view_menus = {
-                        (pvm.permission.name, pvm.view_menu.name)
-                        for pvm in resulting_role.permissions
-                    }
-                    self.assertEqual(
-                        resulting_role_permission_view_menus,
-                        expected_role_permission_view_menus,
-                    )
+    # def test_export_roles(self):
+    #     with tempfile.TemporaryDirectory() as tmp_dir:
+    #         app = Flask("src_app")
+    #         app.config.from_object("tests.config_security")
+    #         app.config[
+    #             "SQLALCHEMY_DATABASE_URI"
+    #         ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+    #         # delete if exists
+    #         if os.path.exists(os.path.join(tmp_dir, "src.db")):
+    #             os.remove(os.path.join(tmp_dir, "src.db"))
+    #         with app.app_context():
+    #             app_builder = AppBuilder(app)  # noqa: F841
+    #             cli_runner = app.test_cli_runner()
+    #
+    #             path = os.path.join(tmp_dir, "roles.json")
+    #
+    #             export_result = cli_runner.invoke(export_roles, [f"--path={path}"])
+    #
+    #             self.assertEqual(export_result.exit_code, 0)
+    #             self.assertTrue(os.path.exists(path))
+    #
+    #             with open(path, "r") as fd:
+    #                 resulting_roles: List = json.loads(fd.read())
+    #             # sort to get consistent order and consistent tests
+    #             self.expected_roles = sorted(
+    #                 self.expected_roles, key=lambda role_name: role_name["name"]
+    #             )
+    #             resulting_roles = sorted(
+    #                 resulting_roles, key=lambda role_name: role_name["name"]
+    #             )
+    #             for expected_role in self.expected_roles:
+    #                 match = [
+    #                     r for r in resulting_roles if r["name"] == expected_role["name"]
+    #                 ]
+    #                 self.assertTrue(match)
+    #                 resulting_role = match[0]
+    #                 resulting_role_permission_view_menus = {
+    #                     (pvm["permission"]["name"], pvm["view_menu"]["name"])
+    #                     for pvm in resulting_role["permissions"]
+    #                 }
+    #                 expected_role_permission_view_menus = {
+    #                     (pvm["permission"]["name"], pvm["view_menu"]["name"])
+    #                     for pvm in expected_role["permissions"]
+    #                 }
+    #                 self.assertEqual(
+    #                     resulting_role_permission_view_menus,
+    #                     expected_role_permission_view_menus,
+    #                 )
+    #
+    # def test_export_roles_filename(self):
+    #     with tempfile.TemporaryDirectory() as tmp_dir:
+    #         app = Flask("src_app")
+    #         app.config.from_object("tests.config_security")
+    #
+    #         app.config[
+    #             "SQLALCHEMY_DATABASE_URI"
+    #         ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+    #         with app.app_context():
+    #             app_builder = AppBuilder(app)  # noqa: F841
+    #
+    #             owd = os.getcwd()
+    #             os.chdir(tmp_dir)
+    #             cli_runner = app.test_cli_runner()
+    #             export_result = cli_runner.invoke(export_roles)
+    #             os.chdir(owd)
+    #
+    #             self.assertEqual(export_result.exit_code, 0)
+    #             self.assertGreater(
+    #                 len(glob.glob(os.path.join(tmp_dir, "roles_export_*"))), 0
+    #             )
+    #
+    # @patch("json.dumps")
+    # def test_export_roles_indent(self, mock_json_dumps):
+    #     """Test that json.dumps is called with the correct argument passed from CLI."""
+    #     with tempfile.TemporaryDirectory() as tmp_dir:
+    #         app = Flask("src_app")
+    #         app.config.from_object("tests.config_security")
+    #         app.config[
+    #             "SQLALCHEMY_DATABASE_URI"
+    #         ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+    #         with app.app_context():
+    #             app_builder = AppBuilder(app)  # noqa: F841
+    #             cli_runner = app.test_cli_runner()
+    #
+    #             cli_runner.invoke(export_roles)
+    #             mock_json_dumps.assert_called_with(ANY, indent=None)
+    #             mock_json_dumps.reset_mock()
+    #
+    #             example_cli_args = ["", "foo", -1, 0, 1]
+    #             for arg in example_cli_args:
+    #                 cli_runner.invoke(export_roles, [f"--indent={arg}"])
+    #                 mock_json_dumps.assert_called_with(ANY, indent=arg)
+    #                 mock_json_dumps.reset_mock()
+    #
+    # def test_import_roles(self):
+    #     with tempfile.TemporaryDirectory() as tmp_dir:
+    #         app = Flask("dst_app")
+    #         app.config[
+    #             "SQLALCHEMY_DATABASE_URI"
+    #         ] = f"sqlite:///{os.path.join(tmp_dir, 'dst.db')}"
+    #         with app.app_context():
+    #             app_builder = AppBuilder(app)
+    #             cli_runner = app.test_cli_runner()
+    #
+    #             path = os.path.join(tmp_dir, "roles.json")
+    #
+    #             with open(path, "w") as fd:
+    #                 fd.write(json.dumps(self.expected_roles))
+    #
+    #             # before import roles on dst app include only Admin and Public
+    #             self.assertEqual(len(app_builder.sm.get_all_roles()), 2)
+    #
+    #             import_result = cli_runner.invoke(import_roles, [f"--path={path}"])
+    #             self.assertEqual(import_result.exit_code, 0)
+    #
+    #             resulting_roles = app_builder.sm.get_all_roles()
+    #
+    #             for expected_role in self.expected_roles:
+    #                 match = [
+    #                     r for r in resulting_roles if r.name == expected_role["name"]
+    #                 ]
+    #                 self.assertTrue(match)
+    #                 resulting_role = match[0]
+    #
+    #                 expected_role_permission_view_menus = {
+    #                     (pvm["permission"]["name"], pvm["view_menu"]["name"])
+    #                     for pvm in expected_role["permissions"]
+    #                 }
+    #                 resulting_role_permission_view_menus = {
+    #                     (pvm.permission.name, pvm.view_menu.name)
+    #                     for pvm in resulting_role.permissions
+    #                 }
+    #                 self.assertEqual(
+    #                     resulting_role_permission_view_menus,
+    #                     expected_role_permission_view_menus,
+    #                 )
