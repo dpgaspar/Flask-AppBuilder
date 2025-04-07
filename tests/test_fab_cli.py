@@ -147,9 +147,10 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app = Flask("src_app")
             app.config.from_object("tests.config_security_cli")
             log.error("BIND URL 3: %s", app.config["SQLALCHEMY_DATABASE_URI"])
+            del app.extensions["sqlalchemy"]
             with app.app_context():
                 log.error("BIND URL 4: %s", app.config["SQLALCHEMY_DATABASE_URI"])
-                db = get_sqla_class()()
+
                 app_builder = AppBuilder(app)  # noqa: F841
                 log.error("BIND URL 2: %s", app_builder.session.get_bind().url)
                 cli_runner = app.test_cli_runner()
