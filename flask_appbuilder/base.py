@@ -171,8 +171,8 @@ class AppBuilder:
         # init flask-sqlalchemy if needed
         log.error("Base: CONFIG URL 5: %s", app.config["SQLALCHEMY_DATABASE_URI"])
         if "sqlalchemy" not in app.extensions:
+            self.session.remove()
             log.error("Base: SQLAlchemy not in app.extensions")
-            self.session.close_all()
             db.init_app(app)
         log.error("Base: CONFIG URL 7: %s", app.config["SQLALCHEMY_DATABASE_URI"])
         log.error("Base: SQLAlchemy BIND 8: %s", db.session.get_bind())
