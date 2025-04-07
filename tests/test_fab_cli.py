@@ -146,6 +146,7 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config.from_object("tests.config_security_cli")
             with app.app_context():
                 app_builder = AppBuilder(app)  # noqa: F841
+                log.error("BIND URL 2: %s", app_builder.session.get_bind().url)
                 cli_runner = app.test_cli_runner()
 
                 path = os.path.join(tmp_dir, "roles.json")
