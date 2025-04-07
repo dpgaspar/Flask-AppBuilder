@@ -9,7 +9,6 @@ from unittest.mock import ANY, patch
 from click.testing import CliRunner
 from flask import Flask
 from flask_appbuilder import AppBuilder
-from flask_appbuilder.extensions import db
 from flask_appbuilder.cli import (
     cast_int_like_to_int,
     create_app,
@@ -143,11 +142,11 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
 
     def test_export_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
-            from flask_appbuilder.utils.legacy import get_sqla_class
             app = Flask("src_app")
             app.config.from_object("tests.config_security_cli")
             log.error("BIND URL 3: %s", app.config["SQLALCHEMY_DATABASE_URI"])
-            del app.extensions["sqlalchemy"]
+            if "sqlalchemy" in app.extensions:
+                del app.extensions["sqlalchemy"]
             with app.app_context():
                 log.error("BIND URL 4: %s", app.config["SQLALCHEMY_DATABASE_URI"])
 
