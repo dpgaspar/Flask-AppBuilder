@@ -146,9 +146,13 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app.config.from_object("tests.config_security_cli")
             log.error("BIND URL 3: %s", app.config["SQLALCHEMY_DATABASE_URI"])
             if "sqlalchemy" in app.extensions:
+                log.error("SQLAlchemy already in app.extensions [1]")
                 del app.extensions["sqlalchemy"]
             with app.app_context():
                 log.error("BIND URL 4: %s", app.config["SQLALCHEMY_DATABASE_URI"])
+                if "sqlalchemy" in app.extensions:
+                    log.error("SQLAlchemy already in app.extensions [1]")
+                    del app.extensions["sqlalchemy"]
 
                 app_builder = AppBuilder(app)  # noqa: F841
                 log.error("BIND URL 2: %s", app_builder.session.get_bind().url)
