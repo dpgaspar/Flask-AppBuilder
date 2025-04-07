@@ -626,12 +626,12 @@ class BaseApi(AbstractViewApi):
             ):
                 continue
             if attr_name in self.exclude_route_methods:
-                log.info("Not registering route for method %s", attr_name)
+                log.debug("Not registering route for method %s", attr_name)
                 continue
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
-                    log.info(
+                    log.debug(
                         "Registering route %s%s %s",
                         self.blueprint.url_prefix,
                         url,

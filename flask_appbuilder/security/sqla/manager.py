@@ -795,6 +795,7 @@ class SecurityManager(BaseSecurityManager):
         self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
     ) -> None:
         """Exports roles to JSON file."""
+        log.error("BIND URL: %s", self.appbuilder.session.get_bind().url)
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         filename = path or f"roles_export_{timestamp}.json"
 
