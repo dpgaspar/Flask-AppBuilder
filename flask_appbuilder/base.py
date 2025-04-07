@@ -173,7 +173,6 @@ class AppBuilder:
         if "sqlalchemy" not in app.extensions:
             log.error("Base: SQLAlchemy not in app.extensions")
             db.init_app(app)
-        log.error("Base: BIND SESSION URL 6", self.session.get_bind().url)
         log.error("Base: BIND URL 7: %s", app.config["SQLALCHEMY_DATABASE_URI"])
 
         self.base_template = app.config.get("FAB_BASE_TEMPLATE", self.base_template)
