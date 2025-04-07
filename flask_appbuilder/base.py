@@ -170,7 +170,6 @@ class AppBuilder:
         self._init_extension(app)
         # init flask-sqlalchemy if needed
         log.error("Base: BIND URL 5: %s", app.config["SQLALCHEMY_DATABASE_URI"])
-        log.error("Base: BIND SESSION URL 6", self.session.get_bind().url)
         if "sqlalchemy" not in app.extensions:
             log.error("Base: SQLAlchemy not in app.extensions")
             db.init_app(app)
