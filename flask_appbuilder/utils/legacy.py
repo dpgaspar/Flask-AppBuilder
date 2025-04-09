@@ -9,17 +9,24 @@ else:
     SQLALegacy = None  # type: ignore
 
 
-def get_sqla_class() -> Union[Type[SQLA], Type[SQLALegacy]]:
+def is_flask_sqlalchemy_2() -> bool:
     """
-    Returns the SQLA class based on the version of flask-sqlalchemy installed.
+    Check if the installed version of flask-sqlalchemy is 2.x.x.
     """
     try:
         fsqla_version = version("flask-sqlalchemy")
     except PackageNotFoundError:
-        raise ImportError("flask-sqlalchemy is not installed")
+        return False
 
     major_version = int(fsqla_version.split(".")[0])
-    if major_version < 3:
+    return major_version == 2
+
+
+def get_sqla_class() -> Union[Type[SQLA], Type[SQLALegacy]]:
+    """
+    Returns the SQLA class based on the version of flask-sqlalchemy installed.
+    """
+    if is_flask_sqlalchemy_2():
         from flask_appbuilder.models.sqla.base_legacy import SQLA
     else:
         from flask_appbuilder.models.sqla.base import SQLA
