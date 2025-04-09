@@ -143,8 +143,12 @@ class SecurityManager(BaseSecurityManager):
         else:
             register_user.password = generate_password_hash(
                 password=password,
-                method=self.appbuilder.get_app.config.get('FAB_PASSWORD_HASH_METHOD', 'scrypt'),
-                salt_length=self.appbuilder.get_app.config.get('FAB_PASSWORD_HASH_SALT_LENGTH', 16),
+                method=self.appbuilder.get_app.config.get(
+                    "FAB_PASSWORD_HASH_METHOD", "scrypt"
+                ),
+                salt_length=self.appbuilder.get_app.config.get(
+                    "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+                ),
             )
         register_user.registration_hash = str(uuid.uuid1())
         try:
@@ -240,8 +244,12 @@ class SecurityManager(BaseSecurityManager):
             else:
                 user.password = generate_password_hash(
                     password=password,
-                    method=self.appbuilder.get_app.config.get('FAB_PASSWORD_HASH_METHOD', 'scrypt'),
-                    salt_length=self.appbuilder.get_app.config.get('FAB_PASSWORD_HASH_SALT_LENGTH', 16),
+                    method=self.appbuilder.get_app.config.get(
+                        "FAB_PASSWORD_HASH_METHOD", "scrypt"
+                    ),
+                    salt_length=self.appbuilder.get_app.config.get(
+                        "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+                    ),
                 )
             self.get_session.add(user)
             self.get_session.commit()

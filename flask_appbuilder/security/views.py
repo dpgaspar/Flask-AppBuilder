@@ -448,8 +448,12 @@ class UserDBModelView(UserModelView):
     def pre_add(self, item: Any) -> None:
         item.password = generate_password_hash(
             password=item.password,
-            method=self.appbuilder.get_app.config.get('FAB_PASSWORD_HASH_METHOD', 'scrypt'),
-            salt_length=self.appbuilder.get_app.config.get('FAB_PASSWORD_HASH_SALT_LENGTH', 16),
+            method=self.appbuilder.get_app.config.get(
+                "FAB_PASSWORD_HASH_METHOD", "scrypt"
+            ),
+            salt_length=self.appbuilder.get_app.config.get(
+                "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+            ),
         )
 
 
