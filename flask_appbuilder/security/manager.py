@@ -1002,7 +1002,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if user is None or (not user.is_active):
             # Balance failure and success
             check_password_hash(
-                self.appbuilder.app.config["AUTH_DB_FAKE_PASSWORD_HASH_CHECK"],
+                current_app.config["AUTH_DB_FAKE_PASSWORD_HASH_CHECK"],
                 "password",
             )
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED, username)

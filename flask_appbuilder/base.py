@@ -108,8 +108,6 @@ class AppBuilder:
 
         :param app:
             The flask app object
-        :param session:
-            The SQLAlchemy session object
         :param menu:
             optional, a previous contructed menu
         :param indexview:

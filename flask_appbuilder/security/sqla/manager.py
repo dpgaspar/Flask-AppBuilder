@@ -121,7 +121,7 @@ class SecurityManager(BaseSecurityManager):
             # Check if an application context does not exist
         if not has_app_context():
             # Create a new application context
-            with self.appbuilder.app.app_context():
+            with current_app.app_context():
                 self._create_db()
         else:
             self._create_db()
