@@ -342,6 +342,7 @@ class BaseView(AbstractViewApi):
         """
         kwargs["base_template"] = self.appbuilder.base_template
         kwargs["appbuilder"] = self.appbuilder
+        kwargs["current_app"] = current_app
         return render_template(
             template, **dict(list(kwargs.items()) + list(self.extra_args.items()))
         )
