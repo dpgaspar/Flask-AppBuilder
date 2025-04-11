@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools
 import json
 import logging
@@ -76,6 +78,7 @@ from flask_appbuilder.hooks import (
 )
 from flask_appbuilder.models.filters import Filters
 from flask_appbuilder.models.sqla import Model
+from flask_appbuilder.models.sqla.filters import BaseFilter
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.decorators import permission_name, protect
 from flask_appbuilder.utils.limit import Limit
@@ -865,7 +868,7 @@ class ModelRestApi(BaseApi):
             search_columns = ['name', 'address']
 
     """
-    search_filters = None
+    search_filters: dict[str, BaseFilter] | None = None
     """
     Override default search filters for columns
     """

@@ -117,7 +117,7 @@ class BaseFilterConverter:
         log.warning("Filter type not supported for column: %s", col_name)
 
 
-class Filters(object):
+class Filters:
     filters: List[BaseFilter] = []
     """ List of instantiated BaseFilter classes """
     values: List[Any] = []
@@ -226,7 +226,7 @@ class Filters(object):
                 return True
         return False
 
-    def add_filter(self, column_name, filter_class, value):
+    def add_filter(self, column_name: str, filter_class: BaseFilter, value: str):
         self._add_filter(filter_class(column_name, self.datamodel), value)
         return self
 

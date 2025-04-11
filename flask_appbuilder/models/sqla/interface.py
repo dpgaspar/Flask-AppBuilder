@@ -27,7 +27,7 @@ from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.orm.query import Query
 from sqlalchemy.orm.util import AliasedClass
-from sqlalchemy.sql import visitors
+from sqlalchemy.sql import ColumnElement, visitors
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.sqltypes import TypeEngine
@@ -301,14 +301,20 @@ class SQLAInterface(BaseInterface):
     def get_outer_query_from_inner_query(
         self, query: Query, inner_query: Query
     ) -> Query:
-        subquery = inner_query.subquery()
         pk = self.get_pk()
         pk_name = self.get_pk_name()
+
         if isinstance(pk_name, str):
-            subquery_pk = getattr(subquery.c, pk_name)
+            # Only select the primary key in the inner query
+            inner_query = inner_query.with_entities(pk)
+
+            subquery = inner_query.subquery()
+            subquery_pk: ColumnElement = getattr(subquery.c, pk_name)
             return query.join(subquery, pk == subquery_pk)
+
         if isinstance(pk_name, Iterable):
             raise FABException("Composite primary key not supported")
+
         raise FABException("No primary key found")
 
     def apply_outer_select_joins(
@@ -321,6 +327,9 @@ class SQLAInterface(BaseInterface):
         if not select_columns:
             return query
 
+        if aliases_mapping is None:
+            aliases_mapping = {}
+
         for column in select_columns:
             if not is_column_dotted(column):
                 query = self._apply_normal_col_select_option(query, column)
@@ -328,33 +337,48 @@ class SQLAInterface(BaseInterface):
 
             root_relation = get_column_root_relation(column)
             related_model = self.get_related_model(root_relation)
-            leaf_column = getattr(related_model, get_column_leaf(column))
 
+            # Use meaningful alias if not already defined
+            if root_relation not in aliases_mapping:
+                alias = aliased(related_model, name=root_relation)
+                aliases_mapping[root_relation] = alias
+            else:
+                alias = aliases_mapping[root_relation]
+
+            attr = getattr(self.obj, root_relation)
+            leaf_column = getattr(
+                alias, get_column_leaf(column)
+            )  # ✅ FIX: use alias here
+            # Apply correct loading strategy
             if self.is_relation_many_to_many(
                 root_relation
             ) or self.is_relation_one_to_many(root_relation):
                 if outer_default_load and is_flask_sqlalchemy_2():
-                    query = query.options(
-                        Load(self.obj).defaultload(root_relation).load_only(leaf_column)
+                    load = (
+                        Load(self.obj)
+                        .defaultload(attr.of_type(alias))
+                        .load_only(leaf_column)
                     )
                 elif outer_default_load:
-                    query = query.options(
+                    load = (
                         Load(self.obj)
-                        .defaultload(getattr(self.obj, root_relation))
+                        .defaultload(attr.of_type(alias))
                         .load_only(leaf_column)
                     )
                 else:
-                    query = query.options(
+                    load = (
                         Load(self.obj)
-                        .joinedload(getattr(self.obj, root_relation))
+                        .joinedload(attr.of_type(alias))
                         .load_only(leaf_column)
                     )
             else:
-                query = query.options(
+                load = (
                     Load(self.obj)
-                    .joinedload(getattr(self.obj, root_relation))
+                    .joinedload(attr.of_type(alias))
                     .load_only(leaf_column)
                 )
+
+            query = query.options(load)
 
         return query
 
@@ -487,7 +511,12 @@ class SQLAInterface(BaseInterface):
                 outer_default_load=outer_default_load,
                 aliases_mapping=aliases_mapping,
             )
-            return self.apply_order_by(outer_query, order_column, order_direction)
+            return self.apply_order_by(
+                outer_query,
+                order_column,
+                order_direction,
+                aliases_mapping=aliases_mapping,
+            )
         else:
             return inner_query
 
@@ -1018,7 +1047,7 @@ class SQLAInterface(BaseInterface):
         Get the model primary key SQLAlchemy column.
         Will not support composite keys
         """
-        model_ = model or self.obj
+        model_ = self.obj if model is None else model
         pk_name = self._get_pk_name(model_)
         if pk_name and isinstance(pk_name, str):
             return getattr(model_, pk_name)
