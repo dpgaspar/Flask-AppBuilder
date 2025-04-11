@@ -82,6 +82,8 @@ class SQLAInterfaceTestCase(FABTestCase):
             select_columns=["username", "roles.name"],
         )
         self.assertEqual(count, 2)
+        usernames = [user.username for user in users]
+        raise Exception(usernames)
         with assert_no_queries(self.appbuilder.session.get_bind()):
             self.assertEqual(users[0].roles[0].name, "ReadOnly")
 
@@ -134,7 +136,5 @@ class SQLAInterfaceTestCase(FABTestCase):
             ],
         )
         self.assertEqual(count, 2)
-        usernames = [user.username for user in users]
-        raise Exception(usernames)
         with assert_no_queries(self.appbuilder.session.get_bind()):
             self.assertEqual(users[0].roles[0].name, "Admin")
