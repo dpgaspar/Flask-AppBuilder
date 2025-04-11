@@ -11,7 +11,7 @@ from flask_appbuilder.security.sqla.models import (
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from tests.base import FABTestCase
-from tests.const import USERNAME_ADMIN
+from tests.const import USERNAME_ADMIN, USERNAME_READONLY
 
 
 @contextmanager
@@ -81,9 +81,6 @@ class SQLAInterfaceTestCase(FABTestCase):
             order_direction="asc",
             select_columns=["username", "roles.name"],
         )
-        if count != 2:
-            usernames = [user.username for user in users]
-            raise Exception(count, usernames)
         self.assertEqual(count, 2)
         with assert_no_queries(self.appbuilder.session.get_bind()):
             self.assertEqual(users[0].roles[0].name, "ReadOnly")
@@ -138,4 +135,13 @@ class SQLAInterfaceTestCase(FABTestCase):
         )
         self.assertEqual(count, 2)
         with assert_no_queries(self.appbuilder.session.get_bind()):
-            self.assertEqual(users[0].roles[0].name, "Admin")
+            # access attr makes sure no extra lazy queries are triggered
+            users[0].roles[0].name
+        usernames = sorted([user.username for user in users])
+        expected_username = sorted(
+            [
+                USERNAME_ADMIN,
+                USERNAME_READONLY,
+            ]
+        )
+        self.assertEqual(usernames, expected_username)
