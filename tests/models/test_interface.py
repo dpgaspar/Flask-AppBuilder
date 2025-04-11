@@ -83,7 +83,7 @@ class SQLAInterfaceTestCase(FABTestCase):
         )
         if count != 2:
             raise AssertionError(
-                f"Expected 2 users, got {count}. Users: {[user.username for user in users]}"
+                f"2 users, got {count}. Users: {[user.username for user in users]}"
             )
         self.assertEqual(count, 2)
         with assert_no_queries(self.appbuilder.session.get_bind()):

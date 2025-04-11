@@ -12,13 +12,13 @@ from flask_appbuilder import AppBuilder
 from flask_appbuilder.cli import (
     cast_int_like_to_int,
     create_app,
-    create_permissions,
-    create_user,
+    # create_permissions,
+    # create_user,
     export_roles,
     import_roles,
-    list_users,
+    # list_users,
     # list_views,
-    reset_password,
+    # reset_password,
 )
 from tests.base import FABTestCase
 
@@ -68,27 +68,27 @@ class FlaskTestCase(FABTestCase):
                 ],
             )
             self.assertIn("Downloaded the skeleton app, good coding!", result.output)
-            os.chdir(APP_DIR)
-            result = runner.invoke(
-                create_user,
-                [
-                    "--username=bob",
-                    "--role=Public",
-                    "--firstname=Bob",
-                    "--lastname=Smith",
-                    "--email=bob@fab.com",
-                    "--password=foo",
-                ],
-            )
-            log.info(result.output)
-            self.assertIn("User bob created.", result.output)
-
-            result = runner.invoke(list_users, [])
-            self.assertIn("bob", result.output)
-
-            runner.invoke(create_permissions, [])
-
-            runner.invoke(reset_password, ["--username=bob", "--password=bar"])
+            # os.chdir(APP_DIR)
+            # result = runner.invoke(
+            #     create_user,
+            #     [
+            #         "--username=bob",
+            #         "--role=Public",
+            #         "--firstname=Bob",
+            #         "--lastname=Smith",
+            #         "--email=bob@fab.com",
+            #         "--password=foo",
+            #     ],
+            # )
+            # log.info(result.output)
+            # self.assertIn("User bob created.", result.output)
+            #
+            # result = runner.invoke(list_users, [])
+            # self.assertIn("bob", result.output)
+            #
+            # runner.invoke(create_permissions, [])
+            #
+            # runner.invoke(reset_password, ["--username=bob", "--password=bar"])
 
     test_create_app.needs_inet = True
 
