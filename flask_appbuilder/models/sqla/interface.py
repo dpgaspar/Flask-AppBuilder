@@ -346,10 +346,7 @@ class SQLAInterface(BaseInterface):
                 alias = aliases_mapping[root_relation]
 
             attr = getattr(self.obj, root_relation)
-            leaf_column = getattr(
-                alias, get_column_leaf(column)
-            )  # ✅ FIX: use alias here
-            # Apply correct loading strategy
+            leaf_column = getattr(alias, get_column_leaf(column))
             if self.is_relation_many_to_many(
                 root_relation
             ) or self.is_relation_one_to_many(root_relation):
