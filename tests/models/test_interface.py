@@ -9,8 +9,8 @@ from flask_appbuilder.models.sqla.filters import (
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.sqla.models import (
     PermissionView,
-    User,
     Role,
+    User,
 )
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
