@@ -363,17 +363,11 @@ class SQLAInterface(BaseInterface):
                         .load_only(leaf_column)
                     )
                 else:
-                    load = (
-                        Load(self.obj)
-                        .joinedload(attr.of_type(alias))
-                        .load_only(leaf_column)
-                    )
+                    query = query.join(alias, attr, isouter=True)
+                    load = contains_eager(attr.of_type(alias)).load_only(leaf_column)
             else:
-                load = (
-                    Load(self.obj)
-                    .joinedload(attr.of_type(alias))
-                    .load_only(leaf_column)
-                )
+                query = query.join(alias, attr, isouter=True)
+                load = contains_eager(attr.of_type(alias)).load_only(leaf_column)
 
             query = query.options(load)
 
