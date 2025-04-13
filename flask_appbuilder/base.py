@@ -154,6 +154,7 @@ class AppBuilder:
         :param session: The SQLAlchemy session
 
         """
+        log.info("Initializing AppBuilder")
         app.config.setdefault("APP_NAME", "F.A.B.")
         app.config.setdefault("APP_THEME", "")
         app.config.setdefault("APP_ICON", "")
@@ -169,7 +170,6 @@ class AppBuilder:
         # init flask-sqlalchemy if needed
         if "sqlalchemy" not in app.extensions:
             self.session.remove()
-            log.debug("Base: SQLAlchemy not in app.extensions")
             db.init_app(app)
         self.base_template = app.config.get("FAB_BASE_TEMPLATE", self.base_template)
         self.static_folder = app.config.get("FAB_STATIC_FOLDER", self.static_folder)
@@ -218,6 +218,7 @@ class AppBuilder:
         self._add_admin_views()
         self._add_addon_views()
         self._add_menu_permissions()
+        log.info("Initializing AppBuilder done")
 
     def _init_extension(self, app: Flask) -> None:
         app.appbuilder = self
@@ -241,8 +242,8 @@ class AppBuilder:
     @property
     def app(self) -> Flask:
         log.warning(
-            "appbuilder.app will be deprecated in future versions, "
-            "use current_app instead"
+            "appbuilder.app is deprecated and will be removed in a future version. "
+            "Use current_app instead"
         )
         return current_app
 
@@ -428,7 +429,7 @@ class AppBuilder:
             appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         baseview = self._check_and_init(baseview)
-        log.info(LOGMSG_INF_FAB_ADD_VIEW, baseview.__class__.__name__, name)
+        log.debug(LOGMSG_INF_FAB_ADD_VIEW, baseview.__class__.__name__, name)
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self
@@ -543,7 +544,7 @@ class AppBuilder:
 
         """
         baseview = self._check_and_init(baseview)
-        log.info(LOGMSG_INF_FAB_ADD_VIEW, baseview.__class__.__name__, "")
+        log.debug(LOGMSG_INF_FAB_ADD_VIEW, baseview.__class__.__name__, "")
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self

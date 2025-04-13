@@ -192,7 +192,10 @@ def rison(
                 try:
                     jsonschema.validate(instance=kwargs["rison"], schema=schema)
                 except jsonschema.ValidationError as e:
-                    validation_message = str(e).split("\n")[0]
+                    try:
+                        validation_message = str(e).split("\n", 1)[0]
+                    except Exception:
+                        validation_message = str(e)
                     return self.response_400(
                         message=f"Not a valid rison schema {validation_message}"
                     )

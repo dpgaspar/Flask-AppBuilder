@@ -177,6 +177,7 @@ class SQLAInterface(BaseInterface):
         order_column: str,
         order_direction: str,
         aliases_mapping: dict[str, AliasedClass] | None = None,
+        bypass_many_to_many: bool = False,
     ) -> Query:
         if order_column != "":
             # if Model has custom decorator **renders('<COL_NAME>')**
@@ -188,6 +189,12 @@ class SQLAInterface(BaseInterface):
 
             if is_column_dotted(order_column):
                 root_relation = get_column_root_relation(order_column)
+                if (
+                    self.is_relation_many_to_many(root_relation)
+                    or self.is_relation_one_to_many(root_relation)
+                    and bypass_many_to_many
+                ):
+                    return query
                 # On MVC we still allow for joins to happen here
                 if not self.is_model_already_joined(
                     query, self.get_related_model(root_relation)
@@ -326,8 +333,7 @@ class SQLAInterface(BaseInterface):
         if not select_columns:
             return query
 
-        if aliases_mapping is None:
-            aliases_mapping = {}
+        aliases_mapping = aliases_mapping or {}
 
         for column in select_columns:
             if not is_column_dotted(column):
@@ -423,7 +429,11 @@ class SQLAInterface(BaseInterface):
         query = self.apply_filters(query, inner_filters)
         query = self.apply_engine_specific_hack(query, page, page_size, order_column)
         query = self.apply_order_by(
-            query, order_column, order_direction, aliases_mapping=aliases_mapping
+            query,
+            order_column,
+            order_direction,
+            aliases_mapping=aliases_mapping,
+            bypass_many_to_many=True,
         )
         query = self.apply_pagination(query, page, page_size)
         return query
