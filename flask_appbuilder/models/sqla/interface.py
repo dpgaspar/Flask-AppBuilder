@@ -18,7 +18,6 @@ from flask_appbuilder.utils.base import (
     get_column_root_relation,
     is_column_dotted,
 )
-from flask_appbuilder.utils.legacy import is_flask_sqlalchemy_2
 from sqlalchemy import asc, desc
 from sqlalchemy import types as sa_types
 from sqlalchemy.exc import SQLAlchemyError
@@ -350,17 +349,11 @@ class SQLAInterface(BaseInterface):
             if self.is_relation_many_to_many(
                 root_relation
             ) or self.is_relation_one_to_many(root_relation):
-                if outer_default_load and is_flask_sqlalchemy_2():
+                if outer_default_load:
                     load = (
                         Load(self.obj)
-                        .defaultload(attr.of_type(alias))
-                        .load_only(leaf_column)
-                    )
-                elif outer_default_load:
-                    load = (
-                        Load(self.obj)
-                        .defaultload(attr.of_type(alias))
-                        .load_only(leaf_column)
+                        .defaultload(attr)
+                        .load_only(getattr(related_model, get_column_leaf(column)))
                     )
                 else:
                     query = query.join(alias, attr, isouter=True)
