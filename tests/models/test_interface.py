@@ -189,4 +189,7 @@ class SQLAInterfaceTestCase(FABTestCase):
         self.assertEqual(count, 2)
         with assert_no_queries(self.appbuilder.session.get_bind()):
             # access attr makes sure no extra lazy queries are triggered
-            assert users[0].roles[0].name == "Admin"
+            try:
+                assert users[0].roles[0].name == "Admin"
+            except AssertionError:
+                raise AssertionError(f"{users}")
