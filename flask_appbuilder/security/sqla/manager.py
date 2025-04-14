@@ -130,7 +130,8 @@ class SecurityManager(BaseSecurityManager):
         from flask_appbuilder.extensions import db
 
         inspector = inspect(db.engine)
-        if "ab_user" not in inspector.get_table_names():
+        existing_tables = inspector.get_table_names()
+        if "ab_user" not in existing_tables or "ab_group" not in existing_tables:
             log.info(c.LOGMSG_INF_SEC_NO_DB)
             db.create_all()
             log.info(c.LOGMSG_INF_SEC_ADD_DB)
