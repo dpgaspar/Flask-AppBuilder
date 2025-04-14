@@ -1,14 +1,14 @@
+from __future__ import annotations
+
 from functools import reduce
 import logging
 from typing import Any, Callable, cast, Dict, List, Optional, Type, TYPE_CHECKING, Union
 
 from flask import Blueprint, current_app, Flask, url_for
-from sqlalchemy.orm.session import Session as SessionBase
-
-from . import __version__
-from .api.manager import OpenApiManager
-from .babel.manager import BabelManager
-from .const import (
+from flask_appbuilder import __version__
+from flask_appbuilder.api.manager import OpenApiManager
+from flask_appbuilder.babel.manager import BabelManager
+from flask_appbuilder.const import (
     LOGMSG_ERR_FAB_ADD_PERMISSION_MENU,
     LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW,
     LOGMSG_ERR_FAB_ADDON_IMPORT,
@@ -17,9 +17,11 @@ from .const import (
     LOGMSG_INF_FAB_ADDON_ADDED,
     LOGMSG_WAR_FAB_VIEW_EXISTS,
 )
-from .filters import TemplateFilters
-from .menu import Menu, MenuApiManager
-from .views import IndexView, UtilView
+from flask_appbuilder.extensions import db
+from flask_appbuilder.filters import TemplateFilters
+from flask_appbuilder.menu import Menu, MenuApiManager
+from flask_appbuilder.views import IndexView, UtilView
+from sqlalchemy.orm.session import Session as SessionBase
 
 if TYPE_CHECKING:
     from flask_appbuilder.basemanager import BaseManager
@@ -49,7 +51,7 @@ def dynamic_class_import(class_path: str) -> Optional[DynamicImportType]:
         tmp = class_path.split(".")
         module_path = ".".join(tmp[0:-1])
         package = __import__(module_path)
-        return reduce(getattr, tmp[1:], package)
+        return reduce(getattr, tmp[1:], package)  # type: ignore
     except Exception as e:
         log.exception(e)
         log.error(LOGMSG_ERR_FAB_ADDON_IMPORT, class_path, e)
@@ -65,12 +67,11 @@ class AppBuilder:
     initialize your application like this for SQLAlchemy::
 
         from flask import Flask
-        from flask_appbuilder import SQLA, AppBuilder
+        from flask_appbuilder import AppBuilder
 
         app = Flask(__name__)
         app.config.from_object('config')
-        db = SQLA(app)
-        appbuilder = AppBuilder(app, db.session)
+        appbuilder = AppBuilder(app)
 
     When using MongoEngine::
 
@@ -94,7 +95,6 @@ class AppBuilder:
     def __init__(
         self,
         app: Optional[Flask] = None,
-        session: Optional[SessionBase] = None,
         menu: Optional[Menu] = None,
         indexview: Optional[Type["AbstractViewApi"]] = None,
         base_template: str = "appbuilder/baselayout.html",
@@ -108,8 +108,6 @@ class AppBuilder:
 
         :param app:
             The flask app object
-        :param session:
-            The SQLAlchemy session object
         :param menu:
             optional, a previous contructed menu
         :param indexview:
@@ -136,7 +134,6 @@ class AppBuilder:
         self.indexview = indexview
         self.static_folder = static_folder
         self.static_url_path = static_url_path
-        self.app = app
         self.update_perms = update_perms
 
         # Security Manager Class
@@ -147,9 +144,9 @@ class AppBuilder:
         self.menuapi_manager: MenuApiManager = None  # type: ignore
 
         if app is not None:
-            self.init_app(app, session)
+            self.init_app(app)
 
-    def init_app(self, app: Flask, session: SessionBase) -> None:
+    def init_app(self, app: Flask) -> None:
         """
         Will initialize the Flask app, supporting the app factory pattern.
 
@@ -157,6 +154,7 @@ class AppBuilder:
         :param session: The SQLAlchemy session
 
         """
+        log.info("Initializing AppBuilder")
         app.config.setdefault("APP_NAME", "F.A.B.")
         app.config.setdefault("APP_THEME", "")
         app.config.setdefault("APP_ICON", "")
@@ -168,8 +166,11 @@ class AppBuilder:
         app.config.setdefault("FAB_STATIC_FOLDER", self.static_folder)
         app.config.setdefault("FAB_STATIC_URL_PATH", self.static_url_path)
 
-        self.app = app
-
+        self._init_extension(app)
+        # init flask-sqlalchemy if needed
+        if "sqlalchemy" not in app.extensions:
+            self.session.remove()
+            db.init_app(app)
         self.base_template = app.config.get("FAB_BASE_TEMPLATE", self.base_template)
         self.static_folder = app.config.get("FAB_STATIC_FOLDER", self.static_folder)
         self.static_url_path = app.config.get(
@@ -207,7 +208,6 @@ class AppBuilder:
             self.security_manager_class = SecurityManager
 
         self._addon_managers = app.config["ADDON_MANAGERS"]
-        self.session = session
         self.sm = self.security_manager_class(self)
         self.bm = BabelManager(self)
         self.openapi_manager = OpenApiManager(self)
@@ -217,16 +217,16 @@ class AppBuilder:
         app.before_request(self.sm.before_request)
         self._add_admin_views()
         self._add_addon_views()
-        if self.app:
-            self._add_menu_permissions()
-        else:
-            self.post_init()
-        self._init_extension(app)
+        self._add_menu_permissions()
+        log.info("Initializing AppBuilder done")
 
     def _init_extension(self, app: Flask) -> None:
         app.appbuilder = self
-        if not hasattr(app, "extensions"):
-            app.extensions = {}
+        if "appbuilder" in app.extensions:
+            raise RuntimeError(
+                "A 'Flask-AppBuilder' instance has"
+                " already been registered on this Flask app."
+            )
         app.extensions["appbuilder"] = self
 
     def post_init(self) -> None:
@@ -234,31 +234,27 @@ class AppBuilder:
             # instantiate the views and add session
             baseview = self._check_and_init(baseview)
             # Register the views has blueprints
-            if baseview.__class__.__name__ not in self.get_app.blueprints.keys():
+            if baseview.__class__.__name__ not in current_app.blueprints.keys():
                 self.register_blueprint(baseview)
             # Add missing permissions where needed
         self.add_permissions()
 
     @property
-    def get_app(self) -> Flask:
-        """
-        Get current or configured flask app
-
-        :return: Flask App
-        """
-        if self.app:
-            return self.app
-        else:
-            return current_app
+    def app(self) -> Flask:
+        log.warning(
+            "appbuilder.app is deprecated and will be removed in a future version. "
+            "Use current_app instead"
+        )
+        return current_app
 
     @property
-    def get_session(self) -> SessionBase:
+    def session(self) -> SessionBase:
         """
         Get the current sqlalchemy session.
 
         :return: SQLAlchemy Session
         """
-        return self.session
+        return db.session
 
     @property
     def app_name(self) -> str:
@@ -267,7 +263,7 @@ class AppBuilder:
 
         :return: String with app name
         """
-        return self.get_app.config["APP_NAME"]
+        return current_app.config["APP_NAME"]
 
     @property
     def app_theme(self) -> str:
@@ -276,7 +272,7 @@ class AppBuilder:
 
         :return: String app theme name
         """
-        return self.get_app.config["APP_THEME"]
+        return current_app.config["APP_THEME"]
 
     @property
     def app_icon(self) -> str:
@@ -285,11 +281,11 @@ class AppBuilder:
 
         :return: String with relative app icon location
         """
-        return self.get_app.config["APP_ICON"]
+        return current_app.config["APP_ICON"]
 
     @property
     def languages(self) -> Dict[str, Any]:
-        return self.get_app.config["LANGUAGES"]
+        return current_app.config["LANGUAGES"]
 
     @property
     def version(self) -> str:
@@ -301,7 +297,7 @@ class AppBuilder:
         return __version__
 
     def _add_global_filters(self) -> None:
-        self.template_filters = TemplateFilters(self.get_app, self.sm)
+        self.template_filters = TemplateFilters(current_app, self.sm)
 
     def _add_global_static(self) -> None:
         bp = Blueprint(
@@ -312,7 +308,7 @@ class AppBuilder:
             static_folder=self.static_folder,
             static_url_path=self.static_url_path,
         )
-        self.get_app.register_blueprint(bp)
+        current_app.register_blueprint(bp)
 
     def _add_admin_views(self) -> None:
         """
@@ -349,11 +345,6 @@ class AppBuilder:
     def _check_and_init(
         self, baseview: Union[Type["AbstractViewApi"], "AbstractViewApi"]
     ) -> "AbstractViewApi":
-        # If class if not instantiated, instantiate it
-        # and add db session from security models.
-        if hasattr(baseview, "datamodel"):
-            if getattr(baseview, "datamodel").session is None:
-                getattr(baseview, "datamodel").session = self.session
         if isinstance(baseview, type):
             baseview = baseview()
         return baseview
@@ -438,16 +429,15 @@ class AppBuilder:
             appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         baseview = self._check_and_init(baseview)
-        log.info(LOGMSG_INF_FAB_ADD_VIEW, baseview.__class__.__name__, name)
+        log.debug(LOGMSG_INF_FAB_ADD_VIEW, baseview.__class__.__name__, name)
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self
             self.baseviews.append(baseview)
             self._process_inner_views()
-            if self.app:
-                self.register_blueprint(baseview)
-                self._add_permission(baseview)
-                self.add_limits(baseview)
+            self.register_blueprint(baseview)
+            self._add_permission(baseview)
+            self.add_limits(baseview)
         self.add_link(
             name=name,
             href=href,
@@ -515,10 +505,9 @@ class AppBuilder:
             baseview=baseview,
             cond=cond,
         )
-        if self.app:
-            self._add_permissions_menu(name)
-            if category:
-                self._add_permissions_menu(category)
+        self._add_permissions_menu(name)
+        if category:
+            self._add_permissions_menu(category)
 
     def add_separator(
         self, category: str, cond: Optional[Callable[..., bool]] = None
@@ -555,18 +544,17 @@ class AppBuilder:
 
         """
         baseview = self._check_and_init(baseview)
-        log.info(LOGMSG_INF_FAB_ADD_VIEW, baseview.__class__.__name__, "")
+        log.debug(LOGMSG_INF_FAB_ADD_VIEW, baseview.__class__.__name__, "")
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self
             self.baseviews.append(baseview)
             self._process_inner_views()
-            if self.app:
-                self.register_blueprint(
-                    baseview, endpoint=endpoint, static_folder=static_folder
-                )
-                self._add_permission(baseview)
-                self.add_limits(baseview)
+            self.register_blueprint(
+                baseview, endpoint=endpoint, static_folder=static_folder
+            )
+            self._add_permission(baseview)
+            self.add_limits(baseview)
         else:
             log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS, baseview.__class__.__name__)
         return baseview
@@ -613,7 +601,7 @@ class AppBuilder:
             return {}
         return self.sm.security_converge(self.baseviews, self.menu.menu, dry)
 
-    def get_url_for_login_with(self, next_url: str = None) -> str:
+    def get_url_for_login_with(self, next_url: str | None = None) -> str:
         if self.sm.auth_view is None:
             return ""
         return url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"), next=next_url)
@@ -702,7 +690,7 @@ class AppBuilder:
         endpoint: Optional[str] = None,
         static_folder: Optional[str] = None,
     ) -> None:
-        self.get_app.register_blueprint(
+        current_app.register_blueprint(
             baseview.create_blueprint(
                 self, endpoint=endpoint, static_folder=static_folder
             )
