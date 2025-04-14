@@ -13,3 +13,9 @@ class RolePermissionListSchema(Schema):
     id = fields.Integer()
     permission_name = fields.String()
     view_menu_name = fields.String()
+
+
+class RoleUserPutSchema(Schema):
+    user_ids = fields.List(
+        fields.Integer, required=True, metadata={"description": "List of user ids"}
+    )

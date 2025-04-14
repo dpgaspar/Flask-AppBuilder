@@ -252,8 +252,8 @@ To insert your template section before the edit widget, just create your own tem
 
     {% extends "appbuilder/general/model/edit.html" %}
 
-        {% block add_form %}
-            This Text is before the add form widget
+        {% block edit_form %}
+            This Text is before the edit form widget
             {{ super() }}
         {% endblock %}
 
