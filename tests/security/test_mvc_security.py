@@ -301,7 +301,9 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         Ensure a spoofed Host header does not allow redirection to an untrusted domain
         """
-        self.app.config["SAFE_REDIRECT_HOSTS"] = ["example.localhost"]  # trusted dev host
+        self.app.config["SAFE_REDIRECT_HOSTS"] = [
+            "example.localhost"
+        ]  # trusted dev host
         self.browser_logout(self.client)
 
         response = self.browser_login(
@@ -333,7 +335,6 @@ class MVCSecurityTestCase(BaseMVCTestCase):
 
         assert response.status_code == 302
         assert response.location == "https://example.com/"
-
 
     def test_db_login_invalid_control_characters_next_url(self):
         """
