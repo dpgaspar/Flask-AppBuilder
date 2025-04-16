@@ -245,6 +245,96 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         assert response.location == "/"
 
+    def test_db_login_invalid_no_netloc_with_scheme_next_url(self):
+        """
+        Test Security invalid next URL with no netloc but with scheme
+        """
+        self.browser_logout(self.client)
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="http:///sample.com ",
+            follow_redirects=False,
+        )
+        assert response.location == "/"
+
+    def test_login_next_url_spoofed_host_header_disallowed(self):
+        """
+        Ensure a spoofed Host header does not allow redirection to an untrusted domain
+        """
+        self.app.config["SAFE_REDIRECT_HOSTS"] = ["localhost"]  # trusted dev host
+        self.browser_logout(self.client)
+
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://example.com/",
+            follow_redirects=False,
+            headers={"Host": "example.com"},
+        )
+
+        assert response.status_code == 302
+        assert response.location == "/"
+
+    def test_login_next_url_spoofed_host_header_allowed_config(self):
+        """
+        Ensure a spoofed Host header does not allow redirection to an untrusted domain
+        """
+        self.app.config["SAFE_REDIRECT_HOSTS"] = ["localhost"]  # trusted dev host
+        self.browser_logout(self.client)
+
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://localhost/something",
+            follow_redirects=False,
+            headers={"Host": "example.com"},
+        )
+
+        assert response.status_code == 302
+        assert response.location == "https://localhost/something"
+
+    def test_login_next_url_allowed_config_wildcard(self):
+        """
+        Ensure a spoofed Host header does not allow redirection to an untrusted domain
+        """
+        self.app.config["SAFE_REDIRECT_HOSTS"] = ["example.localhost"]  # trusted dev host
+        self.browser_logout(self.client)
+
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://example.localhost/something",
+            follow_redirects=False,
+            headers={"Host": "example.localhost"},
+        )
+
+        assert response.status_code == 302
+        assert response.location == "https://example.localhost/something"
+
+    def test_login_next_url_spoofed_host_header_allowed(self):
+        """
+        Ensure a spoofed Host header does not allow redirection to an untrusted domain
+        """
+        self.browser_logout(self.client)
+
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://example.com/",
+            follow_redirects=False,
+            headers={"Host": "example.com"},
+        )
+
+        assert response.status_code == 302
+        assert response.location == "https://example.com/"
+
+
     def test_db_login_invalid_control_characters_next_url(self):
         """
         Test Security invalid next URL with control characters
