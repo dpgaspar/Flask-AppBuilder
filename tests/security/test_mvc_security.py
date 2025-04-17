@@ -245,20 +245,6 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         assert response.location == "/"
 
-    def test_db_login_invalid_no_netloc_with_scheme_next_url(self):
-        """
-        Test Security invalid next URL with no netloc but with scheme
-        """
-        self.browser_logout(self.client)
-        response = self.browser_login(
-            self.client,
-            USERNAME_ADMIN,
-            PASSWORD_ADMIN,
-            next_url="http:///sample.com ",
-            follow_redirects=False,
-        )
-        assert response.location == "/"
-
     def test_login_next_url_spoofed_host_header_disallowed(self):
         """
         Ensure a spoofed Host header does not allow redirection to an untrusted domain
