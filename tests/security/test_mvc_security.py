@@ -287,9 +287,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         Ensure a spoofed Host header does not allow redirection to an untrusted domain
         """
-        self.app.config["SAFE_REDIRECT_HOSTS"] = [
-            "*.localhost"
-        ]  # trusted dev host
+        self.app.config["SAFE_REDIRECT_HOSTS"] = ["*.localhost"]  # trusted dev host
         self.browser_logout(self.client)
 
         response = self.browser_login(
