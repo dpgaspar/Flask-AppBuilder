@@ -959,3 +959,46 @@ class LDAPSearchTestCase(unittest.TestCase):
             follow_redirects=False,
         )
         assert response.location == "/users/userinfo/"
+
+    def test__ldap_get_nested_groups(self):
+        """
+        LDAP: test `_search_ldap` method (with AUTH_LDAP_USE_NESTED_GROUPS_FOR_ROLES)
+        """
+        self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
+        self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
+        self.app.config["AUTH_LDAP_USE_NESTED_GROUPS_FOR_ROLES"] = "true"
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        sm = self.appbuilder.sm
+        create_default_users(self.appbuilder.session)
+
+        user_alice = (
+            "cn=test,ou=groups,dc=example,dc=org",
+            {
+                "member:1.2.840.113556.1.4.1941:": [
+                    b"cn=alice,ou=users,dc=example,dc=org"
+                ],
+            },
+        )
+        # run `_search_ldap` method w/mocked ldap connection
+        mock_con = Mock()
+        mock_con.search_s.return_value = [
+            (
+                None,
+                [
+                    "ldap://ForestDnsZones.mycompany.com/"
+                    "DC=ForestDnsZones,DC=mycompany,DC=com"
+                ],
+            ),
+            user_alice,
+            (None, ["ldap://mycompany.com/CN=Configuration,DC=mycompany,DC=com"]),
+        ]
+        nested_groups = sm._ldap_get_nested_groups(
+            ldap, mock_con, "cn=alice,ou=users,dc=example,dc=org"
+        )
+
+        # validate - search returned expected data
+        self.assertEqual(len(nested_groups), 1)
+        self.assertEqual(nested_groups[0], b"cn=test,ou=groups,dc=example,dc=org")
+
+        mock_con.search_s.assert_called()
