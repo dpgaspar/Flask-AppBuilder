@@ -94,7 +94,15 @@ class SecurityManager(BaseSecurityManager):
             if hashed_password:
                 register_user.password = hashed_password
             else:
-                register_user.password = generate_password_hash(password)
+                register_user.password = generate_password_hash(
+                    password=password,
+                    method=self.appbuilder.get_app.config.get(
+                        "FAB_PASSWORD_HASH_METHOD", "scrypt"
+                    ),
+                    salt_length=self.appbuilder.get_app.config.get(
+                        "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+                    ),
+                )
             register_user.registration_hash = str(uuid.uuid1())
             register_user.save()
             return register_user
@@ -141,7 +149,15 @@ class SecurityManager(BaseSecurityManager):
             if hashed_password:
                 user.password = hashed_password
             else:
-                user.password = generate_password_hash(password)
+                user.password = generate_password_hash(
+                    password=password,
+                    method=self.appbuilder.get_app.config.get(
+                        "FAB_PASSWORD_HASH_METHOD", "scrypt"
+                    ),
+                    salt_length=self.appbuilder.get_app.config.get(
+                        "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+                    ),
+                )
             user.save()
             log.info(c.LOGMSG_INF_SEC_ADD_USER, username)
             return user
