@@ -29,7 +29,7 @@ def is_safe_redirect_url(url: str) -> bool:
         scheme = "http"
     valid_schemes = ["http", "https"]
 
-    safe_hosts = current_app.config.get("SAFE_REDIRECT_HOSTS", [])
+    safe_hosts = current_app.config.get("FAB_SAFE_REDIRECT_HOSTS", [])
     if not safe_hosts:
         safe_hosts = [urlparse(request.host_url).netloc]
 
