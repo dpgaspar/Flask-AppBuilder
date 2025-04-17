@@ -330,9 +330,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                        | `generate_password_hash`_.                 |   No      |
 |                                        | Default: ``'scrypt'``.                     |           |
 +----------------------------------------+--------------------------------------------+-----------+
+| FAB_SAFE_REDIRECT_HOSTS                | A List[str] with allowed domains to check  |           |
+|                                        | when validating safe redirect              |   No      |
++----------------------------------------+--------------------------------------------+-----------+
 | FAB_PASSWORD_HASH_SALT_LENGTH          | Sets the password hashing salt length.     |   No      |
 |                                        | Default: ``16``.                           |           |
 +----------------------------------------+--------------------------------------------+-----------+
+
 
 .. _generate_password_hash: https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.security.generate_password_hash
 
