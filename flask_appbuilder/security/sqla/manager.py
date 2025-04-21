@@ -276,8 +276,8 @@ class SecurityManager(BaseSecurityManager):
                         "FAB_PASSWORD_HASH_SALT_LENGTH", 16
                     ),
                 )
-            self.get_session.add(user)
-            self.get_session.commit()
+            db.session.add(user)
+            db.session.commit()
             log.info(c.LOGMSG_INF_SEC_ADD_USER, username)
             return user
         except Exception as e:

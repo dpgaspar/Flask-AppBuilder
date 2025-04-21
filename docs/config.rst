@@ -6,7 +6,6 @@ Configuration keys
 
 Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap's default theme:
 
-<<<<<<< HEAD
 - SQLALCHEMY_DATABASE_URI
     - Description: DB connection string (flask-sqlalchemy)
     - Mandatory: Conditional
