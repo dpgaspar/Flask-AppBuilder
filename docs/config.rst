@@ -6,6 +6,7 @@ Configuration keys
 
 Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap's default theme:
 
+<<<<<<< HEAD
 - SQLALCHEMY_DATABASE_URI
     - Description: DB connection string (flask-sqlalchemy)
     - Mandatory: Conditional
@@ -214,6 +215,15 @@ Use config.py to configure the following parameters. By default it will use SQLL
     - Mandatory: No
 - FAB_PASSWORD_COMPLEXITY_ENABLED
     - Description: Enables the password complexity validation for AUTH database users. Default is False
+    - Mandatory: No
+- FAB_PASSWORD_HASH_METHOD
+    - Description: Hash method to use for password hashing. Default is scrypt
+    - Mandatory: No
+- FAB_PASSWORD_HASH_SALT_LENGTH
+    - Description: Salt length to use for password hashing. Default is 16
+    - Mandatory: No
+- FAB_SAFE_REDIRECT_HOSTS
+    - Description: List of allowed hosts for safe redirects. Default is empty list
     - Mandatory: No
 
 Note

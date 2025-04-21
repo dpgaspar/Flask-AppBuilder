@@ -52,7 +52,15 @@ class UserAPITestCase(FABTestCase):
             last_name=last_name,
             email=email,
             roles=roles,
-            password=generate_password_hash(password),
+            password=generate_password_hash(
+                password=password,
+                method=self.appbuilder.get_app.config.get(
+                    "FAB_PASSWORD_HASH_METHOD", "scrypt"
+                ),
+                salt_length=self.appbuilder.get_app.config.get(
+                    "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+                ),
+            ),
         )
         db.session.add(user)
         db.session.commit()

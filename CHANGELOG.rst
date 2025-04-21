@@ -1,6 +1,13 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.6.2
+-----------------------------------
+
+- fix: change SAFE_REDIRECT_HOSTS to FAB_SAFE_REDIRECT_HOSTS (#2335) [Daniel Vaz Gaspar]
+- feat: Make password hashing parameters configurable (#2332) [Denis Ismailaj]
+- fix: next url validation (#2334) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.6.1
 -----------------------------------
 
