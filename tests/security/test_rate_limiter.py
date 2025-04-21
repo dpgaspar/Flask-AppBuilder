@@ -24,6 +24,7 @@ class LimiterTestCase(FABTestCase):
         self.ctx.push()
 
         self.appbuilder = AppBuilder(self.app)
+        self.create_default_users(self.appbuilder)
 
         class Base1Api(BaseApi):
             @limit("2 per second")
@@ -40,34 +41,34 @@ class LimiterTestCase(FABTestCase):
         self.appbuilder.add_api(Base1Api)
         self.appbuilder.add_view(TestView, name="testview")
 
-    # def test_default_auth_rate_limit(self):
-    #     client = self.app.test_client()
-    #
-    #     with hiro.Timeline().freeze():
-    #         rv = self.browser_login(client, USERNAME_ADMIN, "wrong_password")
-    #         data = rv.data.decode("utf-8")
-    #         self.assertIn(INVALID_LOGIN_STRING, data)
-    #
-    #         rv = self.browser_login(client, USERNAME_ADMIN, "wrong_password")
-    #         data = rv.data.decode("utf-8")
-    #         self.assertIn(INVALID_LOGIN_STRING, data)
-    #
-    #         rv = self.browser_login(client, USERNAME_ADMIN, "wrong_password")
-    #         self.assertEqual(rv.status_code, 429)
-    #
-    # def test_api_rate_decorated_limit(self):
-    #     client = self.app.test_client()
-    #     token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-    #     uri = "api/v1/base1api/test1"
-    #     with hiro.Timeline().freeze():
-    #         rv = self.auth_client_get(client, token, uri)
-    #         self.assertEqual(rv.status_code, 200)
-    #
-    #         rv = self.auth_client_get(client, token, uri)
-    #         self.assertEqual(rv.status_code, 200)
-    #
-    #         rv = self.auth_client_get(client, token, uri)
-    #         self.assertEqual(rv.status_code, 429)
+    def test_default_auth_rate_limit(self):
+        client = self.app.test_client()
+
+        with hiro.Timeline().freeze():
+            rv = self.browser_login(client, USERNAME_ADMIN, "wrong_password")
+            data = rv.data.decode("utf-8")
+            self.assertIn(INVALID_LOGIN_STRING, data)
+
+            rv = self.browser_login(client, USERNAME_ADMIN, "wrong_password")
+            data = rv.data.decode("utf-8")
+            self.assertIn(INVALID_LOGIN_STRING, data)
+
+            rv = self.browser_login(client, USERNAME_ADMIN, "wrong_password")
+            self.assertEqual(rv.status_code, 429)
+
+    def test_api_rate_decorated_limit(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "api/v1/base1api/test1"
+        with hiro.Timeline().freeze():
+            rv = self.auth_client_get(client, token, uri)
+            self.assertEqual(rv.status_code, 200)
+
+            rv = self.auth_client_get(client, token, uri)
+            self.assertEqual(rv.status_code, 200)
+
+            rv = self.auth_client_get(client, token, uri)
+            self.assertEqual(rv.status_code, 429)
 
     def view_rate_decorated_limit(self):
         client = self.app.test_client()
