@@ -77,7 +77,7 @@ class FABTestCase(unittest.TestCase):
         next_url: Optional[str] = None,
         follow_redirects: bool = True,
         headers: Optional[dict] = None,
-    ) -> Response:
+    ) -> TestResponse:
         login_url = "/login/"
         if next_url:
             login_url = f"{login_url}?next={next_url}"
