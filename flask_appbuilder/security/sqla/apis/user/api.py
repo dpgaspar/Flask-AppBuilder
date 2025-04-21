@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import g, request
+from flask import current_app, g, request
 from flask_appbuilder import ModelRestApi
 from flask_appbuilder.api import expose, safe
 from flask_appbuilder.const import API_RESULT_RES_KEY
@@ -72,23 +72,15 @@ class UserApi(ModelRestApi):
         if item.password:
             item.password = generate_password_hash(
                 password=item.password,
-                method=self.appbuilder.get_app.config.get(
-                    "FAB_PASSWORD_HASH_METHOD", "scrypt"
-                ),
-                salt_length=self.appbuilder.get_app.config.get(
-                    "FAB_PASSWORD_HASH_SALT_LENGTH", 16
-                ),
+                method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+                salt_length=current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
             )
 
     def pre_add(self, item):
         item.password = generate_password_hash(
             password=item.password,
-            method=self.appbuilder.get_app.config.get(
-                "FAB_PASSWORD_HASH_METHOD", "scrypt"
-            ),
-            salt_length=self.appbuilder.get_app.config.get(
-                "FAB_PASSWORD_HASH_SALT_LENGTH", 16
-            ),
+            method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+            salt_length=current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
         )
 
     @expose("/", methods=["POST"])

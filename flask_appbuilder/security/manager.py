@@ -954,12 +954,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         user = self.get_user_by_id(userid)
         user.password = generate_password_hash(
             password=password,
-            method=self.appbuilder.get_app.config.get(
-                "FAB_PASSWORD_HASH_METHOD", "scrypt"
-            ),
-            salt_length=self.appbuilder.get_app.config.get(
-                "FAB_PASSWORD_HASH_SALT_LENGTH", 16
-            ),
+            method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+            salt_length=current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
         )
         self.update_user(user)
 
