@@ -54,12 +54,8 @@ class UserAPITestCase(FABTestCase):
             roles=roles,
             password=generate_password_hash(
                 password=password,
-                method=self.appbuilder.get_app.config.get(
-                    "FAB_PASSWORD_HASH_METHOD", "scrypt"
-                ),
-                salt_length=self.appbuilder.get_app.config.get(
-                    "FAB_PASSWORD_HASH_SALT_LENGTH", 16
-                ),
+                method=self.app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+                salt_length=self.app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
             ),
         )
         db.session.add(user)
