@@ -10,7 +10,14 @@ from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import generate_password_hash
 
-from .apis import PermissionApi, PermissionViewMenuApi, RoleApi, UserApi, ViewMenuApi
+from .apis import (
+    GroupApi,
+    PermissionApi,
+    PermissionViewMenuApi,
+    RoleApi,
+    UserApi,
+    ViewMenuApi,
+)
 from .models import (
     assoc_permissionview_role,
     Group,
@@ -54,6 +61,7 @@ class SecurityManager(BaseSecurityManager):
     user_api = UserApi
     view_menu_api = ViewMenuApi
     permission_view_menu_api = PermissionViewMenuApi
+    group_api = GroupApi
 
     def __init__(self, appbuilder):
         """
@@ -103,6 +111,7 @@ class SecurityManager(BaseSecurityManager):
             self.appbuilder.add_api(self.user_api)
             self.appbuilder.add_api(self.view_menu_api)
             self.appbuilder.add_api(self.permission_view_menu_api)
+            self.appbuilder.add_api(self.group_api)
 
     def create_db(self):
         try:

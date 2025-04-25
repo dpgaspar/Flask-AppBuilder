@@ -10,7 +10,7 @@ from flask_appbuilder.security.sqla.apis.user.schema import (
     UserPostSchema,
     UserPutSchema,
 )
-from flask_appbuilder.security.sqla.models import Role, User
+from flask_appbuilder.security.sqla.models import Group, Role, User
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash
@@ -39,6 +39,7 @@ class UserApi(ModelRestApi):
         "changed_on",
         "created_by.id",
         "changed_by.id",
+        "groups",
     ]
     show_columns = list_columns
     add_columns = [
@@ -49,6 +50,7 @@ class UserApi(ModelRestApi):
         "active",
         "email",
         "password",
+        "groups",
     ]
     edit_columns = add_columns
     search_columns = [
@@ -60,6 +62,7 @@ class UserApi(ModelRestApi):
         "created_by",
         "changed_by",
         "roles",
+        "groups",
     ]
 
     add_model_schema = UserPostSchema()
@@ -130,23 +133,41 @@ class UserApi(ModelRestApi):
             item = self.add_model_schema.load(request.json)
             model = User()
             roles = []
+            groups = []
             for key, value in item.items():
-                if key != "roles":
+                if key not in ("roles", "groups"):
                     setattr(model, key, value)
-                else:
-                    for role_id in item[key]:
+                elif key == "roles":
+                    for role_id in value:
                         role = (
                             self.datamodel.session.query(Role)
                             .filter(Role.id == role_id)
                             .one_or_none()
                         )
-                        if role:
-                            role.user_id = model.id
-                            role.role_id = role_id
-                            roles.append(role)
+                        if not role:
+                            return self.response_400(
+                                message=f"Role with id {role_id} not found."
+                            )
+                        role.user_id = model.id
+                        role.role_id = role_id
+                        roles.append(role)
+                elif key == "groups":
+                    for group_id in value:
+                        group = (
+                            self.datamodel.session.query(Group)
+                            .filter(Group.id == group_id)
+                            .one_or_none()
+                        )
+                        if not group:
+                            return self.response_400(
+                                message=f"Group with id {group_id} not found."
+                            )
+                        groups.append(group)
 
             if "roles" in item.keys():
                 model.roles = roles
+            if "groups" in item.keys():
+                model.groups = groups
 
             self.pre_add(model)
             self.datamodel.add(model, raise_exception=True)
@@ -201,24 +222,66 @@ class UserApi(ModelRestApi):
             item = self.edit_model_schema.load(request.json)
             model = self.datamodel.get(pk, self._base_filters)
             roles = []
+            groups = []
+
+            item_roles = item.get("roles")
+            item_groups = item.get("groups")
+
+            if item_roles == [] and item_groups == []:
+                return self.response_400(
+                    message="User must have at least one role or group!"
+                )
+
+            if item_roles == [] and (item_groups is None and not model.groups):
+                return self.response_400(
+                    message=(
+                        "Cannot clear all roles unless at least one group is \
+                             assigned!"
+                    )
+                )
+
+            if item_groups == [] and (item_roles is None and not model.roles):
+                return self.response_400(
+                    message=(
+                        "Cannot clear all groups unless at least one role is \
+                             assigned!"
+                    )
+                )
 
             for key, value in item.items():
-                if key != "roles":
+                if key not in ("roles", "groups"):
                     setattr(model, key, value)
-                else:
-                    for role_id in item[key]:
+                elif key == "roles":
+                    for role_id in value:
                         role = (
                             self.datamodel.session.query(Role)
                             .filter(Role.id == role_id)
                             .one_or_none()
                         )
-                        if role:
-                            role.user_id = model.id
-                            role.role_id = role_id
-                            roles.append(role)
+                        if not role:
+                            return self.response_404(
+                                message=f"Role with id {role_id} not found."
+                            )
+                        role.user_id = model.id
+                        role.role_id = role_id
+                        roles.append(role)
+                elif key == "groups":
+                    for group_id in value:
+                        group = (
+                            self.datamodel.session.query(Group)
+                            .filter(Group.id == group_id)
+                            .one_or_none()
+                        )
+                        if not group:
+                            return self.response_404(
+                                message=f"Group with id {group_id} not found."
+                            )
+                        groups.append(group)
 
             if "roles" in item.keys():
                 model.roles = roles
+            if "groups" in item.keys():
+                model.groups = groups
 
             self.pre_update(model)
             self.datamodel.edit(model, raise_exception=True)
