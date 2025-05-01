@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.6.3rc1
+-----------------------------------
+
+- fix: always add a unique col to ordering (#2340) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.6.2
 -----------------------------------
 
