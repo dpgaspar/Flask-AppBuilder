@@ -43,7 +43,7 @@ flask-limiter==3.7.0
     # via flask-appbuilder
 flask-login==0.6.3
     # via flask-appbuilder
-flask-sqlalchemy==2.5.1
+flask-sqlalchemy==3.1.1
     # via flask-appbuilder
 flask-wtf==1.2.1
     # via flask-appbuilder
@@ -89,6 +89,7 @@ packaging==23.2
     #   apispec
     #   limits
     #   marshmallow
+    #   marshmallow-sqlalchemy
 prison==0.2.1
     # via flask-appbuilder
 pygments==2.16.1
@@ -117,7 +118,7 @@ six==1.16.0
     # via
     #   prison
     #   python-dateutil
-sqlalchemy==1.4.49
+sqlalchemy==2.0.30
     # via
     #   flask-appbuilder
     #   flask-sqlalchemy
@@ -129,6 +130,7 @@ typing-extensions==4.12.2
     # via
     #   flask-limiter
     #   limits
+    #   sqlalchemy
 werkzeug==3.0.3
     # via
     #   flask
