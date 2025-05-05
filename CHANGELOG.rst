@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.6.3rc2
+-----------------------------------
+
+- fix: use id as a tiebreaker in the ordering (#2343) [Daniel Vaz Gaspar]
+- fix: always add a unique col to ordering (#2340) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.6.2
 -----------------------------------
 
