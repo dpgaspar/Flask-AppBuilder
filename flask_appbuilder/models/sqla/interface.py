@@ -178,6 +178,7 @@ class SQLAInterface(BaseInterface):
         order_column: str,
         order_direction: str,
         aliases_mapping: Dict[str, AliasedClass] = None,
+        add_pk: bool = False,
     ) -> Query:
         if order_column != "":
             # if Model has custom decorator **renders('<COL_NAME>')**
@@ -201,10 +202,10 @@ class SQLAInterface(BaseInterface):
                 _order_column = getattr(_alias, column_leaf)
             # get the primary key so we can add a tie breaker of the order
             # when the order column is not unique it can cause issues with pagination
-            pk = self.get_pk()
             direction = asc if order_direction == "asc" else desc
             order_by_columns = [direction(_order_column)]
-            if pk:
+            pk = self.get_pk()
+            if add_pk and pk:
                 order_by_columns.append(direction(pk))
             query = query.order_by(*order_by_columns)
 
@@ -387,7 +388,11 @@ class SQLAInterface(BaseInterface):
         query = self.apply_filters(query, inner_filters)
         query = self.apply_engine_specific_hack(query, page, page_size, order_column)
         query = self.apply_order_by(
-            query, order_column, order_direction, aliases_mapping=aliases_mapping
+            query,
+            order_column,
+            order_direction,
+            aliases_mapping=aliases_mapping,
+            add_pk=True,
         )
         query = self.apply_pagination(query, page, page_size)
         return query
@@ -438,8 +443,6 @@ class SQLAInterface(BaseInterface):
         :return: A SQLAlchemy Query with all the applied logic
         """
         aliases_mapping = {}
-        pk_name = self.get_pk_name()
-        extended_select_columns = select_columns + [pk_name] if select_columns else None
         inner_query = self._apply_inner_all(
             query,
             filters,
@@ -447,17 +450,17 @@ class SQLAInterface(BaseInterface):
             order_direction,
             page,
             page_size,
-            extended_select_columns,
+            select_columns,
             aliases_mapping=aliases_mapping,
         )
         # Only use a from_self if we need to select a join one to many or many to many
-        if extended_select_columns and self.exists_col_to_many(extended_select_columns):
-            if extended_select_columns and order_column:
-                extended_select_columns = extended_select_columns + [order_column]
+        if select_columns and self.exists_col_to_many(select_columns):
+            if select_columns and order_column:
+                select_columns = select_columns + [order_column]
             outer_query = inner_query.from_self()
             outer_query = self.apply_outer_select_joins(
                 outer_query,
-                extended_select_columns,
+                select_columns,
                 outer_default_load=outer_default_load,
             )
             return self.apply_order_by(outer_query, order_column, order_direction)
