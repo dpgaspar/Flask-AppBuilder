@@ -438,6 +438,8 @@ class SQLAInterface(BaseInterface):
         :return: A SQLAlchemy Query with all the applied logic
         """
         aliases_mapping = {}
+        pk_name = self.get_pk_name()
+        extended_select_columns = select_columns + [pk_name] if select_columns else None
         inner_query = self._apply_inner_all(
             query,
             filters,
@@ -445,16 +447,18 @@ class SQLAInterface(BaseInterface):
             order_direction,
             page,
             page_size,
-            select_columns,
+            extended_select_columns,
             aliases_mapping=aliases_mapping,
         )
         # Only use a from_self if we need to select a join one to many or many to many
-        if select_columns and self.exists_col_to_many(select_columns):
-            if select_columns and order_column:
-                select_columns = select_columns + [order_column]
+        if extended_select_columns and self.exists_col_to_many(extended_select_columns):
+            if extended_select_columns and order_column:
+                extended_select_columns = extended_select_columns + [order_column]
             outer_query = inner_query.from_self()
             outer_query = self.apply_outer_select_joins(
-                outer_query, select_columns, outer_default_load=outer_default_load
+                outer_query,
+                extended_select_columns,
+                outer_default_load=outer_default_load,
             )
             return self.apply_order_by(outer_query, order_column, order_direction)
         else:
