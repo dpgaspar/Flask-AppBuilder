@@ -19,3 +19,9 @@ class RoleUserPutSchema(Schema):
     user_ids = fields.List(
         fields.Integer, required=True, metadata={"description": "List of user ids"}
     )
+
+
+class RoleGroupPutSchema(Schema):
+    group_ids = fields.List(
+        fields.Integer, required=True, metadata={"description": "List of group ids"}
+    )
