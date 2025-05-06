@@ -178,6 +178,7 @@ class SQLAInterface(BaseInterface):
         order_column: str,
         order_direction: str,
         aliases_mapping: Dict[str, AliasedClass] = None,
+        add_pk: bool = False,
     ) -> Query:
         if order_column != "":
             # if Model has custom decorator **renders('<COL_NAME>')**
@@ -199,10 +200,15 @@ class SQLAInterface(BaseInterface):
                 column_leaf = get_column_leaf(order_column)
                 _alias = self.get_alias_mapping(root_relation, aliases_mapping)
                 _order_column = getattr(_alias, column_leaf)
-            if order_direction == "asc":
-                query = query.order_by(asc(_order_column))
-            else:
-                query = query.order_by(desc(_order_column))
+            # get the primary key so we can add a tie breaker of the order
+            # when the order column is not unique it can cause issues with pagination
+            direction = asc if order_direction == "asc" else desc
+            order_by_columns = [direction(_order_column)]
+            pk = self.get_pk()
+            if add_pk and pk:
+                order_by_columns.append(direction(pk))
+            query = query.order_by(*order_by_columns)
+
         return query
 
     def apply_pagination(
@@ -382,7 +388,11 @@ class SQLAInterface(BaseInterface):
         query = self.apply_filters(query, inner_filters)
         query = self.apply_engine_specific_hack(query, page, page_size, order_column)
         query = self.apply_order_by(
-            query, order_column, order_direction, aliases_mapping=aliases_mapping
+            query,
+            order_column,
+            order_direction,
+            aliases_mapping=aliases_mapping,
+            add_pk=True,
         )
         query = self.apply_pagination(query, page, page_size)
         return query
@@ -449,7 +459,9 @@ class SQLAInterface(BaseInterface):
                 select_columns = select_columns + [order_column]
             outer_query = inner_query.from_self()
             outer_query = self.apply_outer_select_joins(
-                outer_query, select_columns, outer_default_load=outer_default_load
+                outer_query,
+                select_columns,
+                outer_default_load=outer_default_load,
             )
             return self.apply_order_by(outer_query, order_column, order_direction)
         else:
