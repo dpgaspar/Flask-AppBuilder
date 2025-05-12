@@ -65,12 +65,12 @@ class UserApi(ModelRestApi):
     add_model_schema = UserPostSchema()
     edit_model_schema = UserPutSchema()
 
-    def pre_update(self, item):
+    def pre_update(self, item, data):
         item.changed_on = datetime.now()
         item.changed_by_fk = g.user.id
-        if item.password:
+        if "password" in data and data["password"]:
             item.password = generate_password_hash(
-                password=item.password,
+                password=data["password"],
                 method=self.appbuilder.get_app.config.get(
                     "FAB_PASSWORD_HASH_METHOD", "scrypt"
                 ),
@@ -220,7 +220,7 @@ class UserApi(ModelRestApi):
             if "roles" in item.keys():
                 model.roles = roles
 
-            self.pre_update(model)
+            self.pre_update(model, item)
             self.datamodel.edit(model, raise_exception=True)
             return self.response(
                 200,
