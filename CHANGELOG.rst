@@ -1,6 +1,27 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.6.3
+-----------------------------------
+
+- fix: use id as a tiebreaker in the ordering (#2343) [Daniel Vaz Gaspar]
+- fix: always add a unique col to ordering (#2340) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.6.2
+-----------------------------------
+
+- fix: change SAFE_REDIRECT_HOSTS to FAB_SAFE_REDIRECT_HOSTS (#2335) [Daniel Vaz Gaspar]
+- feat: Make password hashing parameters configurable (#2332) [Denis Ismailaj]
+- fix: next url validation (#2334) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 4.6.1
+-----------------------------------
+
+- fix: improve API for role users update (#2328) [Daniel Vaz Gaspar]
+- fix: openAPI spec for security update role users (#2326) [Daniel Vaz Gaspar]
+- feat(RoleApi): Add role/:id/users endpoint (#2319) [Enzo Martellucci]
+- fix: Ensure sub is a string when generating JWT tokens (#2321) [Paul Rhodes]
+
 Improvements and Bug fixes on 4.6.0
 -----------------------------------
 

@@ -36,11 +36,11 @@ class RoleApi(ModelRestApi):
         RoleUserPutSchema,
     )
 
-    @expose("/<int:pk>/permissions/", methods=["GET"])
+    @expose("/<int:role_id>/permissions/", methods=["GET"])
     @protect()
     @safe
     @permission_name("list_role_permissions")
-    def list_role_permissions(self, pk):
+    def list_role_permissions(self, role_id):
         """list role permissions
         ---
         get:
@@ -48,7 +48,7 @@ class RoleApi(ModelRestApi):
           - in: path
             schema:
               type: integer
-            name: pk
+            name: role_id
           responses:
             200:
               description: List of permissions
@@ -70,7 +70,7 @@ class RoleApi(ModelRestApi):
             500:
               $ref: '#/components/responses/500'
         """
-        role = self.datamodel.get(pk, select_columns=["permissions"])
+        role = self.datamodel.get(role_id, select_columns=["permissions"])
         if not role:
             return self.response_404()
 
@@ -156,14 +156,14 @@ class RoleApi(ModelRestApi):
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))
 
-    @expose("/<int:pk>/users", methods=["PUT"])
+    @expose("/<int:role_id>/users", methods=["PUT"])
     @protect()
     @safe
     @permission_name("update_role_users")
-    def update_role_users(self, pk):
+    def update_role_users(self, role_id):
         """update role users
         ---
-        post:
+        put:
           parameters:
           - in: path
             schema:
@@ -199,19 +199,18 @@ class RoleApi(ModelRestApi):
         """
         try:
             item = self.update_role_user_schema.load(request.json)
-            role = self.datamodel.get(pk)
+            role = self.datamodel.get(role_id)
             if not role:
                 return self.response_404()
-            users = []
-            for id in item["user_ids"]:
-                user = (
-                    current_app.appbuilder.get_session.query(User)
-                    .filter_by(id=id)
-                    .one_or_none()
-                )
-                if not user:
-                    return self.response_404()
-                users.append(user)
+
+            users = (
+                current_app.appbuilder.get_session.query(User)
+                .filter(User.id.in_(item["user_ids"]))
+                .all()
+            )
+
+            if len(users) != len(item["user_ids"]):
+                return self.response_404()  # Some users were not found
 
             role.user = users
             self.datamodel.edit(role, raise_exception=True)
