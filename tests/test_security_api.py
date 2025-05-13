@@ -409,7 +409,7 @@ class UserAPITestCase(FABTestCase):
             "username": "test_password",
         }
         rv = self.auth_client_post(client, token, uri, create_user_payload)
-        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 201)
 
         user = self.appbuilder.sm.find_user(username="test_password")
         self.assertIsNotNone(user)
@@ -443,7 +443,7 @@ class UserAPITestCase(FABTestCase):
             "username": "test_change_password",
         }
         rv = self.auth_client_post(client, token, uri, create_user_payload)
-        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 201)
 
         user = self.appbuilder.sm.find_user(username="test_change_password")
         self.assertIsNotNone(user)
