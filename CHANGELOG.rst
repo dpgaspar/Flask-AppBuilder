@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.6.4
+-----------------------------------
+
+- fix(UserApi): Fixed pre_update issue (#2347) [Alexandru Soare]
+
 Improvements and Bug fixes on 4.6.3
 -----------------------------------
 
