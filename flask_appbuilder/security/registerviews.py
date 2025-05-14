@@ -291,3 +291,7 @@ class RegisterUserOAuthView(BaseRegisterUser):
             last_name=form.last_name.data,
             email=form.email.data,
         )
+
+class RegisterUserADFSView(BaseRegisterUser):
+
+    pass

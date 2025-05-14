@@ -1,11 +1,12 @@
+import base64
 import datetime
+import json
 import importlib
 import logging
 import re
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
-from flask import Flask, g, session, url_for
-from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
+from flask import Flask, g, session, url_for, make_response
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
@@ -21,8 +22,10 @@ from .registerviews import (
     RegisterUserDBView,
     RegisterUserOAuthView,
     RegisterUserOIDView,
+    RegisterUserADFSView,
 )
 from .views import (
+    AuthADFSView,
     AuthDBView,
     AuthLDAPView,
     AuthOAuthView,
@@ -38,6 +41,7 @@ from .views import (
     UserGroupModelView,
     UserInfoEditView,
     UserLDAPModelView,
+    UserADFSModelView,
     UserOAuthModelView,
     UserOIDModelView,
     UserRemoteUserModelView,
@@ -49,6 +53,7 @@ from ..const import (
     AUTH_DB,
     AUTH_LDAP,
     AUTH_OAUTH,
+    AUTH_ADFS,
     AUTH_OID,
     AUTH_REMOTE_USER,
     LOGMSG_ERR_SEC_ADD_REGISTER_USER,
@@ -57,7 +62,6 @@ from ..const import (
     LOGMSG_WAR_SEC_LOGIN_FAILED,
     LOGMSG_WAR_SEC_NO_USER,
     LOGMSG_WAR_SEC_NOLDAP_OBJ,
-    MICROSOFT_KEY_SET_URL,
     PERMISSION_PREFIX,
 )
 
@@ -180,6 +184,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own user OID view """
     useroauthmodelview = UserOAuthModelView
     """ Override if you want your own user OAuth view """
+    userADFSmodelview = UserADFSModelView
+    """ Override if you want your own user ADFS view """
     userremoteusermodelview = UserRemoteUserModelView
     """ Override if you want your own user REMOTE_USER view """
     registerusermodelview = RegisterUserModelView
@@ -194,6 +200,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Authentication OAuth view """
     authremoteuserview = AuthRemoteUserView
     """ Override if you want your own Authentication REMOTE_USER view """
+    authADFSview = AuthADFSView
+    """ Override if you want your own Authentication ADFS view """
 
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
@@ -201,6 +209,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own register user OpenID view """
     registeruseroauthview = RegisterUserOAuthView
     """ Override if you want your own register user OAuth view """
+    registeruserADFSview = RegisterUserADFSView
+    """ Override if you want your own register user ADFS view """
+
 
     resetmypasswordview = ResetMyPasswordView
     """ Override if you want your own reset my password view """
@@ -281,8 +292,34 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_LASTNAME_FIELD", "sn")
             app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
 
-        if self.auth_type == AUTH_REMOTE_USER:
-            app.config.setdefault("AUTH_REMOTE_USER_ENV_VAR", "REMOTE_USER")
+        # ADFS Config
+        if self.auth_type == AUTH_ADFS:
+            if "AUTH_ADFS_XML_FILE_IDP" or "AUTH_ADFS_XML_FILE_SP" or "AUTH_ADFS_ADVANCED_SETTINGS" not in app.config:
+                pass
+                #raise Exception(
+                #    "No AUTH_ADFS_XML_FILE_IDP or AUTH_ADFS_XML_FILE_SP or AUTH_ADFS_ADVANCED_SETTINGS defined in config"
+                #    " with AUTH_ADFS authentication type."
+                #)
+                        
+            # app.config.setdefault("AUTH_LDAP_SEARCH_FILTER", "")
+            # app.config.setdefault("AUTH_LDAP_APPEND_DOMAIN", "")
+            # app.config.setdefault("AUTH_LDAP_USERNAME_FORMAT", "")
+            # app.config.setdefault("AUTH_LDAP_BIND_USER", "")
+            # app.config.setdefault("AUTH_LDAP_BIND_PASSWORD", "")
+            # # TLS options
+            # app.config.setdefault("AUTH_LDAP_USE_TLS", False)
+            # app.config.setdefault("AUTH_LDAP_ALLOW_SELF_SIGNED", False)
+            # app.config.setdefault("AUTH_LDAP_TLS_DEMAND", False)
+            # app.config.setdefault("AUTH_LDAP_TLS_CACERTDIR", "")
+            # app.config.setdefault("AUTH_LDAP_TLS_CACERTFILE", "")
+            # app.config.setdefault("AUTH_LDAP_TLS_CERTFILE", "")
+            # app.config.setdefault("AUTH_LDAP_TLS_KEYFILE", "")
+            # Mapping options - need to be update
+            app.config.setdefault("AUTH_ADFS_UID_FIELD", "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn")
+            app.config.setdefault("AUTH_ADFS_GROUP_FIELD", "")
+            app.config.setdefault("AUTH_ADFS_FIRSTNAME_FIELD", "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")
+            app.config.setdefault("AUTH_ADFS_LASTNAME_FIELD", "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'")
+            app.config.setdefault("AUTH_ADFS_EMAIL_FIELD", "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn")
 
         # Rate limiting
         app.config.setdefault("AUTH_RATE_LIMITED", False)
@@ -291,17 +328,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_OID:
             from flask_openid import OpenID
 
-            log.warning(
-                "AUTH_OID is deprecated and will be removed in version 5. "
-                "Migrate to other authentication methods."
-            )
             self.oid = OpenID(app)
-
         if self.auth_type == AUTH_OAUTH:
             from authlib.integrations.flask_client import OAuth
 
             self.oauth = OAuth(app)
-            self.oauth_remotes = {}
+            self.oauth_remotes = dict()
             for _provider in self.oauth_providers:
                 provider_name = _provider["name"]
                 log.debug("OAuth providers init %s", provider_name)
@@ -449,10 +481,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"]
 
     @property
-    def auth_remote_user_env_var(self) -> str:
-        return self.appbuilder.get_app.config["AUTH_REMOTE_USER_ENV_VAR"]
-
-    @property
     def auth_roles_mapping(self) -> Dict[str, List[str]]:
         return self.appbuilder.get_app.config["AUTH_ROLES_MAPPING"]
 
@@ -549,16 +577,45 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["AUTH_RATE_LIMIT"]
 
     @property
+    def auth_adfs_xml_file_idp(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_XML_FILE_IDP"]
+
+    @property
+    def auth_adfs_xml_file_sp(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_XML_FILE_SP"]
+
+    @property
+    def auth_adfs_advanced_settings(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_ADVANCED_SETTINGS"]
+
+    @property
+    def auth_adfs_uid_field(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_UID_FIELD"]
+
+    @property
+    def auth_adfs_group_field(self) -> str:
+        return self.appbuilder.get_app.config["AUTH_ADFS_GROUP_FIELD"]
+
+    @property
+    def auth_adfs_firstname_field(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_FIRSTNAME_FIELD"]
+
+    @property
+    def auth_adfs_lastname_field(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_LASTNAME_FIELD"]
+
+    @property
+    def auth_adfs_email_field(self):
+        return self.appbuilder.get_app.config["AUTH_ADFS_EMAIL_FIELD"]
+
+    @property
     def current_user(self):
         if current_user.is_authenticated:
             return g.user
         elif current_user_jwt:
             return current_user_jwt
 
-    def oauth_user_info_getter(
-        self,
-        func: Callable[["BaseSecurityManager", str, Dict[str, Any]], Dict[str, Any]],
-    ):
+    def oauth_user_info_getter(self, f):
         """
         Decorator function to be the OAuth user info getter
         for all the providers, receives provider and response
@@ -573,11 +630,21 @@ class BaseSecurityManager(AbstractSecurityManager):
                 if provider == 'github':
                     me = sm.oauth_remotes[provider].get('user')
                     return {'username': me.data.get('login')}
-                return {}
+                else:
+                    return {}
         """
 
-        def wraps(provider: str, response: Dict[str, Any] = None) -> Dict[str, Any]:
-            return func(self, provider, response)
+        def wraps(provider, response=None):
+            ret = f(self, provider, response=response)
+            # Checks if decorator is well behaved and returns a dict as supposed.
+            if not type(ret) == dict:
+                log.error(
+                    "OAuth user info decorated function "
+                    "did not returned a dict, but: %s",
+                    type(ret),
+                )
+                return {}
+            return ret
 
         self.oauth_user_info = wraps
         return wraps
@@ -616,11 +683,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         session["oauth_provider"] = provider
 
-    def get_oauth_user_info(
-        self, provider: str, resp: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def get_oauth_user_info(self, provider, resp):
         """
-        Since there are different OAuth APIs with different ways to
+        Since there are different OAuth API's with different ways to
         retrieve user info
         """
         # for GITHUB
@@ -659,16 +724,23 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "last_name": data.get("family_name", ""),
                 "email": data.get("email", ""),
             }
+        # for Azure AD Tenant. Azure OAuth response contains
+        # JWT token which has user info.
+        # JWT token needs to be base64 decoded.
+        # https://docs.microsoft.com/en-us/azure/active-directory/develop/
+        # active-directory-protocols-oauth-code
         if provider == "azure":
-            me = self._decode_and_validate_azure_jwt(resp["id_token"])
-            log.debug("User info from Azure: %s", me)
-            # https://learn.microsoft.com/en-us/azure/active-directory/develop/id-token-claims-reference#payload-claims
+            log.debug("Azure response received : %s", resp)
+            id_token = resp["id_token"]
+            log.debug(str(id_token))
+            me = self._azure_jwt_token_parse(id_token)
+            log.debug("Parse JWT token : %s", me)
             return {
-                # To keep backward compatibility with previous versions
-                # of FAB, we use upn if available, otherwise we use email
-                "email": me["upn"] if "upn" in me else me["email"],
+                "name": me.get("name", ""),
+                "email": me["upn"],
                 "first_name": me.get("given_name", ""),
                 "last_name": me.get("family_name", ""),
+                "id": me["oid"],
                 "username": me["oid"],
                 "role_keys": me.get("roles", []),
             }
@@ -722,80 +794,39 @@ class BaseSecurityManager(AbstractSecurityManager):
                 "email": data.get("email", ""),
                 "role_keys": data.get("groups", []),
             }
-        # for Authentik
-        if provider == "authentik":
-            id_token = resp["id_token"]
-            me = self._get_authentik_token_info(id_token)
-            log.debug("User info from authentik: %s", me)
-            return {
-                "email": me["preferred_username"],
-                "first_name": me.get("given_name", ""),
-                "username": me["nickname"],
-                "role_keys": me.get("groups", []),
-            }
-
-        raise OAuthProviderUnknown()
-
-    def _get_microsoft_jwks(self) -> List[Dict[str, Any]]:
-        import requests
-
-        return requests.get(MICROSOFT_KEY_SET_URL).json()
-
-    def _decode_and_validate_azure_jwt(self, id_token: str) -> Dict[str, str]:
-        verify_signature = self.oauth_remotes["azure"].client_kwargs.get(
-            "verify_signature", False
-        )
-        if verify_signature:
-            from authlib.jose import JsonWebKey, jwt as authlib_jwt
-
-            keyset = JsonWebKey.import_key_set(self._get_microsoft_jwks())
-            claims = authlib_jwt.decode(id_token, keyset)
-            claims.validate()
-            return claims
-
-        return jwt.decode(id_token, options={"verify_signature": False})
-
-    def _get_authentik_jwks(self, jwks_url) -> dict:
-        import requests
-
-        resp = requests.get(jwks_url)
-        if resp.status_code == 200:
-            return resp.json()
-        return False
-
-    def _validate_jwt(self, id_token, jwks):
-        from authlib.jose import JsonWebKey, jwt as authlib_jwt
-
-        keyset = JsonWebKey.import_key_set(jwks)
-        claims = authlib_jwt.decode(id_token, keyset)
-        claims.validate()
-        log.info("JWT token is validated")
-        return claims
-
-    def _get_authentik_token_info(self, id_token):
-        me = jwt.decode(id_token, options={"verify_signature": False})
-
-        verify_signature = self.oauth_remotes["authentik"].client_kwargs.get(
-            "verify_signature", True
-        )
-        if verify_signature:
-            # Validate the token using authentik certificate
-            jwks_uri = self.oauth_remotes["authentik"].server_metadata.get("jwks_uri")
-            if jwks_uri:
-                jwks = self._get_authentik_jwks(jwks_uri)
-                if jwks:
-                    return self._validate_jwt(id_token, jwks)
-            else:
-                log.error(
-                    "jwks_uri not specified in OAuth Providers, "
-                    "could not verify token signature"
-                )
         else:
-            # Return the token info without validating
-            log.warning("JWT token is not validated!")
-            return me
+            return {}
 
-        raise InvalidLoginAttempt("OAuth signature verify failed")
+    def _azure_parse_jwt(self, id_token):
+        jwt_token_parts = r"^([^\.\s]*)\.([^\.\s]+)\.([^\.\s]*)$"
+        matches = re.search(jwt_token_parts, id_token)
+        if not matches or len(matches.groups()) < 3:
+            log.error("Unable to parse token.")
+            return {}
+        return {
+            "header": matches.group(1),
+            "Payload": matches.group(2),
+            "Sig": matches.group(3),
+        }
+
+    def _azure_jwt_token_parse(self, id_token):
+        jwt_split_token = self._azure_parse_jwt(id_token)
+        if not jwt_split_token:
+            return
+
+        jwt_payload = jwt_split_token["Payload"]
+        # Prepare for base64 decoding
+        payload_b64_string = jwt_payload
+        payload_b64_string += "=" * (4 - ((len(jwt_payload) % 4)))
+        decoded_payload = base64.urlsafe_b64decode(payload_b64_string.encode("ascii"))
+
+        if not decoded_payload:
+            log.error("Payload of id_token could not be base64 url decoded.")
+            return
+
+        jwt_decoded_payload = json.loads(decoded_payload.decode("utf-8"))
+
+        return jwt_decoded_payload
 
     def register_views(self):
         if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEWS", True):
@@ -810,6 +841,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 self.registeruser_view = self.registeruseroidview()
             elif self.auth_type == AUTH_OAUTH:
                 self.registeruser_view = self.registeruseroauthview()
+            elif self.auth_type == AUTH_ADFS:
+                self.registeruser_view = self.registeruserADFSview()                
             if self.registeruser_view:
                 self.appbuilder.add_view_no_menu(self.registeruser_view)
 
@@ -830,6 +863,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         elif self.auth_type == AUTH_REMOTE_USER:
             self.user_view = self.userremoteusermodelview
             self.auth_view = self.authremoteuserview()
+        elif self.auth_type == AUTH_ADFS:
+            self.user_view = self.userADFSmodelview
+            self.auth_view = self.authADFSview()            
         else:
             self.user_view = self.useroidmodelview
             self.auth_view = self.authoidview()
@@ -1024,6 +1060,45 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED, username)
             return None
 
+    def _init_saml_auth(self, req):
+            """
+            Initialize ADFS request using SP and IDP information.
+
+            :param req: The request
+            :return: auth object array
+            """
+            try:
+                from onelogin.saml2.auth import OneLogin_Saml2_Auth
+                from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
+            except Exception as e:
+                log.error("python3-saml library is not installed" + str(e))
+                return None
+
+            xml_idp = OneLogin_Saml2_IdPMetadataParser.parse_remote(self.auth_adfs_xml_file_idp) # this includes the SP portion as well
+            # replace the SP portion with the SP xml file
+            with open(self.auth_adfs_xml_file_sp, 'r') as data: 
+                sp_data = json.load(data)
+            #combine the files into a single xml
+            final_xml = xml_idp
+            final_xml["sp"] = sp_data["sp"]
+
+            auth = OneLogin_Saml2_Auth(req, final_xml) #authentication request
+            
+            return auth
+
+    def _prepare_flask_request(self, request):
+            # If server is behind proxys or balancers use the HTTP_X_FORWARDED fields
+            return {
+                'https': 'on' if request.scheme == 'https' or ('https' in request.headers.get("Referer")) else 'off',
+                'http_host': request.host.split(":")[0] if ":" in request.host else reqest.host,
+                # 'server_port': '4040',
+                'script_name': request.path,
+                'get_data': request.args.copy(),
+                # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
+                #'lowercase_urlencoding': True,
+                'post_data': request.form.copy()
+            }
+
     def _search_ldap(self, ldap, con, username):
         """
         Searches LDAP for user.
@@ -1053,7 +1128,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if len(self.auth_roles_mapping) > 0:
             request_fields.append(self.auth_ldap_group_field)
 
-        # perform the LDAP search
+        # preform the LDAP search
         log.debug(
             "LDAP search for '%s' with fields %s in scope '%s'",
             filter_str,
@@ -1171,6 +1246,97 @@ class BaseSecurityManager(AbstractSecurityManager):
         # decode - removing empty strings
         return [x.decode("utf-8") for x in raw_list if x.decode("utf-8")]
 
+    def auth_user_adfs(self, request):
+
+        auth_request = self._prepare_flask_request(request)
+        auth = self._init_saml_auth(auth_request)
+
+        return auth, auth_request
+
+    def adfs_metadata(self, request):
+
+        auth_request = self._prepare_flask_request(request)
+        auth = self._init_saml_auth(auth_request)
+        settings = auth.get_settings()
+        metadata = settings.get_sp_metadata()
+        errors = settings.validate_metadata(metadata)
+
+        if len(errors) == 0:
+            response = make_response(metadata, 200)
+            response.headers['Content-Type'] = 'text/xml'
+        else:
+            response = make_response(', '.join(errors), 500)
+
+        return response
+
+    def auth_user_adfs_login(self, session, auth, auth_request): # this is temporary that needs to be converted
+        """
+        Method for authenticating user with LDAP.
+
+        NOTE: this depends on python3-saml module
+
+        :param username: the username
+        :param password: the password
+        """
+
+        try:
+            from onelogin.saml2.utils import OneLogin_Saml2_Utils
+            if 'AuthNRequestID' in session:
+                del session['AuthNRequestID']
+            session['samlUserdata'] = auth.get_attributes()
+            session['samlNameId'] = auth.get_nameid()
+            session['samlNameIdFormat'] = auth.get_nameid_format()
+            session['samlNameIdNameQualifier'] = auth.get_nameid_nq()
+            session['samlNameIdSPNameQualifier'] = auth.get_nameid_spnq()
+            session['samlSessionIndex'] = auth.get_session_index()
+            self_url = OneLogin_Saml2_Utils.get_self_url(auth_request)
+
+            user_name = session['samlUserdata'][self.auth_adfs_uid_field]
+            username = user_name[0].split("@")[0]
+            # Search the DB for this user
+            user = self.find_user(username=username) #simplify it
+
+            # If user is not active, go away
+            if user and (not user.is_active):
+                return None
+
+            user_attributes = {}
+            
+            # If the user is new, register them
+            if (not user) and self.auth_user_registration:
+                user = self.add_user(
+                    username=username,
+                    first_name= session['samlUserdata'][self.auth_adfs_firstname_field][0],
+                    last_name= session['samlUserdata'][self.auth_adfs_firstname_field][0],
+                    email= session['samlUserdata'][self.auth_adfs_email_field][0] or f"{user_name}@email.notfound",
+                    role=self.find_role(self.auth_user_registration_role),
+                )
+                log.debug("New user registered: {0}".format(user))
+
+                # If user registration failed, go away
+                if not user:
+                    log.info(LOGMSG_ERR_SEC_ADD_REGISTER_USER.format(username))
+                    return None
+
+            # LOGIN SUCCESS (only if user is now registered)
+            if user:
+                self.update_user_auth_stat(user)
+                return user, self_url
+            else:
+                return None
+
+            # This is redirect               
+            if 'RelayState' in request.form and self_url != request.form['RelayState']:
+                # To avoid 'Open Redirect' attacks, before execute the redirection confirm
+                # the value of the request.form['RelayState'] is a trusted URL.
+                return redirect(auth.redirect_to(request.form['RelayState']))
+            elif auth.get_settings().is_debug_active():
+                error_reason = auth.get_last_error_reason()
+
+        except ImportError:
+            log.error("python3-saml library is not installed")
+            return None
+
     def auth_user_ldap(self, username, password):
         """
         Method for authenticating user with LDAP.
@@ -1236,7 +1402,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             user_attributes = {}
 
             # Flow 1 - (Indirect Search Bind):
-            #  - in this flow, special bind credentials are used to perform the
+            #  - in this flow, special bind credentials are used to preform the
             #    LDAP search
             #  - in this flow, AUTH_LDAP_SEARCH must be set
             if self.auth_ldap_bind_user:
@@ -1272,7 +1438,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
             # Flow 2 - (Direct Search Bind):
             #  - in this flow, the credentials provided by the end-user are used
-            #    to perform the LDAP search
+            #    to preform the LDAP search
             #  - in this flow, we only search LDAP if AUTH_LDAP_SEARCH is set
             #     - features like AUTH_USER_REGISTRATION & AUTH_ROLES_SYNC_AT_LOGIN
             #       will only work if AUTH_LDAP_SEARCH is set
@@ -1561,14 +1727,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         return bool(db_role_ids) and self.exist_permission_on_roles(
             view_name, permission_name, db_role_ids
         )
-
-    def get_oid_identity_url(self, provider_name: str) -> Optional[str]:
-        """
-        Returns the OIDC identity provider URL
-        """
-        for provider in self.openid_providers:
-            if provider.get("name") == provider_name:
-                return provider.get("url")
 
     def get_user_roles(self, user) -> List[object]:
         """
@@ -2223,17 +2381,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def load_user(self, pk):
-        user = self.get_user_by_id(int(pk))
-        if user.is_active:
-            return user
+        return self.get_user_by_id(int(pk))
 
     def load_user_jwt(self, _jwt_header, jwt_data):
         identity = jwt_data["sub"]
         user = self.load_user(identity)
-        if user.is_active:
-            # Set flask g.user to JWT user, we can't do it on before request
-            g.user = user
-            return user
+        # Set flask g.user to JWT user, we can't do it on before request
+        g.user = user
+        return user
 
     @staticmethod
     def before_request():
