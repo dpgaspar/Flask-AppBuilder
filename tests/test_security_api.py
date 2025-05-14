@@ -313,6 +313,7 @@ class UserAPITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         uri = "api/v1/security/users/"
+
         create_user_payload = {
             "active": True,
             "email": "fab@test_create_user_1.com",
@@ -392,6 +393,72 @@ class UserAPITestCase(FABTestCase):
         for r in roles:
             self.session.delete(r)
         self.session.commit()
+
+    def test_edit_user_check_password(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        role_id = self.appbuilder.sm.find_role("Admin").id
+        uri = "api/v1/security/users/"
+        create_user_payload = {
+            "active": True,
+            "email": "test_password@test.com",
+            "first_name": "test",
+            "last_name": "test",
+            "password": "password",
+            "roles": [role_id],
+            "username": "test_password",
+        }
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        self.assertEqual(rv.status_code, 201)
+
+        user = self.appbuilder.sm.find_user(username="test_password")
+        self.assertIsNotNone(user)
+        user_id = user.id
+        old_password_hash = user.password
+
+        update_payload = {"username": "test_password_renamed"}
+        rv = self.auth_client_put(client, token, f"{uri}{user_id}", update_payload)
+        self.assertEqual(rv.status_code, 200)
+
+        updated_user = self.appbuilder.sm.find_user(username="test_password_renamed")
+        self.assertIsNotNone(updated_user)
+        self.assertEqual(updated_user.password, old_password_hash)
+
+        self.session.delete(updated_user)
+        self.session.commit()
+
+    def test_edit_user_change_password(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        role_id = self.appbuilder.sm.find_role("Admin").id
+        uri = "api/v1/security/users/"
+
+        create_user_payload = {
+            "active": True,
+            "email": "test_change_password@test.com",
+            "first_name": "test",
+            "last_name": "test",
+            "password": "initial_password",
+            "roles": [role_id],
+            "username": "test_change_password",
+        }
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        self.assertEqual(rv.status_code, 201)
+
+        user = self.appbuilder.sm.find_user(username="test_change_password")
+        self.assertIsNotNone(user)
+        user_id = user.id
+        old_password_hash = user.password
+
+        update_payload = {"password": "new_secure_password"}
+        rv = self.auth_client_put(client, token, f"{uri}{user_id}", update_payload)
+        self.assertEqual(rv.status_code, 200)
+
+        updated_user = self.appbuilder.sm.find_user(username="test_change_password")
+        self.assertIsNotNone(updated_user)
+        self.assertNotEqual(updated_user.password, old_password_hash)
+
+        self.appbuilder.sm.del_register_user(updated_user)
 
     def test_delete_user(self):
         client = self.app.test_client()
