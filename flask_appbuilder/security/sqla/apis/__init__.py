@@ -1,3 +1,4 @@
+from flask_appbuilder.security.sqla.apis.group import GroupApi  # noqa: F401
 from flask_appbuilder.security.sqla.apis.permission import PermissionApi  # noqa: F401
 from flask_appbuilder.security.sqla.apis.permission_view_menu import (  # noqa: F401
     PermissionViewMenuApi,
