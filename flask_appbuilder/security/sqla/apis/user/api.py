@@ -138,31 +138,33 @@ class UserApi(ModelRestApi):
                 if key not in ("roles", "groups"):
                     setattr(model, key, value)
                 elif key == "roles":
-                    for role_id in value:
-                        role = (
-                            self.datamodel.session.query(Role)
-                            .filter(Role.id == role_id)
-                            .one_or_none()
+                    roles = self._fetch_entities(Role, value)
+                    missing_ids = set(value) - {r.id for r in roles}
+                    if missing_ids:
+                        return self.response_400(
+                            message={
+                                "roles": [
+                                    (
+                                        f"Role(s) with ID(s) {sorted(missing_ids)} "
+                                        "not found."
+                                    )
+                                ]
+                            }
                         )
-                        if not role:
-                            return self.response_400(
-                                message=f"Role with id {role_id} not found."
-                            )
-                        role.user_id = model.id
-                        role.role_id = role_id
-                        roles.append(role)
                 elif key == "groups":
-                    for group_id in value:
-                        group = (
-                            self.datamodel.session.query(Group)
-                            .filter(Group.id == group_id)
-                            .one_or_none()
+                    groups = self._fetch_entities(Group, value)
+                    missing_ids = set(value) - {g.id for g in groups}
+                    if missing_ids:
+                        return self.response_400(
+                            message={
+                                "groups": [
+                                    (
+                                        f"Group(s) with ID(s) {sorted(missing_ids)} "
+                                        "not found."
+                                    )
+                                ]
+                            }
                         )
-                        if not group:
-                            return self.response_400(
-                                message=f"Group with id {group_id} not found."
-                            )
-                        groups.append(group)
 
             if "roles" in item.keys():
                 model.roles = roles
@@ -252,31 +254,33 @@ class UserApi(ModelRestApi):
                 if key not in ("roles", "groups"):
                     setattr(model, key, value)
                 elif key == "roles":
-                    for role_id in value:
-                        role = (
-                            self.datamodel.session.query(Role)
-                            .filter(Role.id == role_id)
-                            .one_or_none()
+                    roles = self._fetch_entities(Role, value)
+                    missing_ids = set(value) - {r.id for r in roles}
+                    if missing_ids:
+                        return self.response_404(
+                            message={
+                                "roles": [
+                                    (
+                                        f"Role(s) with ID(s) {sorted(missing_ids)} "
+                                        "not found."
+                                    )
+                                ]
+                            }
                         )
-                        if not role:
-                            return self.response_404(
-                                message=f"Role with id {role_id} not found."
-                            )
-                        role.user_id = model.id
-                        role.role_id = role_id
-                        roles.append(role)
                 elif key == "groups":
-                    for group_id in value:
-                        group = (
-                            self.datamodel.session.query(Group)
-                            .filter(Group.id == group_id)
-                            .one_or_none()
+                    groups = self._fetch_entities(Group, value)
+                    missing_ids = set(value) - {g.id for g in groups}
+                    if missing_ids:
+                        return self.response_404(
+                            message={
+                                "groups": [
+                                    (
+                                        f"Group(s) with ID(s) {sorted(missing_ids)} "
+                                        "not found."
+                                    )
+                                ]
+                            }
                         )
-                        if not group:
-                            return self.response_404(
-                                message=f"Group with id {group_id} not found."
-                            )
-                        groups.append(group)
 
             if "roles" in item.keys():
                 model.roles = roles

@@ -43,7 +43,7 @@ class GroupApi(ModelRestApi):
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
+                  $ref: '#/components/schemas/GroupPostSchema'
           responses:
             201:
               description: Group created
@@ -53,7 +53,7 @@ class GroupApi(ModelRestApi):
                     type: object
                     properties:
                       result:
-                        $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
+                        $ref: '#/components/schemas/GroupPostSchema'
             400:
               $ref: '#/components/responses/400'
             401:
@@ -71,33 +71,33 @@ class GroupApi(ModelRestApi):
 
             for key, value in item.items():
                 if key == "roles":
-                    for role_id in value:
-                        role = (
-                            self.datamodel.session.query(Role)
-                            .filter(Role.id == role_id)
-                            .one_or_none()
+                    roles = self._fetch_entities(Role, value)
+                    missing_role_ids = set(item["roles"]) - {r.id for r in roles}
+                    if missing_role_ids:
+                        return self.response_400(
+                            message={
+                                "roles": [
+                                    (
+                                        f"Role(s) with ID(s) {sorted(missing_role_ids)} "
+                                        "do not exist."
+                                    )
+                                ]
+                            }
                         )
-                        if not role:
-                            return self.response_400(
-                                message={
-                                    "roles": [f"Role with ID {role_id} does not exist."]
-                                }
-                            )
-                        roles.append(role)
                 elif key == "users":
-                    for user_id in value:
-                        user = (
-                            self.datamodel.session.query(User)
-                            .filter(User.id == user_id)
-                            .one_or_none()
+                    users = self._fetch_entities(User, value)
+                    missing_user_ids = set(item["users"]) - {u.id for u in users}
+                    if missing_user_ids:
+                        return self.response_400(
+                            message={
+                                "users": [
+                                    (
+                                        f"User(s) with ID(s) {sorted(missing_user_ids)} "
+                                        "do not exist."
+                                    )
+                                ]
+                            }
                         )
-                        if not user:
-                            return self.response_400(
-                                message={
-                                    "users": [f"User with ID {user_id} does not exist."]
-                                }
-                            )
-                        users.append(user)
                 else:
                     setattr(model, key, value)
 
@@ -133,7 +133,7 @@ class GroupApi(ModelRestApi):
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/{{self.__class__.__name__}}.put'
+                  $ref: '#/components/schemas/GroupPutSchema'
           responses:
             200:
               description: Group updated
@@ -143,7 +143,7 @@ class GroupApi(ModelRestApi):
                     type: object
                     properties:
                       result:
-                        $ref: '#/components/schemas/{{self.__class__.__name__}}.put'
+                        $ref: '#/components/schemas/GroupPutSchema'
             400:
               $ref: '#/components/responses/400'
             401:
@@ -166,33 +166,33 @@ class GroupApi(ModelRestApi):
 
             for key, value in item.items():
                 if key == "roles":
-                    for role_id in value:
-                        role = (
-                            self.datamodel.session.query(Role)
-                            .filter(Role.id == role_id)
-                            .one_or_none()
+                    roles = self._fetch_entities(Role, value)
+                    missing_role_ids = set(value) - {r.id for r in roles}
+                    if missing_role_ids:
+                        return self.response_400(
+                            message={
+                                "roles": [
+                                    (
+                                        f"Role(s) with ID(s) {sorted(missing_role_ids)} "
+                                        "do not exist."
+                                    )
+                                ]
+                            }
                         )
-                        if not role:
-                            return self.response_400(
-                                message={
-                                    "roles": [f"Role with ID {role_id} does not exist."]
-                                }
-                            )
-                        roles.append(role)
                 elif key == "users":
-                    for user_id in value:
-                        user = (
-                            self.datamodel.session.query(User)
-                            .filter(User.id == user_id)
-                            .one_or_none()
+                    users = self._fetch_entities(User, value)
+                    missing_user_ids = set(value) - {u.id for u in users}
+                    if missing_user_ids:
+                        return self.response_400(
+                            message={
+                                "users": [
+                                    (
+                                        f"User(s) with ID(s) {sorted(missing_user_ids)} "
+                                        "do not exist."
+                                    )
+                                ]
+                            }
                         )
-                        if not user:
-                            return self.response_400(
-                                message={
-                                    "users": [f"User with ID {user_id} does not exist."]
-                                }
-                            )
-                        users.append(user)
                 else:
                     setattr(model, key, value)
 

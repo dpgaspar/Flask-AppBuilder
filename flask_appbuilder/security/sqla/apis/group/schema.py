@@ -19,12 +19,14 @@ class GroupPostSchema(Schema):
     )
     label = fields.String(
         required=False,
-        validate=[Length(1, 150)],
+        allow_none=True,
+        validate=[Length(0, 150)],
         metadata={"description": label_description},
     )
     description = fields.String(
         required=False,
-        validate=[Length(1, 512)],
+        allow_none=True,
+        validate=[Length(0, 512)],
         metadata={"description": description_description},
     )
     roles = fields.List(
@@ -49,12 +51,14 @@ class GroupPutSchema(Schema):
     )
     label = fields.String(
         required=False,
-        validate=[Length(1, 150)],
+        allow_none=True,
+        validate=[Length(0, 150)],
         metadata={"description": label_description},
     )
     description = fields.String(
         required=False,
-        validate=[Length(1, 512)],
+        allow_none=True,
+        validate=[Length(0, 512)],
         metadata={"description": description_description},
     )
     roles = fields.List(
