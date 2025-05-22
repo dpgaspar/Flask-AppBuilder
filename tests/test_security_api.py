@@ -304,6 +304,14 @@ class UserAPITestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, create_user_payload)
         self.assertEqual(rv.status_code, 400)
 
+        response = json.loads(rv.data)
+        self.assertIn("message", response)
+        self.assertIn("_schema", response["message"])
+        self.assertIn(
+            "At least one of 'roles' or 'groups' must be provided and non-empty.",
+            response["message"]["_schema"],
+        )
+
     def test_create_user_with_invalid_role(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)

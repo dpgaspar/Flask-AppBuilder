@@ -1268,7 +1268,7 @@ class ModelRestApi(BaseModelApi):
         self.edit_query_rel_fields = self.edit_query_rel_fields or dict()
         self.add_query_rel_fields = self.add_query_rel_fields or dict()
 
-    def _fetch_entities(self, model_class, ids):
+    def _fetch_entities(self, model_class: Model, ids: List[int]):
         if not ids:
             return []
         return (
