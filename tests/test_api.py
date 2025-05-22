@@ -1593,6 +1593,88 @@ class APITestCase(FABTestCase):
             self.assertEqual(data[API_RESULT_RES_KEY][0], expected_result)
             self.assertEqual(rv.status_code, 200)
 
+    def test_get_list_filter_in_operator(self):
+        """
+        REST API: Test 'in' filter on field_integer
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        with model1_data(self.appbuilder.session, 5) as models:
+            field_integers = [models[0].field_integer, models[1].field_integer]
+            expected_results = [
+                {
+                    "field_date": model.field_date.isoformat()
+                    if model.field_date
+                    else None,
+                    "field_float": float(model.field_float),
+                    "field_integer": model.field_integer,
+                    "field_string": model.field_string,
+                }
+                for model in models[:2]
+            ]
+
+            arguments = {
+                API_FILTERS_RIS_KEY: [
+                    {"col": "field_integer", "opr": "in", "value": field_integers}
+                ],
+                "order_column": "field_integer",
+                "order_direction": "asc",
+            }
+
+            uri = f"api/v1/model1api/?q={prison.dumps(arguments)}"
+            rv = self.auth_client_get(client, token, uri)
+            data = json.loads(rv.data.decode("utf-8"))
+
+            self.assertEqual(rv.status_code, 200)
+            actual_results = data[API_RESULT_RES_KEY]
+            self.assertEqual(len(actual_results), len(expected_results))
+            for result in expected_results:
+                self.assertIn(result, actual_results)
+
+    def test_get_list_filter_not_in_operator(self):
+        """
+        REST API: Test 'not in' filter on field_integer
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        with model1_data(self.appbuilder.session, 5) as models:
+            excluded_field_integers = [models[0].field_integer, models[1].field_integer]
+            expected_results = [
+                {
+                    "field_date": model.field_date.isoformat()
+                    if model.field_date
+                    else None,
+                    "field_float": float(model.field_float),
+                    "field_integer": model.field_integer,
+                    "field_string": model.field_string,
+                }
+                for model in models[2:]
+            ]
+
+            arguments = {
+                API_FILTERS_RIS_KEY: [
+                    {
+                        "col": "field_integer",
+                        "opr": "not_in",
+                        "value": excluded_field_integers,
+                    }
+                ],
+                "order_column": "field_integer",
+                "order_direction": "asc",
+            }
+
+            uri = f"api/v1/model1api/?q={prison.dumps(arguments)}"
+            rv = self.auth_client_get(client, token, uri)
+            data = json.loads(rv.data.decode("utf-8"))
+
+            self.assertEqual(rv.status_code, 200)
+            actual_results = data[API_RESULT_RES_KEY]
+            self.assertEqual(len(actual_results), len(expected_results))
+            for result in expected_results:
+                self.assertIn(result, actual_results)
+
     def test_get_list_invalid_filters(self):
         """
         REST Api: Test get list filter params
@@ -1993,12 +2075,16 @@ class APITestCase(FABTestCase):
                 {"name": "Greater than", "operator": "gt"},
                 {"name": "Smaller than", "operator": "lt"},
                 {"name": "Not Equal to", "operator": "neq"},
+                {"name": "In", "operator": "in"},
+                {"name": "Not In", "operator": "not_in"},
             ],
             "field_integer": [
                 {"name": "Equal to", "operator": "eq"},
                 {"name": "Greater than", "operator": "gt"},
                 {"name": "Smaller than", "operator": "lt"},
                 {"name": "Not Equal to", "operator": "neq"},
+                {"name": "In", "operator": "in"},
+                {"name": "Not In", "operator": "not_in"},
             ],
             "field_string": [
                 {"name": "Starts with", "operator": "sw"},
@@ -2009,6 +2095,8 @@ class APITestCase(FABTestCase):
                 {"name": "Not Ends with", "operator": "new"},
                 {"name": "Not Contains", "operator": "nct"},
                 {"name": "Not Equal to", "operator": "neq"},
+                {"name": "In", "operator": "in"},
+                {"name": "Not In", "operator": "not_in"},
             ],
         }
         self.assertEqual(data["filters"], expected_filters)
