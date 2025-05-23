@@ -1268,6 +1268,15 @@ class ModelRestApi(BaseModelApi):
         self.edit_query_rel_fields = self.edit_query_rel_fields or dict()
         self.add_query_rel_fields = self.add_query_rel_fields or dict()
 
+    def _fetch_entities(self, model_class: Model, ids: List[int]):
+        if not ids:
+            return []
+        return (
+            self.datamodel.session.query(model_class)
+            .filter(model_class.id.in_(ids))
+            .all()
+        )
+
     def merge_add_field_info(self, response: Dict[str, Any], **kwargs: Any) -> None:
         add_columns_info = kwargs.get("add_columns", {})
         response[API_ADD_COLUMNS_RES_KEY] = self._get_fields_info(
