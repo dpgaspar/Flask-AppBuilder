@@ -295,7 +295,7 @@ class Filters(object):
 
     def apply_all(self, query):
         for flt, values in zip(self.filters, self.values):
-            if isinstance(values, list):
+            if isinstance(values, list) and flt.arg_name not in {"in", "not_in"}:
                 for value in values:
                     query = flt.apply(query, value)
             else:
