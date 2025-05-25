@@ -289,6 +289,12 @@ class APITestCase(FABTestCase):
 
         self.appbuilder.add_api(Model1ApiOrder)
 
+        class Model1ApiOrderPk(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            base_order = ("id", "desc")
+
+        self.appbuilder.add_api(Model1ApiOrderPk)
+
         class Model1ApiRestrictedPermissions(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             base_permissions = ["can_get", "can_info"]
@@ -1421,6 +1427,41 @@ class APITestCase(FABTestCase):
             # Test override
             arguments = {"order_column": "field_integer", "order_direction": "asc"}
             uri = f"api/v1/model1apiorder/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+            rv = self.auth_client_get(client, token, uri)
+            data = json.loads(rv.data.decode("utf-8"))
+            self.assertEqual(
+                data[API_RESULT_RES_KEY][0],
+                {
+                    "field_date": None,
+                    "field_float": 0.0,
+                    "field_integer": 0,
+                    "field_string": "test0",
+                },
+            )
+
+    def test_get_list_base_order_with_pk(self):
+        """
+        REST Api: Test get list with base order using primary key
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # test string order asc
+        with model1_data(self.appbuilder.session, MODEL1_DATA_SIZE):
+            rv = self.auth_client_get(client, token, "api/v1/model1apiorderpk/")
+            data = json.loads(rv.data.decode("utf-8"))
+            self.assertEqual(
+                data[API_RESULT_RES_KEY][0],
+                {
+                    "field_date": None,
+                    "field_float": float(MODEL1_DATA_SIZE - 1),
+                    "field_integer": MODEL1_DATA_SIZE - 1,
+                    "field_string": "test{}".format(MODEL1_DATA_SIZE - 1),
+                },
+            )
+            # Test override
+            arguments = {"order_column": "id", "order_direction": "asc"}
+            uri = f"api/v1/model1apiorderpk/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
             rv = self.auth_client_get(client, token, uri)
             data = json.loads(rv.data.decode("utf-8"))
             self.assertEqual(
