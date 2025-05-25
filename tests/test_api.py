@@ -1633,8 +1633,8 @@ class APITestCase(FABTestCase):
             expected_results = [
                 {
                     "field_date": (
-+                        model.field_date.isoformat() if model.field_date else None
-+                    ),
+                        model.field_date.isoformat() if model.field_date else None
+                    ),
                     "field_float": float(model.field_float),
                     "field_integer": model.field_integer,
                     "field_string": model.field_string,
@@ -1672,8 +1672,8 @@ class APITestCase(FABTestCase):
             expected_results = [
                 {
                     "field_date": (
-+                        model.field_date.isoformat() if model.field_date else None
-+                    ),
+                        model.field_date.isoformat() if model.field_date else None
+                    ),
                     "field_float": float(model.field_float),
                     "field_integer": model.field_integer,
                     "field_string": model.field_string,
