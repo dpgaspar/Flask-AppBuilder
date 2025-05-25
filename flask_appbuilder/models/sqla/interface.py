@@ -205,7 +205,7 @@ class SQLAInterface(BaseInterface):
             direction = asc if order_direction == "asc" else desc
             order_by_columns = [direction(_order_column)]
             pk = self.get_pk()
-            if add_pk and pk:
+            if add_pk and pk and pk != _order_column:
                 order_by_columns.append(direction(pk))
             query = query.order_by(*order_by_columns)
 
