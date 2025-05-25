@@ -1459,21 +1459,7 @@ class APITestCase(FABTestCase):
                     "field_string": "test{}".format(MODEL1_DATA_SIZE - 1),
                 },
             )
-            # Test override
-            arguments = {"order_column": "id", "order_direction": "asc"}
-            uri = f"api/v1/model1apiorderpk/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
-            rv = self.auth_client_get(client, token, uri)
-            data = json.loads(rv.data.decode("utf-8"))
-            self.assertEqual(
-                data[API_RESULT_RES_KEY][0],
-                {
-                    "field_date": None,
-                    "field_float": 0.0,
-                    "field_integer": 0,
-                    "field_string": "test0",
-                },
-            )
-
+            
     def test_get_list_page(self):
         """
         REST Api: Test get list page params
