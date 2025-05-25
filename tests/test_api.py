@@ -1459,7 +1459,7 @@ class APITestCase(FABTestCase):
                     "field_string": "test{}".format(MODEL1_DATA_SIZE - 1),
                 },
             )
-            
+
     def test_get_list_page(self):
         """
         REST Api: Test get list page params
