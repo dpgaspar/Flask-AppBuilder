@@ -1460,7 +1460,6 @@ class APITestCase(FABTestCase):
                 },
             )
             
-    
     def test_get_list_page(self):
         """
         REST Api: Test get list page params
