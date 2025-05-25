@@ -1460,6 +1460,7 @@ class APITestCase(FABTestCase):
                 },
             )
             
+    
     def test_get_list_page(self):
         """
         REST Api: Test get list page params
@@ -1631,9 +1632,9 @@ class APITestCase(FABTestCase):
             field_integers = [models[0].field_integer, models[1].field_integer]
             expected_results = [
                 {
-                    "field_date": model.field_date.isoformat()
-                    if model.field_date
-                    else None,
+                    "field_date": (
++                        model.field_date.isoformat() if model.field_date else None
++                    ),
                     "field_float": float(model.field_float),
                     "field_integer": model.field_integer,
                     "field_string": model.field_string,
@@ -1670,9 +1671,9 @@ class APITestCase(FABTestCase):
             excluded_field_integers = [models[0].field_integer, models[1].field_integer]
             expected_results = [
                 {
-                    "field_date": model.field_date.isoformat()
-                    if model.field_date
-                    else None,
+                    "field_date": (
++                        model.field_date.isoformat() if model.field_date else None
++                    ),
                     "field_float": float(model.field_float),
                     "field_integer": model.field_integer,
                     "field_string": model.field_string,
