@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.7.0rc1
+-----------------------------------
+
+- feat(filters): add "FilterIn" and "FilterNotIn" operators with unit tests (#2354) [Enzo Martellucci]
+- feat(GroupAPI): Add GroupAPI to FAB (#2339) [Enzo Martellucci]
+
 Improvements and Bug fixes on 4.6.4
 -----------------------------------
 
