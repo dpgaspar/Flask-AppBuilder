@@ -1,6 +1,14 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.7.0rc2
+-----------------------------------
+
+- fix: group api, OAS and payload (#2358) [Daniel Vaz Gaspar]
+- fix: order by using mssql database (#2356) [ThomasP0815]
+- feat(filters): add "FilterIn" and "FilterNotIn" operators with unit tests (#2354) [Enzo Martellucci]
+- feat(GroupAPI): Add GroupAPI to FAB (#2339) [Enzo Martellucci]
+
 Improvements and Bug fixes on 4.6.4
 -----------------------------------
 
