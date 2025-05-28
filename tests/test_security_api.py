@@ -1533,9 +1533,26 @@ class GroupAPITestCase(FABTestCase):
     def test_list_group_api_populated_list(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        group_name = "test_list_group_api"
-        group = self.appbuilder.sm.add_group(group_name, "label", "description")
+        admin_role = self.appbuilder.sm.find_role("Admin")
+        # user = self.appbuilder.sm.find_user("test_user_group")
+        # self.session.merge(user)
+        # self.session.delete(user)
+        # self.session.commit()
+        user = self.appbuilder.sm.add_user(
+            username="test_user_group",
+            first_name="Test",
+            last_name="User",
+            email="test_user@fab.com",
+            role=None,
+            password="password",
+        )
+        group = self.appbuilder.sm.add_group(
+            "test_list_group_api1",
+            "label",
+            "description",
+            roles=[admin_role],
+            users=[user],
+        )
 
         uri = "api/v1/security/groups/"
         rv = self.auth_client_get(client, token, uri)
@@ -1544,9 +1561,22 @@ class GroupAPITestCase(FABTestCase):
         response = json.loads(rv.data)
         assert "count" and "result" in response
         self.assertEqual(response["count"], 1)
-        self.assertEqual(response["result"][0]["name"], group_name)
+        self.assertEqual(
+            response["result"],
+            [
+                {
+                    "description": "description",
+                    "id": group.id,
+                    "label": "label",
+                    "name": "test_list_group_api1",
+                    "roles": [{"id": admin_role.id, "name": "Admin"}],
+                    "users": [{"id": user.id, "username": "test_user_group"}],
+                }
+            ],
+        )
 
         self.session.delete(group)
+        self.session.delete(user)
         self.session.commit()
 
     def test_create_group(self):
@@ -1646,6 +1676,7 @@ class GroupAPITestCase(FABTestCase):
         self.session.delete(group)
         self.session.delete(group_user)
         self.session.delete(group_role)
+        self.session.query(User).filter(User.username == "test_user_group").delete()
         self.session.commit()
 
     def test_create_group_with_invalid_user(self):

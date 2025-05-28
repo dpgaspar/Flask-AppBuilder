@@ -20,7 +20,16 @@ class GroupApi(ModelRestApi):
     datamodel = SQLAInterface(Group)
     allow_browser_login = True
 
-    list_columns = ["id", "name", "label", "description", "roles", "users"]
+    list_columns = [
+        "id",
+        "name",
+        "label",
+        "description",
+        "roles.name",
+        "roles.id",
+        "users.id",
+        "users.username",
+    ]
     show_columns = list_columns
     edit_columns = ["name", "label", "description", "users", "roles"]
     add_columns = edit_columns
@@ -28,6 +37,11 @@ class GroupApi(ModelRestApi):
 
     add_model_schema = GroupPostSchema()
     edit_model_schema = GroupPutSchema()
+
+    openapi_spec_component_schemas = (
+        GroupPostSchema,
+        GroupPutSchema,
+    )
 
     @expose("/", methods=["POST"])
     @protect()
