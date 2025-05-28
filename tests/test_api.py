@@ -289,6 +289,12 @@ class APITestCase(FABTestCase):
 
         self.appbuilder.add_api(Model1ApiOrder)
 
+        class Model1ApiOrderPk(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            base_order = ("id", "desc")
+
+        self.appbuilder.add_api(Model1ApiOrderPk)
+
         class Model1ApiRestrictedPermissions(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             base_permissions = ["can_get", "can_info"]
@@ -1433,6 +1439,27 @@ class APITestCase(FABTestCase):
                 },
             )
 
+    def test_get_list_base_order_with_pk(self):
+        """
+        REST Api: Test get list with base order using primary key
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # test string order asc
+        with model1_data(self.appbuilder.session, MODEL1_DATA_SIZE):
+            rv = self.auth_client_get(client, token, "api/v1/model1apiorderpk/")
+            data = json.loads(rv.data.decode("utf-8"))
+            self.assertEqual(
+                data[API_RESULT_RES_KEY][0],
+                {
+                    "field_date": None,
+                    "field_float": float(MODEL1_DATA_SIZE - 1),
+                    "field_integer": MODEL1_DATA_SIZE - 1,
+                    "field_string": "test{}".format(MODEL1_DATA_SIZE - 1),
+                },
+            )
+
     def test_get_list_page(self):
         """
         REST Api: Test get list page params
@@ -1604,9 +1631,9 @@ class APITestCase(FABTestCase):
             field_integers = [models[0].field_integer, models[1].field_integer]
             expected_results = [
                 {
-                    "field_date": model.field_date.isoformat()
-                    if model.field_date
-                    else None,
+                    "field_date": (
+                        model.field_date.isoformat() if model.field_date else None
+                    ),
                     "field_float": float(model.field_float),
                     "field_integer": model.field_integer,
                     "field_string": model.field_string,
@@ -1643,9 +1670,9 @@ class APITestCase(FABTestCase):
             excluded_field_integers = [models[0].field_integer, models[1].field_integer]
             expected_results = [
                 {
-                    "field_date": model.field_date.isoformat()
-                    if model.field_date
-                    else None,
+                    "field_date": (
+                        model.field_date.isoformat() if model.field_date else None
+                    ),
                     "field_float": float(model.field_float),
                     "field_integer": model.field_integer,
                     "field_string": model.field_string,
