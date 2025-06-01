@@ -107,6 +107,14 @@ class GenericFilterConverter(BaseFilterConverter):
                 FilterStartsWith,
             ],
         ),
-        ("is_integer", [FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller]),
+        (
+            "is_integer",
+            [
+                FilterEqual,
+                FilterNotEqual,
+                FilterGreater,
+                FilterSmaller,
+            ],
+        ),
         ("is_date", [FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller]),
     )

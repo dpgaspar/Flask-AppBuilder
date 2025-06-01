@@ -10,7 +10,14 @@ from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import generate_password_hash
 
-from .apis import PermissionApi, PermissionViewMenuApi, RoleApi, UserApi, ViewMenuApi
+from .apis import (
+    GroupApi,
+    PermissionApi,
+    PermissionViewMenuApi,
+    RoleApi,
+    UserApi,
+    ViewMenuApi,
+)
 from .models import (
     assoc_permissionview_role,
     Group,
@@ -54,6 +61,7 @@ class SecurityManager(BaseSecurityManager):
     user_api = UserApi
     view_menu_api = ViewMenuApi
     permission_view_menu_api = PermissionViewMenuApi
+    group_api = GroupApi
 
     def __init__(self, appbuilder):
         """
@@ -105,6 +113,7 @@ class SecurityManager(BaseSecurityManager):
             self.appbuilder.add_api(self.user_api)
             self.appbuilder.add_api(self.view_menu_api)
             self.appbuilder.add_api(self.permission_view_menu_api)
+            self.appbuilder.add_api(self.group_api)
 
     def create_db(self):
         try:
@@ -143,7 +152,15 @@ class SecurityManager(BaseSecurityManager):
         if hashed_password:
             register_user.password = hashed_password
         else:
-            register_user.password = generate_password_hash(password)
+            register_user.password = generate_password_hash(
+                password=password,
+                method=self.appbuilder.get_app.config.get(
+                    "FAB_PASSWORD_HASH_METHOD", "scrypt"
+                ),
+                salt_length=self.appbuilder.get_app.config.get(
+                    "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+                ),
+            )
         register_user.registration_hash = str(uuid.uuid1())
         try:
             self.get_session.add(register_user)
@@ -236,7 +253,15 @@ class SecurityManager(BaseSecurityManager):
             if hashed_password:
                 user.password = hashed_password
             else:
-                user.password = generate_password_hash(password)
+                user.password = generate_password_hash(
+                    password=password,
+                    method=self.appbuilder.get_app.config.get(
+                        "FAB_PASSWORD_HASH_METHOD", "scrypt"
+                    ),
+                    salt_length=self.appbuilder.get_app.config.get(
+                        "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+                    ),
+                )
             self.get_session.add(user)
             self.get_session.commit()
             log.info(c.LOGMSG_INF_SEC_ADD_USER, username)

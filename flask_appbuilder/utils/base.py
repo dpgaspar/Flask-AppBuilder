@@ -1,3 +1,4 @@
+from fnmatch import fnmatch
 import logging
 from typing import Any, Callable
 import unicodedata
@@ -27,10 +28,16 @@ def is_safe_redirect_url(url: str) -> bool:
     if not url_info.scheme and url_info.netloc:
         scheme = "http"
     valid_schemes = ["http", "https"]
-    host_url = urlparse(request.host_url)
-    return (not url_info.netloc or url_info.netloc == host_url.netloc) and (
-        not scheme or scheme in valid_schemes
+
+    safe_hosts = current_app.config.get("FAB_SAFE_REDIRECT_HOSTS", [])
+    if not safe_hosts:
+        safe_hosts = [urlparse(request.host_url).netloc]
+
+    is_host_allowed = not url_info.netloc or any(
+        fnmatch(url_info.netloc, pattern) for pattern in safe_hosts
     )
+
+    return is_host_allowed and (not scheme or scheme in valid_schemes)
 
 
 def get_safe_redirect(url):
