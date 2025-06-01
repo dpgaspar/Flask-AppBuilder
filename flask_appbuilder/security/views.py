@@ -35,7 +35,6 @@ from werkzeug.wrappers import Response as WerkzeugResponse
 from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
 
-
 log = logging.getLogger(__name__)
 
 
@@ -336,6 +335,16 @@ class UserOAuthModelView(UserModelView):
 class UserRemoteUserModelView(UserModelView):
     """
     View that add REMOTE_USER specifics to User view.
+    Override to implement your own custom view.
+    Then override userldapmodelview property on SecurityManager
+    """
+
+    pass
+
+
+class UserADFSModelView(UserModelView):
+    """
+    View that add ADFS specifics to User view.
     Override to implement your own custom view.
     Then override userldapmodelview property on SecurityManager
     """
@@ -823,3 +832,75 @@ class AuthRemoteUserView(AuthView):
             flash(as_unicode(self.invalid_login_message), "warning")
         next_url = request.args.get("next", "")
         return redirect(get_safe_redirect(next_url))
+
+class AuthADFSView(AuthView):
+    login_template = 'appbuilder/general/security/login_oauth.html' # this needs to be updated
+
+    def __init__(self):
+        super(AuthADFSView, self).__init__()
+
+    @expose("/login/", methods=["GET", "POST"])
+    @expose("/login/saml", methods=["GET", "POST"])
+    def login(self):
+        form = None # this needs to be updated 
+        if g.user is not None and g.user.is_authenticated:
+            log.debug("Already authenticated {0}".format(g.user))
+            return redirect(self.appbuilder.get_url_for_index)
+            try:
+                auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
+                next_url = get_safe_redirect(request.args.get("next", "/"))
+            except Exception as e:
+                flash(str(e), "danger")
+                return redirect(self.appbuilder.get_url_for_index)
+
+        if 'sso2' in request.args:
+                auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
+                redir = request.args.get('next', '/')
+                if "/sso2" in redir:
+                    redir = '/login/acs'
+                return redirect(auth.login(redir))
+        # form will fail for now
+        return self.render_template(
+            self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
+        )
+
+    @expose("/login/acs", methods=["GET", "POST"])
+    def acs(self):
+        auth, auth_request = self.appbuilder.sm.auth_user_adfs(request)
+        auth.process_response()
+        errors = auth.get_errors()
+        if len(errors) == 0:  # no errors, let's authenticate the user
+            user, self_url = self.appbuilder.sm.auth_user_adfs_login(session, auth, auth_request)
+            if not user:
+                flash(as_unicode(self.invalid_login_message), "warning")
+                return redirect(self.appbuilder.get_url_for_login_with(next_url))
+            login_user(user, remember=False)
+            
+            if 'RelayState' in request.form and self_url != request.form['RelayState']:
+                return redirect(auth.redirect_to(request.form['RelayState']))
+             
+    @expose("/metadata/", methods=["GET", "POST"])
+
+    def metadata(self):
+        response = self.appbuilder.sm.adfs_metadata(request)
+        return response
+
+    @expose('/logout/') #this remains
+    def logout():
+        auth, auth_request = self.appbuilder.sm.auth_user_adfs(session, auth, auth_request)
+        if 'sls' in request.args:
+            request_id = None
+            if 'LogoutRequestID' in session:
+                request_id = session['LogoutRequestID']
+            dscb = lambda: session.clear()
+            url = auth.process_slo(request_id=request_id, delete_session_cb=dscb)
+            errors = auth.get_errors()
+            if len(errors) == 0:
+                if url is not None:
+                    # To avoid 'Open Redirect' attacks, before execute the redirection confirm
+                    # the value of the url is a trusted URL.
+                    return redirect(url)
+                else:
+                    success_slo = True
+            elif auth.get_settings().is_debug_active():
+                error_reason = auth.get_last_error_reason()
