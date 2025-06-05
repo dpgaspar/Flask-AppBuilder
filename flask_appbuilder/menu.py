@@ -10,7 +10,7 @@ from .security.decorators import permission_name, protect
 
 class MenuItem(object):
     def __init__(
-        self, name, href="", icon="", label="", childs=None, baseview=None, cond=None
+        self, name, href="", icon="", label="", childs=None, baseview=None, cond=None, target="_self"
     ):
         self.name = name
         self.href = href
@@ -19,9 +19,14 @@ class MenuItem(object):
         self.childs = childs or []
         self.baseview = baseview
         self.cond = cond
+        self.target = target
 
     def should_render(self) -> bool:
         return bool(self.cond()) if self.cond is not None else True
+
+    def get_target(self) -> str:
+        """Returns the target for a HTML <a> tag. Defaults to _self"""
+        return self.target
 
     def get_url(self):
         if not self.href:
@@ -94,6 +99,7 @@ class Menu(object):
                         "icon": item.icon,
                         "label": __(str(item.label)),
                         "url": item.get_url(),
+                        "target": item.get_target(),
                     }
                 )
         return ret_list
@@ -135,6 +141,7 @@ class Menu(object):
         category_label="",
         baseview=None,
         cond=None,
+        target="_self",
     ):
         label = label or name
         category_label = category_label or category
@@ -147,6 +154,7 @@ class Menu(object):
                     label=label,
                     baseview=baseview,
                     cond=cond,
+                    target=target,
                 )
             )
         else:
@@ -159,6 +167,7 @@ class Menu(object):
                     label=label,
                     baseview=baseview,
                     cond=cond,
+                    target=target,
                 )
                 menu_item.childs.append(new_menu_item)
             else:
@@ -172,6 +181,7 @@ class Menu(object):
                     label=label,
                     baseview=baseview,
                     cond=cond,
+                    target=target,
                 )
                 self.find(category).childs.append(new_menu_item)
 
