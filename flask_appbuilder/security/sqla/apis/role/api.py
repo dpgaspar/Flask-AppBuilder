@@ -280,9 +280,7 @@ class RoleApi(ModelRestApi):
                 return self.response_404()
 
             groups = (
-                db.session.query(Group)
-                .filter(Group.id.in_(item["group_ids"]))
-                .all()
+                db.session.query(Group).filter(Group.id.in_(item["group_ids"])).all()
             )
 
             if len(groups) != len(item["group_ids"]):

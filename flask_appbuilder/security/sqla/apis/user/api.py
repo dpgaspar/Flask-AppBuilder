@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import current_app, g, request
+from flask import current_app, request
 from flask_appbuilder import ModelRestApi
 from flask_appbuilder.api import expose, safe
 from flask_appbuilder.const import API_RESULT_RES_KEY
@@ -70,16 +70,12 @@ class UserApi(ModelRestApi):
 
     def pre_update(self, item, data):
         item.changed_on = datetime.now()
-        item.changed_by_fk = g.user.id
+        item.changed_by_fk = self.appbuilder.sm.current_user.id
         if "password" in data and data["password"]:
             item.password = generate_password_hash(
                 password=data["password"],
-                method=self.appbuilder.get_app.config.get(
-                    "FAB_PASSWORD_HASH_METHOD", "scrypt"
-                ),
-                salt_length=self.appbuilder.get_app.config.get(
-                    "FAB_PASSWORD_HASH_SALT_LENGTH", 16
-                ),
+                method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+                salt_length=current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
             )
 
     def pre_add(self, item):
@@ -175,7 +171,7 @@ class UserApi(ModelRestApi):
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))
 
-    @expose("/<pk>", methods=["PUT"])
+    @expose("/<pk>", methods=("PUT",))
     @protect()
     @safe
     @permission_name("put")
