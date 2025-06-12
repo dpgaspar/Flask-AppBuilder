@@ -1462,12 +1462,14 @@ class GroupAPITestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
+        self.ctx = self.app.app_context()
+        self.ctx.push()
         self.app.config["FAB_ADD_SECURITY_API"] = True
         self.appbuilder = AppBuilder(self.app)
 
-        for b in self.appbuilder.baseviews:
-            if hasattr(b, "datamodel") and b.datamodel.session is not None:
-                b.datamodel.session = db.session
+        # for b in self.appbuilder.baseviews:
+        #     if hasattr(b, "datamodel") and b.datamodel.session is not None:
+        #         b.datamodel.session = db.session
 
         self.create_default_users(self.appbuilder)
 
@@ -1480,11 +1482,12 @@ class GroupAPITestCase(FABTestCase):
         db.session.commit()
 
         self.appbuilder.session.close()
-        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        for baseview in self.appbuilder.baseviews:
-            if hasattr(baseview, "datamodel"):
-                baseview.datamodel.session = None
-        engine.dispose()
+        # engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        # for baseview in self.appbuilder.baseviews:
+        #     if hasattr(baseview, "datamodel"):
+        #         baseview.datamodel.session = None
+        # engine.dispose()
+        self.ctx.pop()
 
     def test_list_group_api_empty_list(self):
         client = self.app.test_client()
