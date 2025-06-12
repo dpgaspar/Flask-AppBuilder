@@ -448,12 +448,8 @@ class UserDBModelView(UserModelView):
     def pre_add(self, item: Any) -> None:
         item.password = generate_password_hash(
             password=item.password,
-            method=self.appbuilder.get_app.config.get(
-                "FAB_PASSWORD_HASH_METHOD", "scrypt"
-            ),
-            salt_length=self.appbuilder.get_app.config.get(
-                "FAB_PASSWORD_HASH_SALT_LENGTH", 16
-            ),
+            method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+            salt_length=current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
         )
 
 
@@ -585,7 +581,7 @@ class AuthView(BaseView):
     def logout(self):
         logout_user()
         return redirect(
-            self.appbuilder.app.config.get(
+            current_app.config.get(
                 "LOGOUT_REDIRECT_URL", self.appbuilder.get_url_for_index
             )
         )

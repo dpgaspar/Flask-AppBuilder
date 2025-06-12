@@ -2,6 +2,7 @@ from flask import current_app, request
 from flask_appbuilder import ModelRestApi
 from flask_appbuilder.api import expose, safe
 from flask_appbuilder.const import API_RESULT_RES_KEY
+from flask_appbuilder.extensions import db
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.decorators import permission_name, protect
 from flask_appbuilder.security.sqla.apis.role.schema import (
@@ -136,7 +137,7 @@ class RoleApi(ModelRestApi):
             permissions = []
             for id in item["permission_view_menu_ids"]:
                 permission = (
-                    current_app.appbuilder.get_session.query(PermissionView)
+                    current_app.appbuilder.session.query(PermissionView)
                     .filter_by(id=id)
                     .one_or_none()
                 )
@@ -144,7 +145,7 @@ class RoleApi(ModelRestApi):
                     permissions.append(permission)
 
             role.permissions = permissions
-            self.datamodel.edit(role, raise_exception=True)
+            self.datamodel.edit(role)
             return self.response(
                 200,
                 **{
@@ -207,7 +208,7 @@ class RoleApi(ModelRestApi):
                 return self.response_404()
 
             users = (
-                current_app.appbuilder.get_session.query(User)
+                current_app.appbuilder.session.query(User)
                 .filter(User.id.in_(item["user_ids"]))
                 .all()
             )
@@ -216,7 +217,7 @@ class RoleApi(ModelRestApi):
                 return self.response_404()  # Some users were not found
 
             role.user = users
-            self.datamodel.edit(role, raise_exception=True)
+            self.datamodel.edit(role)
             return self.response(
                 200,
                 **{
@@ -279,16 +280,14 @@ class RoleApi(ModelRestApi):
                 return self.response_404()
 
             groups = (
-                current_app.appbuilder.get_session.query(Group)
-                .filter(Group.id.in_(item["group_ids"]))
-                .all()
+                db.session.query(Group).filter(Group.id.in_(item["group_ids"])).all()
             )
 
             if len(groups) != len(item["group_ids"]):
                 return self.response_404()  # Some groups were not found
 
             role.groups = groups
-            self.datamodel.edit(role, raise_exception=True)
+            self.datamodel.edit(role)
             return self.response(
                 200,
                 **{

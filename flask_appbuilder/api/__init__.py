@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools
 import json
 import logging
@@ -20,23 +22,15 @@ import urllib.parse
 from apispec import APISpec, yaml_utils
 from apispec.exceptions import DuplicateComponentNameError
 from flask import Blueprint, current_app, jsonify, make_response, request, Response
-from flask_appbuilder.models.sqla import Model
-from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_babel import lazy_gettext as _
-import jsonschema
-from marshmallow import Schema, ValidationError
-from marshmallow.fields import Field
-from marshmallow_sqlalchemy.fields import Related, RelatedList
-import prison
-from sqlalchemy.exc import IntegrityError
-from werkzeug.exceptions import BadRequest
-import yaml
-
-from .convert import Model2SchemaConverter
-from .schemas import get_info_schema, get_item_schema, get_list_schema
-from .._compat import as_unicode
-from ..baseviews import AbstractViewApi
-from ..const import (
+from flask_appbuilder._compat import as_unicode
+from flask_appbuilder.api.convert import Model2SchemaConverter
+from flask_appbuilder.api.schemas import (
+    get_info_schema,
+    get_item_schema,
+    get_list_schema,
+)
+from flask_appbuilder.baseviews import AbstractViewApi
+from flask_appbuilder.const import (
     API_ADD_COLUMNS_RES_KEY,
     API_ADD_COLUMNS_RIS_KEY,
     API_ADD_TITLE_RES_KEY,
@@ -73,11 +67,31 @@ from ..const import (
     API_URI_RIS_KEY,
     PERMISSION_PREFIX,
 )
-from ..exceptions import FABException, InvalidOrderByColumnFABException
-from ..hooks import get_before_request_hooks, wrap_route_handler_with_hooks
-from ..models.filters import Filters
-from ..security.decorators import permission_name, protect
-from ..utils.limit import Limit
+from flask_appbuilder.exceptions import (
+    DatabaseException,
+    FABException,
+    InvalidOrderByColumnFABException,
+)
+from flask_appbuilder.extensions import db
+from flask_appbuilder.hooks import (
+    get_before_request_hooks,
+    wrap_route_handler_with_hooks,
+)
+from flask_appbuilder.models.filters import Filters
+from flask_appbuilder.models.sqla import Model
+from flask_appbuilder.models.sqla.filters import BaseFilter
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.security.decorators import permission_name, protect
+from flask_appbuilder.utils.limit import Limit
+from flask_babel import lazy_gettext as _
+import jsonschema
+from marshmallow import Schema, ValidationError
+from marshmallow.fields import Field
+from marshmallow_sqlalchemy.fields import Related, RelatedList
+import prison
+from werkzeug.exceptions import BadRequest
+import yaml
+
 
 if TYPE_CHECKING:
     from flask_appbuilder import AppBuilder
@@ -156,7 +170,7 @@ def rison(
     def _rison(f: Callable[..., Any]) -> Callable[..., Any]:
         def wraps(self: "BaseApi", *args: Any, **kwargs: Any) -> Response:
             value = request.args.get(API_URI_RIS_KEY, None)
-            kwargs["rison"] = dict()
+            kwargs["rison"] = {}
             if value:
                 try:
                     kwargs["rison"] = prison.loads(value)
@@ -179,7 +193,13 @@ def rison(
                 try:
                     jsonschema.validate(instance=kwargs["rison"], schema=schema)
                 except jsonschema.ValidationError as e:
-                    return self.response_400(message=f"Not a valid rison schema {e}")
+                    try:
+                        validation_message = str(e).split("\n", 1)[0]
+                    except Exception:
+                        validation_message = str(e)
+                    return self.response_400(
+                        message=f"Not a valid rison schema {validation_message}"
+                    )
             return f(self, *args, **kwargs)
 
         return functools.update_wrapper(wraps, f)
@@ -547,7 +567,7 @@ class BaseApi(AbstractViewApi):
         self.blueprint = Blueprint(self.endpoint, __name__, url_prefix=self.route_base)
         # Exempt API from CSRF protect
         if self.csrf_exempt:
-            csrf = self.appbuilder.app.extensions.get("csrf")
+            csrf = current_app.extensions.get("csrf")
             if csrf:
                 csrf.exempt(self.blueprint)
 
@@ -613,12 +633,12 @@ class BaseApi(AbstractViewApi):
             ):
                 continue
             if attr_name in self.exclude_route_methods:
-                log.info("Not registering route for method %s", attr_name)
+                log.debug("Not registering route for method %s", attr_name)
                 continue
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
-                    log.info(
+                    log.debug(
                         "Registering route %s%s %s",
                         self.blueprint.url_prefix,
                         url,
@@ -833,8 +853,8 @@ class BaseApi(AbstractViewApi):
         return self.response(500, **{"message": message})
 
 
-class BaseModelApi(BaseApi):
-    datamodel: Optional[SQLAInterface] = None
+class ModelRestApi(BaseApi):
+    datamodel: SQLAInterface
     """
     Your sqla model you must initialize it like::
 
@@ -852,7 +872,7 @@ class BaseModelApi(BaseApi):
             search_columns = ['name', 'address']
 
     """
-    search_filters = None
+    search_filters: dict[str, BaseFilter] | None = None
     """
     Override default search filters for columns
     """
@@ -906,55 +926,6 @@ class BaseModelApi(BaseApi):
     Filters object will calculate all possible filter types
     based on search_columns
     """
-
-    def __init__(self, **kwargs: Any) -> None:
-        datamodel = kwargs.get("datamodel", None)
-        if datamodel:
-            self.datamodel = datamodel
-        self._init_properties()
-        self._init_titles()
-        super(BaseModelApi, self).__init__()
-
-    def _gen_labels_columns(self, list_columns: List[str]) -> None:
-        """
-        Auto generates pretty label_columns from list of columns
-        """
-        for col in list_columns:
-            if not self.label_columns.get(col):
-                self.label_columns[col] = self._prettify_column(col)
-
-    def _label_columns_json(self, cols: Optional[List[str]] = None) -> Dict[str, Any]:
-        """
-        Prepares dict with labels to be JSON serializable
-        """
-        ret = {}
-        cols = cols or []
-        d = {k: v for (k, v) in self.label_columns.items() if k in cols}
-        for key, value in d.items():
-            ret[key] = as_unicode(_(value).encode("UTF-8"))
-        return ret
-
-    def _init_properties(self) -> None:
-        self.label_columns = self.label_columns or {}
-        self.base_filters = self.base_filters or []
-        self.search_exclude_columns = self.search_exclude_columns or []
-        self.search_columns = self.search_columns or []
-
-        self._base_filters = self.datamodel.get_filters().add_filter_list(
-            self.base_filters
-        )
-        search_columns = self.datamodel.get_search_columns_list()
-        if not self.search_columns:
-            self.search_columns = [
-                x for x in search_columns if x not in self.search_exclude_columns
-            ]
-        self._gen_labels_columns(self.datamodel.get_columns_list())
-
-    def _init_titles(self) -> None:
-        pass
-
-
-class ModelRestApi(BaseModelApi):
     list_title = ""
     """
     List Title, if not configured the default is
@@ -1054,9 +1025,8 @@ class ModelRestApi(BaseModelApi):
     """
     Dictionary with column descriptions that will be shown on the forms::
 
-        class MyView(ModelView):
-            datamodel = SQLAModel(MyTable, db.session)
-
+        class MyView(ModelRestApi):
+            datamodel = SQLAModel(Model1)
             description_columns = {'name':'your models name column',
                                     'address':'the address column'}
     """
@@ -1087,7 +1057,7 @@ class ModelRestApi(BaseModelApi):
     Add a custom filter to form related fields::
 
         class ContactModelView(ModelRestApi):
-            datamodel = SQLAModel(Contact, db.session)
+            datamodel = SQLAModel(Contact)
             edit_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
 
     """
@@ -1135,7 +1105,9 @@ class ModelRestApi(BaseModelApi):
     }
 
     def __init__(self) -> None:
-        super(ModelRestApi, self).__init__()
+        super().__init__()
+        self._init_properties()
+        self._init_titles()
         self.validators_columns = self.validators_columns or {}
         self.model2schemaconverter = self.model2schemaconverter(
             self.datamodel, self.validators_columns
@@ -1145,7 +1117,7 @@ class ModelRestApi(BaseModelApi):
         self, appbuilder: "AppBuilder", *args: Any, **kwargs: Any
     ) -> Blueprint:
         self._init_model_schemas()
-        return super(ModelRestApi, self).create_blueprint(appbuilder, *args, **kwargs)
+        return super().create_blueprint(appbuilder, *args, **kwargs)
 
     @property
     def list_model_schema_name(self) -> str:
@@ -1164,7 +1136,7 @@ class ModelRestApi(BaseModelApi):
         return f"{self.__class__.__name__}.put"
 
     def add_apispec_components(self, api_spec: APISpec) -> None:
-        super(ModelRestApi, self).add_apispec_components(api_spec)
+        super().add_apispec_components(api_spec)
         api_spec.components.schema(
             self.list_model_schema_name, schema=self.list_model_schema
         )
@@ -1177,6 +1149,25 @@ class ModelRestApi(BaseModelApi):
         api_spec.components.schema(
             self.show_model_schema_name, schema=self.show_model_schema
         )
+
+    def _gen_labels_columns(self, list_columns: List[str]) -> None:
+        """
+        Auto generates pretty label_columns from list of columns
+        """
+        for col in list_columns:
+            if not self.label_columns.get(col):
+                self.label_columns[col] = self._prettify_column(col)
+
+    def _label_columns_json(self, cols: Optional[List[str]] = None) -> Dict[str, Any]:
+        """
+        Prepares dict with labels to be JSON serializable
+        """
+        ret = {}
+        cols = cols or []
+        d = {k: v for (k, v) in self.label_columns.items() if k in cols}
+        for key, value in d.items():
+            ret[key] = as_unicode(_(value).encode("UTF-8"))
+        return ret
 
     def _init_model_schemas(self) -> None:
         # Create Marshmalow schemas if one is not specified
@@ -1205,7 +1196,6 @@ class ModelRestApi(BaseModelApi):
         """
         Init Titles if not defined
         """
-        super(ModelRestApi, self)._init_titles()
         class_name = self.datamodel.model_name
         if not self.list_title:
             self.list_title = "List " + self._prettify_name(class_name)
@@ -1221,7 +1211,21 @@ class ModelRestApi(BaseModelApi):
         """
         Initializes all properties
         """
-        super(ModelRestApi, self)._init_properties()
+        self.label_columns = self.label_columns or {}
+        self.base_filters = self.base_filters or []
+        self.search_exclude_columns = self.search_exclude_columns or []
+        self.search_columns = self.search_columns or []
+
+        self._base_filters = self.datamodel.get_filters().add_filter_list(
+            self.base_filters
+        )
+        search_columns = self.datamodel.get_search_columns_list()
+        if not self.search_columns:
+            self.search_columns = [
+                x for x in search_columns if x not in self.search_exclude_columns
+            ]
+        self._gen_labels_columns(self.datamodel.get_columns_list())
+
         # Reset init props
         self.description_columns = self.description_columns or {}
         self.list_exclude_columns = self.list_exclude_columns or []
@@ -1271,11 +1275,7 @@ class ModelRestApi(BaseModelApi):
     def _fetch_entities(self, model_class: Model, ids: List[int]):
         if not ids:
             return []
-        return (
-            self.datamodel.session.query(model_class)
-            .filter(model_class.id.in_(ids))
-            .all()
-        )
+        return db.session.query(model_class).filter(model_class.id.in_(ids)).all()
 
     def merge_add_field_info(self, response: Dict[str, Any], **kwargs: Any) -> None:
         add_columns_info = kwargs.get("add_columns", {})
@@ -1748,7 +1748,7 @@ class ModelRestApi(BaseModelApi):
         # This validates custom Schema with custom validations
         self.pre_add(item)
         try:
-            self.datamodel.add(item, raise_exception=True)
+            self.datamodel.add(item)
             self.post_add(item)
             return self.response(
                 201,
@@ -1757,8 +1757,10 @@ class ModelRestApi(BaseModelApi):
                     "id": self.datamodel.get_pk_value(item),
                 },
             )
-        except IntegrityError as e:
-            return self.response_422(message=str(e.orig))
+        except DatabaseException as e:
+            return self.response_422(
+                message=f"Database exception occurred: {e.__cause__}"
+            )
 
     @expose("/", methods=["POST"])
     @protect()
@@ -1814,14 +1816,16 @@ class ModelRestApi(BaseModelApi):
             return self.response_422(message=err.messages)
         self.pre_update(item)
         try:
-            self.datamodel.edit(item, raise_exception=True)
+            self.datamodel.edit(item)
             self.post_update(item)
             return self.response(
                 200,
                 **{API_RESULT_RES_KEY: self.edit_model_schema.dump(item, many=False)},
             )
-        except IntegrityError as e:
-            return self.response_422(message=str(e.orig))
+        except DatabaseException as e:
+            return self.response_422(
+                message=f"Database exception occurred: {e.__cause__}"
+            )
 
     @expose("/<pk>", methods=["PUT"])
     @protect()
@@ -1875,11 +1879,13 @@ class ModelRestApi(BaseModelApi):
             return self.response_404()
         self.pre_delete(item)
         try:
-            self.datamodel.delete(item, raise_exception=True)
+            self.datamodel.delete(item)
             self.post_delete(item)
             return self.response(200, message="OK")
-        except IntegrityError as e:
-            return self.response_422(message=str(e.orig))
+        except DatabaseException as e:
+            return self.response_422(
+                message=f"Database exception occurred: {e.__cause__}"
+            )
 
     @expose("/<pk>", methods=["DELETE"])
     @protect()

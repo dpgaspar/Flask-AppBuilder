@@ -4,6 +4,7 @@ import logging
 from typing import List, Optional, Union
 import uuid
 
+from flask import current_app
 from werkzeug.security import generate_password_hash
 
 from .models import (
@@ -96,10 +97,8 @@ class SecurityManager(BaseSecurityManager):
             else:
                 register_user.password = generate_password_hash(
                     password=password,
-                    method=self.appbuilder.get_app.config.get(
-                        "FAB_PASSWORD_HASH_METHOD", "scrypt"
-                    ),
-                    salt_length=self.appbuilder.get_app.config.get(
+                    method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+                    salt_length=current_app.config.get(
                         "FAB_PASSWORD_HASH_SALT_LENGTH", 16
                     ),
                 )
@@ -151,10 +150,8 @@ class SecurityManager(BaseSecurityManager):
             else:
                 user.password = generate_password_hash(
                     password=password,
-                    method=self.appbuilder.get_app.config.get(
-                        "FAB_PASSWORD_HASH_METHOD", "scrypt"
-                    ),
-                    salt_length=self.appbuilder.get_app.config.get(
+                    method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+                    salt_length=current_app.config.get(
                         "FAB_PASSWORD_HASH_SALT_LENGTH", 16
                     ),
                 )
