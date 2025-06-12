@@ -11,7 +11,7 @@ from flask_appbuilder.security.sqla.apis.user.schema import (
     UserPostSchema,
     UserPutSchema,
 )
-from flask_appbuilder.security.sqla.models import Role, User
+from flask_appbuilder.security.sqla.models import Group, Role, User
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash
@@ -40,6 +40,7 @@ class UserApi(ModelRestApi):
         "changed_on",
         "created_by.id",
         "changed_by.id",
+        "groups",
     ]
     show_columns = list_columns
     add_columns = [
@@ -50,6 +51,7 @@ class UserApi(ModelRestApi):
         "active",
         "email",
         "password",
+        "groups",
     ]
     edit_columns = add_columns
     search_columns = [
@@ -61,19 +63,24 @@ class UserApi(ModelRestApi):
         "created_by",
         "changed_by",
         "roles",
+        "groups",
     ]
 
     add_model_schema = UserPostSchema()
     edit_model_schema = UserPutSchema()
 
-    def pre_update(self, item):
+    def pre_update(self, item, data):
         item.changed_on = datetime.now()
         item.changed_by_fk = g.user.id
-        if item.password:
+        if "password" in data and data["password"]:
             item.password = generate_password_hash(
-                password=item.password,
-                method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
-                salt_length=current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
+                password=data["password"],
+                method=self.appbuilder.get_app.config.get(
+                    "FAB_PASSWORD_HASH_METHOD", "scrypt"
+                ),
+                salt_length=self.appbuilder.get_app.config.get(
+                    "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+                ),
             )
 
     def pre_add(self, item):
@@ -123,23 +130,43 @@ class UserApi(ModelRestApi):
             item = self.add_model_schema.load(request.json)
             model = User()
             roles = []
+            groups = []
             for key, value in item.items():
-                if key != "roles":
+                if key not in ("roles", "groups"):
                     setattr(model, key, value)
-                else:
-                    for role_id in item[key]:
-                        role = (
-                            db.session.query(Role)
-                            .filter(Role.id == role_id)
-                            .one_or_none()
+                elif key == "roles":
+                    roles = self._fetch_entities(Role, value)
+                    missing_ids = set(value) - {r.id for r in roles}
+                    if missing_ids:
+                        return self.response_400(
+                            message={
+                                "roles": [
+                                    (
+                                        f"Role(s) with ID(s) {sorted(missing_ids)} "
+                                        "not found."
+                                    )
+                                ]
+                            }
                         )
-                        if role:
-                            role.user_id = model.id
-                            role.role_id = role_id
-                            roles.append(role)
+                elif key == "groups":
+                    groups = self._fetch_entities(Group, value)
+                    missing_ids = set(value) - {g.id for g in groups}
+                    if missing_ids:
+                        return self.response_400(
+                            message={
+                                "groups": [
+                                    (
+                                        f"Group(s) with ID(s) {sorted(missing_ids)} "
+                                        "not found."
+                                    )
+                                ]
+                            }
+                        )
 
             if "roles" in item.keys():
                 model.roles = roles
+            if "groups" in item.keys():
+                model.groups = groups
 
             self.pre_add(model)
             self.datamodel.add(model)
@@ -194,27 +221,71 @@ class UserApi(ModelRestApi):
             item = self.edit_model_schema.load(request.json)
             model = self.datamodel.get(pk, self._base_filters)
             roles = []
+            groups = []
+
+            item_roles = item.get("roles")
+            item_groups = item.get("groups")
+
+            if item_roles == [] and item_groups == []:
+                return self.response_400(
+                    message="User must have at least one role or group!"
+                )
+
+            if item_roles == [] and (item_groups is None and not model.groups):
+                return self.response_400(
+                    message=(
+                        "Cannot clear all roles unless at least one group is \
+                             assigned!"
+                    )
+                )
+
+            if item_groups == [] and (item_roles is None and not model.roles):
+                return self.response_400(
+                    message=(
+                        "Cannot clear all groups unless at least one role is \
+                             assigned!"
+                    )
+                )
 
             for key, value in item.items():
-                if key != "roles":
+                if key not in ("roles", "groups"):
                     setattr(model, key, value)
-                else:
-                    for role_id in item[key]:
-                        role = (
-                            db.session.query(Role)
-                            .filter(Role.id == role_id)
-                            .one_or_none()
+                elif key == "roles":
+                    roles = self._fetch_entities(Role, value)
+                    missing_ids = set(value) - {r.id for r in roles}
+                    if missing_ids:
+                        return self.response_404(
+                            message={
+                                "roles": [
+                                    (
+                                        f"Role(s) with ID(s) {sorted(missing_ids)} "
+                                        "not found."
+                                    )
+                                ]
+                            }
                         )
-                        if role:
-                            role.user_id = model.id
-                            role.role_id = role_id
-                            roles.append(role)
+                elif key == "groups":
+                    groups = self._fetch_entities(Group, value)
+                    missing_ids = set(value) - {g.id for g in groups}
+                    if missing_ids:
+                        return self.response_404(
+                            message={
+                                "groups": [
+                                    (
+                                        f"Group(s) with ID(s) {sorted(missing_ids)} "
+                                        "not found."
+                                    )
+                                ]
+                            }
+                        )
 
             if "roles" in item.keys():
                 model.roles = roles
+            if "groups" in item.keys():
+                model.groups = groups
 
-            self.pre_update(model)
-            self.datamodel.edit(model)
+            self.pre_update(model, item)
+            self.datamodel.edit(model, raise_exception=True)
             return self.response(
                 200,
                 **{API_RESULT_RES_KEY: self.edit_model_schema.dump(item, many=False)},

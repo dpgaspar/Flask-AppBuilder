@@ -12,6 +12,14 @@ from flask_appbuilder.extensions import db
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.manager import BaseSecurityManager
 from flask_appbuilder.security.sqla.apis import (
+from sqlalchemy import and_, func, literal, update
+from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.orm import contains_eager
+from sqlalchemy.orm.exc import MultipleResultsFound
+from werkzeug.security import generate_password_hash
+
+from .apis import (
+    GroupApi,
     PermissionApi,
     PermissionViewMenuApi,
     RoleApi,
@@ -19,6 +27,7 @@ from flask_appbuilder.security.sqla.apis import (
     ViewMenuApi,
 )
 from flask_appbuilder.security.sqla.models import (
+from .models import (
     assoc_permissionview_role,
     Group,
     Permission,
@@ -63,6 +72,7 @@ class SecurityManager(BaseSecurityManager):
     user_api = UserApi
     view_menu_api = ViewMenuApi
     permission_view_menu_api = PermissionViewMenuApi
+    group_api = GroupApi
 
     def __init__(self, appbuilder):
         """
@@ -106,14 +116,13 @@ class SecurityManager(BaseSecurityManager):
     def register_views(self) -> None:
         super().register_views()
 
-        if not current_app.config.get("FAB_ADD_SECURITY_API", False):
-            return
-
-        self.appbuilder.add_api(self.permission_api)
-        self.appbuilder.add_api(self.role_api)
-        self.appbuilder.add_api(self.user_api)
-        self.appbuilder.add_api(self.view_menu_api)
-        self.appbuilder.add_api(self.permission_view_menu_api)
+        if current_app.config.get("FAB_ADD_SECURITY_API", False):
+            self.appbuilder.add_api(self.permission_api)
+            self.appbuilder.add_api(self.role_api)
+            self.appbuilder.add_api(self.user_api)
+            self.appbuilder.add_api(self.view_menu_api)
+            self.appbuilder.add_api(self.permission_view_menu_api)
+            self.appbuilder.add_api(self.group_api)
 
     def create_db(self) -> None:
         if not current_app.config.get("FAB_CREATE_DB", True):

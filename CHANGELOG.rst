@@ -1,6 +1,25 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.7.0
+-----------------------------------
+
+- fix: group api, OAS and payload (#2358) [Daniel Vaz Gaspar]
+- fix: order by using mssql database (#2356) [ThomasP0815]
+- feat(filters): add "FilterIn" and "FilterNotIn" operators with unit tests (#2354) [Enzo Martellucci]
+- feat(GroupAPI): Add GroupAPI to FAB (#2339) [Enzo Martellucci]
+
+Improvements and Bug fixes on 4.6.4
+-----------------------------------
+
+- fix(UserApi): Fixed pre_update issue (#2347) [Alexandru Soare]
+
+Improvements and Bug fixes on 4.6.3
+-----------------------------------
+
+- fix: use id as a tiebreaker in the ordering (#2343) [Daniel Vaz Gaspar]
+- fix: always add a unique col to ordering (#2340) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 4.6.2
 -----------------------------------
 

@@ -26,6 +26,8 @@ __all__ = [
     "FilterEqualFunction",
     "FilterGreater",
     "FilterNotEndsWith",
+    "FilterIn",
+    "FilterNotIn",
     "FilterRelationManyToManyEqual",
     "FilterRelationOneToManyEqual",
     "FilterRelationOneToManyNotEqual",
@@ -184,6 +186,30 @@ class FilterSmaller(BaseFilter):
         return query.filter(field < value)
 
 
+class FilterIn(BaseFilter):
+    name = lazy_gettext("In")
+    arg_name = "in"
+
+    def apply(self, query, value):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        typed_values = [
+            set_value_to_type(self.datamodel, self.column_name, v) for v in value
+        ]
+        return query.filter(field.in_(typed_values))
+
+
+class FilterNotIn(BaseFilter):
+    name = lazy_gettext("Not In")
+    arg_name = "not_in"
+
+    def apply(self, query, value):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        typed_values = [
+            set_value_to_type(self.datamodel, self.column_name, v) for v in value
+        ]
+        return query.filter(~field.in_(typed_values))
+
+
 class FilterRelationOneToManyEqual(FilterRelation):
     name = lazy_gettext("Relation")
     arg_name = "rel_o_m"
@@ -315,6 +341,8 @@ class SQLAFilterConverter(BaseFilterConverter):
                 FilterNotEndsWith,
                 FilterNotContains,
                 FilterNotEqual,
+                FilterIn,
+                FilterNotIn,
             ],
         ),
         (
@@ -341,11 +369,43 @@ class SQLAFilterConverter(BaseFilterConverter):
                 FilterNotEndsWith,
                 FilterNotContains,
                 FilterNotEqual,
+                FilterIn,
+                FilterNotIn,
             ],
         ),
-        ("is_integer", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
-        ("is_float", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
-        ("is_numeric", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
+        (
+            "is_integer",
+            [
+                FilterEqual,
+                FilterGreater,
+                FilterSmaller,
+                FilterNotEqual,
+                FilterIn,
+                FilterNotIn,
+            ],
+        ),
+        (
+            "is_float",
+            [
+                FilterEqual,
+                FilterGreater,
+                FilterSmaller,
+                FilterNotEqual,
+                FilterIn,
+                FilterNotIn,
+            ],
+        ),
+        (
+            "is_numeric",
+            [
+                FilterEqual,
+                FilterGreater,
+                FilterSmaller,
+                FilterNotEqual,
+                FilterIn,
+                FilterNotIn,
+            ],
+        ),
         ("is_date", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
         ("is_boolean", [FilterEqual, FilterNotEqual]),
         ("is_datetime", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),

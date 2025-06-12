@@ -178,6 +178,7 @@ class SQLAInterface(BaseInterface):
         order_direction: str,
         aliases_mapping: dict[str, AliasedClass] | None = None,
         bypass_many_to_many: bool = False,
+        add_pk: bool = False,
     ) -> Query:
         if order_column != "":
             # if Model has custom decorator **renders('<COL_NAME>')**
@@ -205,10 +206,15 @@ class SQLAInterface(BaseInterface):
                 column_leaf = get_column_leaf(order_column)
                 _alias = self.get_alias_mapping(root_relation, aliases_mapping)
                 _order_column = getattr(_alias, column_leaf)
-            if order_direction == "asc":
-                query = query.order_by(asc(_order_column))
-            else:
-                query = query.order_by(desc(_order_column))
+            # get the primary key so we can add a tie breaker of the order
+            # when the order column is not unique it can cause issues with pagination
+            direction = asc if order_direction == "asc" else desc
+            order_by_columns = [direction(_order_column)]
+            pk = self.get_pk()
+            if add_pk and pk and pk != _order_column:
+                order_by_columns.append(direction(pk))
+            query = query.order_by(*order_by_columns)
+
         return query
 
     def apply_pagination(
@@ -434,6 +440,7 @@ class SQLAInterface(BaseInterface):
             order_direction,
             aliases_mapping=aliases_mapping,
             bypass_many_to_many=True,
+            add_pk=True,
         )
         query = self.apply_pagination(query, page, page_size)
         return query
