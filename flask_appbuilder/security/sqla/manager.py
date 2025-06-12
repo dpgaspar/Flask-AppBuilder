@@ -12,13 +12,6 @@ from flask_appbuilder.extensions import db
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.manager import BaseSecurityManager
 from flask_appbuilder.security.sqla.apis import (
-from sqlalchemy import and_, func, literal, update
-from sqlalchemy.engine.reflection import Inspector
-from sqlalchemy.orm import contains_eager
-from sqlalchemy.orm.exc import MultipleResultsFound
-from werkzeug.security import generate_password_hash
-
-from .apis import (
     GroupApi,
     PermissionApi,
     PermissionViewMenuApi,
@@ -27,7 +20,6 @@ from .apis import (
     ViewMenuApi,
 )
 from flask_appbuilder.security.sqla.models import (
-from .models import (
     assoc_permissionview_role,
     Group,
     Permission,
