@@ -284,7 +284,7 @@ class UserApi(ModelRestApi):
                 model.groups = groups
 
             self.pre_update(model, item)
-            self.datamodel.edit(model, raise_exception=True)
+            self.datamodel.edit(model)
             return self.response(
                 200,
                 **{API_RESULT_RES_KEY: self.edit_model_schema.dump(item, many=False)},

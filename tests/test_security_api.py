@@ -1467,7 +1467,7 @@ class GroupAPITestCase(FABTestCase):
 
         for b in self.appbuilder.baseviews:
             if hasattr(b, "datamodel") and b.datamodel.session is not None:
-                b.datamodel.session = self.db.session
+                b.datamodel.session = db.session
 
         self.create_default_users(self.appbuilder)
 
