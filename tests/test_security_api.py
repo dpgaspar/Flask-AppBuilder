@@ -345,7 +345,7 @@ class UserAPITestCase(FABTestCase):
         add_user_response = json.loads(rv.data)
         assert "id" in add_user_response
         user = (
-            self.session.query(User)
+            db.session.query(User)
             .filter(User.id == add_user_response["id"])
             .one_or_none()
         )
@@ -358,12 +358,12 @@ class UserAPITestCase(FABTestCase):
         self.assertEqual(len(user.groups), 2)
         self.assertIn("test_group_1", user.groups[0].name)
         self.assertIn("test_group_2", user.groups[1].name)
-        self.session.delete(user)
+        db.session.delete(user)
         created_group_1 = self.appbuilder.sm.find_group("test_group_1")
         created_group_2 = self.appbuilder.sm.find_group("test_group_2")
-        self.session.delete(created_group_1)
-        self.session.delete(created_group_2)
-        self.session.commit()
+        db.session.delete(created_group_1)
+        db.session.delete(created_group_2)
+        db.session.commit()
 
     def test_create_user_with_invalid_group(self):
         client = self.app.test_client()
@@ -460,8 +460,8 @@ class UserAPITestCase(FABTestCase):
         self.assertIsNotNone(updated_user)
         self.assertEqual(updated_user.password, old_password_hash)
 
-        self.session.delete(updated_user)
-        self.session.commit()
+        db.session.delete(updated_user)
+        db.session.commit()
 
     def test_edit_user_change_password(self):
         client = self.app.test_client()
@@ -1126,10 +1126,10 @@ class RolePermissionAPITestCase(FABTestCase):
         self.assertIn(created_group_1.name, updated_role.groups[0].name)
         self.assertIn(created_group_2.name, updated_role.groups[1].name)
 
-        self.session.delete(updated_role)
-        self.session.delete(created_group_1)
-        self.session.delete(created_group_2)
-        self.session.commit()
+        db.session.delete(updated_role)
+        db.session.delete(created_group_1)
+        db.session.delete(created_group_2)
+        db.session.commit()
 
     def test_update_role_users_invalid_role(self):
         client = self.app.test_client()
@@ -1212,8 +1212,8 @@ class RolePermissionAPITestCase(FABTestCase):
         role = self.appbuilder.sm.find_role(role_name)
         self.assertEqual(len(role.groups), 0)
 
-        self.session.delete(role)
-        self.session.commit()
+        db.session.delete(role)
+        db.session.commit()
 
     def test_list_view_menu_permissions_of_role(self):
         client = self.app.test_client()
@@ -1450,8 +1450,8 @@ class UserDefaultPasswordComplexityValidatorTestCase(FABTestCase):
             .filter(User.username == "password complexity test user")
             .one_or_none()
         )
-        session.delete(user)
-        session.commit()
+        db.session.delete(user)
+        db.session.commit()
 
 
 class GroupAPITestCase(FABTestCase):
@@ -1463,9 +1463,7 @@ class GroupAPITestCase(FABTestCase):
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_API"] = True
-        self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        self.session = self.db.session
+        self.appbuilder = AppBuilder(self.app)
 
         for b in self.appbuilder.baseviews:
             if hasattr(b, "datamodel") and b.datamodel.session is not None:
@@ -1474,12 +1472,12 @@ class GroupAPITestCase(FABTestCase):
         self.create_default_users(self.appbuilder)
 
     def tearDown(self):
-        groups = self.session.query(self.appbuilder.sm.group_model).all()
+        groups = db.session.query(self.appbuilder.sm.group_model).all()
         for group in groups:
             group.users = []
             group.roles = []
-            self.session.delete(group)
-        self.session.commit()
+            db.session.delete(group)
+        db.session.commit()
 
         self.appbuilder.session.close()
         engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
@@ -1504,10 +1502,6 @@ class GroupAPITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         admin_role = self.appbuilder.sm.find_role("Admin")
-        # user = self.appbuilder.sm.find_user("test_user_group")
-        # self.session.merge(user)
-        # self.session.delete(user)
-        # self.session.commit()
         user = self.appbuilder.sm.add_user(
             username="test_user_group",
             first_name="Test",
@@ -1545,9 +1539,9 @@ class GroupAPITestCase(FABTestCase):
             ],
         )
 
-        self.session.delete(group)
-        self.session.delete(user)
-        self.session.commit()
+        db.session.delete(group)
+        db.session.delete(user)
+        db.session.commit()
 
     def test_create_group(self):
         client = self.app.test_client()
@@ -1559,14 +1553,14 @@ class GroupAPITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 201)
         assert "id" in add_group_response
         group = (
-            self.session.query(self.appbuilder.sm.group_model)
+            db.session.query(self.appbuilder.sm.group_model)
             .filter(self.appbuilder.sm.group_model.id == add_group_response["id"])
             .one_or_none()
         )
         self.assertIsNotNone(group)
         self.assertEqual(group.name, create_group_payload["name"])
-        self.session.delete(group)
-        self.session.commit()
+        db.session.delete(group)
+        db.session.commit()
 
     def test_create_group_without_name(self):
         client = self.app.test_client()
@@ -1590,13 +1584,13 @@ class GroupAPITestCase(FABTestCase):
 
         group_name = "existing_group"
         group = self.appbuilder.sm.add_group(group_name, "label", "description")
-        self.session.commit()
+        db.session.commit()
 
         rv = self.auth_client_post(client, token, uri, json={"name": group_name})
         self.assertEqual(rv.status_code, 422)
 
-        self.session.delete(group)
-        self.session.commit()
+        db.session.delete(group)
+        db.session.commit()
 
     def test_create_group_with_users_and_roles(self):
         client = self.app.test_client()
@@ -1628,7 +1622,7 @@ class GroupAPITestCase(FABTestCase):
         add_group_response = json.loads(rv.data)
         assert "id" in add_group_response
         group = (
-            self.session.query(self.appbuilder.sm.group_model)
+            db.session.query(self.appbuilder.sm.group_model)
             .filter(self.appbuilder.sm.group_model.id == add_group_response["id"])
             .one_or_none()
         )
@@ -1643,11 +1637,11 @@ class GroupAPITestCase(FABTestCase):
         self.assertIn(group_role, group.roles)
         self.assertIn(group_user, group.users)
 
-        self.session.delete(group)
-        self.session.delete(group_user)
-        self.session.delete(group_role)
-        self.session.query(User).filter(User.username == "test_user_group").delete()
-        self.session.commit()
+        db.session.delete(group)
+        db.session.delete(group_user)
+        db.session.delete(group_role)
+        db.session.query(User).filter(User.username == "test_user_group").delete()
+        db.session.commit()
 
     def test_create_group_with_invalid_user(self):
         client = self.app.test_client()
@@ -1689,7 +1683,7 @@ class GroupAPITestCase(FABTestCase):
 
         group_name = "test_delete_group"
         group = self.appbuilder.sm.add_group(group_name, "label", "description")
-        self.session.commit()
+        db.session.commit()
         group_id = group.id
 
         uri = f"api/v1/security/groups/{group_id}"
@@ -1716,7 +1710,7 @@ class GroupAPITestCase(FABTestCase):
         group_name = "test_edit_group"
         updated_group_name = "updated_test_edit_group"
         group = self.appbuilder.sm.add_group(group_name, "label", "description")
-        self.session.commit()
+        db.session.commit()
         group_id = group.id
 
         uri = f"api/v1/security/groups/{group_id}"
@@ -1728,8 +1722,8 @@ class GroupAPITestCase(FABTestCase):
         self.assertIsNotNone(updated_group)
         self.assertEqual(updated_group.name, updated_group_name)
 
-        self.session.delete(updated_group)
-        self.session.commit()
+        db.session.delete(updated_group)
+        db.session.commit()
 
     def test_edit_invalid_group(self):
         client = self.app.test_client()
@@ -1749,7 +1743,7 @@ class GroupAPITestCase(FABTestCase):
 
         group_name = "test_edit_group_roles"
         group = self.appbuilder.sm.add_group(group_name, "description", "label")
-        self.session.commit()
+        db.session.commit()
 
         uri = f"api/v1/security/groups/{group.id}"
         role = self.appbuilder.sm.add_role("test_edit_group_roles")
@@ -1760,10 +1754,10 @@ class GroupAPITestCase(FABTestCase):
         updated_group = self.appbuilder.sm.find_group(group_name)
         self.assertIsNotNone(updated_group)
         self.assertEqual(len(updated_group.roles), 1)
-        self.session.delete(updated_group)
+        db.session.delete(updated_group)
         updated_role = self.appbuilder.sm.find_role("test_edit_group_roles")
-        self.session.delete(updated_role)
-        self.session.commit()
+        db.session.delete(updated_role)
+        db.session.commit()
 
     def test_edit_group_users(self):
         client = self.app.test_client()
@@ -1801,10 +1795,10 @@ class GroupAPITestCase(FABTestCase):
         updated_user_2 = self.appbuilder.sm.find_user(username="test_user_2")
         self.assertEqual(updated_user_1.groups[0].id, updated_group.id)
         self.assertEqual(updated_user_2.groups[0].id, updated_group.id)
-        self.session.delete(updated_user_2)
-        self.session.delete(updated_user_1)
-        self.session.delete(updated_group)
-        self.session.commit()
+        db.session.delete(updated_user_2)
+        db.session.delete(updated_user_1)
+        db.session.delete(updated_group)
+        db.session.commit()
 
     def test_edit_group_with_invalid_user(self):
         client = self.app.test_client()
@@ -1812,7 +1806,7 @@ class GroupAPITestCase(FABTestCase):
 
         group_name = "test_edit_group_invalid_user"
         group = self.appbuilder.sm.add_group(group_name, "description", "label")
-        self.session.commit()
+        db.session.commit()
 
         invalid_user_id = 999999
         uri = f"api/v1/security/groups/{group.id}"
@@ -1821,8 +1815,8 @@ class GroupAPITestCase(FABTestCase):
         rv = self.auth_client_put(client, token, uri, json=payload)
         self.assertEqual(rv.status_code, 400)
 
-        self.session.delete(group)
-        self.session.commit()
+        db.session.delete(group)
+        db.session.commit()
 
     def test_edit_group_with_invalid_role(self):
         client = self.app.test_client()
@@ -1830,7 +1824,7 @@ class GroupAPITestCase(FABTestCase):
 
         group_name = "test_edit_group_invalid_role"
         group = self.appbuilder.sm.add_group(group_name, "description", "label")
-        self.session.commit()
+        db.session.commit()
 
         invalid_role_id = 999999
         uri = f"api/v1/security/groups/{group.id}"
@@ -1839,5 +1833,5 @@ class GroupAPITestCase(FABTestCase):
         rv = self.auth_client_put(client, token, uri, json=payload)
         self.assertEqual(rv.status_code, 400)
 
-        self.session.delete(group)
-        self.session.commit()
+        db.session.delete(group)
+        db.session.commit()
