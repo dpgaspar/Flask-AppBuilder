@@ -535,7 +535,7 @@ msgstr "Inicio de sesión inválido. Por favor inténtelo de nuevo."
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:56
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:118
 msgid "Sign In"
-msgstr "Registrarse"
+msgstr "Iniciar sesión"
 
 #: flask_appbuilder/templates/appbuilder/baselib.html:115
 #: flask_appbuilder/templates/appbuilder/navbar_right.html:37
