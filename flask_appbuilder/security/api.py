@@ -105,11 +105,11 @@ class SecurityApi(BaseApi):
         # Identity can be any data that is json serializable
         resp = dict()
         resp[API_SECURITY_ACCESS_TOKEN_KEY] = create_access_token(
-            identity=user.id, fresh=True
+            identity=str(user.id), fresh=True
         )
         if "refresh" in login_payload and login_payload["refresh"]:
             resp[API_SECURITY_REFRESH_TOKEN_KEY] = create_refresh_token(
-                identity=user.id
+                identity=str(user.id)
             )
         return self.response(200, **resp)
 
