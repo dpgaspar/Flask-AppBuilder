@@ -51,7 +51,15 @@ class UserAPITestCase(FABTestCase):
         user.username = username
         user.email = email
         user.roles = roles
-        user.password = generate_password_hash(password)
+        user.password = generate_password_hash(
+            password=password,
+            method=self.appbuilder.get_app.config.get(
+                "FAB_PASSWORD_HASH_METHOD", "scrypt"
+            ),
+            salt_length=self.appbuilder.get_app.config.get(
+                "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+            ),
+        )
         self.session.commit()
         return user
 
@@ -113,6 +121,7 @@ class UserAPITestCase(FABTestCase):
                 "email",
                 "fail_login_count",
                 "first_name",
+                "groups",
                 "id",
                 "last_login",
                 "last_name",
@@ -277,7 +286,7 @@ class UserAPITestCase(FABTestCase):
         self.session.delete(user)
         self.session.commit()
 
-    def test_create_user_without_role(self):
+    def test_create_user_without_role_or_group(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
@@ -289,15 +298,18 @@ class UserAPITestCase(FABTestCase):
             "last_name": "admin",
             "password": "password",
             "roles": [],
+            "groups": [],
             "username": "fab_usear_api_test_2",
         }
         rv = self.auth_client_post(client, token, uri, create_user_payload)
-        add_user_response = json.loads(rv.data)
         self.assertEqual(rv.status_code, 400)
 
-        assert "message" in add_user_response
-        self.assertEqual(
-            add_user_response["message"], {"roles": ["Shorter than minimum length 1."]}
+        response = json.loads(rv.data)
+        self.assertIn("message", response)
+        self.assertIn("_schema", response["message"])
+        self.assertIn(
+            "At least one of 'roles' or 'groups' must be provided and non-empty.",
+            response["message"]["_schema"],
         )
 
     def test_create_user_with_invalid_role(self):
@@ -305,6 +317,7 @@ class UserAPITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         uri = "api/v1/security/users/"
+
         create_user_payload = {
             "active": True,
             "email": "fab@test_create_user_1.com",
@@ -315,25 +328,74 @@ class UserAPITestCase(FABTestCase):
             "username": "fab_usear_api_test_2",
         }
         rv = self.auth_client_post(client, token, uri, create_user_payload)
-        add_user_response = json.loads(rv.data)
+        self.assertEqual(rv.status_code, 400)
+
+    def test_create_user_with_groups(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        group_1 = self.appbuilder.sm.add_group(
+            "test_group_1", "label_1", "description_1"
+        )
+        group_2 = self.appbuilder.sm.add_group(
+            "test_group_2", "label_2", "description_2"
+        )
+
+        uri = "api/v1/security/users/"
+        create_user_payload = {
+            "active": True,
+            "email": "fab@test_create_user_with_groups.com",
+            "first_name": "fab",
+            "last_name": "admin",
+            "password": "password",
+            "groups": [group_1.id, group_2.id],
+            "username": "fab_user_with_groups",
+        }
+
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
         self.assertEqual(rv.status_code, 201)
 
-        user = self.appbuilder.sm.get_user_by_id(add_user_response["id"])
-
+        add_user_response = json.loads(rv.data)
+        assert "id" in add_user_response
+        user = (
+            self.session.query(User)
+            .filter(User.id == add_user_response["id"])
+            .one_or_none()
+        )
+        self.assertIsNotNone(user)
         self.assertEqual(user.active, create_user_payload["active"])
         self.assertEqual(user.email, create_user_payload["email"])
         self.assertEqual(user.first_name, create_user_payload["first_name"])
         self.assertEqual(user.last_name, create_user_payload["last_name"])
         self.assertEqual(user.username, create_user_payload["username"])
-        self.assertEqual(len(user.roles), 0)
-
-        user = (
-            self.session.query(self.user_model)
-            .filter(self.user_model.id == user.id)
-            .first()
-        )
+        self.assertEqual(len(user.groups), 2)
+        self.assertIn("test_group_1", user.groups[0].name)
+        self.assertIn("test_group_2", user.groups[1].name)
         self.session.delete(user)
+        created_group_1 = self.appbuilder.sm.find_group("test_group_1")
+        created_group_2 = self.appbuilder.sm.find_group("test_group_2")
+        self.session.delete(created_group_1)
+        self.session.delete(created_group_2)
         self.session.commit()
+
+    def test_create_user_with_invalid_group(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/security/users/"
+        invalid_group_id = 999999
+        create_user_payload = {
+            "active": True,
+            "email": "fab@test_create_user_with_invalid_group.com",
+            "first_name": "fab",
+            "last_name": "admin",
+            "password": "password",
+            "groups": [invalid_group_id],
+            "username": "fab_user_with_invalid_group",
+        }
+
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        self.assertEqual(rv.status_code, 400)
 
     def test_edit_user(self):
         client = self.app.test_client()
@@ -384,6 +446,72 @@ class UserAPITestCase(FABTestCase):
         for r in roles:
             self.session.delete(r)
         self.session.commit()
+
+    def test_edit_user_check_password(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        role_id = self.appbuilder.sm.find_role("Admin").id
+        uri = "api/v1/security/users/"
+        create_user_payload = {
+            "active": True,
+            "email": "test_password@test.com",
+            "first_name": "test",
+            "last_name": "test",
+            "password": "password",
+            "roles": [role_id],
+            "username": "test_password",
+        }
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        self.assertEqual(rv.status_code, 201)
+
+        user = self.appbuilder.sm.find_user(username="test_password")
+        self.assertIsNotNone(user)
+        user_id = user.id
+        old_password_hash = user.password
+
+        update_payload = {"username": "test_password_renamed"}
+        rv = self.auth_client_put(client, token, f"{uri}{user_id}", update_payload)
+        self.assertEqual(rv.status_code, 200)
+
+        updated_user = self.appbuilder.sm.find_user(username="test_password_renamed")
+        self.assertIsNotNone(updated_user)
+        self.assertEqual(updated_user.password, old_password_hash)
+
+        self.session.delete(updated_user)
+        self.session.commit()
+
+    def test_edit_user_change_password(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        role_id = self.appbuilder.sm.find_role("Admin").id
+        uri = "api/v1/security/users/"
+
+        create_user_payload = {
+            "active": True,
+            "email": "test_change_password@test.com",
+            "first_name": "test",
+            "last_name": "test",
+            "password": "initial_password",
+            "roles": [role_id],
+            "username": "test_change_password",
+        }
+        rv = self.auth_client_post(client, token, uri, create_user_payload)
+        self.assertEqual(rv.status_code, 201)
+
+        user = self.appbuilder.sm.find_user(username="test_change_password")
+        self.assertIsNotNone(user)
+        user_id = user.id
+        old_password_hash = user.password
+
+        update_payload = {"password": "new_secure_password"}
+        rv = self.auth_client_put(client, token, f"{uri}{user_id}", update_payload)
+        self.assertEqual(rv.status_code, 200)
+
+        updated_user = self.appbuilder.sm.find_user(username="test_change_password")
+        self.assertIsNotNone(updated_user)
+        self.assertNotEqual(updated_user.password, old_password_hash)
+
+        self.appbuilder.sm.del_register_user(updated_user)
 
     def test_delete_user(self):
         client = self.app.test_client()
@@ -963,6 +1091,154 @@ class RolePermissionAPITestCase(FABTestCase):
             permission_2_name, view_menu_name, cascade=True
         )
 
+    def test_update_role_users_valid_user(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        role_name = "test_user_role"
+        user_name = "test_user_test"
+        test_role = self.appbuilder.sm.add_role(name=role_name)
+        test_user = self.appbuilder.sm.add_user(
+            username=user_name,
+            first_name=user_name,
+            last_name=user_name,
+            email="test@t3t.com",
+            role=None,
+        )
+
+        uri = f"api/v1/security/roles/{test_role.id}/users"
+        payload = {"user_ids": [test_user.id]}
+
+        response = self.auth_client_put(client, token, uri, payload)
+        self.assertEqual(response.status_code, 200)
+
+        role = self.appbuilder.sm.find_role(role_name)
+        user = self.appbuilder.sm.find_user(username=user_name)
+
+        self.assertEqual(len(user.roles), 1)
+        self.assertEqual(role.user[0].id, user.id)
+        self.assertEqual(user.roles[0].id, role.id)
+        self.session.delete(role)
+        self.session.delete(user)
+        self.session.commit()
+
+    def test_update_role_groups_valid_group(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        role_name = "test_role_with_groups"
+        test_role = self.appbuilder.sm.add_role(name=role_name)
+
+        group_1 = self.appbuilder.sm.add_group(
+            "test_group_1", "label_1", "description_1"
+        )
+        group_2 = self.appbuilder.sm.add_group(
+            "test_group_2", "label_2", "description_2"
+        )
+
+        uri = f"api/v1/security/roles/{test_role.id}/groups"
+        payload = {"group_ids": [group_1.id, group_2.id]}
+
+        response = self.auth_client_put(client, token, uri, payload)
+        self.assertEqual(response.status_code, 200)
+
+        updated_role = self.appbuilder.sm.find_role(role_name)
+        created_group_1 = self.appbuilder.sm.find_group("test_group_1")
+        created_group_2 = self.appbuilder.sm.find_group("test_group_2")
+        self.assertIsNotNone(updated_role)
+        self.assertEqual(len(updated_role.groups), 2)
+        self.assertIn(created_group_1.name, updated_role.groups[0].name)
+        self.assertIn(created_group_2.name, updated_role.groups[1].name)
+
+        self.session.delete(updated_role)
+        self.session.delete(created_group_1)
+        self.session.delete(created_group_2)
+        self.session.commit()
+
+    def test_update_role_users_invalid_role(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        invalid_role_id = 9999999
+        uri = f"api/v1/security/roles/{invalid_role_id}/users"
+
+        payload = {"user_ids": [1, 2]}
+
+        response = self.auth_client_put(client, token, uri, payload)
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_role_groups_invalid_role(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        invalid_role_id = 9999999
+        uri = f"api/v1/security/roles/{invalid_role_id}/groups"
+
+        payload = {"group_ids": [1, 2]}
+
+        response = self.auth_client_put(client, token, uri, payload)
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_role_users_invalid_payload(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        role_name = "test_invalid_user_role"
+        test_role = self.appbuilder.sm.add_role(name=role_name)
+
+        uri = f"api/v1/security/roles/{test_role.id}/users"
+        payload = {}
+
+        response = self.auth_client_put(client, token, uri, payload)
+        self.assertEqual(response.status_code, 400)
+
+        role = self.appbuilder.sm.find_role(role_name)
+        self.session.delete(role)
+        self.session.commit()
+
+    def test_update_role_users_invalid_user(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        role_name = "test_invalid_user_role"
+        test_role = self.appbuilder.sm.add_role(name=role_name)
+        self.session.commit()
+
+        invalid_user_id = 999999
+
+        uri = f"api/v1/security/roles/{test_role.id}/users"
+        payload = {"user_ids": [invalid_user_id]}
+
+        response = self.auth_client_put(client, token, uri, payload)
+        self.assertEqual(response.status_code, 404)
+
+        role = self.appbuilder.sm.find_role(role_name)
+        self.assertEqual(len(role.user), 0)
+
+        self.session.delete(role)
+        self.session.commit()
+
+    def test_update_role_groups_invalid_group(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        role_name = "test_invalid_group_role"
+        test_role = self.appbuilder.sm.add_role(name=role_name)
+
+        invalid_group_id = 9999999
+
+        uri = f"api/v1/security/roles/{test_role.id}/groups"
+        payload = {"group_ids": [invalid_group_id]}
+
+        response = self.auth_client_put(client, token, uri, payload)
+        self.assertEqual(response.status_code, 404)
+
+        role = self.appbuilder.sm.find_role(role_name)
+        self.assertEqual(len(role.groups), 0)
+
+        self.session.delete(role)
+        self.session.commit()
+
     def test_list_view_menu_permissions_of_role(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1206,3 +1482,392 @@ class UserDefaultPasswordComplexityValidatorTestCase(FABTestCase):
         )
         session.delete(user)
         session.commit()
+
+
+class GroupAPITestCase(FABTestCase):
+    def setUp(self):
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+
+        self.app = Flask(__name__)
+        self.basedir = os.path.abspath(os.path.dirname(__file__))
+        self.app.config.from_object("tests.config_api")
+        self.app.config["FAB_ADD_SECURITY_API"] = True
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.session = self.db.session
+
+        for b in self.appbuilder.baseviews:
+            if hasattr(b, "datamodel") and b.datamodel.session is not None:
+                b.datamodel.session = self.db.session
+
+        self.create_default_users(self.appbuilder)
+
+    def tearDown(self):
+        groups = self.session.query(self.appbuilder.sm.group_model).all()
+        for group in groups:
+            group.users = []
+            group.roles = []
+            self.session.delete(group)
+        self.session.commit()
+
+        self.appbuilder.session.close()
+        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        for baseview in self.appbuilder.baseviews:
+            if hasattr(baseview, "datamodel"):
+                baseview.datamodel.session = None
+        engine.dispose()
+
+    def test_list_group_api_empty_list(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/security/groups/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        response = json.loads(rv.data)
+        assert "count" and "result" in response
+        self.assertEqual(response["count"], 0)
+
+    def test_list_group_api_populated_list(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        admin_role = self.appbuilder.sm.find_role("Admin")
+        # user = self.appbuilder.sm.find_user("test_user_group")
+        # self.session.merge(user)
+        # self.session.delete(user)
+        # self.session.commit()
+        user = self.appbuilder.sm.add_user(
+            username="test_user_group",
+            first_name="Test",
+            last_name="User",
+            email="test_user@fab.com",
+            role=None,
+            password="password",
+        )
+        group = self.appbuilder.sm.add_group(
+            "test_list_group_api1",
+            "label",
+            "description",
+            roles=[admin_role],
+            users=[user],
+        )
+
+        uri = "api/v1/security/groups/"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        response = json.loads(rv.data)
+        assert "count" and "result" in response
+        self.assertEqual(response["count"], 1)
+        self.assertEqual(
+            response["result"],
+            [
+                {
+                    "description": "description",
+                    "id": group.id,
+                    "label": "label",
+                    "name": "test_list_group_api1",
+                    "roles": [{"id": admin_role.id, "name": "Admin"}],
+                    "users": [{"id": user.id, "username": "test_user_group"}],
+                }
+            ],
+        )
+
+        self.session.delete(group)
+        self.session.delete(user)
+        self.session.commit()
+
+    def test_create_group(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "api/v1/security/groups/"
+        create_group_payload = {"name": "test_create_group"}
+        rv = self.auth_client_post(client, token, uri, create_group_payload)
+        add_group_response = json.loads(rv.data)
+        self.assertEqual(rv.status_code, 201)
+        assert "id" in add_group_response
+        group = (
+            self.session.query(self.appbuilder.sm.group_model)
+            .filter(self.appbuilder.sm.group_model.id == add_group_response["id"])
+            .one_or_none()
+        )
+        self.assertIsNotNone(group)
+        self.assertEqual(group.name, create_group_payload["name"])
+        self.session.delete(group)
+        self.session.commit()
+
+    def test_create_group_without_name(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "api/v1/security/groups/"
+
+        payload = {
+            "label": "Test Label",
+            "description": "Test Description",
+            "roles": [],
+            "users": [],
+        }
+
+        rv = self.auth_client_post(client, token, uri, json=payload)
+        self.assertEqual(rv.status_code, 400)
+
+    def test_create_group_existing_name(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "api/v1/security/groups/"
+
+        group_name = "existing_group"
+        group = self.appbuilder.sm.add_group(group_name, "label", "description")
+        self.session.commit()
+
+        rv = self.auth_client_post(client, token, uri, json={"name": group_name})
+        self.assertEqual(rv.status_code, 422)
+
+        self.session.delete(group)
+        self.session.commit()
+
+    def test_create_group_with_users_and_roles(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        role = self.appbuilder.sm.add_role("test_role_group")
+
+        user = self.appbuilder.sm.add_user(
+            username="test_user_group",
+            first_name="Test",
+            last_name="User",
+            email="test_user@fab.com",
+            role=None,
+            password="password",
+        )
+
+        uri = "api/v1/security/groups/"
+        create_group_payload = {
+            "name": "test_group_with_one_user_and_one_role",
+            "label": "Test Group Label",
+            "description": "Test Group Description",
+            "roles": [role.id],
+            "users": [user.id],
+        }
+
+        rv = self.auth_client_post(client, token, uri, create_group_payload)
+        self.assertEqual(rv.status_code, 201)
+
+        add_group_response = json.loads(rv.data)
+        assert "id" in add_group_response
+        group = (
+            self.session.query(self.appbuilder.sm.group_model)
+            .filter(self.appbuilder.sm.group_model.id == add_group_response["id"])
+            .one_or_none()
+        )
+        group_role = self.appbuilder.sm.find_role("test_role_group")
+        group_user = self.appbuilder.sm.find_user(username="test_user_group")
+        self.assertIsNotNone(group)
+        self.assertEqual(group.name, create_group_payload["name"])
+        self.assertEqual(group.label, create_group_payload["label"])
+        self.assertEqual(group.description, create_group_payload["description"])
+        self.assertEqual(len(group.roles), 1)
+        self.assertEqual(len(group.users), 1)
+        self.assertIn(group_role, group.roles)
+        self.assertIn(group_user, group.users)
+
+        self.session.delete(group)
+        self.session.delete(group_user)
+        self.session.delete(group_role)
+        self.session.query(User).filter(User.username == "test_user_group").delete()
+        self.session.commit()
+
+    def test_create_group_with_invalid_user(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/security/groups/"
+        invalid_user_id = 999999
+        create_group_payload = {
+            "name": "test_group_invalid_user",
+            "label": "Test Group Label",
+            "description": "Test Group Description",
+            "roles": [],
+            "users": [invalid_user_id],
+        }
+
+        rv = self.auth_client_post(client, token, uri, create_group_payload)
+        self.assertEqual(rv.status_code, 400)
+
+    def test_create_group_with_invalid_role(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        uri = "api/v1/security/groups/"
+        invalid_role_id = 999999
+        create_group_payload = {
+            "name": "test_group_invalid_role",
+            "label": "Test Group Label",
+            "description": "Test Group Description",
+            "roles": [invalid_role_id],
+            "users": [],
+        }
+
+        rv = self.auth_client_post(client, token, uri, create_group_payload)
+        self.assertEqual(rv.status_code, 400)
+
+    def test_delete_group(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        group_name = "test_delete_group"
+        group = self.appbuilder.sm.add_group(group_name, "label", "description")
+        self.session.commit()
+        group_id = group.id
+
+        uri = f"api/v1/security/groups/{group_id}"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        deleted_group = self.appbuilder.sm.find_group(group_name)
+        assert deleted_group is None
+
+    def test_delete_invalid_group(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        invalid_group_id = 999999
+        uri = f"api/v1/security/groups/{invalid_group_id}"
+        rv = self.auth_client_delete(client, token, uri)
+
+        self.assertEqual(rv.status_code, 404)
+
+    def test_edit_group_name(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        group_name = "test_edit_group"
+        updated_group_name = "updated_test_edit_group"
+        group = self.appbuilder.sm.add_group(group_name, "label", "description")
+        self.session.commit()
+        group_id = group.id
+
+        uri = f"api/v1/security/groups/{group_id}"
+        payload = {"name": updated_group_name}
+        rv = self.auth_client_put(client, token, uri, json=payload)
+        self.assertEqual(rv.status_code, 200)
+
+        updated_group = self.appbuilder.sm.find_group(updated_group_name)
+        self.assertIsNotNone(updated_group)
+        self.assertEqual(updated_group.name, updated_group_name)
+
+        self.session.delete(updated_group)
+        self.session.commit()
+
+    def test_edit_invalid_group(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        invalid_group_id = 999999
+        uri = f"api/v1/security/groups/{invalid_group_id}"
+        payload = {"name": "updated_invalid_group_name"}
+
+        rv = self.auth_client_put(client, token, uri, json=payload)
+
+        self.assertEqual(rv.status_code, 404)
+
+    def test_edit_group_roles(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        group_name = "test_edit_group_roles"
+        group = self.appbuilder.sm.add_group(group_name, "description", "label")
+        self.session.commit()
+
+        uri = f"api/v1/security/groups/{group.id}"
+        role = self.appbuilder.sm.add_role("test_edit_group_roles")
+
+        payload = {"roles": [role.id]}
+        rv = self.auth_client_put(client, token, uri, json=payload)
+        self.assertEqual(rv.status_code, 200)
+        updated_group = self.appbuilder.sm.find_group(group_name)
+        self.assertIsNotNone(updated_group)
+        self.assertEqual(len(updated_group.roles), 1)
+        self.session.delete(updated_group)
+        updated_role = self.appbuilder.sm.find_role("test_edit_group_roles")
+        self.session.delete(updated_role)
+        self.session.commit()
+
+    def test_edit_group_users(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        group_name = "test_edit_group_users"
+        group = self.appbuilder.sm.add_group(group_name, "description", "label")
+
+        user_1 = self.appbuilder.sm.add_user(
+            username="test_user_1",
+            first_name="Test",
+            last_name="User1",
+            email="test_user_1@fab.com",
+            role=None,
+            password="password",
+        )
+        user_2 = self.appbuilder.sm.add_user(
+            username="test_user_2",
+            first_name="Test",
+            last_name="User2",
+            email="test_user_2@fab.com",
+            role=None,
+            password="password",
+        )
+
+        uri = f"api/v1/security/groups/{group.id}"
+        payload = {"users": [user_1.id, user_2.id]}
+        rv = self.auth_client_put(client, token, uri, json=payload)
+        self.assertEqual(rv.status_code, 200)
+
+        updated_group = self.appbuilder.sm.find_group(group_name)
+        self.assertIsNotNone(updated_group)
+        self.assertEqual(len(updated_group.users), 2)
+        updated_user_1 = self.appbuilder.sm.find_user(username="test_user_1")
+        updated_user_2 = self.appbuilder.sm.find_user(username="test_user_2")
+        self.assertEqual(updated_user_1.groups[0].id, updated_group.id)
+        self.assertEqual(updated_user_2.groups[0].id, updated_group.id)
+        self.session.delete(updated_user_2)
+        self.session.delete(updated_user_1)
+        self.session.delete(updated_group)
+        self.session.commit()
+
+    def test_edit_group_with_invalid_user(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        group_name = "test_edit_group_invalid_user"
+        group = self.appbuilder.sm.add_group(group_name, "description", "label")
+        self.session.commit()
+
+        invalid_user_id = 999999
+        uri = f"api/v1/security/groups/{group.id}"
+        payload = {"users": [invalid_user_id]}
+
+        rv = self.auth_client_put(client, token, uri, json=payload)
+        self.assertEqual(rv.status_code, 400)
+
+        self.session.delete(group)
+        self.session.commit()
+
+    def test_edit_group_with_invalid_role(self):
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        group_name = "test_edit_group_invalid_role"
+        group = self.appbuilder.sm.add_group(group_name, "description", "label")
+        self.session.commit()
+
+        invalid_role_id = 999999
+        uri = f"api/v1/security/groups/{group.id}"
+        payload = {"roles": [invalid_role_id]}
+
+        rv = self.auth_client_put(client, token, uri, json=payload)
+        self.assertEqual(rv.status_code, 400)
+
+        self.session.delete(group)
+        self.session.commit()

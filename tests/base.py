@@ -75,6 +75,7 @@ class FABTestCase(unittest.TestCase):
         password: str,
         next_url: Optional[str] = None,
         follow_redirects: bool = True,
+        headers: Optional[dict] = None,
     ) -> Response:
         login_url = "/login/"
         if next_url:
@@ -83,6 +84,7 @@ class FABTestCase(unittest.TestCase):
             login_url,
             data=dict(username=username, password=password),
             follow_redirects=follow_redirects,
+            headers=headers or {},
         )
 
     def assert_response(
