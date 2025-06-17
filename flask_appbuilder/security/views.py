@@ -22,7 +22,10 @@ from flask_appbuilder.security.forms import (
     roles_or_groups_required,
     UserInfoEdit,
 )
-from flask_appbuilder.security.utils import generate_random_string
+from flask_appbuilder.security.utils import (
+    generate_random_string,
+    get_default_hash_method,
+)
 from flask_appbuilder.utils.base import get_safe_redirect, lazy_formatter_gettext
 from flask_appbuilder.validators import PasswordComplexityValidator
 from flask_appbuilder.views import expose, ModelView, SimpleFormView
@@ -448,9 +451,7 @@ class UserDBModelView(UserModelView):
     def pre_add(self, item: Any) -> None:
         item.password = generate_password_hash(
             password=item.password,
-            method=self.appbuilder.get_app.config.get(
-                "FAB_PASSWORD_HASH_METHOD", "scrypt"
-            ),
+            method=get_default_hash_method(self.appbuilder.get_app),
             salt_length=self.appbuilder.get_app.config.get(
                 "FAB_PASSWORD_HASH_SALT_LENGTH", 16
             ),

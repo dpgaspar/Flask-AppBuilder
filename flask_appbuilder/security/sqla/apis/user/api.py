@@ -11,6 +11,7 @@ from flask_appbuilder.security.sqla.apis.user.schema import (
     UserPutSchema,
 )
 from flask_appbuilder.security.sqla.models import Group, Role, User
+from flask_appbuilder.security.utils import get_default_hash_method
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash
@@ -74,9 +75,7 @@ class UserApi(ModelRestApi):
         if "password" in data and data["password"]:
             item.password = generate_password_hash(
                 password=data["password"],
-                method=self.appbuilder.get_app.config.get(
-                    "FAB_PASSWORD_HASH_METHOD", "scrypt"
-                ),
+                method=get_default_hash_method(self.appbuilder.get_app),
                 salt_length=self.appbuilder.get_app.config.get(
                     "FAB_PASSWORD_HASH_SALT_LENGTH", 16
                 ),

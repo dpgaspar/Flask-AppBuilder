@@ -1,10 +1,11 @@
 """
-    Console utility to help manage F.A.B's apps
+Console utility to help manage F.A.B's apps
 
-    use:
+use:
 
-    $ fabmanager --help
+$ fabmanager --help
 """
+
 from io import BytesIO
 import os
 import shutil
