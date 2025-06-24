@@ -38,7 +38,11 @@ except Exception as e:
 
 for user in users:
     log.info("Hashing password for {0}".format(user.username))
-    user.password = generate_password_hash(user.password)
+    user.password = generate_password_hash(
+        password=user.password,
+        method=app.config.get('FAB_PASSWORD_HASH_METHOD', 'scrypt'),
+        salt_length=app.config.get('FAB_PASSWORD_HASH_SALT_LENGTH', 16),
+    )
     try:
         db.session.merge(user)
         db.session.commit()
