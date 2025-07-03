@@ -1034,6 +1034,10 @@ class BaseCRUDView(BaseModelView):
         widgets = widgets or {}
         widgets["related_views"] = []
         for view in self._related_views:
+            # Skip related views if the current user does not have 'can_list' permission
+            if not self.appbuilder.sm.has_access("can_list", view.__class__.__name__):
+                continue
+
             if orders.get(view.__class__.__name__):
                 order_column, order_direction = orders.get(view.__class__.__name__)
             else:
