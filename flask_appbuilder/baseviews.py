@@ -1036,6 +1036,7 @@ class BaseCRUDView(BaseModelView):
         for view in self._related_views:
             # Skip related views if the current user does not have 'can_list' permission
             if not self.appbuilder.sm.has_access("can_list", view.__class__.__name__):
+                self._related_views.remove(view)
                 continue
 
             if orders.get(view.__class__.__name__):
