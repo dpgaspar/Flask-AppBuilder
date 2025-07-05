@@ -34,6 +34,12 @@ class InvalidOrderByColumnFABException(FABException):
     ...
 
 
+class InvalidColumnArgsFABException(FABException):
+    """Invalid combination of column arguments"""
+
+    ...
+
+
 class InterfaceQueryWithoutSession(FABException):
     """You need to setup a session on the interface to perform queries"""
 
