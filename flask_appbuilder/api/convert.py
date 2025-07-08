@@ -1,6 +1,7 @@
 from typing import Any, Callable, Dict, List, Optional, Type
 
-from flask_appbuilder.models.sqla import db, Model
+from flask import current_app
+from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from marshmallow import fields, Schema
 from marshmallow.fields import Field
@@ -123,7 +124,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                     model = _model
                     fields = columns
                     load_instance = True
-                    sqla_session = db.session
+                    sqla_session = current_app.appbuilder.session
                     # The parent_schema_name is useful to humanize nested schema names
                     # This name comes from ModelRestApi
                     parent_schema_name = _parent_schema_name

@@ -21,6 +21,7 @@ mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
 class ContactGroup(Model):
+    __tablename__ = "contact_group"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
 
@@ -29,6 +30,8 @@ class ContactGroup(Model):
 
 
 class Gender(Model):
+    __tablename__ = "gender"
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
 
@@ -37,6 +40,8 @@ class Gender(Model):
 
 
 class Contact(Model):
+    __tablename__ = "contact"
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
     address: Mapped[Optional[str]] = mapped_column(String(564))

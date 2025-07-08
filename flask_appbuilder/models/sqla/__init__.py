@@ -3,13 +3,12 @@ from __future__ import annotations
 import datetime
 from typing import Any
 
-from flask_appbuilder.extensions import db
-from sqlalchemy.orm import DeclarativeMeta
+from sqlalchemy.orm import declarative_base
 
-BaseModel: DeclarativeMeta = db.Model
+Base = declarative_base()
 
 
-class Model(BaseModel):
+class Model(Base):
     __abstract__ = True
     """
     Use this class has the base for your models,

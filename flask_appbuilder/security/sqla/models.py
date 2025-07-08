@@ -4,7 +4,6 @@ from typing import List, Optional
 from flask import g
 from flask_appbuilder import Model
 from flask_appbuilder._compat import as_unicode
-from flask_appbuilder.extensions import db
 from sqlalchemy import (
     Boolean,
     Column,
@@ -12,6 +11,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    Table,
     Sequence,
     String,
     UniqueConstraint,
@@ -66,8 +66,9 @@ class ViewMenu(Model):
         return self.name
 
 
-assoc_permissionview_role = db.Table(
+assoc_permissionview_role = Table(
     "ab_permission_view_role",
+    Model.metadata,
     Column(
         "id",
         Integer,
@@ -92,8 +93,9 @@ assoc_permissionview_role = db.Table(
 )
 
 
-assoc_user_role = db.Table(
+assoc_user_role = Table(
     "ab_user_role",
+    Model.metadata,
     Column(
         "id",
         Integer,
@@ -233,8 +235,9 @@ class User(Model):
         return self.get_full_name()
 
 
-assoc_user_group = db.Table(
+assoc_user_group = Table(
     "ab_user_group",
+    Model.metadata,
     Column(
         "id",
         Integer,
@@ -249,8 +252,9 @@ assoc_user_group = db.Table(
 )
 
 
-assoc_group_role = db.Table(
+assoc_group_role = Table(
     "ab_group_role",
+    Model.metadata,
     Column(
         "id",
         Integer,

@@ -1,20 +1,21 @@
 import logging
 
 from flask import Flask
-from flask_appbuilder.extensions import db
 from .views import ContactModelView, ContactTimeChartView, GroupModelView
-from .extensions import appbuilder
+from .extensions import appbuilder, db
 from .utils import fill_gender
 
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.INFO)
 
+
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object("config")
     with app.app_context():
-        appbuilder.init_app(app)
+        db.init_app(app)
+        appbuilder.init_app(app, db.session)
         db.create_all()
         fill_gender()
         appbuilder.add_view(

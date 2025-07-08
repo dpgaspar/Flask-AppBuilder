@@ -1,4 +1,4 @@
-from flask_appbuilder.extensions import db
+from flask import current_app
 from sqlalchemy.exc import SQLAlchemyError
 
 from .models import Gender
@@ -6,8 +6,8 @@ from .models import Gender
 
 def fill_gender():
     try:
-        db.session.add(Gender(name="Male"))
-        db.session.add(Gender(name="Female"))
-        db.session.commit()
+        current_app.appbuilder.session.add(Gender(name="Male"))
+        current_app.appbuilder.session.add(Gender(name="Female"))
+        current_app.appbuilder.session.commit()
     except SQLAlchemyError:
-        db.session.rollback()
+        current_app.appbuilder.session.rollback()

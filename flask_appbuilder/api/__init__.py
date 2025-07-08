@@ -72,7 +72,8 @@ from flask_appbuilder.exceptions import (
     FABException,
     InvalidOrderByColumnFABException,
 )
-from flask_appbuilder.extensions import db
+
+# from flask_appbuilder.extensions import db
 from flask_appbuilder.hooks import (
     get_before_request_hooks,
     wrap_route_handler_with_hooks,
@@ -1275,7 +1276,11 @@ class ModelRestApi(BaseApi):
     def _fetch_entities(self, model_class: Model, ids: List[int]):
         if not ids:
             return []
-        return db.session.query(model_class).filter(model_class.id.in_(ids)).all()
+        return (
+            current_app.appbuilder.session.query(model_class)
+            .filter(model_class.id.in_(ids))
+            .all()
+        )
 
     def merge_add_field_info(self, response: Dict[str, Any], **kwargs: Any) -> None:
         add_columns_info = kwargs.get("add_columns", {})

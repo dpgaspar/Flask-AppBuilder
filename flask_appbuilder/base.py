@@ -17,7 +17,8 @@ from flask_appbuilder.const import (
     LOGMSG_INF_FAB_ADDON_ADDED,
     LOGMSG_WAR_FAB_VIEW_EXISTS,
 )
-from flask_appbuilder.extensions import db
+
+# from flask_appbuilder.extensions import db
 from flask_appbuilder.filters import TemplateFilters
 from flask_appbuilder.menu import Menu, MenuApiManager
 from flask_appbuilder.views import IndexView, UtilView
@@ -95,6 +96,7 @@ class AppBuilder:
     def __init__(
         self,
         app: Optional[Flask] = None,
+        session: Optional[SessionBase] = None,
         menu: Optional[Menu] = None,
         indexview: Optional[Type["AbstractViewApi"]] = None,
         base_template: str = "appbuilder/baselayout.html",
@@ -108,6 +110,8 @@ class AppBuilder:
 
         :param app:
             The flask app object
+        :param session:
+            The SQLAlchemy session object
         :param menu:
             optional, a previous contructed menu
         :param indexview:
@@ -122,6 +126,7 @@ class AppBuilder:
             optional, update permissions flag (Boolean) you can use
             FAB_UPDATE_PERMS config key also
         """
+        self._session = None
         self.baseviews: List[Union[Type["AbstractViewApi"], "AbstractViewApi"]] = []
 
         # temporary list that hold addon_managers config key
@@ -144,9 +149,9 @@ class AppBuilder:
         self.menuapi_manager: MenuApiManager = None  # type: ignore
 
         if app is not None:
-            self.init_app(app)
+            self.init_app(app, session=session)
 
-    def init_app(self, app: Flask) -> None:
+    def init_app(self, app: Flask, session: SessionBase) -> None:
         """
         Will initialize the Flask app, supporting the app factory pattern.
 
@@ -167,10 +172,7 @@ class AppBuilder:
         app.config.setdefault("FAB_STATIC_URL_PATH", self.static_url_path)
 
         self._init_extension(app)
-        # init flask-sqlalchemy if needed
-        if "sqlalchemy" not in app.extensions:
-            self.session.remove()
-            db.init_app(app)
+        self._session = session
         self.base_template = app.config.get("FAB_BASE_TEMPLATE", self.base_template)
         self.static_folder = app.config.get("FAB_STATIC_FOLDER", self.static_folder)
         self.static_url_path = app.config.get(
@@ -254,7 +256,7 @@ class AppBuilder:
 
         :return: SQLAlchemy Session
         """
-        return db.session
+        return self._session
 
     @property
     def app_name(self) -> str:

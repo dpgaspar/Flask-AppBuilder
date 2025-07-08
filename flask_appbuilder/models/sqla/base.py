@@ -17,15 +17,15 @@ class SQLA(SQLAlchemy):
     Configure just like flask_sqlalchemy SQLAlchemy
     """
 
-    def init_app(self, app: Flask) -> None:
-        session_options = app.config.get("SQLALCHEMY_SESSION_OPTIONS", {})
-        if session_options:
-            self.session = self._make_scoped_session(session_options)
-        super().init_app(app)
+    # def init_app(self, app: Flask) -> None:
+    #     session_options = app.config.get("SQLALCHEMY_SESSION_OPTIONS", {})
+    # if session_options:
+    #     self.session = self._make_scoped_session(session_options)
+    # super().init_app(app)
 
-    def get_tables_for_bind(self, bind: Engine | Connection) -> list[Table]:
-        """Returns a list of all tables relevant for a bind."""
-        tables = self.metadata.tables
-        return [
-            table for key, table in tables.items() if table.info.get("bind_key") == bind
-        ]
+    @staticmethod
+    def get_tables_for_bind(bind: Engine | Connection) -> list[Table]:
+        from sqlalchemy import inspect
+
+        inspector = inspect(bind)
+        return inspector.get_table_names()
