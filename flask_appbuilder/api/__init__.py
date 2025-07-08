@@ -73,7 +73,11 @@ from ..const import (
     API_URI_RIS_KEY,
     PERMISSION_PREFIX,
 )
-from ..exceptions import FABException, InvalidOrderByColumnFABException
+from ..exceptions import (
+    FABException,
+    InvalidColumnArgsFABException,
+    InvalidOrderByColumnFABException,
+)
 from ..hooks import get_before_request_hooks, wrap_route_handler_with_hooks
 from ..models.filters import Filters
 from ..security.decorators import permission_name, protect
@@ -1467,19 +1471,27 @@ class ModelRestApi(BaseModelApi):
         :param kwargs: Query string parameter arguments
         :return: HTTP Response
         """
+        response = {}
+        args = kwargs.get("rison", {})
+        # handle select columns
+        try:
+            select_columns, pruned_select_cols = self._handle_columns_args(
+                args,
+                self.show_select_columns,
+                self.show_columns,
+            )
+        except InvalidColumnArgsFABException as e:
+            return self.response_400(message=str(e))
+
         item = self.datamodel.get(
             pk,
             self._base_filters,
-            self.show_select_columns,
+            select_columns,
             self.show_outer_default_load,
         )
         if not item:
             return self.response_404()
 
-        response = {}
-        args = kwargs.get("rison", {})
-        select_cols = args.get(API_SELECT_COLUMNS_RIS_KEY, [])
-        pruned_select_cols = [col for col in select_cols if col in self.show_columns]
         self.set_response_key_mappings(
             response, self.get, args, **{API_SELECT_COLUMNS_RIS_KEY: pruned_select_cols}
         )
@@ -1582,23 +1594,15 @@ class ModelRestApi(BaseModelApi):
         response = dict()
         args = kwargs.get("rison", {})
         # handle select columns
-        output_select_cols = args.get(API_SELECT_COLUMNS_RIS_KEY, [])
-        select_cols = args.get(API_SELECT_SEL_COLUMNS_RIS_KEY, [])
-        if select_cols and output_select_cols:
-            return self.response_400(message="Cannot use both select and sel columns")
-        list_select_columns = self.list_select_columns
-        pruned_select_cols = []
-        if output_select_cols:
-            pruned_select_cols = [
-                col for col in output_select_cols if col in self.list_columns
-            ]
-        if select_cols:
-            pruned_select_cols = [
-                col for col in select_cols if col in self.list_columns
-            ]
-            list_select_columns = [
-                col for col in select_cols if col in self.list_select_columns
-            ]
+        try:
+            select_columns, pruned_select_cols = self._handle_columns_args(
+                args,
+                self.list_select_columns,
+                self.list_columns,
+            )
+        except InvalidColumnArgsFABException as e:
+            return self.response_400(message=str(e))
+
         # map decorated metadata
         self.set_response_key_mappings(
             response,
@@ -1631,7 +1635,7 @@ class ModelRestApi(BaseModelApi):
             order_direction,
             page=page_index,
             page_size=page_size,
-            select_columns=list_select_columns,
+            select_columns=select_columns,
             outer_default_load=self.list_outer_default_load,
         )
         pks = self.datamodel.get_keys(lst)
@@ -1976,6 +1980,37 @@ class ModelRestApi(BaseModelApi):
         self._filters.clear_filters()
         self._filters.rest_add_filters(rison_args.get(API_FILTERS_RIS_KEY, []))
         return self._filters.get_joined_filters(self._base_filters)
+
+    def _handle_columns_args(
+        self,
+        args: Dict[str, Any],
+        default_select_columns: List[str],
+        default_response_columns: List[str],
+    ) -> Tuple[List[str], List[str]]:
+        """
+        Handle the column args from the request.
+        """
+        select_columns_arg = args.get(API_SELECT_SEL_COLUMNS_RIS_KEY, [])
+        response_columns_arg = args.get(API_SELECT_COLUMNS_RIS_KEY, [])
+        if select_columns_arg and response_columns_arg:
+            raise InvalidColumnArgsFABException(
+                "Cannot use both select and sel columns"
+            )
+        select_columns = default_select_columns
+        response_columns = []
+        if select_columns_arg:
+            select_columns = [
+                col for col in select_columns_arg if col in default_select_columns
+            ]
+            response_columns = [
+                col for col in select_columns_arg if col in default_response_columns
+            ]
+        elif response_columns_arg:
+            response_columns = [
+                col for col in response_columns_arg if col in default_response_columns
+            ]
+
+        return select_columns, response_columns
 
     def _description_columns_json(
         self, cols: Optional[List[str]] = None

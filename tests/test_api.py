@@ -879,7 +879,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_choose_cols(self):
         """
-        REST Api: Test get item with select columns
+        REST Api: Test get item with the columns arg
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -888,6 +888,30 @@ class APITestCase(FABTestCase):
             uri = (
                 f"api/v1/model1api/{model_id}?"
                 f"q=({API_SELECT_COLUMNS_RIS_KEY}:!(field_integer))"
+            )
+            rv = self.auth_client_get(client, token, uri)
+            data = json.loads(rv.data.decode("utf-8"))
+            self.assertEqual(data[API_RESULT_RES_KEY], {"field_integer": 0})
+            self.assertEqual(
+                data[API_DESCRIPTION_COLUMNS_RES_KEY],
+                {"field_integer": "Field Integer"},
+            )
+            self.assertEqual(
+                data[API_LABEL_COLUMNS_RES_KEY], {"field_integer": "Field Integer"}
+            )
+            self.assertEqual(rv.status_code, 200)
+
+    def test_get_item_choose_select_cols(self):
+        """
+        REST Api: Test get item with the select_columns arg
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        with model1_data(self.appbuilder.session, 1) as models:
+            model_id = models[0].id
+            uri = (
+                f"api/v1/model1api/{model_id}?"
+                f"q=({API_SELECT_SEL_COLUMNS_RIS_KEY}:!(field_integer))"
             )
             rv = self.auth_client_get(client, token, uri)
             data = json.loads(rv.data.decode("utf-8"))
