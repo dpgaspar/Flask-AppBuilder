@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.8.0rc1
+-----------------------------------
+
+- feat: Support the select_columns arg on the Get Item method (#2372) [Vitor Avila]
+
 Improvements and Bug fixes on 4.7.0
 -----------------------------------
 
