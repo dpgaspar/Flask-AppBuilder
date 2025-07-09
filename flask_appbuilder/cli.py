@@ -281,8 +281,8 @@ def list_users():
     echo_header("List of users")
     for user in current_app.appbuilder.sm.get_all_users():
         click.echo(
-            "username:{0} | email:{1} | role:{2}".format(
-                user.username, user.email, user.roles
+            "username:{0} | firstname:{1} | lastname:{2} | email:{3} | active:{4} | role:{5}".format(
+                user.username, user.firstname, user.lastname, user.email, user.active, user.roles
             )
         )
 
