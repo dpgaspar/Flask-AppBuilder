@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-    Some py2/py3 compatibility support based on a stripped down
-    version of six so we don't have to depend on a specific version
-    of it.
+Some py2/py3 compatibility support based on a stripped down
+version of six so we don't have to depend on a specific version
+of it.
 
-    :copyright: (c) 2013 by Armin Ronacher.
-    :license: BSD, see LICENSE for more details.
+:copyright: (c) 2013 by Armin Ronacher.
+:license: BSD, see LICENSE for more details.
 """
 import sys
 

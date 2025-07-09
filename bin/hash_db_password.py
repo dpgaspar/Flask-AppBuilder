@@ -4,7 +4,7 @@ import sys
 from werkzeug.security import generate_password_hash
 
 from flask_appbuilder.security.sqla.models import User
-
+from flask_appbuilder.security.utils import get_default_hash_method
 
 try:
     from app import app, db
@@ -36,11 +36,13 @@ except Exception as e:
     log.error("Config db key {}".format(app.config['SQLALCHEMY_DATABASE_URI']))
     exit()
 
+
 for user in users:
     log.info("Hashing password for {0}".format(user.username))
+
     user.password = generate_password_hash(
         password=user.password,
-        method=app.config.get('FAB_PASSWORD_HASH_METHOD', 'scrypt'),
+        method=get_default_hash_method(app),
         salt_length=app.config.get('FAB_PASSWORD_HASH_SALT_LENGTH', 16),
     )
     try:
@@ -49,5 +51,5 @@ for user in users:
     except Exception as e:
         db.session.rollback()
         log.error("Error updating password for {0}: {1}".format(user.full_name, str(e)))
-        
+
 

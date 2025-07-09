@@ -22,6 +22,7 @@ from .registerviews import (
     RegisterUserOAuthView,
     RegisterUserOIDView,
 )
+from .utils import get_default_hash_method
 from .views import (
     AuthDBView,
     AuthLDAPView,
@@ -238,13 +239,16 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         # Werkzeug prior to 3.0.0 does not support scrypt
         parsed_werkzeug_version = Version(importlib.metadata.version("werkzeug"))
+
         if parsed_werkzeug_version < Version("3.0.0"):
+            app.config.setdefault("FAB_PASSWORD_HASH_METHOD", "pbkdf2:sha256")
             app.config.setdefault(
                 "AUTH_DB_FAKE_PASSWORD_HASH_CHECK",
                 "pbkdf2:sha256:150000$Z3t6fmj2$22da622d94a1f8118"
                 "c0976a03d2f18f680bfff877c9a965db9eedc51bc0be87c",
             )
         else:
+            app.config.setdefault("FAB_PASSWORD_HASH_METHOD", "pbkdf2:sha256")
             app.config.setdefault(
                 "AUTH_DB_FAKE_PASSWORD_HASH_CHECK",
                 "scrypt:32768:8:1$wiDa0ruWlIPhp9LM$6e40"
@@ -952,9 +956,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         user = self.get_user_by_id(userid)
         user.password = generate_password_hash(
             password=password,
-            method=self.appbuilder.get_app.config.get(
-                "FAB_PASSWORD_HASH_METHOD", "scrypt"
-            ),
+            method=get_default_hash_method(self.appbuilder.get_app),
             salt_length=self.appbuilder.get_app.config.get(
                 "FAB_PASSWORD_HASH_SALT_LENGTH", 16
             ),

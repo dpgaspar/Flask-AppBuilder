@@ -123,7 +123,7 @@ def safe(f: Callable[..., Any]) -> Callable[..., Any]:
 
 
 def rison(
-    schema: Optional[Dict[str, Any]] = None
+    schema: Optional[Dict[str, Any]] = None,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
     Use this decorator to parse URI *Rison* arguments to
