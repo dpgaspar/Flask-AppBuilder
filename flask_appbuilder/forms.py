@@ -76,8 +76,9 @@ class FieldConverter(object):
     def convert(self):
         # sqlalchemy.types.Enum inherits from String, therefore `is_enum` must be
         # checked before checking for `is_string`:
+        col_type = self.datamodel.list_columns[self.colname].type
+
         if getattr(self.datamodel, "is_enum")(self.colname):
-            col_type = self.datamodel.list_columns[self.colname].type
             return EnumField(
                 enum_class=col_type.enum_class,
                 enums=col_type.enums,
@@ -104,7 +105,7 @@ class FieldConverter(object):
                         validators=self.validators,
                         default=self.default,
                     )
-        log.error("Column %s Type not supported", self.colname)
+        log.error("Column %s with type %s not supported", self.colname, col_type)
 
 
 class GeneralModelConverter(object):
