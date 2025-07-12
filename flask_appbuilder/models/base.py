@@ -247,7 +247,7 @@ class BaseInterface:
         return False
 
     def is_pk_composite(self):
-        raise False
+        return False
 
     def is_fk(self, col_name):
         return False
