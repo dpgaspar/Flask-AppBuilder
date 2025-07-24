@@ -54,7 +54,7 @@ class BaseInterface:
         Make mypy happy about the injected filters like self.datamodel.FilterEqual
         https://mypy.readthedocs.io/en/latest/cheat_sheet_py3.html#when-you-re-puzzled-or-when-things-are-complicated
         """
-        return super().__getattr__(name)
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
     def _get_attr(self, col_name):
         if not hasattr(self.obj, col_name):
