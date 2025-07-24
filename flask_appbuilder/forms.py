@@ -74,11 +74,11 @@ class FieldConverter(object):
         self.default = default
 
     def convert(self):
-        # sqlalchemy.types.Enum inherits from String, therefore `is_enum` must be
-        # checked before checking for `is_string`:
         col_type = self.datamodel.list_columns[self.colname].type
 
-        if getattr(self.datamodel, "is_enum")(self.colname):
+        # sqlalchemy.types.Enum inherits from String, therefore `is_enum` must be
+        # checked before checking for `is_string`:
+        if self.datamodel.is_enum(self.colname):
             return EnumField(
                 enum_class=col_type.enum_class,
                 enums=col_type.enums,
