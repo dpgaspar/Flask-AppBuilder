@@ -6,7 +6,7 @@ from typing import List
 from flask import Flask
 from flask_appbuilder import AppBuilder
 from flask_appbuilder.exceptions import PasswordComplexityValidationError
-from flask_appbuilder.extensions import db
+from flask_appbuilder.utils.legacy import get_sqla_class
 from flask_appbuilder.security.sqla.models import Permission, Role, User, ViewMenu
 import prison
 from tests.base import FABTestCase
@@ -58,8 +58,8 @@ class UserAPITestCase(FABTestCase):
                 salt_length=self.app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
             ),
         )
-        db.session.add(user)
-        db.session.commit()
+        self.appbuilder.session.add(user)
+        self.appbuilder.session.commit()
         return user
 
     def test_user_info(self):

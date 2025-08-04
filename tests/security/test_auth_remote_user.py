@@ -3,6 +3,7 @@ import unittest
 from flask import Flask
 from flask_appbuilder import AppBuilder
 from flask_appbuilder.const import AUTH_REMOTE_USER
+from flask_appbuilder.utils.legacy import get_sqla_class
 
 
 class AuthRemoteUserTestCase(unittest.TestCase):
@@ -12,14 +13,12 @@ class AuthRemoteUserTestCase(unittest.TestCase):
         self.app.config.from_object("tests.config_api")
 
     def tearDown(self):
-        from flask_appbuilder.extensions import db
-
         with self.app.app_context():
             # Remove test user
             user_alice = self.appbuilder.sm.find_user("alice")
             if user_alice:
-                db.session.delete(user_alice)
-                db.session.commit()
+                self.appbuilder.session.delete(user_alice)
+                self.appbuilder.session.commit()
 
             # stop Flask
             self.app = None
@@ -29,7 +28,9 @@ class AuthRemoteUserTestCase(unittest.TestCase):
 
     def test_unset_remote_user_env_var(self):
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
 
             self.assertEqual(sm.auth_remote_user_env_var, "REMOTE_USER")
@@ -37,14 +38,18 @@ class AuthRemoteUserTestCase(unittest.TestCase):
     def test_set_remote_user_env_var(self):
         with self.app.app_context():
             self.app.config["AUTH_REMOTE_USER_ENV_VAR"] = "HTTP_REMOTE_USER"
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
 
             self.assertEqual(sm.auth_remote_user_env_var, "HTTP_REMOTE_USER")
 
     def test_normal_login(self):
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
 
             # register a user
@@ -60,7 +65,9 @@ class AuthRemoteUserTestCase(unittest.TestCase):
 
     def test_inactive_user_login(self):
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
 
             # register a user

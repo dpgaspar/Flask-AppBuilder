@@ -9,6 +9,7 @@ from unittest.mock import ANY, patch
 from click.testing import CliRunner
 from flask import Flask
 from flask_appbuilder import AppBuilder
+from flask_appbuilder.utils.legacy import get_sqla_class
 from flask_appbuilder.cli import (
     cast_int_like_to_int,
     create_app,
@@ -145,7 +146,9 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app = Flask("src_app")
             app.config.from_object("tests.config_security_cli")
             with app.app_context():
-                app_builder = AppBuilder(app)  # noqa: F841
+                SQLA = get_sqla_class()
+                db = SQLA(app)
+                app_builder = AppBuilder(app, db.session)  # noqa: F841
                 cli_runner = app.test_cli_runner()
 
                 path = os.path.join(tmp_dir, "roles.json")
@@ -188,7 +191,9 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
             app = Flask("src_app")
             app.config.from_object("tests.config_security_cli")
             with app.app_context():
-                app_builder = AppBuilder(app)  # noqa: F841
+                SQLA = get_sqla_class()
+                db = SQLA(app)
+                app_builder = AppBuilder(app, db.session)  # noqa: F841
 
                 owd = os.getcwd()
                 os.chdir(tmp_dir)
@@ -207,7 +212,9 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
         app = Flask("src_app")
         app.config.from_object("tests.config_security_cli")
         with app.app_context():
-            app_builder = AppBuilder(app)  # noqa: F841
+            SQLA = get_sqla_class()
+            db = SQLA(app)
+            app_builder = AppBuilder(app, db.session)  # noqa: F841
             cli_runner = app.test_cli_runner()
 
             cli_runner.invoke(export_roles)
@@ -227,7 +234,9 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
                 "SQLALCHEMY_DATABASE_URI"
             ] = f"sqlite:///{os.path.join(tmp_dir, 'dst.db')}"
             with app.app_context():
-                app_builder = AppBuilder(app)
+                SQLA = get_sqla_class()
+                db = SQLA(app)
+                app_builder = AppBuilder(app, db.session)
                 cli_runner = app.test_cli_runner()
 
                 path = os.path.join(tmp_dir, "roles.json")

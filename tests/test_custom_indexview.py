@@ -2,6 +2,7 @@ import logging
 import os
 
 from flask_appbuilder import AppBuilder, IndexView
+from flask_appbuilder.utils.legacy import get_sqla_class
 from tests.base import FABTestCase
 
 log = logging.getLogger(__name__)
@@ -28,7 +29,9 @@ class FlaskTestCase(FABTestCase):
         """
         uri = "/"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             client = self.app.test_client()
             rv = client.get(uri)
 

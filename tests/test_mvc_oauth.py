@@ -1,6 +1,5 @@
 from urllib.parse import quote
 
-from flask_appbuilder.extensions import db
 from flask_appbuilder.security.sqla.models import User
 from flask_login import current_user
 import jwt
@@ -31,6 +30,7 @@ class MVCOAuthTestCase(FABTestCase):
         from flask import Flask
         from flask_wtf import CSRFProtect
         from flask_appbuilder import AppBuilder
+        from flask_appbuilder.utils.legacy import get_sqla_class
 
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_oauth")
@@ -39,16 +39,18 @@ class MVCOAuthTestCase(FABTestCase):
         self.ctx = self.app.app_context()
         self.ctx.push()
         self.csrf = CSRFProtect(self.app)
-        self.appbuilder = AppBuilder(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def tearDown(self):
         self.cleanup()
 
     def cleanup(self):
-        users = db.session.query(User).filter(User.username.ilike("google%")).all()
+        users = self.db.session.query(User).filter(User.username.ilike("google%")).all()
         for user in users:
-            db.session.delete(user)
-        db.session.commit()
+            self.db.session.delete(user)
+        self.db.session.commit()
         self.ctx.pop()
 
     def test_oauth_login(self):

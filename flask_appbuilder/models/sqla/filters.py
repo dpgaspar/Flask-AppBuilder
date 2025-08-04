@@ -4,8 +4,6 @@ import logging
 from dateutil import parser
 from flask import current_app
 from flask_appbuilder.exceptions import ApplyFilterException
-
-# from flask_appbuilder.extensions import db
 from flask_appbuilder.models.filters import (
     BaseFilter,
     BaseFilterConverter,

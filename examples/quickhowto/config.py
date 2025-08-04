@@ -18,7 +18,7 @@ OPENID_PROVIDERS = [
 
 SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "app.db")
 # SQLALCHEMY_DATABASE_URI = 'mysql://username:password@mysqlserver.local/quickhowto'
-SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:5432/app'
+# SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:5432/app'
 # SQLALCHEMY_ECHO = True
 SQLALCHEMY_POOL_RECYCLE = 3
 

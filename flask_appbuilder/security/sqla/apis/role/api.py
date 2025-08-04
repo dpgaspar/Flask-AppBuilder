@@ -2,8 +2,6 @@ from flask import current_app, request
 from flask_appbuilder import ModelRestApi
 from flask_appbuilder.api import expose, safe
 from flask_appbuilder.const import API_RESULT_RES_KEY
-
-# from flask_appbuilder.extensions import db
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.decorators import permission_name, protect
 from flask_appbuilder.security.sqla.apis.role.schema import (

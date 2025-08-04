@@ -8,6 +8,7 @@ from flask import Flask
 from flask_appbuilder import AppBuilder
 from flask_appbuilder.security.manager import AUTH_LDAP
 from flask_appbuilder.security.sqla.models import User
+from flask_appbuilder.utils.legacy import get_sqla_class
 import jinja2
 import ldap
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
@@ -36,19 +37,17 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_EMAIL_FIELD"] = "mail"
 
     def tearDown(self):
-        from flask_appbuilder.extensions import db
-
         # Remove test user
         with self.app.app_context():
             # Remove test user
             user_alice = self.appbuilder.sm.find_user("alice")
             if user_alice:
-                db.session.delete(user_alice)
-                db.session.commit()
+                self.appbuilder.session.delete(user_alice)
+                self.appbuilder.session.commit()
             user_natalie = self.appbuilder.sm.find_user("natalie")
             if user_natalie:
-                db.session.delete(user_natalie)
-                db.session.commit()
+                self.appbuilder.session.delete(user_natalie)
+                self.appbuilder.session.commit()
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()
@@ -70,7 +69,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -101,7 +102,9 @@ class LDAPSearchTestCase(unittest.TestCase):
             "AUTH_LDAP_SEARCH_FILTER"
         ] = "(memberOf=cn=staff,ou=groups,dc=example,dc=org)"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -126,7 +129,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -169,7 +174,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         LDAP: test login flow for - missing credentials
         """
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -202,7 +209,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -239,7 +248,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -282,7 +293,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -320,7 +333,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -354,7 +369,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = False
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -380,7 +397,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -403,7 +422,9 @@ class LDAPSearchTestCase(unittest.TestCase):
             "AUTH_LDAP_USERNAME_FORMAT"
         ] = "cn=%s,ou=users,dc=example,dc=org"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -437,7 +458,9 @@ class LDAPSearchTestCase(unittest.TestCase):
             "AUTH_LDAP_USERNAME_FORMAT"
         ] = "cn=%s,ou=users,dc=example,dc=org"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -472,7 +495,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -505,7 +530,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.app.config["AUTH_USER_REGISTRATION"] = False
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -531,7 +558,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -553,7 +582,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -586,7 +617,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -626,7 +659,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -667,7 +702,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -707,7 +744,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -751,7 +790,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -795,7 +836,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -835,7 +878,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -874,7 +919,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -917,7 +964,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -961,7 +1010,9 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["WTF_CSRF_ENABLED"] = False
         self.app.config["SECRET_KEY"] = "thisismyscretkey"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             client = self.app.test_client()
             client.get("/logout/")
 

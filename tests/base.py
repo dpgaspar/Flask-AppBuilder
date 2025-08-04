@@ -7,6 +7,7 @@ import unittest
 from flask import Flask
 from flask.testing import FlaskClient
 from flask_appbuilder import AppBuilder
+from flask_appbuilder.utils.legacy import get_sqla_class
 from flask_appbuilder.const import (
     API_SECURITY_PASSWORD_KEY,
     API_SECURITY_PROVIDER_KEY,
@@ -182,7 +183,9 @@ class BaseMVCTestCase(FABTestCase):
 
         self.ctx = self.app.app_context()
         self.ctx.push()
-        self.appbuilder = AppBuilder(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
         self.create_default_users(self.appbuilder)
 
     def tearDown(self):

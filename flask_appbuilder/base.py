@@ -17,8 +17,6 @@ from flask_appbuilder.const import (
     LOGMSG_INF_FAB_ADDON_ADDED,
     LOGMSG_WAR_FAB_VIEW_EXISTS,
 )
-
-# from flask_appbuilder.extensions import db
 from flask_appbuilder.filters import TemplateFilters
 from flask_appbuilder.menu import Menu, MenuApiManager
 from flask_appbuilder.views import IndexView, UtilView

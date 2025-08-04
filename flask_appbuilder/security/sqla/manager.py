@@ -128,8 +128,6 @@ class SecurityManager(BaseSecurityManager):
             self._create_db()
 
     def _create_db(self) -> None:
-        # from flask_appbuilder.extensions import db
-
         engine = self.session.get_bind(mapper=None, clause=None)
         inspector = inspect(engine)
         existing_tables = inspector.get_table_names()

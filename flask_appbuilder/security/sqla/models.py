@@ -11,9 +11,9 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
-    Table,
     Sequence,
     String,
+    Table,
     UniqueConstraint,
 )
 from sqlalchemy.ext.declarative import declared_attr

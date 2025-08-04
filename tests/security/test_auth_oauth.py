@@ -8,6 +8,7 @@ from flask_appbuilder import AppBuilder
 from flask_appbuilder.const import AUTH_OAUTH
 from flask_appbuilder.exceptions import InvalidLoginAttempt
 from flask_appbuilder.exceptions import OAuthProviderUnknown
+from flask_appbuilder.utils.legacy import get_sqla_class
 import jinja2
 import jwt
 from tests.const import USERNAME_ADMIN
@@ -65,21 +66,19 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         ]
 
     def tearDown(self):
-        from flask_appbuilder.extensions import db
-
         # Remove test user
         with self.app.app_context():
             user_alice = self.appbuilder.sm.find_user("alice")
             if user_alice:
-                db.session.delete(user_alice)
-                db.session.commit()
+                self.appbuilder.session.delete(user_alice)
+                self.appbuilder.session.commit()
 
             # stop Flask
             self.app = None
             # stop Flask-AppBuilder
             self.appbuilder = None
             # stop Database
-            db.session.remove()
+            self.appbuilder.session.remove()
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()
@@ -105,7 +104,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         OAUTH: test login flow for - inactive user
         """
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             users = self.appbuilder.session.query(sm.user_model).all()
             for user in users:
@@ -141,7 +142,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         OAUTH: test login flow for - missing credentials
         """
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -168,7 +171,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -198,7 +203,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         """
         self.app.config["AUTH_USER_REGISTRATION"] = False
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -226,7 +233,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -263,7 +272,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -301,7 +312,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
             "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
         ] = "contains(['alice'], username) && 'User' || 'Public'"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -335,7 +348,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_ROLES_MAPPING"] = {"GROUP_1": ["Admin", "User"]}
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = False
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -373,7 +388,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_ROLES_MAPPING"] = {"GROUP_1": ["Admin", "User"]}
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -416,7 +433,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
             "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
         ] = "contains(['alice'], username) && 'User' || 'Public'"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -457,7 +476,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
             "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
         ] = "contains(['alice'], username) && 'User' || 'Public'"
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             sm = self.appbuilder.sm
             create_default_users(self.appbuilder.session)
 
@@ -490,7 +511,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
 
     def test_oauth_user_info_getter(self):
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
 
             @self.appbuilder.sm.oauth_user_info_getter
             def user_info_getter(sm, provider, response):
@@ -504,13 +527,17 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
 
     def test_oauth_user_info_unknown_provider(self):
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             with self.assertRaises(OAuthProviderUnknown):
                 self.appbuilder.sm.oauth_user_info("unknown", {})
 
     def test_oauth_user_info_azure_email_upn(self):
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             claims = {
                 "aud": "test-aud",
                 "iss": "https://sts.windows.net/test/",
@@ -547,7 +574,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
 
     def test_oauth_user_info_azure(self):
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             claims = {
                 "aud": "test-aud",
                 "iss": "https://sts.windows.net/test/",
@@ -607,7 +636,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
             }
         ]
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             claims = {
                 "aud": "test-aud",
                 "iss": "https://sts.windows.net/test/",
@@ -685,7 +716,9 @@ r9+EFRsxA5GNYA==
 
     def test_oauth_user_info_auth0(self):
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
 
             self.appbuilder.sm.oauth_remotes["auth0"].userinfo = MagicMock(
                 return_value={
@@ -747,21 +780,21 @@ class OAuthAuthentikTestCase(unittest.TestCase):
         ]
 
     def tearDown(self):
-        from flask_appbuilder.extensions import db
-
         # Remove test user
         with self.app.app_context():
             user_alice = self.appbuilder.sm.find_user("alice")
             if user_alice:
-                db.session.delete(user_alice)
-                db.session.commit()
+                self.appbuilder.session.delete(user_alice)
+                self.appbuilder.session.commit()
 
     # ----------------
     # Unit Tests
     # ----------------
     def test_oauth_user_info_authentik(self):
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             claims = {
                 "iss": "https://authentik.mydomain.com/application/o/"
                 "flask-appbuilder-test/",
@@ -825,7 +858,9 @@ class OAuthAuthentikTestCase(unittest.TestCase):
             },
         ]
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             claims = {
                 "iss": "https://authentik.mydomain.com/application/o/"
                 "flask-appbuilder-test/",
@@ -935,7 +970,9 @@ r9+EFRsxA5GNYA==
             },
         ]
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             claims = {
                 "iss": "https://authentik.mydomain.com/application/o/"
                 "flask-appbuilder-test/",
@@ -1030,7 +1067,9 @@ BVl433tgTTQ=
             },
         ]
         with self.app.app_context():
-            self.appbuilder = AppBuilder(self.app)
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
             claims = {
                 "iss": "https://authentik.mydomain.com/application/o/"
                 "flask-appbuilder-test/",

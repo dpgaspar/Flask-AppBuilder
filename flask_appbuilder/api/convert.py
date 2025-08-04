@@ -135,7 +135,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             class Meta:
                 model = _model
                 load_instance = True
-                sqla_session = db.session
+                sqla_session = current_app.appbuilder.session
                 # The parent_schema_name is useful to humanize nested schema names
                 # This name comes from ModelRestApi
                 parent_schema_name = _parent_schema_name

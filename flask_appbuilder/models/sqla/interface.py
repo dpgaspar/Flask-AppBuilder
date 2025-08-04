@@ -4,10 +4,8 @@ from contextlib import suppress
 import logging
 from typing import Any, Iterable, Optional, Tuple, Type
 
-from flask import Request, current_app
+from flask import current_app, Request
 from flask_appbuilder.exceptions import DatabaseException, FABException
-
-# from flask_appbuilder.extensions import db
 from flask_appbuilder.filemanager import FileManager, ImageManager
 from flask_appbuilder.models.base import BaseInterface
 from flask_appbuilder.models.filters import Filters

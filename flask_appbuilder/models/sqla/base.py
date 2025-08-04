@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.engine import Connection, Engine
 from sqlalchemy.sql.schema import Table
