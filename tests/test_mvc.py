@@ -25,6 +25,7 @@ from flask_appbuilder.models.sqla.filters import (
     FilterStartsWith,
 )
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.utils.legacy import get_sqla_class
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView, ModelView
 from flask_wtf import CSRFProtect
 from tests.base import BaseMVCTestCase, FABTestCase
@@ -67,7 +68,9 @@ class MVCBabelTestCase(FABTestCase):
         app.config.from_object("tests.config_api")
         app.config["LANGUAGES"] = {}
         with app.app_context():
-            appbuilder = AppBuilder(app)
+            SQLA = get_sqla_class()
+            db = SQLA(app)
+            appbuilder = AppBuilder(app, db.session)
             self.create_default_users(appbuilder)
 
             client = app.test_client()
@@ -89,7 +92,9 @@ class MVCBabelTestCase(FABTestCase):
             "pt": {"flag": "pt", "name": "Portuguese"},
         }
         with app.app_context():
-            appbuilder = AppBuilder(app)
+            SQLA = get_sqla_class()
+            db = SQLA(app)
+            appbuilder = AppBuilder(app, db.session)
             self.create_default_users(appbuilder)
 
             client = app.test_client()
@@ -268,7 +273,9 @@ class MVCCSRFTestCase(BaseMVCTestCase):
         self.ctx = self.app.app_context()
         self.ctx.push()
         self.csrf = CSRFProtect(self.app)
-        self.appbuilder = AppBuilder(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
         self.appbuilder.add_view(Model2View, "Model2", category="Model2")
 

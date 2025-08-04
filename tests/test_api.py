@@ -34,6 +34,7 @@ from flask_appbuilder.const import (
 from flask_appbuilder.hooks import before_request
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.utils.legacy import get_sqla_class
 import prison
 from sqlalchemy.sql.expression import func
 from tests.base import FABTestCase
@@ -89,7 +90,9 @@ class APICSRFTestCase(FABTestCase):
         self.ctx = self.app.app_context()
         self.ctx.push()
         self.csrf = CSRFProtect(self.app)
-        self.appbuilder = AppBuilder(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
         self.create_default_users(self.appbuilder)
 
     def tearDown(self):
@@ -131,7 +134,9 @@ class APIDisableSecViewTestCase(FABTestCase):
         self.app.config["FAB_ADD_SECURITY_VIEWS"] = False
         self.ctx = self.app.app_context()
         self.ctx.push()
-        self.appbuilder = AppBuilder(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def tearDown(self):
         self.appbuilder = None
@@ -160,7 +165,9 @@ class APIDisableOpenApiViewTestCase(FABTestCase):
 
         self.ctx = self.app.app_context()
         self.ctx.push()
-        self.appbuilder = AppBuilder(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def tearDown(self):
         self.appbuilder = None
@@ -198,7 +205,9 @@ class APITestCase(FABTestCase):
 
         self.ctx = self.app.app_context()
         self.ctx.push()
-        self.appbuilder = AppBuilder(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
         rison_schema = {
             "type": "object",

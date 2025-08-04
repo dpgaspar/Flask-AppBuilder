@@ -4,6 +4,7 @@ from flask import Flask
 from flask_appbuilder import AppBuilder, BaseView
 from flask_appbuilder.api import BaseApi, expose
 from flask_appbuilder.security.decorators import limit
+from flask_appbuilder.utils.legacy import get_sqla_class
 import hiro
 import jinja2
 from tests.base import FABTestCase
@@ -23,7 +24,9 @@ class LimiterTestCase(FABTestCase):
         self.ctx = self.app.app_context()
         self.ctx.push()
 
-        self.appbuilder = AppBuilder(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
         self.create_default_users(self.appbuilder)
 
         class Base1Api(BaseApi):

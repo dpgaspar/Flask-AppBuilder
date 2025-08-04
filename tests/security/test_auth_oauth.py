@@ -73,12 +73,10 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
                 self.appbuilder.session.delete(user_alice)
                 self.appbuilder.session.commit()
 
-            # stop Flask
-            self.app = None
-            # stop Flask-AppBuilder
-            self.appbuilder = None
-            # stop Database
-            self.appbuilder.session.remove()
+        # stop Flask
+        self.app = None
+        # stop Flask-AppBuilder
+        self.appbuilder = None
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()

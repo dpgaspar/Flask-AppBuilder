@@ -1312,7 +1312,9 @@ class UserRolePermissionDisabledTestCase(FABTestCase):
 
         self.ctx = self.app.app_context()
         self.ctx.push()
-        self.appbuilder = AppBuilder(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def tearDown(self):
         # self.appbuilder.session.close()

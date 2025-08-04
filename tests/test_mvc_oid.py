@@ -9,12 +9,15 @@ class MVCOIDTestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
+        from flask_appbuilder.utils.legacy import get_sqla_class
 
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_oid")
         self.ctx = self.app.app_context()
         self.ctx.push()
-        self.appbuilder = AppBuilder(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def test_oid_login_get(self):
         """

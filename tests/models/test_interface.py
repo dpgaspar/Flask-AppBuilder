@@ -12,6 +12,7 @@ from flask_appbuilder.security.sqla.models import (
     Role,
     User,
 )
+from flask_appbuilder.utils.legacy import get_sqla_class
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from tests.base import FABTestCase
@@ -44,7 +45,9 @@ class SQLAInterfaceTestCase(FABTestCase):
 
         self.ctx = self.app.app_context()
         self.ctx.push()
-        self.appbuilder = AppBuilder(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
         self.create_default_users(self.appbuilder)
 
     def tearDown(self):
