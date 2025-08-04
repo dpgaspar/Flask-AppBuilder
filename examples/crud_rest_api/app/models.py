@@ -12,6 +12,7 @@ mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
 class ContactGroup(AuditMixin, Model):
+    __tablename__ = "contact_group"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
 
@@ -20,6 +21,7 @@ class ContactGroup(AuditMixin, Model):
 
 
 class ContactGroupTag(Model):
+    __tablename__ = "contact_group_tag"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
     group_id: Mapped[Optional[int]] = mapped_column(
@@ -45,6 +47,7 @@ class Gender(enum.Enum):
 
 
 class Contact(Model):
+    __tablename__ = "contact"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))
@@ -74,6 +77,7 @@ class ModelOMParent(Model):
 
 
 class ModelOMChild(Model):
+    __tablename__ = "model_om_child"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     parent_id = Column(Integer, ForeignKey("model_om_parent.id"))
