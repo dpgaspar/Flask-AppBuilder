@@ -7,7 +7,6 @@ import unittest
 from flask import Flask
 from flask.testing import FlaskClient
 from flask_appbuilder import AppBuilder
-from flask_appbuilder.utils.legacy import get_sqla_class
 from flask_appbuilder.const import (
     API_SECURITY_PASSWORD_KEY,
     API_SECURITY_PROVIDER_KEY,
@@ -16,6 +15,7 @@ from flask_appbuilder.const import (
     API_SECURITY_VERSION,
 )
 from flask_appbuilder.security.sqla.models import Group, User
+from flask_appbuilder.utils.legacy import get_sqla_class
 from hiro import Timeline
 import jinja2
 from tests.const import (

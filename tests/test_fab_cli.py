@@ -9,7 +9,6 @@ from unittest.mock import ANY, patch
 from click.testing import CliRunner
 from flask import Flask
 from flask_appbuilder import AppBuilder
-from flask_appbuilder.utils.legacy import get_sqla_class
 from flask_appbuilder.cli import (
     cast_int_like_to_int,
     create_app,
@@ -21,6 +20,7 @@ from flask_appbuilder.cli import (
     # list_views,
     # reset_password,
 )
+from flask_appbuilder.utils.legacy import get_sqla_class
 from tests.base import FABTestCase
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
