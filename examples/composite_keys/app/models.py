@@ -9,6 +9,7 @@ mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
 class Item(NameMixin, Model):
+    __tablename__ = "item"
     id = Column(Integer, primary_key=True)
     serial_number = Column(String, unique=True)
     model = Column(String(150), nullable=False)
@@ -18,6 +19,7 @@ class Item(NameMixin, Model):
 
 
 class Datacenter(NameMixin, Model):
+    __tablename__ = "datacenter"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))
@@ -27,6 +29,7 @@ class Datacenter(NameMixin, Model):
 
 
 class Rack(NameMixin, Model):
+    __tablename__ = "rack"
     num = Column(Integer, primary_key=True)
     datacenter_id = Column(
         Integer, ForeignKey("datacenter.id"), primary_key=True, nullable=False
@@ -38,6 +41,7 @@ class Rack(NameMixin, Model):
 
 
 class Inventory(NameMixin, Model):
+    __tablename__ = "inventory"
     item_id = Column(Integer, ForeignKey("item.id"), primary_key=True, nullable=False)
     item = relationship("Item")
     rack_num = Column(Integer, ForeignKey("rack.num"), primary_key=True, nullable=False)

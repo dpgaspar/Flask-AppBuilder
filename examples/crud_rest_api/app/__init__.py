@@ -1,15 +1,14 @@
 from flask import Flask
-
-from flask_appbuilder.extensions import db
 from .api import GreetingApi, ContactModelApi, GroupModelApi, ModelOMParentApi, ContactGroupModelView, ContactGroupTagModelView
-from .extensions import appbuilder
+from .extensions import appbuilder, db
 
 
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object("config")
     with app.app_context():
-        appbuilder.init_app(app)
+        db.init_app(app)
+        appbuilder.init_app(app, db.session)
         db.create_all()
         appbuilder.add_api(GreetingApi)
         appbuilder.add_api(ContactModelApi)
@@ -30,3 +29,7 @@ def create_app() -> Flask:
             category_icon="fa-envelope",
         )
     return app
+
+
+# For backward compatibility
+app = create_app()

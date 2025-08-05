@@ -67,22 +67,12 @@ class AppBuilder:
 
         from flask import Flask
         from flask_appbuilder import AppBuilder
+        from flask_appbuilder.models.sqla.base import SQLA
 
         app = Flask(__name__)
         app.config.from_object('config')
-        appbuilder = AppBuilder(app)
-
-    When using MongoEngine::
-
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-        from flask_appbuilder.security.mongoengine.manager import SecurityManager
-        from flask_mongoengine import MongoEngine
-
-        app = Flask(__name__)
-        app.config.from_object('config')
-        dbmongo = MongoEngine(app)
-        appbuilder = AppBuilder(app, security_manager_class=SecurityManager)
+        db = SQLA(app)
+        appbuilder = AppBuilder(app, db.session)
 
     You can also create everything as an application factory.
     """

@@ -31,8 +31,7 @@ class BabelManager(BaseManager):
         else:
             translations_path = appbuilder_translations_path + ";translations"
         current_app.config["BABEL_TRANSLATION_DIRECTORIES"] = translations_path
-        self.babel = Babel(current_app)
-        self.babel.locale_selector_func = self.get_locale
+        self.babel = Babel(current_app, locale_selector=self.get_locale)
 
     def register_views(self):
         self.locale_view = LocaleView()

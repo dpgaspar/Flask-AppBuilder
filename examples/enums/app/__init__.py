@@ -7,7 +7,7 @@ from .views import (
     ContactChartView,
     ContactTimeChartView,
 )
-from .extensions import appbuilder
+from .extensions import appbuilder, db
 
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
@@ -18,7 +18,8 @@ def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object("config")
     with app.app_context():
-        appbuilder.init_app(app)
+        db.init_app(app)
+        appbuilder.init_app(app, db.session)
         appbuilder.add_view(
             GroupModelView,
             "List Groups",
@@ -40,3 +41,7 @@ def create_app() -> Flask:
             category="Contacts",
         )
     return app
+
+
+# For backward compatibility
+app = create_app()

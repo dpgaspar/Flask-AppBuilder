@@ -16,12 +16,6 @@ class SQLA(SQLAlchemy):
     Configure just like flask_sqlalchemy SQLAlchemy
     """
 
-    # def init_app(self, app: Flask) -> None:
-    #     session_options = app.config.get("SQLALCHEMY_SESSION_OPTIONS", {})
-    # if session_options:
-    #     self.session = self._make_scoped_session(session_options)
-    # super().init_app(app)
-
     @staticmethod
     def get_tables_for_bind(bind: Engine | Connection) -> list[Table]:
         from sqlalchemy import inspect

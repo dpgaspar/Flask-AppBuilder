@@ -1,14 +1,14 @@
 from flask import Flask
-
 from .views import ItemModelView, RackModelView, InventoryModelView, DatacenterModelView
-from .extensions import appbuilder
+from .extensions import appbuilder, db
 
 
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object("config")
     with app.app_context():
-        appbuilder.init_app(app)
+        db.init_app(app)
+        appbuilder.init_app(app, db.session)
         appbuilder.add_view(
             DatacenterModelView,
             "List Datacenters",
@@ -34,3 +34,7 @@ def create_app() -> Flask:
         )
 
     return app
+
+
+# For backward compatibility
+app = create_app()
