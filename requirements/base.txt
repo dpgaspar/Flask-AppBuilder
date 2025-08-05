@@ -4,8 +4,6 @@
 #
 #    pip-compile requirements/base.in
 #
--e file:///Users/dpgaspar/workarea/preset/Flask-AppBuilder
-    # via -r requirements/base.in
 apispec[yaml]==6.3.0
     # via flask-appbuilder
 attrs==23.1.0
