@@ -50,10 +50,11 @@ class SQLAInterface(BaseInterface):
 
     filter_converter_class = filters.SQLAFilterConverter
 
-    def __init__(self, obj: Type[Model]) -> None:
+    def __init__(self, obj: Type[Model], session: Optional[SessionBase] = None) -> None:
         _include_filters(self)
         self.list_columns = {}
         self.list_properties = {}
+        self.session = session or current_app.appbuilder.session
         # Collect all SQLA columns and properties
         for prop in class_mapper(obj).iterate_properties:
             if type(prop) != SynonymProperty:
@@ -164,7 +165,7 @@ class SQLAInterface(BaseInterface):
             page
             and page_size
             and not order_column
-            and current_app.appbuilder.session.get_bind().name == "mssql"
+            and self.session.get_bind().name == "mssql"
         ):
             pk_name = self.get_pk_name()
             return query.order_by(pk_name)
@@ -547,7 +548,7 @@ class SQLAInterface(BaseInterface):
              https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html#sqlalchemy.orm.Load.defaultload
         :return: A tuple with the query count (non paginated) and the results
         """
-        query = current_app.appbuilder.session.query(self.obj)
+        query = self.session.query(self.obj)
 
         count = self.query_count(query, filters, select_columns)
         query = self.apply_all(
@@ -572,7 +573,7 @@ class SQLAInterface(BaseInterface):
     def query_simple_group(
         self, group_by: str | None = None, filters: Filters | None = None
     ) -> list[list[Any]]:
-        query = current_app.appbuilder.session.query(self.obj)
+        query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
         group = GroupByCol(group_by, "Group by")
@@ -581,7 +582,7 @@ class SQLAInterface(BaseInterface):
     def query_month_group(
         self, group_by: str | None = None, filters: Filters | None = None
     ) -> list[list[Any]]:
-        query = current_app.appbuilder.session.query(self.obj)
+        query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
         group = GroupByDateMonth(group_by, "Group by Month")
@@ -590,7 +591,7 @@ class SQLAInterface(BaseInterface):
     def query_year_group(
         self, group_by: str | None = None, filters: Filters | None = None
     ) -> list[list[Any]]:
-        query = current_app.appbuilder.session.query(self.obj)
+        query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
         group_year = GroupByDateYear(group_by, "Group by Year")
@@ -788,44 +789,44 @@ class SQLAInterface(BaseInterface):
 
     def add(self, item: Model, commit: bool = True) -> None:
         try:
-            current_app.appbuilder.session.add(item)
+            self.session.add(item)
             if commit:
-                current_app.appbuilder.session.commit()
+                self.session.commit()
         except SQLAlchemyError as ex:
             log.exception("Add item database error")
-            current_app.appbuilder.session.rollback()
+            self.session.rollback()
             raise ex
 
     def edit(self, item: Model, commit: bool = True) -> None:
         try:
-            current_app.appbuilder.session.merge(item)
+            self.session.merge(item)
             if commit:
-                current_app.appbuilder.session.commit()
+                self.session.commit()
         except SQLAlchemyError as ex:
             log.exception("Edit item database error")
-            current_app.appbuilder.session.rollback()
+            self.session.rollback()
             raise DatabaseException from ex
 
     def delete(self, item: Model, commit: bool = True) -> None:
         try:
             self._delete_files(item)
-            current_app.appbuilder.session.delete(item)
+            self.session.delete(item)
             if commit:
-                current_app.appbuilder.session.commit()
+                self.session.commit()
         except SQLAlchemyError as ex:
             log.exception("Delete item database error")
-            current_app.appbuilder.session.rollback()
+            self.session.rollback()
             raise DatabaseException from ex
 
     def delete_all(self, items: list[Model]) -> None:
         try:
             for item in items:
                 self._delete_files(item)
-                current_app.appbuilder.session.delete(item)
-            current_app.appbuilder.session.commit()
+                self.session.delete(item)
+            self.session.commit()
         except SQLAlchemyError as ex:
             log.exception("Delete items database error")
-            current_app.appbuilder.session.rollback()
+            self.session.rollback()
             raise DatabaseException from ex
 
     """
@@ -895,7 +896,7 @@ class SQLAInterface(BaseInterface):
 
     def get_related_obj(self, col_name: str, value: Any) -> Optional[Type[Model]]:
         rel_model = self.get_related_model(col_name)
-        return current_app.appbuilder.session.query(rel_model).get(value)
+        return self.session.query(rel_model).get(value)
 
     def get_related_fks(self, related_views: Any) -> list[str]:
         return [view.datamodel.get_related_fk(self.obj) for view in related_views]
@@ -1024,7 +1025,7 @@ class SQLAInterface(BaseInterface):
                 _filters.add_filter(_pk, self.FilterEqual, _id)
         else:
             _filters.add_filter(pk, self.FilterEqual, id)
-        query = current_app.appbuilder.session.query(self.obj)
+        query = self.session.query(self.obj)
         item = self.apply_all(
             query,
             _filters,
