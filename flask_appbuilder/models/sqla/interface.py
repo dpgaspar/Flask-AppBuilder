@@ -24,6 +24,7 @@ from sqlalchemy.orm import aliased, class_mapper, ColumnProperty, contains_eager
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.orm.query import Query
+from sqlalchemy.orm.session import Session as SessionBase
 from sqlalchemy.orm.util import AliasedClass
 from sqlalchemy.sql import ColumnElement, visitors
 from sqlalchemy.sql.elements import BinaryExpression
@@ -54,7 +55,7 @@ class SQLAInterface(BaseInterface):
         _include_filters(self)
         self.list_columns = {}
         self.list_properties = {}
-        self.session = session or current_app.appbuilder.session
+        self._session = session
         # Collect all SQLA columns and properties
         for prop in class_mapper(obj).iterate_properties:
             if type(prop) != SynonymProperty:
@@ -63,6 +64,15 @@ class SQLAInterface(BaseInterface):
             if col_name in self.list_properties:
                 self.list_columns[col_name] = obj.__mapper__.columns[col_name]
         super().__init__(obj)
+
+    @property
+    def session(self) -> SessionBase:
+        """
+        Returns the SQLAlchemy session
+        """
+        if not self._session:
+            return current_app.appbuilder.session
+        return self._session
 
     @property
     def model_name(self) -> str:
