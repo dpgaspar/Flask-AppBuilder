@@ -556,9 +556,6 @@ class RolePermissionAPITestCase(FABTestCase):
     def tearDown(self):
         self.appbuilder.session.close()
         engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        for baseview in self.appbuilder.baseviews:
-            if hasattr(baseview, "datamodel"):
-                baseview.datamodel.session = None
         engine.dispose()
         self.ctx.pop()
 
