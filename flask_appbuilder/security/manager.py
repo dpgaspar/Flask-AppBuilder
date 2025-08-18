@@ -280,6 +280,11 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_FIRSTNAME_FIELD", "givenName")
             app.config.setdefault("AUTH_LDAP_LASTNAME_FIELD", "sn")
             app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
+            # Nested groups options
+            app.config.setdefault("AUTH_LDAP_USE_NESTED_GROUPS_FOR_ROLES", False)
+
+        if self.auth_type == AUTH_REMOTE_USER:
+            app.config.setdefault("AUTH_REMOTE_USER_ENV_VAR", "REMOTE_USER")
 
         if self.auth_type == AUTH_REMOTE_USER:
             app.config.setdefault("AUTH_REMOTE_USER_ENV_VAR", "REMOTE_USER")
@@ -531,6 +536,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_tls_keyfile(self):
         return self.appbuilder.get_app.config["AUTH_LDAP_TLS_KEYFILE"]
+
+    @property
+    def auth_ldap_use_nested_groups_for_roles(self):
+        return self.appbuilder.get_app.config["AUTH_LDAP_USE_NESTED_GROUPS_FOR_ROLES"]
 
     @property
     def openid_providers(self):
@@ -1086,10 +1095,53 @@ class BaseSecurityManager(AbstractSecurityManager):
             user_dn = search_result[0][0]
             # extract the other attributes
             user_info = search_result[0][1]
-            # return
-            return user_dn, user_info
         except (IndexError, NameError):
             return None, None
+
+        # get nested groups for user
+        if self.auth_ldap_use_nested_groups_for_roles:
+            nested_groups = self._ldap_get_nested_groups(ldap, con, user_dn)
+
+            if self.auth_ldap_group_field in user_info:
+                user_info[self.auth_ldap_group_field].extend(nested_groups)
+            else:
+                user_info[self.auth_ldap_group_field] = nested_groups
+
+        # return
+        return user_dn, user_info
+
+    def _ldap_get_nested_groups(self, ldap, con, user_dn) -> List[str]:
+        """
+        Searches nested groups for user. Only for MS AD version.
+
+        :param ldap: The ldap module reference
+        :param con: The ldap connection
+        :param user_dn: user DN to match with CN
+        :return: ldap groups array
+        """
+        log.debug("Nested groups for LDAP enabled.")
+        # filter for microsoft active directory only
+        nested_groups_filter_str = (
+            f"(&(objectCategory=Group)(member:1.2.840.113556.1.4.1941:={user_dn}))"
+        )
+        nested_groups_request_fields = ["cn"]
+
+        nested_groups_search_result = con.search_s(
+            self.auth_ldap_search,
+            ldap.SCOPE_SUBTREE,
+            nested_groups_filter_str,
+            nested_groups_request_fields,
+        )
+        log.debug(
+            "LDAP search for nested groups returned: %s",
+            nested_groups_search_result,
+        )
+
+        nested_groups = [
+            x[0].encode() for x in nested_groups_search_result if x[0] is not None
+        ]
+        log.debug("LDAP nested groups for users: %s", nested_groups)
+        return nested_groups
 
     def _ldap_calculate_user_roles(
         self, user_attributes: Dict[str, bytes]
