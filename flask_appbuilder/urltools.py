@@ -98,7 +98,7 @@ def get_filter_args(filters, disallow_if_not_in_search=True):
     """
     Sets filters with the given current request args
 
-    Request arg filters are of the form "_flt_<DECIMAL>_<VIEW_NAME>_<COL_NAME>"
+    Request arg filters are of the form "_flt_<INTEGER>_<VIEW_NAME>_<COL_NAME>"
 
     :param filters: Filter instance to apply the request filters on
     :param disallow_if_not_in_search: If True, disallow filters that are not in the search

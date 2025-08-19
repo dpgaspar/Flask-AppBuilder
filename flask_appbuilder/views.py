@@ -262,7 +262,7 @@ class RestCRUDView(BaseCRUDView):
             order_column, order_direction = "", ""
         page = get_page_args().get(self.__class__.__name__)
         page_size = get_page_size_args().get(self.__class__.__name__)
-        get_filter_args(self._filters)
+        get_filter_args(self._filters, disallow_if_not_in_search=False)
         joined_filters = self._filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(
             joined_filters,
