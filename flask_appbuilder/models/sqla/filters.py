@@ -20,6 +20,7 @@ __all__ = [
     "FilterNotStartsWith",
     "FilterStartsWith",
     "FilterContains",
+    "FilterNotContains",
     "FilterNotEqual",
     "FilterEndsWith",
     "FilterEqualFunction",
@@ -79,6 +80,9 @@ def set_value_to_type(datamodel, column_name, value):
             return parser.parse(value)
         except Exception:
             return None
+    elif datamodel.is_json(column_name):
+        # For JSON columns, treat as string for filtering
+        return str(value)
     return value
 
 
@@ -413,4 +417,17 @@ class SQLAFilterConverter(BaseFilterConverter):
         ("is_date", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
         ("is_boolean", [FilterEqual, FilterNotEqual]),
         ("is_datetime", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
+        (
+            "is_json",
+            [
+                FilterStartsWith,
+                FilterEndsWith,
+                FilterContains,
+                FilterEqual,
+                FilterNotStartsWith,
+                FilterNotEndsWith,
+                FilterNotContains,
+                FilterNotEqual,
+            ],
+        ),
     )

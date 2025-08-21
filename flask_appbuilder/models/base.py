@@ -219,6 +219,9 @@ class BaseInterface:
     def is_enum(self, col_name):
         return False
 
+    def is_json(self, col_name):
+        return False
+
     def is_relation(self, prop):
         return False
 
