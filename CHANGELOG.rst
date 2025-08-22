@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 4.8.1rc1
+-----------------------------------
+
+- fix: don't register reset my password when not on AUTH_DB (#2384) [Daniel Vaz Gaspar]
+- fix: Correct is_pk_composite method to return False instead of raising an error. False is not a base exception (#2378) [Kyle Lagerquist]
+
 Improvements and Bug fixes on 4.8.0
 -----------------------------------
 
