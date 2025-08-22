@@ -695,6 +695,26 @@ r9+EFRsxA5GNYA==
             },
         )
 
+    def test_reset_password_view_not_registered_with_oauth(self):
+        """
+        OAUTH: test that ResetMyPasswordView is not registered when using OAuth
+        authentication
+        """
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        for view in self.appbuilder.baseviews:
+            if view.__class__.__name__ == "ResetMyPasswordView":
+                self.fail(
+                    "ResetMyPasswordView should not be registered when using OAuth "
+                    "authentication"
+                )
+
+        # Also verify that the view is not accessible via URL
+        with self.app.test_client() as client:
+            response = client.get("/resetmypassword/form")
+            # Should return 404 since the view is not registered
+            self.assertEqual(response.status_code, 404)
+
 
 class OAuthAuthentikTestCase(unittest.TestCase):
     def setUp(self):
