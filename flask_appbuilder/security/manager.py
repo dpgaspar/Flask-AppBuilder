@@ -806,6 +806,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_user_registration:
             if self.auth_type == AUTH_DB:
                 self.registeruser_view = self.registeruserdbview()
+                self.appbuilder.add_view_no_menu(self.resetpasswordview())
+                self.appbuilder.add_view_no_menu(self.resetmypasswordview())
             elif self.auth_type == AUTH_OID:
                 self.registeruser_view = self.registeruseroidview()
             elif self.auth_type == AUTH_OAUTH:
@@ -813,8 +815,6 @@ class BaseSecurityManager(AbstractSecurityManager):
             if self.registeruser_view:
                 self.appbuilder.add_view_no_menu(self.registeruser_view)
 
-        self.appbuilder.add_view_no_menu(self.resetpasswordview())
-        self.appbuilder.add_view_no_menu(self.resetmypasswordview())
         self.appbuilder.add_view_no_menu(self.userinfoeditview())
 
         if self.auth_type == AUTH_DB:
