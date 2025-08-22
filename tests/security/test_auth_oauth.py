@@ -697,14 +697,16 @@ r9+EFRsxA5GNYA==
 
     def test_reset_password_view_not_registered_with_oauth(self):
         """
-        OAUTH: test that ResetMyPasswordView is not registered when using OAuth authentication
+        OAUTH: test that ResetMyPasswordView is not registered when using OAuth
+        authentication
         """
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
         for view in self.appbuilder.baseviews:
             if view.__class__.__name__ == "ResetMyPasswordView":
                 self.fail(
-                    "ResetMyPasswordView should not be registered when using OAuth authentication"
+                    "ResetMyPasswordView should not be registered when using OAuth "
+                    "authentication"
                 )
 
         # Also verify that the view is not accessible via URL
