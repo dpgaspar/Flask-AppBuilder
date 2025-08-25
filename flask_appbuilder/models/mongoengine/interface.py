@@ -4,6 +4,7 @@ import sys
 from mongoengine.fields import (
     BooleanField,
     DateTimeField,
+    DictField,
     FileField,
     FloatField,
     ImageField,
@@ -131,6 +132,12 @@ class MongoEngineInterface(BaseInterface):
     def is_gridfs_image(self, col_name):
         try:
             return isinstance(self.obj._fields[col_name], ImageField)
+        except Exception:
+            return False
+
+    def is_json(self, col_name):
+        try:
+            return isinstance(self.obj._fields[col_name], DictField)
         except Exception:
             return False
 

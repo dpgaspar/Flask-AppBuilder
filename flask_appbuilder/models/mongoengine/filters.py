@@ -142,4 +142,15 @@ class MongoEngineFilterConverter(BaseFilterConverter):
         ("is_datetime", [FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller]),
         ("is_integer", [FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller]),
         ("is_float", [FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller]),
+        (
+            "is_json",
+            [
+                FilterEqual,
+                FilterNotEqual,
+                FilterStartsWith,
+                FilterNotStartsWith,
+                FilterContains,
+                FilterNotContains,
+            ],
+        ),
     )
