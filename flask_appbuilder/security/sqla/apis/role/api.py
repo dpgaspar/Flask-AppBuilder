@@ -61,7 +61,9 @@ class RoleApi(ModelRestApi):
                     type: object
                     properties:
                       result:
-                        $ref: '#/components/schemas/RolePermissionListSchema'
+                        items:
+                          $ref: '#/components/schemas/RolePermissionListSchema'
+                        type: array
             400:
               $ref: '#/components/responses/400'
             401:
