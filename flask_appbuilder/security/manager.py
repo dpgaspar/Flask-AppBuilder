@@ -817,13 +817,13 @@ class BaseSecurityManager(AbstractSecurityManager):
             if self.registeruser_view:
                 self.appbuilder.add_view_no_menu(self.registeruser_view)
 
-        self.appbuilder.add_view_no_menu(self.resetpasswordview())
-        self.appbuilder.add_view_no_menu(self.resetmypasswordview())
         self.appbuilder.add_view_no_menu(self.userinfoeditview())
 
         if self.auth_type == AUTH_DB:
             self.user_view = self.userdbmodelview
             self.auth_view = self.authdbview()
+            self.appbuilder.add_view_no_menu(self.resetpasswordview())
+            self.appbuilder.add_view_no_menu(self.resetmypasswordview())
 
         elif self.auth_type == AUTH_LDAP:
             self.user_view = self.userldapmodelview
