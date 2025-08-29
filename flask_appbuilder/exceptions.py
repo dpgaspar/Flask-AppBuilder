@@ -16,6 +16,10 @@ class FABException(Exception):
         )
 
 
+class DatabaseException(FABException):
+    """Database related exception"""
+
+
 class InvalidColumnFilterFABException(FABException):
     """Invalid column for filter"""
 

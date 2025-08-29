@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 
 
 class ProductType(Model):
+    __tablename__ = "product_type"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -16,6 +17,7 @@ class ProductType(Model):
 
 
 class Product(Model):
+    __tablename__ = "product"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
     price = Column(Float, nullable=False)

@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 
 
 class ContactGroup(BaseMixin, Model):
+    __tablename__ = "contact_group"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -13,6 +14,7 @@ class ContactGroup(BaseMixin, Model):
 
 
 class Gender(BaseMixin, Model):
+    __tablename__ = "gender"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -21,6 +23,7 @@ class Gender(BaseMixin, Model):
 
 
 class Contact(BaseMixin, Model):
+    __tablename__ = "contact"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))

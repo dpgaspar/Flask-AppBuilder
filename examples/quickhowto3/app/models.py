@@ -10,6 +10,7 @@ from flask_appbuilder import Model
 
 
 class Group(Model):
+    __tablename__ = "group"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -18,6 +19,7 @@ class Group(Model):
 
 
 class Gender(Model):
+    __tablename__ = "gender"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -26,6 +28,7 @@ class Gender(Model):
 
 
 class Contact(Model):
+    __tablename__ = "contact"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))

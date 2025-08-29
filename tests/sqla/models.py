@@ -24,6 +24,7 @@ def validate_name(n):
 
 
 class Model1(Model):
+    __tablename__ = "model1"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     field_integer = Column(Integer())
@@ -54,6 +55,7 @@ class Model1CustomSchema(BaseModelSchema):
 
 
 class Model2(Model):
+    __tablename__ = "model2"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     field_integer = Column(Integer())
@@ -72,6 +74,7 @@ class Model2(Model):
 
 
 class Model3(Model):
+    __tablename__ = "model3"
     pk1 = Column(Integer(), primary_key=True)
     pk2 = Column(DateTime(), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
@@ -81,6 +84,7 @@ class Model3(Model):
 
 
 class Model4(Model):
+    __tablename__ = "model4"
     id = Column(Integer(), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     model1_1_id = Column(Integer, ForeignKey("model1.id"), nullable=False)
@@ -93,6 +97,7 @@ class Model4(Model):
 
 
 class ModelWithProperty(Model):
+    __tablename__ = "model_with_property"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
 
@@ -108,6 +113,7 @@ class TmpEnum(enum.Enum):
 
 
 class ModelWithEnums(Model):
+    __tablename__ = "model_with_enums"
     id = Column(Integer, primary_key=True)
     enum1 = Column(Enum("e1", "e2", "e3", "e4", name="enum1"))
     enum2 = Column(Enum(TmpEnum))
@@ -172,6 +178,7 @@ class ModelOMParent(Model):
 
 
 class ModelOMChild(Model):
+    __tablename__ = "model_om_child"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     parent_id = Column(Integer, ForeignKey("model_om_parent.id"))
@@ -190,6 +197,7 @@ class ModelOOParent(Model):
 
 
 class ModelOOChild(Model):
+    __tablename__ = "model_oo_child"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     parent_id = Column(Integer, ForeignKey("model_oo_parent.id"))

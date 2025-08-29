@@ -8,6 +8,7 @@ mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
 class ContactGroup(Model):
+    __tablename__ = "contact_group"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -16,6 +17,7 @@ class ContactGroup(Model):
 
 
 class ContactGroup2(Model):
+    __tablename__ = "contact_group2"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -24,6 +26,7 @@ class ContactGroup2(Model):
 
 
 class ContactSubGroup2(Model):
+    __tablename__ = "contact_sub_group2"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
     contact_group2_id = Column(Integer, ForeignKey("contact_group2.id"), nullable=False)
@@ -34,6 +37,7 @@ class ContactSubGroup2(Model):
 
 
 class ContactSubGroup(Model):
+    __tablename__ = "contact_sub_group"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
     contact_group_id = Column(Integer, ForeignKey("contact_group.id"), nullable=False)
@@ -44,6 +48,7 @@ class ContactSubGroup(Model):
 
 
 class Gender(Model):
+    __tablename__ = "gender"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -52,6 +57,7 @@ class Gender(Model):
 
 
 class Contact(Model):
+    __tablename__ = "contact"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))

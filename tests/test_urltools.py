@@ -1,12 +1,12 @@
 import os
 
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.urltools import get_filter_args
+from flask_appbuilder.utils.legacy import get_sqla_class
+from tests.base import FABTestCase
 from tests.sqla.models import Model1
-
-from .base import FABTestCase
 
 
 class FlaskTestCase(FABTestCase):
@@ -14,22 +14,25 @@ class FlaskTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
-
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
+    def tearDown(self):
+        self.ctx.pop()
+
     def test_get_filter_args_allow_one(self):
         datamodel = SQLAInterface(Model1)
-        with self.appbuilder.get_app.test_request_context(
-            "/users/list?_flt_1_field_string=a"
-        ):
+        with self.app.test_request_context("/users/list?_flt_1_field_string=a"):
             filters = datamodel.get_filters(["field_string", "field_integer"])
             get_filter_args(filters)
             assert filters.values == [["a"]]
 
     def test_get_filter_args_allow_multiple(self):
         datamodel = SQLAInterface(Model1)
-        with self.appbuilder.get_app.test_request_context(
+        with self.app.test_request_context(
             "/users/list?_flt_1_field_string=a&_flt_1_field_integer=2"
         ):
             filters = datamodel.get_filters(["field_string", "field_integer"])
@@ -38,27 +41,21 @@ class FlaskTestCase(FABTestCase):
 
     def test_get_filter_args_disallow(self):
         datamodel = SQLAInterface(Model1)
-        with self.appbuilder.get_app.test_request_context(
-            "/users/list?_flt_1_field_float=1.0"
-        ):
+        with self.app.test_request_context("/users/list?_flt_1_field_float=1.0"):
             filters = datamodel.get_filters(["field_string", "field_integer"])
             get_filter_args(filters)
             assert filters.values == []
 
     def test_get_filter_args_disallow_off(self):
         datamodel = SQLAInterface(Model1)
-        with self.appbuilder.get_app.test_request_context(
-            "/users/list?_flt_1_field_float=1.0"
-        ):
+        with self.app.test_request_context("/users/list?_flt_1_field_float=1.0"):
             filters = datamodel.get_filters(["field_string", "field_integer"])
             get_filter_args(filters, disallow_if_not_in_search=False)
             assert filters.values == [["1.0"]]
 
     def test_get_filter_args_invalid_index(self):
         datamodel = SQLAInterface(Model1)
-        with self.appbuilder.get_app.test_request_context(
-            "/users/list?_flt_a_field_string=a"
-        ):
+        with self.app.test_request_context("/users/list?_flt_a_field_string=a"):
             filters = datamodel.get_filters(["field_string", "field_integer"])
             get_filter_args(filters)
             assert filters.values == []

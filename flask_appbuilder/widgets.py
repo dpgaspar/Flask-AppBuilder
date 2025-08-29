@@ -6,7 +6,7 @@ Created on Oct 12, 2013
 
 import logging
 
-from flask.globals import _request_ctx_stack
+from flask import current_app
 
 from ._compat import as_unicode
 
@@ -28,8 +28,7 @@ class RenderTemplateWidget(object):
         self.template_args = kwargs
 
     def __call__(self, **kwargs):
-        ctx = _request_ctx_stack.top
-        jinja_env = ctx.app.jinja_env
+        jinja_env = current_app.jinja_env
 
         template = jinja_env.get_template(self.template)
         args = self.template_args.copy()

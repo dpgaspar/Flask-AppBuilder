@@ -2,6 +2,7 @@ import datetime
 import logging
 
 from dateutil import parser
+from flask import current_app
 from flask_appbuilder.exceptions import ApplyFilterException
 from flask_appbuilder.models.filters import (
     BaseFilter,
@@ -218,11 +219,9 @@ class FilterRelationOneToManyEqual(FilterRelation):
         try:
             rel_obj = self.datamodel.get_related_obj(self.column_name, value)
         except SQLAlchemyError as exc:
-            logging.warning(
-                "Filter exception for %s with value %s, will not apply", field, value
-            )
+            logging.warning("Filter exception for %s will not apply", field)
             try:
-                self.datamodel.session.rollback()
+                current_app.appbuilder.session.rollback()
             except SQLAlchemyError:
                 # on MSSQL a rollback would fail here
                 pass
@@ -239,11 +238,9 @@ class FilterRelationOneToManyNotEqual(FilterRelation):
         try:
             rel_obj = self.datamodel.get_related_obj(self.column_name, value)
         except SQLAlchemyError as exc:
-            logging.warning(
-                "Filter exception for %s with value %s, will not apply", field, value
-            )
+            log.warning("Filter exception for %s will not apply", field)
             try:
-                self.datamodel.session.rollback()
+                current_app.appbuilder.session.rollback()
             except SQLAlchemyError:
                 # on MSSQL a rollback would fail here
                 pass
@@ -269,7 +266,7 @@ class FilterRelationManyToManyEqual(FilterRelation):
                 value_item,
             )
             try:
-                self.datamodel.session.rollback()
+                current_app.appbuilder.session.rollback()
             except SQLAlchemyError:
                 # on MSSQL a rollback would fail here
                 pass
@@ -278,10 +275,9 @@ class FilterRelationManyToManyEqual(FilterRelation):
         if rel_obj:
             return query.filter(field.contains(rel_obj))
         else:
-            log.error(
-                "Related object for column: %s, value: %s return Null",
+            log.warning(
+                "Related object for column: %s returned Null",
                 self.column_name,
-                value_item,
             )
 
         return query

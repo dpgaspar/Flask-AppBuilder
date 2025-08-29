@@ -138,7 +138,7 @@ class RoleApi(ModelRestApi):
             permissions = []
             for id in item["permission_view_menu_ids"]:
                 permission = (
-                    current_app.appbuilder.get_session.query(PermissionView)
+                    current_app.appbuilder.session.query(PermissionView)
                     .filter_by(id=id)
                     .one_or_none()
                 )
@@ -146,7 +146,7 @@ class RoleApi(ModelRestApi):
                     permissions.append(permission)
 
             role.permissions = permissions
-            self.datamodel.edit(role, raise_exception=True)
+            self.datamodel.edit(role)
             return self.response(
                 200,
                 **{
@@ -209,7 +209,7 @@ class RoleApi(ModelRestApi):
                 return self.response_404()
 
             users = (
-                current_app.appbuilder.get_session.query(User)
+                current_app.appbuilder.session.query(User)
                 .filter(User.id.in_(item["user_ids"]))
                 .all()
             )
@@ -218,7 +218,7 @@ class RoleApi(ModelRestApi):
                 return self.response_404()  # Some users were not found
 
             role.user = users
-            self.datamodel.edit(role, raise_exception=True)
+            self.datamodel.edit(role)
             return self.response(
                 200,
                 **{
@@ -281,7 +281,7 @@ class RoleApi(ModelRestApi):
                 return self.response_404()
 
             groups = (
-                current_app.appbuilder.get_session.query(Group)
+                current_app.appbuilder.session.query(Group)
                 .filter(Group.id.in_(item["group_ids"]))
                 .all()
             )
@@ -290,7 +290,7 @@ class RoleApi(ModelRestApi):
                 return self.response_404()  # Some groups were not found
 
             role.groups = groups
-            self.datamodel.edit(role, raise_exception=True)
+            self.datamodel.edit(role)
             return self.response(
                 200,
                 **{

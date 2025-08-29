@@ -3,6 +3,7 @@ from flask_appbuilder import Model
 
 
 class ContactGroup(Model):
+    __tablename__ = "contact_group"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 

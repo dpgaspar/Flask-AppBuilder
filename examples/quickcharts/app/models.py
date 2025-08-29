@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship
 
 
 class Country(Model):
+    __tablename__ = "country"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -14,6 +15,7 @@ class Country(Model):
 
 
 class PoliticalType(Model):
+    __tablename__ = "political_type"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -22,6 +24,7 @@ class PoliticalType(Model):
 
 
 class CountryStats(Model):
+    __tablename__ = "country_stats"
     id = Column(Integer, primary_key=True)
     stat_date = Column(Date, nullable=True)
     population = Column(Float)
