@@ -94,9 +94,9 @@ get_list_schema = {
                                     "anyOf": [
                                         {"type": "number"},
                                         {"type": "string"},
-                                        {"type": "boolean"}
+                                        {"type": "boolean"},
                                     ]
-                                }
+                                },
                             },
                         ]
                     },
