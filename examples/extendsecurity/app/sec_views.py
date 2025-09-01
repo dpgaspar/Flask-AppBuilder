@@ -4,9 +4,9 @@ from flask_babel import lazy_gettext
 
 class MyUserDBModelView(UserDBModelView):
     """
-        View that add DB specifics to User view.
-        Override to implement your own custom view.
-        Then override userdbmodelview property on SecurityManager
+    View that add DB specifics to User view.
+    Override to implement your own custom view.
+    Then override userdbmodelview property on SecurityManager
     """
 
     show_fieldsets = [

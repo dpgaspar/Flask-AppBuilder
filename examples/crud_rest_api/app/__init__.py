@@ -1,14 +1,35 @@
-import logging
-
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
+from .api import GreetingApi, ContactModelApi, GroupModelApi, ModelOMParentApi, ContactGroupModelView, ContactGroupTagModelView
+from .extensions import appbuilder, db
 
-logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
-logging.getLogger().setLevel(logging.DEBUG)
 
-app = Flask(__name__)
-app.config.from_object("config")
-db = SQLA(app)
-appbuilder = AppBuilder(app, db.session)
+def create_app() -> Flask:
+    app = Flask(__name__)
+    app.config.from_object("config")
+    with app.app_context():
+        db.init_app(app)
+        appbuilder.init_app(app, db.session)
+        db.create_all()
+        appbuilder.add_api(GreetingApi)
+        appbuilder.add_api(ContactModelApi)
+        appbuilder.add_api(GroupModelApi)
+        appbuilder.add_api(ModelOMParentApi)
+        appbuilder.add_view(
+            ContactGroupModelView,
+            "List Contact Groups",
+            icon="fa-folder-open-o",
+            category="Contacts",
+            category_icon="fa-envelope",
+        )
+        appbuilder.add_view(
+            ContactGroupTagModelView,
+            "List Contact Group Tags",
+            icon="fa-folder-open-o",
+            category="Contacts",
+            category_icon="fa-envelope",
+        )
+    return app
 
-from . import models, api  # noqa
+
+# For backward compatibility
+app = create_app()

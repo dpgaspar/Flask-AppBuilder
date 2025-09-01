@@ -39,7 +39,7 @@ except Exception:
 log = logging.getLogger(__name__)
 
 
-class FieldConverter(object):
+class FieldConverter:
     """
     Helper class that converts model fields into WTForm fields
 
@@ -107,7 +107,7 @@ class FieldConverter(object):
         log.error("Column %s Type not supported", self.colname)
 
 
-class GeneralModelConverter(object):
+class GeneralModelConverter:
     """
     Returns a form from a model only one public exposed
     method 'create_form'

@@ -2,7 +2,7 @@ __author__ = "Daniel Gaspar"
 
 import logging
 
-from flask import flash, redirect, request, session, url_for
+from flask import current_app, flash, redirect, request, session, url_for
 from flask_babel import lazy_gettext
 
 from .forms import LoginForm_oid, RegisterUserDBForm, RegisterUserOIDForm
@@ -76,7 +76,7 @@ class BaseRegisterUser(PublicFormView):
         except Exception:
             log.error("Install Flask-Mail to use User registration")
             return False
-        mail = Mail(self.appbuilder.get_app)
+        mail = Mail(current_app)
         msg = Message()
         msg.subject = self.email_subject
         url = url_for(

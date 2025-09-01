@@ -4,9 +4,9 @@ import logging
 from typing import Any, Dict, List, Optional, Set
 import unittest
 
-from flask import Flask, Response
+from flask import Flask
 from flask.testing import FlaskClient
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.const import (
     API_SECURITY_PASSWORD_KEY,
     API_SECURITY_PROVIDER_KEY,
@@ -15,6 +15,7 @@ from flask_appbuilder.const import (
     API_SECURITY_VERSION,
 )
 from flask_appbuilder.security.sqla.models import Group, User
+from flask_appbuilder.utils.legacy import get_sqla_class
 from hiro import Timeline
 import jinja2
 from tests.const import (
@@ -23,6 +24,7 @@ from tests.const import (
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
+from werkzeug.test import TestResponse
 
 
 class FABTestCase(unittest.TestCase):
@@ -76,7 +78,7 @@ class FABTestCase(unittest.TestCase):
         next_url: Optional[str] = None,
         follow_redirects: bool = True,
         headers: Optional[dict] = None,
-    ) -> Response:
+    ) -> TestResponse:
         login_url = "/login/"
         if next_url:
             login_url = f"{login_url}?next={next_url}"
@@ -107,9 +109,9 @@ class FABTestCase(unittest.TestCase):
 
     def create_default_users(self, appbuilder) -> None:
         with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
-            self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
+            self.create_admin_user(appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
             self.create_user(
-                self.appbuilder,
+                appbuilder,
                 USERNAME_READONLY,
                 PASSWORD_READONLY,
                 "ReadOnly",
@@ -179,9 +181,18 @@ class BaseMVCTestCase(FABTestCase):
         self.app.config.from_object("tests.config_api")
         logging.basicConfig(level=logging.ERROR)
 
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
         self.create_default_users(self.appbuilder)
+
+    def tearDown(self):
+        self.ctx.pop()
+        self.appbuilder = None
+        self.ctx = None
+        self.app = None
 
     @property
     def registered_endpoints(self) -> Set:

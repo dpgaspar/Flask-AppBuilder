@@ -5,8 +5,9 @@ from typing import List
 
 from flask import Flask
 from flask_appbuilder import AppBuilder
-from flask_appbuilder import SQLA
+from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.security.sqla.models import Permission, Role, User, ViewMenu
+from flask_appbuilder.utils.legacy import get_sqla_class
 import prison
 from tests.base import FABTestCase
 from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
@@ -21,20 +22,22 @@ class UserAPITestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_security_api")
-        self.db = SQLA(self.app)
 
-        self.session = self.db.session
-        self.appbuilder = AppBuilder(self.app, self.session)
-        self.user_model = User
-        self.role_model = Role
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.create_default_users(self.appbuilder)
 
     def tearDown(self):
-        self.appbuilder.session.close()
-        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        for baseview in self.appbuilder.baseviews:
-            if hasattr(baseview, "datamodel"):
-                baseview.datamodel.session = None
-        engine.dispose()
+        # self.appbuilder.session.close()
+        # engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        # for baseview in self.appbuilder.baseviews:
+        #     if hasattr(baseview, "datamodel"):
+        #         baseview.datamodel.session = None
+        # engine.dispose()
+        self.ctx.pop()
 
     def _create_test_user(
         self,
@@ -45,22 +48,20 @@ class UserAPITestCase(FABTestCase):
         first_name="first-name",
         last_name="last-name",
     ):
-        user = User()
-        user.first_name = first_name
-        user.last_name = last_name
-        user.username = username
-        user.email = email
-        user.roles = roles
-        user.password = generate_password_hash(
-            password=password,
-            method=self.appbuilder.get_app.config.get(
-                "FAB_PASSWORD_HASH_METHOD", "scrypt"
-            ),
-            salt_length=self.appbuilder.get_app.config.get(
-                "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+        user = User(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            roles=roles,
+            password=generate_password_hash(
+                password=password,
+                method=self.app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+                salt_length=self.app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
             ),
         )
-        self.session.commit()
+        self.appbuilder.session.add(user)
+        self.appbuilder.session.commit()
         return user
 
     def test_user_info(self):
@@ -197,8 +198,8 @@ class UserAPITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         role = Role(name="test-role")
-        self.session.add(role)
-        self.session.commit()
+        self.db.session.add(role)
+        self.db.session.commit()
         role_id = role.id
         user = self._create_test_user(
             "test-get-single-user", "password", [role], "test-get-single-user@fab.com"
@@ -216,20 +217,11 @@ class UserAPITestCase(FABTestCase):
         self.assertEqual(result["email"], "test-get-single-user@fab.com")
         self.assertEqual(result["roles"], [{"id": role_id, "name": "test-role"}])
 
-        user = (
-            self.session.query(self.user_model)
-            .filter(self.user_model.id == user.id)
-            .first()
-        )
-        self.session.delete(user)
-        role = (
-            self.session.query(self.role_model)
-            .filter(self.role_model.id == role_id)
-            .first()
-        )
-        self.session.delete(role)
-
-        self.session.commit()
+        user = self.db.session.query(User).filter(User.id == user.id).first()
+        self.db.session.delete(user)
+        role = self.db.session.query(Role).filter(Role.id == role_id).first()
+        self.db.session.delete(role)
+        self.db.session.commit()
 
     def test_get_single_not_found(self):
         client = self.app.test_client()
@@ -247,8 +239,8 @@ class UserAPITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         role = Role(name="test-create-user-api")
-        self.session.add(role)
-        self.session.commit()
+        self.db.session.add(role)
+        self.db.session.commit()
 
         uri = "api/v1/security/users/"
         create_user_payload = {
@@ -266,7 +258,7 @@ class UserAPITestCase(FABTestCase):
 
         assert "id" in add_user_response
         user = (
-            self.session.query(User)
+            self.db.session.query(User)
             .filter(User.id == add_user_response["id"])
             .one_or_none()
         )
@@ -278,13 +270,10 @@ class UserAPITestCase(FABTestCase):
         self.assertEqual(len(user.roles), 1)
         self.assertEqual(user.roles[0].name, "test-create-user-api")
 
-        user = (
-            self.session.query(self.user_model)
-            .filter(self.user_model.id == user.id)
-            .first()
-        )
-        self.session.delete(user)
-        self.session.commit()
+        user = self.db.session.query(User).filter(User.id == user.id).first()
+        self.db.session.delete(user)
+        self.db.session.delete(role)
+        self.db.session.commit()
 
     def test_create_user_without_role_or_group(self):
         client = self.app.test_client()
@@ -358,7 +347,7 @@ class UserAPITestCase(FABTestCase):
         add_user_response = json.loads(rv.data)
         assert "id" in add_user_response
         user = (
-            self.session.query(User)
+            self.db.session.query(User)
             .filter(User.id == add_user_response["id"])
             .one_or_none()
         )
@@ -371,12 +360,12 @@ class UserAPITestCase(FABTestCase):
         self.assertEqual(len(user.groups), 2)
         self.assertIn("test_group_1", user.groups[0].name)
         self.assertIn("test_group_2", user.groups[1].name)
-        self.session.delete(user)
+        self.db.session.delete(user)
         created_group_1 = self.appbuilder.sm.find_group("test_group_1")
         created_group_2 = self.appbuilder.sm.find_group("test_group_2")
-        self.session.delete(created_group_1)
-        self.session.delete(created_group_2)
-        self.session.commit()
+        self.db.session.delete(created_group_1)
+        self.db.session.delete(created_group_2)
+        self.db.session.commit()
 
     def test_create_user_with_invalid_group(self):
         client = self.app.test_client()
@@ -406,10 +395,10 @@ class UserAPITestCase(FABTestCase):
         role_1 = Role(name="test-role1")
         role_2 = Role(name="test-role2")
         role_3 = Role(name="test-role3")
-        self.session.add(role_1)
-        self.session.add(role_2)
-        self.session.add(role_3)
-        self.session.commit()
+        self.db.session.add(role_1)
+        self.db.session.add(role_2)
+        self.db.session.add(role_3)
+        self.db.session.commit()
         user = self._create_test_user(
             "edit-user-1", "password", [role_1], "test-edit-user1@fab.com"
         )
@@ -426,26 +415,22 @@ class UserAPITestCase(FABTestCase):
             {"email": updated_email, "roles": [role_2.id, role_3.id]},
         )
         self.assertEqual(rv.status_code, 200)
-        updated_user = self.session.query(self.user_model).get(user_id)
+        updated_user = self.db.session.query(User).get(user_id)
         self.assertEqual(len(updated_user.roles), 2)
-        self.assertEqual(updated_user.roles[0].name, "test-role2")
-        self.assertEqual(updated_user.roles[1].name, "test-role3")
+        update_use_roles = sorted([role.name for role in updated_user.roles])
+        self.assertEqual(update_use_roles, ["test-role2", "test-role3"])
         self.assertEqual(updated_user.email, updated_email)
 
         roles = (
-            self.session.query(self.role_model)
-            .filter(self.role_model.id.in_([role_1_id, role_2_id, role_3_id]))
+            self.db.session.query(Role)
+            .filter(Role.id.in_([role_1_id, role_2_id, role_3_id]))
             .all()
         )
-        user = (
-            self.session.query(self.user_model)
-            .filter(self.user_model.id == user_id)
-            .first()
-        )
-        self.session.delete(user)
+        user = self.db.session.query(User).filter(User.id == user_id).first()
+        self.db.session.delete(user)
         for r in roles:
-            self.session.delete(r)
-        self.session.commit()
+            self.db.session.delete(r)
+        self.db.session.commit()
 
     def test_edit_user_check_password(self):
         client = self.app.test_client()
@@ -477,8 +462,8 @@ class UserAPITestCase(FABTestCase):
         self.assertIsNotNone(updated_user)
         self.assertEqual(updated_user.password, old_password_hash)
 
-        self.session.delete(updated_user)
-        self.session.commit()
+        self.db.session.delete(updated_user)
+        self.db.session.commit()
 
     def test_edit_user_change_password(self):
         client = self.app.test_client()
@@ -516,12 +501,11 @@ class UserAPITestCase(FABTestCase):
     def test_delete_user(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        session = self.appbuilder.session
 
         role = Role(name="delete-user-role")
 
-        session.add(role)
-        session.commit()
+        self.db.session.add(role)
+        self.db.session.commit()
         user = self._create_test_user(
             "delete-user", "password", [role], "delete-user@fab.com"
         )
@@ -535,13 +519,9 @@ class UserAPITestCase(FABTestCase):
         updated_user = self.appbuilder.sm.get_user_by_id(user_id)
         assert not updated_user
 
-        role = (
-            session.query(self.role_model)
-            .filter(self.role_model.id == role_id)
-            .one_or_none()
-        )
-        session.delete(role)
-        session.commit()
+        role = self.db.session.query(Role).filter(Role.id == role_id).one_or_none()
+        self.db.session.delete(role)
+        self.db.session.commit()
 
     def test_delete_user_not_found(self):
         client = self.app.test_client()
@@ -561,32 +541,29 @@ class RolePermissionAPITestCase(FABTestCase):
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_API"] = True
+
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
-        self.session = self.db.session
         self.appbuilder = AppBuilder(self.app, self.db.session)
         self.permission_model = Permission
         self.viewmenu_model = ViewMenu
         self.role_model = Role
-
-        for b in self.appbuilder.baseviews:
-            if hasattr(b, "datamodel") and b.datamodel.session is not None:
-                b.datamodel.session = self.db.session
 
         self.create_default_users(self.appbuilder)
 
     def tearDown(self):
         self.appbuilder.session.close()
         engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        for baseview in self.appbuilder.baseviews:
-            if hasattr(baseview, "datamodel"):
-                baseview.datamodel.session = None
         engine.dispose()
+        self.ctx.pop()
 
     def test_list_permission_api(self):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        count = self.session.query(self.permission_model).count()
+        count = self.db.session.query(self.permission_model).count()
 
         uri = "api/v1/security/permissions/"
         rv = self.auth_client_get(client, token, uri)
@@ -615,7 +592,7 @@ class RolePermissionAPITestCase(FABTestCase):
         self.assertEqual(response["id"], permission_id)
         self.assertEqual(response["result"]["name"], permission_name)
 
-        self.session.delete(permission)
+        self.db.session.delete(permission)
 
     def test_get_invalid_permission_api(self):
         client = self.app.test_client()
@@ -680,7 +657,7 @@ class RolePermissionAPITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        count = self.session.query(self.viewmenu_model).count()
+        count = self.db.session.query(self.viewmenu_model).count()
 
         uri = "api/v1/security/resources/"
         rv = self.auth_client_get(client, token, uri)
@@ -707,7 +684,7 @@ class RolePermissionAPITestCase(FABTestCase):
         self.assertEqual(response["id"], view_id)
         self.assertEqual(response["result"]["name"], view_name)
 
-        self.session.delete(view)
+        self.db.session.delete(view)
 
     def test_get_invalid_view_api(self):
         client = self.app.test_client()
@@ -919,8 +896,8 @@ class RolePermissionAPITestCase(FABTestCase):
         assert "id" and "result" in response
         self.assertEqual(response["result"].get("name", ""), role_name)
 
-        self.session.delete(role)
-        self.session.commit()
+        self.db.session.delete(role)
+        self.db.session.commit()
 
     def test_create_role_api(self):
         client = self.app.test_client()
@@ -935,9 +912,9 @@ class RolePermissionAPITestCase(FABTestCase):
         assert "id" and "result" in add_role_response
         self.assertEqual(create_user_payload, add_role_response["result"])
 
-        role = self.session.query(self.role_model).filter_by(name=role_name).first()
-        self.session.delete(role)
-        self.session.commit()
+        role = self.db.session.query(self.role_model).filter_by(name=role_name).first()
+        self.db.session.delete(role)
+        self.db.session.commit()
 
     def test_edit_role_api(self):
         client = self.app.test_client()
@@ -974,8 +951,8 @@ class RolePermissionAPITestCase(FABTestCase):
 
         role = self.appbuilder.sm.find_role(role_2_name)
 
-        self.session.delete(role)
-        self.session.commit()
+        self.db.session.delete(role)
+        self.db.session.commit()
 
     def test_add_view_menu_permissions_to_role(self):
         client = self.app.test_client()
@@ -1024,12 +1001,12 @@ class RolePermissionAPITestCase(FABTestCase):
 
         self.assertEqual(len(role.permissions), 2)
         self.assertEqual(
-            [p.id for p in role.permissions],
+            sorted([p.id for p in role.permissions]),
             [permission_1_view_menu_id, permission_2_view_menu_id],
         )
 
         role = self.appbuilder.sm.find_role(role_name)
-        self.session.delete(role)
+        self.db.session.delete(role)
 
         self.appbuilder.sm.del_permission_view_menu(
             permission_1_name, view_menu_name, cascade=True
@@ -1053,7 +1030,7 @@ class RolePermissionAPITestCase(FABTestCase):
 
         self.assertEqual(rv.status_code, 400)
         role = self.appbuilder.sm.find_role(role_name)
-        self.session.delete(role)
+        self.db.session.delete(role)
 
     def test_add_view_menu_permissions_to_invalid_role(self):
         client = self.app.test_client()
@@ -1118,9 +1095,9 @@ class RolePermissionAPITestCase(FABTestCase):
         self.assertEqual(len(user.roles), 1)
         self.assertEqual(role.user[0].id, user.id)
         self.assertEqual(user.roles[0].id, role.id)
-        self.session.delete(role)
-        self.session.delete(user)
-        self.session.commit()
+        self.appbuilder.session.delete(role)
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_update_role_groups_valid_group(self):
         client = self.app.test_client()
@@ -1150,10 +1127,10 @@ class RolePermissionAPITestCase(FABTestCase):
         self.assertIn(created_group_1.name, updated_role.groups[0].name)
         self.assertIn(created_group_2.name, updated_role.groups[1].name)
 
-        self.session.delete(updated_role)
-        self.session.delete(created_group_1)
-        self.session.delete(created_group_2)
-        self.session.commit()
+        self.db.session.delete(updated_role)
+        self.db.session.delete(created_group_1)
+        self.db.session.delete(created_group_2)
+        self.db.session.commit()
 
     def test_update_role_users_invalid_role(self):
         client = self.app.test_client()
@@ -1193,8 +1170,8 @@ class RolePermissionAPITestCase(FABTestCase):
         self.assertEqual(response.status_code, 400)
 
         role = self.appbuilder.sm.find_role(role_name)
-        self.session.delete(role)
-        self.session.commit()
+        self.appbuilder.session.delete(role)
+        self.appbuilder.session.commit()
 
     def test_update_role_users_invalid_user(self):
         client = self.app.test_client()
@@ -1202,7 +1179,7 @@ class RolePermissionAPITestCase(FABTestCase):
 
         role_name = "test_invalid_user_role"
         test_role = self.appbuilder.sm.add_role(name=role_name)
-        self.session.commit()
+        self.appbuilder.session.commit()
 
         invalid_user_id = 999999
 
@@ -1215,8 +1192,8 @@ class RolePermissionAPITestCase(FABTestCase):
         role = self.appbuilder.sm.find_role(role_name)
         self.assertEqual(len(role.user), 0)
 
-        self.session.delete(role)
-        self.session.commit()
+        self.appbuilder.session.delete(role)
+        self.appbuilder.session.commit()
 
     def test_update_role_groups_invalid_group(self):
         client = self.app.test_client()
@@ -1236,8 +1213,8 @@ class RolePermissionAPITestCase(FABTestCase):
         role = self.appbuilder.sm.find_role(role_name)
         self.assertEqual(len(role.groups), 0)
 
-        self.session.delete(role)
-        self.session.commit()
+        self.db.session.delete(role)
+        self.db.session.commit()
 
     def test_list_view_menu_permissions_of_role(self):
         client = self.app.test_client()
@@ -1289,7 +1266,7 @@ class RolePermissionAPITestCase(FABTestCase):
         )
 
         role = self.appbuilder.sm.find_role(role_name)
-        self.session.delete(role)
+        self.db.session.delete(role)
 
     def test_list_view_menu_permissions_of_invalid_role(self):
         client = self.app.test_client()
@@ -1329,16 +1306,21 @@ class UserRolePermissionDisabledTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
+
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def tearDown(self):
-        self.appbuilder.session.close()
-        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        for baseview in self.appbuilder.baseviews:
-            if hasattr(baseview, "datamodel"):
-                baseview.datamodel.session = None
-        engine.dispose()
+        # self.appbuilder.session.close()
+        # engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        # for baseview in self.appbuilder.baseviews:
+        #     if hasattr(baseview, "datamodel"):
+        #         baseview.datamodel.session = None
+        # engine.dispose()
+        self.ctx.pop()
 
     def test_user_role_permission(self):
         client = self.app.test_client()
@@ -1366,33 +1348,34 @@ class UserRolePermissionDisabledTestCase(FABTestCase):
 
 
 class UserCustomPasswordComplexityValidatorTestCase(FABTestCase):
+    @staticmethod
+    def password_validator(password):
+        if len(password) < 5:
+            raise PasswordComplexityValidationError
+
     def setUp(self):
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-        from flask_appbuilder.exceptions import PasswordComplexityValidationError
-        from flask_appbuilder.security.sqla.models import User
-
-        def passwordValidator(password):
-            if len(password) < 5:
-                raise PasswordComplexityValidationError
-
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_API"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_ENABLED"] = True
-        self.app.config["FAB_PASSWORD_COMPLEXITY_VALIDATOR"] = passwordValidator
+        self.app.config["FAB_PASSWORD_COMPLEXITY_VALIDATOR"] = self.password_validator
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
-        self.user_model = User
+        self.create_default_users(self.appbuilder)
 
     def tearDown(self):
-        self.appbuilder.session.close()
-        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        for baseview in self.appbuilder.baseviews:
-            if hasattr(baseview, "datamodel"):
-                baseview.datamodel.session = None
-        engine.dispose()
+        # self.appbuilder.session.close()
+        # engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        # for baseview in self.appbuilder.baseviews:
+        #     if hasattr(baseview, "datamodel"):
+        #         baseview.datamodel.session = None
+        # engine.dispose()
+        self.ctx.pop()
 
     def test_password_complexity(self):
         client = self.app.test_client()
@@ -1415,43 +1398,38 @@ class UserCustomPasswordComplexityValidatorTestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, create_user_payload)
         self.assertEqual(rv.status_code, 201)
 
-        session = self.appbuilder.get_session
         user = (
-            session.query(self.user_model)
-            .filter(self.user_model.username == "password complexity test user 10")
+            self.appbuilder.session.query(User)
+            .filter(User.username == "password complexity test user 10")
             .one_or_none()
         )
-        session.delete(user)
-        session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
 
 class UserDefaultPasswordComplexityValidatorTestCase(FABTestCase):
     def setUp(self):
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-        from flask_appbuilder.exceptions import PasswordComplexityValidationError
-        from flask_appbuilder.security.sqla.models import User
-
-        def passwordValidator(password):
-            if len(password) < 5:
-                raise PasswordComplexityValidationError
-
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_API"] = True
         self.app.config["FAB_PASSWORD_COMPLEXITY_ENABLED"] = True
+
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
-        self.user_model = User
+        self.create_default_users(self.appbuilder)
 
     def tearDown(self):
-        self.appbuilder.session.close()
-        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        for baseview in self.appbuilder.baseviews:
-            if hasattr(baseview, "datamodel"):
-                baseview.datamodel.session = None
-        engine.dispose()
+        # self.appbuilder.session.close()
+        # engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        # for baseview in self.appbuilder.baseviews:
+        #     if hasattr(baseview, "datamodel"):
+        #         baseview.datamodel.session = None
+        # engine.dispose()
+        self.ctx.pop()
 
     def test_password_complexity(self):
         client = self.app.test_client()
@@ -1474,14 +1452,13 @@ class UserDefaultPasswordComplexityValidatorTestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, create_user_payload)
         self.assertEqual(rv.status_code, 201)
 
-        session = self.appbuilder.get_session
         user = (
-            session.query(self.user_model)
-            .filter(self.user_model.username == "password complexity test user")
+            self.appbuilder.session.query(User)
+            .filter(User.username == "password complexity test user")
             .one_or_none()
         )
-        session.delete(user)
-        session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
 
 class GroupAPITestCase(FABTestCase):
@@ -1492,31 +1469,34 @@ class GroupAPITestCase(FABTestCase):
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
+        self.ctx = self.app.app_context()
+        self.ctx.push()
         self.app.config["FAB_ADD_SECURITY_API"] = True
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
-        self.session = self.db.session
 
-        for b in self.appbuilder.baseviews:
-            if hasattr(b, "datamodel") and b.datamodel.session is not None:
-                b.datamodel.session = self.db.session
+        # for b in self.appbuilder.baseviews:
+        #     if hasattr(b, "datamodel") and b.datamodel.session is not None:
+        #         b.datamodel.session = db.session
 
         self.create_default_users(self.appbuilder)
 
     def tearDown(self):
-        groups = self.session.query(self.appbuilder.sm.group_model).all()
+        groups = self.appbuilder.session.query(self.appbuilder.sm.group_model).all()
         for group in groups:
             group.users = []
             group.roles = []
-            self.session.delete(group)
-        self.session.commit()
+            self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
 
         self.appbuilder.session.close()
-        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
-        for baseview in self.appbuilder.baseviews:
-            if hasattr(baseview, "datamodel"):
-                baseview.datamodel.session = None
-        engine.dispose()
+        # engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
+        # for baseview in self.appbuilder.baseviews:
+        #     if hasattr(baseview, "datamodel"):
+        #         baseview.datamodel.session = None
+        # engine.dispose()
+        self.ctx.pop()
 
     def test_list_group_api_empty_list(self):
         client = self.app.test_client()
@@ -1534,10 +1514,6 @@ class GroupAPITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         admin_role = self.appbuilder.sm.find_role("Admin")
-        # user = self.appbuilder.sm.find_user("test_user_group")
-        # self.session.merge(user)
-        # self.session.delete(user)
-        # self.session.commit()
         user = self.appbuilder.sm.add_user(
             username="test_user_group",
             first_name="Test",
@@ -1575,9 +1551,9 @@ class GroupAPITestCase(FABTestCase):
             ],
         )
 
-        self.session.delete(group)
-        self.session.delete(user)
-        self.session.commit()
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_create_group(self):
         client = self.app.test_client()
@@ -1589,14 +1565,14 @@ class GroupAPITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 201)
         assert "id" in add_group_response
         group = (
-            self.session.query(self.appbuilder.sm.group_model)
+            self.appbuilder.session.query(self.appbuilder.sm.group_model)
             .filter(self.appbuilder.sm.group_model.id == add_group_response["id"])
             .one_or_none()
         )
         self.assertIsNotNone(group)
         self.assertEqual(group.name, create_group_payload["name"])
-        self.session.delete(group)
-        self.session.commit()
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
 
     def test_create_group_without_name(self):
         client = self.app.test_client()
@@ -1620,13 +1596,13 @@ class GroupAPITestCase(FABTestCase):
 
         group_name = "existing_group"
         group = self.appbuilder.sm.add_group(group_name, "label", "description")
-        self.session.commit()
+        self.appbuilder.session.commit()
 
         rv = self.auth_client_post(client, token, uri, json={"name": group_name})
         self.assertEqual(rv.status_code, 422)
 
-        self.session.delete(group)
-        self.session.commit()
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
 
     def test_create_group_with_users_and_roles(self):
         client = self.app.test_client()
@@ -1658,7 +1634,7 @@ class GroupAPITestCase(FABTestCase):
         add_group_response = json.loads(rv.data)
         assert "id" in add_group_response
         group = (
-            self.session.query(self.appbuilder.sm.group_model)
+            self.appbuilder.session.query(self.appbuilder.sm.group_model)
             .filter(self.appbuilder.sm.group_model.id == add_group_response["id"])
             .one_or_none()
         )
@@ -1673,11 +1649,13 @@ class GroupAPITestCase(FABTestCase):
         self.assertIn(group_role, group.roles)
         self.assertIn(group_user, group.users)
 
-        self.session.delete(group)
-        self.session.delete(group_user)
-        self.session.delete(group_role)
-        self.session.query(User).filter(User.username == "test_user_group").delete()
-        self.session.commit()
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.delete(group_user)
+        self.appbuilder.session.delete(group_role)
+        self.appbuilder.session.query(User).filter(
+            User.username == "test_user_group"
+        ).delete()
+        self.appbuilder.session.commit()
 
     def test_create_group_with_invalid_user(self):
         client = self.app.test_client()
@@ -1719,7 +1697,7 @@ class GroupAPITestCase(FABTestCase):
 
         group_name = "test_delete_group"
         group = self.appbuilder.sm.add_group(group_name, "label", "description")
-        self.session.commit()
+        self.appbuilder.session.commit()
         group_id = group.id
 
         uri = f"api/v1/security/groups/{group_id}"
@@ -1746,7 +1724,7 @@ class GroupAPITestCase(FABTestCase):
         group_name = "test_edit_group"
         updated_group_name = "updated_test_edit_group"
         group = self.appbuilder.sm.add_group(group_name, "label", "description")
-        self.session.commit()
+        self.appbuilder.session.commit()
         group_id = group.id
 
         uri = f"api/v1/security/groups/{group_id}"
@@ -1758,8 +1736,8 @@ class GroupAPITestCase(FABTestCase):
         self.assertIsNotNone(updated_group)
         self.assertEqual(updated_group.name, updated_group_name)
 
-        self.session.delete(updated_group)
-        self.session.commit()
+        self.appbuilder.session.delete(updated_group)
+        self.appbuilder.session.commit()
 
     def test_edit_invalid_group(self):
         client = self.app.test_client()
@@ -1779,7 +1757,7 @@ class GroupAPITestCase(FABTestCase):
 
         group_name = "test_edit_group_roles"
         group = self.appbuilder.sm.add_group(group_name, "description", "label")
-        self.session.commit()
+        self.appbuilder.session.commit()
 
         uri = f"api/v1/security/groups/{group.id}"
         role = self.appbuilder.sm.add_role("test_edit_group_roles")
@@ -1790,10 +1768,10 @@ class GroupAPITestCase(FABTestCase):
         updated_group = self.appbuilder.sm.find_group(group_name)
         self.assertIsNotNone(updated_group)
         self.assertEqual(len(updated_group.roles), 1)
-        self.session.delete(updated_group)
+        self.appbuilder.session.delete(updated_group)
         updated_role = self.appbuilder.sm.find_role("test_edit_group_roles")
-        self.session.delete(updated_role)
-        self.session.commit()
+        self.appbuilder.session.delete(updated_role)
+        self.appbuilder.session.commit()
 
     def test_edit_group_users(self):
         client = self.app.test_client()
@@ -1831,10 +1809,10 @@ class GroupAPITestCase(FABTestCase):
         updated_user_2 = self.appbuilder.sm.find_user(username="test_user_2")
         self.assertEqual(updated_user_1.groups[0].id, updated_group.id)
         self.assertEqual(updated_user_2.groups[0].id, updated_group.id)
-        self.session.delete(updated_user_2)
-        self.session.delete(updated_user_1)
-        self.session.delete(updated_group)
-        self.session.commit()
+        self.appbuilder.session.delete(updated_user_2)
+        self.appbuilder.session.delete(updated_user_1)
+        self.appbuilder.session.delete(updated_group)
+        self.appbuilder.session.commit()
 
     def test_edit_group_with_invalid_user(self):
         client = self.app.test_client()
@@ -1842,7 +1820,7 @@ class GroupAPITestCase(FABTestCase):
 
         group_name = "test_edit_group_invalid_user"
         group = self.appbuilder.sm.add_group(group_name, "description", "label")
-        self.session.commit()
+        self.appbuilder.session.commit()
 
         invalid_user_id = 999999
         uri = f"api/v1/security/groups/{group.id}"
@@ -1851,8 +1829,8 @@ class GroupAPITestCase(FABTestCase):
         rv = self.auth_client_put(client, token, uri, json=payload)
         self.assertEqual(rv.status_code, 400)
 
-        self.session.delete(group)
-        self.session.commit()
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
 
     def test_edit_group_with_invalid_role(self):
         client = self.app.test_client()
@@ -1860,7 +1838,7 @@ class GroupAPITestCase(FABTestCase):
 
         group_name = "test_edit_group_invalid_role"
         group = self.appbuilder.sm.add_group(group_name, "description", "label")
-        self.session.commit()
+        self.appbuilder.session.commit()
 
         invalid_role_id = 999999
         uri = f"api/v1/security/groups/{group.id}"
@@ -1869,5 +1847,5 @@ class GroupAPITestCase(FABTestCase):
         rv = self.auth_client_put(client, token, uri, json=payload)
         self.assertEqual(rv.status_code, 400)
 
-        self.session.delete(group)
-        self.session.commit()
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
