@@ -45,7 +45,6 @@ class FlaskTestCase(FABTestCase):
                 create_app,
                 [
                     f"--name={APP_DIR}",
-                    "--engine=SQLAlchemy",
                     "--secret-key=SHORT_SECRET",
                 ],
             )
@@ -64,7 +63,6 @@ class FlaskTestCase(FABTestCase):
                 create_app,
                 [
                     f"--name={APP_DIR}",
-                    "--engine=SQLAlchemy",
                     f"--secret-key={10*'SECRET'}",
                 ],
             )

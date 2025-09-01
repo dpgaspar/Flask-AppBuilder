@@ -6,7 +6,6 @@ Version 4.0.0
 
 - Drops python 3.6 support
 - Removed config key `AUTH_STRICT_RESPONSE_CODES`, it's always strict now.
-- Removes `Flask-OpenID` dependency (you can install it has an extra dependency `pip install flask-appbuilder[openid]`)
 - Major version bumps on following packages
 
 **Flask from 1.X to 2.X**

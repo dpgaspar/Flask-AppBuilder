@@ -62,13 +62,11 @@ All classes for data access aim for abstracting the backend.
 
       BaseInterface;
       BaseInterface -> SQLAInterface;
-      BaseInterface -> MongoEngineInterface;
       BaseInterface -> GenericInterface;
     }
 
 :BaseInterface: Interface class, imposes a unique API layer for data access.
 :SQLAInterface: Data access for SQLAlchemy.
-:MongoEngineInterface: Data access for MongoEngine (MongoDB).
 :GenericInterface: Data access for custom data structures.
 
 Class Security Diagram Tree
@@ -86,7 +84,6 @@ manage permissions (insert/remove all permission on the backend).
       BaseManager -> AbstractSecurityManager;
       AbstractSecurityManager -> BaseSecurityManager;
       BaseSecurityManager -> sqla.SecurityManager;
-      BaseSecurityManager -> mongoengine.SecurityManager;
     }
 
 :BaseManager: Base class for all Manager classes, holds AppBuilder class.
@@ -94,7 +91,6 @@ manage permissions (insert/remove all permission on the backend).
 :BaseSecurityManager: Base class for security, registers security views, implements authentication,
  inserts/removes all permission on the database, manages roles/users and views.
 :sqla.SecurityManager: Implements BaseSecurityManager for SQAlchemy.
-:mongoengine.SecurityManager: Implements BaseSecurityManager for MongoEngine.
 
 Security Models ERD
 -------------------
