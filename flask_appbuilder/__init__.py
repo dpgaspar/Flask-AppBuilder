@@ -16,6 +16,5 @@ from .views import (  # noqa: F401
     ModelView,
     MultipleView,
     PublicFormView,
-    RestCRUDView,
     SimpleFormView,
 )  # noqa: F401

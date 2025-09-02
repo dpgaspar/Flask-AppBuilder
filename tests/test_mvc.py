@@ -326,7 +326,6 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
     Specific to test ModelView's:
         - include_route_methods
         - exclude_route_methods
-        - disable_api_route_methods
     """
 
     def setUp(self):
@@ -341,15 +340,7 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
         class Model2ExcludeView(ModelView):
             datamodel = SQLAInterface(Model2)
             exclude_route_methods: Set = {
-                "api",
-                "api_read",
-                "api_get",
-                "api_create",
-                "api_update",
-                "api_delete",
-                "api_column_add",
-                "api_column_edit",
-                "api_readvalues",
+                "download",
             }
 
         self.appbuilder.add_view(Model2ExcludeView, "Model2ExcludeView")
@@ -357,34 +348,16 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
         class Model2IncludeExcludeView(ModelView):
             datamodel = SQLAInterface(Model2)
             include_route_methods: Set = {
-                "api",
-                "api_read",
-                "api_get",
-                "api_create",
-                "api_update",
-                "api_delete",
-                "api_column_add",
-                "api_column_edit",
-                "api_readvalues",
+                "list",
+                "show",
             }
             exclude_route_methods: Set = {
-                "api_create",
-                "api_update",
-                "api_delete",
-                "api_column_add",
-                "api_column_edit",
-                "api_readvalues",
+                "show",
             }
 
         self.appbuilder.add_view_no_menu(
             Model2IncludeExcludeView, "Model2IncludeExcludeView"
         )
-
-        class Model2DisableMVCApiView(ModelView):
-            datamodel = SQLAInterface(Model2)
-            disable_api_route_methods = True
-
-        self.appbuilder.add_view(Model2DisableMVCApiView, "Model2DisableMVCApiView")
 
     def test_include_route_methods(self):
         """
@@ -438,9 +411,7 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
         """
 
         expected_endpoints: Set = {
-            "Model2IncludeExcludeView.api",
-            "Model2IncludeExcludeView.api_read",
-            "Model2IncludeExcludeView.api_get",
+            "Model2IncludeExcludeView.list",
         }
         self.assertEqual(
             expected_endpoints,
@@ -452,29 +423,11 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
             ("can_edit", "Model2IncludeExcludeView"),
             ("can_delete", "Model2IncludeExcludeView"),
             ("can_download", "Model2IncludeExcludeView"),
+            ("can_show", "Model2IncludeExcludeView"),
         ]
         for unexpected_permission in unexpected_permissions:
             pvm = self.appbuilder.sm.find_permission_view_menu(*unexpected_permission)
             self.assertIsNone(pvm)
-
-    def test_disable_mvc_api_methods(self):
-        """
-        MVC: Disable MVC API
-        """
-        expected_endpoints: Set = {
-            "Model2DisableMVCApiView.list",
-            "Model2DisableMVCApiView.show",
-            "Model2DisableMVCApiView.add",
-            "Model2DisableMVCApiView.edit",
-            "Model2DisableMVCApiView.delete",
-            "Model2DisableMVCApiView.action",
-            "Model2DisableMVCApiView.download",
-            "Model2DisableMVCApiView.action_post",
-        }
-        self.assertEqual(
-            expected_endpoints,
-            self.get_registered_view_endpoints("Model2DisableMVCApiView"),
-        )
 
 
 class MVCTestCase(BaseMVCTestCase):
@@ -1473,88 +1426,6 @@ class MVCTestCase(BaseMVCTestCase):
             rv = client.get(f"/model1masterchartview/list/{model_id}")
             self.assertEqual(rv.status_code, 200)
 
-    def test_api_read(self):
-        """
-        Testing the api/read endpoint
-        """
-        client = self.app.test_client()
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        with model1_data(self.appbuilder.session):
-            rv = client.get("/model1formattedview/api/read")
-            self.assertEqual(rv.status_code, 200)
-            data = json.loads(rv.data.decode("utf-8"))
-            self.assertIn("result", data)
-            self.assertIn("pks", data)
-            assert len(data.get("result")) > 10
-
-    def test_api_unauthenticated(self):
-        """
-        Testing unauthenticated access to MVC API
-        """
-        client = self.app.test_client()
-        self.browser_logout(client)
-        rv = client.get("/model1formattedview/api/read")
-        self.assertEqual(rv.status_code, 401)
-
-    def test_api_unauthorized(self):
-        """
-        Testing unauthorized access to MVC API
-        """
-        client = self.app.test_client()
-        self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
-
-        rv = client.post(
-            "/model1view/api/create",
-            data=dict(field_string="zzz"),
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 403)
-
-    def test_api_create(self):
-        """
-        Testing the api/create endpoint
-        """
-        client = self.app.test_client()
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        with model1_data(self.appbuilder.session, 1):
-            rv = client.post(
-                "/model1view/api/create",
-                data=dict(field_string="zzz"),
-                follow_redirects=True,
-            )
-            self.assertEqual(rv.status_code, 200)
-            model1 = (
-                self.appbuilder.session.query(Model1)
-                .filter_by(field_string="zzz")
-                .one_or_none()
-            )
-            self.assertIsNotNone(model1)
-
-        # Revert data changes
-        self.appbuilder.session.delete(model1)
-        self.appbuilder.session.commit()
-
-    def test_api_update(self):
-        """
-        Validate that the api update endpoint updates [only] the fields in
-        POST data
-        """
-        client = self.app.test_client()
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        with model1_data(self.appbuilder.session, 1) as models:
-            model_id = models[0].id
-            item = self.appbuilder.session.query(Model1).get(model_id)
-            field_integer_before = item.field_integer
-            rv = client.put(
-                f"/model1view/api/update/{model_id}",
-                data=dict(field_string="zzz"),
-                follow_redirects=True,
-            )
-            self.assertEqual(rv.status_code, 200)
-            item = self.appbuilder.session.query(Model1).get(model_id)
-            self.assertEqual(item.field_string, "zzz")
-            self.assertEqual(item.field_integer, field_integer_before)
-
     def test_class_method_permission_override(self):
         """
         MVC: Test class method permission name override
@@ -1572,15 +1443,6 @@ class MVCTestCase(BaseMVCTestCase):
                 "add": "access",
                 "delete": "access",
                 "download": "access",
-                "api_readvalues": "access",
-                "api_column_edit": "access",
-                "api_column_add": "access",
-                "api_delete": "access",
-                "api_update": "access",
-                "api_create": "access",
-                "api_get": "access",
-                "api_read": "access",
-                "api": "access",
             }
 
         self.model1permoverride = Model1PermOverride
@@ -1639,15 +1501,6 @@ class MVCTestCase(BaseMVCTestCase):
                 "add": "write",
                 "delete": "write",
                 "download": "read",
-                "api_readvalues": "read",
-                "api_column_edit": "write",
-                "api_column_add": "write",
-                "api_delete": "write",
-                "api_update": "write",
-                "api_create": "write",
-                "api_get": "read",
-                "api_read": "read",
-                "api": "read",
             }
 
         self.model1permoverride = Model1PermOverride
@@ -1752,15 +1605,6 @@ class MVCTestCase(BaseMVCTestCase):
                 "add": "write",
                 "delete": "write",
                 "download": "read",
-                "api_readvalues": "read",
-                "api_column_edit": "write",
-                "api_column_add": "write",
-                "api_delete": "write",
-                "api_update": "write",
-                "api_create": "write",
-                "api_get": "read",
-                "api_read": "read",
-                "api": "read",
                 "action_one": "write",
             }
 
@@ -1830,15 +1674,6 @@ class MVCTestCase(BaseMVCTestCase):
                 "add": "access",
                 "delete": "access",
                 "download": "access",
-                "api_readvalues": "access",
-                "api_column_edit": "access",
-                "api_column_add": "access",
-                "api_delete": "access",
-                "api_update": "access",
-                "api_create": "access",
-                "api_get": "access",
-                "api_read": "access",
-                "api": "access",
             }
 
         self.appbuilder.add_view_no_menu(Model1PermConverge)
