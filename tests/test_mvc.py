@@ -395,7 +395,6 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
             "Model2ExcludeView.list",
             "Model2ExcludeView.show",
             "Model2ExcludeView.edit",
-            "Model2ExcludeView.download",
             "Model2ExcludeView.action",
             "Model2ExcludeView.delete",
             "Model2ExcludeView.add",
