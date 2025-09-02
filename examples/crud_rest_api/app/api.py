@@ -1,20 +1,27 @@
-from flask_appbuilder import ModelRestApi
+from flask_appbuilder import ModelRestApi, ModelView
 from flask_appbuilder.api import BaseApi, expose
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.filters import BaseFilter
+from marshmallow import fields, Schema
 from sqlalchemy import or_
 
-from . import appbuilder, db
-from .models import Contact, ContactGroup, ModelOMParent
-from marshmallow import fields, Schema
-
-
-db.create_all()
+from .models import Contact, ContactGroup, ModelOMParent, ContactGroupTag
 
 
 class GreetingsResponseSchema(Schema):
     message = fields.String()
 
+class ContactGroupModelView(ModelView):
+    datamodel = SQLAInterface(ContactGroup)
+    list_columns = ["name", "created_by.first_name", "tags"]
+    add_columns = ["name", "tags"]
+    edit_columns = ["name", "tags"]
+
+class ContactGroupTagModelView(ModelView):
+    datamodel = SQLAInterface(ContactGroupTag)
+    add_columns = ["name"]
+    edit_columns = ["name"]
+    list_columns = ["name"]
 
 class GreetingApi(BaseApi):
     resource_name = "greeting"
@@ -41,9 +48,6 @@ class GreetingApi(BaseApi):
         return self.response(200, message="Hello")
 
 
-appbuilder.add_api(GreetingApi)
-
-
 class CustomFilter(BaseFilter):
     name = "Custom Filter"
     arg_name = "opr"
@@ -58,28 +62,20 @@ class ContactModelApi(ModelRestApi):
     resource_name = "contact"
     datamodel = SQLAInterface(Contact)
     allow_browser_login = True
-
+    list_columns = ["id", "name", "contact_group.id"]
     search_filters = {"name": [CustomFilter]}
     openapi_spec_methods = {
         "get_list": {"get": {"description": "Get all contacts, filter and pagination"}}
     }
 
 
-appbuilder.add_api(ContactModelApi)
-
-
 class GroupModelApi(ModelRestApi):
     resource_name = "group"
     datamodel = SQLAInterface(ContactGroup)
     allow_browser_login = True
-
-
-appbuilder.add_api(GroupModelApi)
+    list_columns = ["name", "tags.name", "created_by.first_name", "created_by.username"]
 
 
 class ModelOMParentApi(ModelRestApi):
     allow_browser_login = True
     datamodel = SQLAInterface(ModelOMParent)
-
-
-appbuilder.add_api(ModelOMParentApi)

@@ -18,7 +18,7 @@ OPENID_PROVIDERS = [
 
 SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "app.db")
 # SQLALCHEMY_DATABASE_URI = 'mysql://username:password@mysqlserver.local/quickhowto'
-# SQLALCHEMY_DATABASE_URI = 'postgresql://scott:tiger@localhost:5432/myapp'
+# SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:5432/app'
 # SQLALCHEMY_ECHO = True
 SQLALCHEMY_POOL_RECYCLE = 3
 
@@ -51,7 +51,7 @@ def custom_password_validator(password: str) -> None:
 
 # FAB_PASSWORD_COMPLEXITY_VALIDATOR = custom_password_validator
 
-FAB_PASSWORD_COMPLEXITY_ENABLED = True
+FAB_PASSWORD_COMPLEXITY_ENABLED = False
 
 # ------------------------------
 # GLOBALS FOR GENERAL APP's

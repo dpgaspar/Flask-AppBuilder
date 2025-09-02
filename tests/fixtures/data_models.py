@@ -45,7 +45,7 @@ def model1_data(session: Session, count: int = MODEL1_DATA_SIZE) -> List[Model1]
         yield model1_collection
     finally:
         for model_id in model_ids:
-            model = session.query(Model1).get(model_id)
+            model = session.get(Model1, model_id)
             if model:
                 session.delete(model)
         session.commit()
