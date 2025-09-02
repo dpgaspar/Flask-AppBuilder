@@ -126,7 +126,6 @@ FLAMSG_ERR_SEC_ACCESS_DENIED = lazy_gettext("Access is Denied")
 PERMISSION_PREFIX = "can_"
 """ Prefix to be concatenated to permission names, and inserted in the backend """
 
-AUTH_OID = 0
 AUTH_DB = 1
 AUTH_LDAP = 2
 AUTH_REMOTE_USER = 3

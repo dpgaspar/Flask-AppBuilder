@@ -1,5 +1,0 @@
-flask==2.2.5
-werkzeug==2.3.7
-flask-mongoengine==1.0.0
-mongoengine==0.27.0
-pymongo==4.5.0

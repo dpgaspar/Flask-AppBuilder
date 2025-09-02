@@ -12,14 +12,11 @@ from flask import current_app
 from flask.cli import with_appcontext
 import jinja2
 
-from .const import AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_OID, AUTH_REMOTE_USER
+from .const import AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_REMOTE_USER
 
 
 SQLA_REPO_URL = (
     "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/refs/heads/v5.zip"
-)
-MONGOENGIE_REPO_URL = (
-    "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip"
 )
 ADDON_REPO_URL = (
     "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-AddOn/archive/master.zip"
@@ -75,7 +72,6 @@ def create_admin(
     """
     auth_type = {
         AUTH_DB: "Database Authentications",
-        AUTH_OID: "OpenID Authentication",
         AUTH_LDAP: "LDAP Authentication",
         AUTH_REMOTE_USER: "WebServer REMOTE_USER Authentication",
         AUTH_OAUTH: "OAuth Authentication",
@@ -300,13 +296,6 @@ def list_users() -> None:
     help="Your application name, directory will have this name",
 )
 @click.option(
-    "--engine",
-    prompt="Your engine type, SQLAlchemy or MongoEngine",
-    type=click.Choice(["SQLAlchemy", "MongoEngine"]),
-    default="SQLAlchemy",
-    help="Write your engine type",
-)
-@click.option(
     "--secret-key",
     prompt="Your app SECRET_KEY. It should be a long random string. Minimal size is 20",
     callback=validate_secret_key,
@@ -315,17 +304,13 @@ def list_users() -> None:
     "related needs by extensions or your application."
     "It should be a long random bytes or str",
 )
-def create_app(name: str, engine: str, secret_key: str) -> None:
+def create_app(name: str, secret_key: str) -> None:
     """
     Create a Skeleton application (needs internet connection to github)
     """
     try:
-        if engine.lower() == "sqlalchemy":
-            url = urlopen(SQLA_REPO_URL)
-            dirname = "Flask-AppBuilder-Skeleton-5"
-        elif engine.lower() == "mongoengine":
-            url = urlopen(MONGOENGIE_REPO_URL)
-            dirname = "Flask-AppBuilder-Skeleton-me-master"
+        url = urlopen(SQLA_REPO_URL)
+        dirname = "Flask-AppBuilder-Skeleton-5"
         zipfile = ZipFile(BytesIO(url.read()))
         zipfile.extractall()
         os.rename(dirname, name)
@@ -340,18 +325,9 @@ def create_app(name: str, engine: str, secret_key: str) -> None:
         click.echo(click.style("Downloaded the skeleton app, good coding!", fg="green"))
     except Exception as e:
         click.echo(click.style("Something went wrong {0}".format(e), fg="red"))
-        if engine.lower() == "sqlalchemy":
-            click.echo(
-                click.style(
-                    "Try downloading from {0}".format(SQLA_REPO_URL), fg="green"
-                )
-            )
-        elif engine.lower() == "mongoengine":
-            click.echo(
-                click.style(
-                    "Try downloading from {0}".format(MONGOENGIE_REPO_URL), fg="green"
-                )
-            )
+        click.echo(
+            click.style("Try downloading from {0}".format(SQLA_REPO_URL), fg="green")
+        )
 
 
 @fab.command("create-addon")

@@ -22,13 +22,11 @@ from .api import SecurityApi
 from .registerviews import (
     RegisterUserDBView,
     RegisterUserOAuthView,
-    RegisterUserOIDView,
 )
 from .views import (
     AuthDBView,
     AuthLDAPView,
     AuthOAuthView,
-    AuthOIDView,
     AuthRemoteUserView,
     PermissionModelView,
     PermissionViewModelView,
@@ -41,7 +39,6 @@ from .views import (
     UserInfoEditView,
     UserLDAPModelView,
     UserOAuthModelView,
-    UserOIDModelView,
     UserRemoteUserModelView,
     UserStatsChartView,
     ViewMenuModelView,
@@ -51,7 +48,6 @@ from ..const import (
     AUTH_DB,
     AUTH_LDAP,
     AUTH_OAUTH,
-    AUTH_OID,
     AUTH_REMOTE_USER,
     LOGMSG_ERR_SEC_ADD_REGISTER_USER,
     LOGMSG_ERR_SEC_AUTH_LDAP,
@@ -147,8 +143,6 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Flask-Login LoginManager """
     jwt_manager = None
     """ Flask-JWT-Extended """
-    oid = None
-    """ Flask-OpenID OpenID """
     oauth = None
     """ Flask-OAuth """
     oauth_remotes = None
@@ -178,8 +172,6 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own user db view """
     userldapmodelview = UserLDAPModelView
     """ Override if you want your own user ldap view """
-    useroidmodelview = UserOIDModelView
-    """ Override if you want your own user OID view """
     useroauthmodelview = UserOAuthModelView
     """ Override if you want your own user OAuth view """
     userremoteusermodelview = UserRemoteUserModelView
@@ -190,8 +182,6 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Authentication DB view """
     authldapview = AuthLDAPView
     """ Override if you want your own Authentication LDAP view """
-    authoidview = AuthOIDView
-    """ Override if you want your own Authentication OID view """
     authoauthview = AuthOAuthView
     """ Override if you want your own Authentication OAuth view """
     authremoteuserview = AuthRemoteUserView
@@ -199,8 +189,6 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
-    registeruseroidview = RegisterUserOIDView
-    """ Override if you want your own register user OpenID view """
     registeruseroauthview = RegisterUserOAuthView
     """ Override if you want your own register user OAuth view """
 
@@ -290,15 +278,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Rate limiting
         current_app.config.setdefault("AUTH_RATE_LIMITED", False)
         current_app.config.setdefault("AUTH_RATE_LIMIT", "10 per 20 second")
-
-        if self.auth_type == AUTH_OID:
-            from flask_openid import OpenID
-
-            log.warning(
-                "AUTH_OID is deprecated and will be removed in version 5. "
-                "Migrate to other authentication methods."
-            )
-            self.oid = OpenID(current_app)
 
         if self.auth_type == AUTH_OAUTH:
             from authlib.integrations.flask_client import OAuth
@@ -535,10 +514,6 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_tls_keyfile(self):
         return current_app.config["AUTH_LDAP_TLS_KEYFILE"]
-
-    @property
-    def openid_providers(self):
-        return current_app.config["OPENID_PROVIDERS"]
 
     @property
     def oauth_providers(self):
@@ -810,8 +785,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_user_registration:
             if self.auth_type == AUTH_DB:
                 self.registeruser_view = self.registeruserdbview()
-            elif self.auth_type == AUTH_OID:
-                self.registeruser_view = self.registeruseroidview()
             elif self.auth_type == AUTH_OAUTH:
                 self.registeruser_view = self.registeruseroauthview()
             if self.registeruser_view:
@@ -834,14 +807,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         elif self.auth_type == AUTH_REMOTE_USER:
             self.user_view = self.userremoteusermodelview
             self.auth_view = self.authremoteuserview()
-        else:
-            self.user_view = self.useroidmodelview
-            self.auth_view = self.authoidview()
-            if self.auth_user_registration:
-                pass
-                # self.registeruser_view = self.registeruseroidview()
-                # self.appbuilder.add_view_no_menu(self.registeruser_view)
-
         self.appbuilder.add_view_no_menu(self.auth_view)
 
         # this needs to be done after the view is added, otherwise the blueprint
@@ -1362,21 +1327,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                 log.error(e)
                 return None
 
-    def auth_user_oid(self, email):
-        """
-        OpenID user Authentication
-
-        :param email: user's email to authenticate
-        :type self: User model
-        """
-        user = self.find_user(email=email)
-        if user is None or (not user.is_active):
-            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED, email)
-            return None
-        else:
-            self.update_user_auth_stat(user)
-            return user
-
     def auth_user_remote_user(self, username):
         """
         REMOTE_USER user Authentication
@@ -1559,14 +1509,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         return bool(db_role_ids) and self.exist_permission_on_roles(
             view_name, permission_name, db_role_ids
         )
-
-    def get_oid_identity_url(self, provider_name: str) -> Optional[str]:
-        """
-        Returns the OIDC identity provider URL
-        """
-        for provider in self.openid_providers:
-            if provider.get("name") == provider_name:
-                return provider.get("url")
 
     def get_user_roles(self, user) -> List[object]:
         """

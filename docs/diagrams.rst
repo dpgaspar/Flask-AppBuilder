@@ -27,7 +27,7 @@ BaseViews, IndexViews and the leafs ModelView, chart views and form views.
       BaseModelView -> BaseCRUDView;
       BaseChartView -> GroupByChartView;
       BaseChartView -> DirectByChartView;
-      BaseCRUDView -> RestCRUDView -> ModelView;
+      BaseCRUDView -> ModelView;
       BaseCRUDView -> MasterDetailView;
       BaseCRUDView -> CompactCRUDMixin;
     }
@@ -45,7 +45,6 @@ Next is a summary explanation for each class:
 :GroupByChartView: Subclass it to render Google charts with group by queries.
 :DirectByChartView: Subclass it to render Google charts with queries.
 :BaseCRUDView: Implement base functionality for add, edit, delete, creates all forms.
-:RestCRUDView: Exposes the JSON REST API for CRUD methods and more.
 :ModelView: Subclass it to render your views based on models, with complete CRUD UI functionality.
 :MasterDetailView: Renders a master ModelView and multiple detail ModelViews thar are database related.
 :MultipleView: Renders multiple views on the same page (ex: ModelView and GroupByChartView)
@@ -62,13 +61,11 @@ All classes for data access aim for abstracting the backend.
 
       BaseInterface;
       BaseInterface -> SQLAInterface;
-      BaseInterface -> MongoEngineInterface;
       BaseInterface -> GenericInterface;
     }
 
 :BaseInterface: Interface class, imposes a unique API layer for data access.
 :SQLAInterface: Data access for SQLAlchemy.
-:MongoEngineInterface: Data access for MongoEngine (MongoDB).
 :GenericInterface: Data access for custom data structures.
 
 Class Security Diagram Tree
@@ -86,7 +83,6 @@ manage permissions (insert/remove all permission on the backend).
       BaseManager -> AbstractSecurityManager;
       AbstractSecurityManager -> BaseSecurityManager;
       BaseSecurityManager -> sqla.SecurityManager;
-      BaseSecurityManager -> mongoengine.SecurityManager;
     }
 
 :BaseManager: Base class for all Manager classes, holds AppBuilder class.
@@ -94,7 +90,6 @@ manage permissions (insert/remove all permission on the backend).
 :BaseSecurityManager: Base class for security, registers security views, implements authentication,
  inserts/removes all permission on the database, manages roles/users and views.
 :sqla.SecurityManager: Implements BaseSecurityManager for SQAlchemy.
-:mongoengine.SecurityManager: Implements BaseSecurityManager for MongoEngine.
 
 Security Models ERD
 -------------------

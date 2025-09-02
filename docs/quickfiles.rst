@@ -1,8 +1,7 @@
 Model Views with Files and Images
 =================================
 
-You can implement views with images or files embedded on the model's definition. You can do it using SQLAlchemy or
-MongoDB (MongoEngine). When using SQLAlchemy, files and images are saved on the filesystem, on MongoDB on the db (GridFS).
+You can implement views with images or files embedded on the model's definition using SQLAlchemy. Files and images are saved on the filesystem.
 
 Define your model (models.py)
 -----------------------------
@@ -49,9 +48,6 @@ Each image will have two files with different sizes, images are saved as <uuid>_
 
 Later reference this method like it's a column on your view.
 
-To implement image or file support using GridFS from MongoDB is even easier, take a look at the example:
-
-https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/mongoimages
 
 Define your Views (views.py)
 ----------------------------
