@@ -119,28 +119,6 @@ class SQLAFiltersJSONCoverageTestCase(JSONCoverageFixTestCase):
                 self.assertTrue(found, f"Expected filter type '{expected}' not found")
 
 
-class MockMongoEngineJSONCoverageTestCase(unittest.TestCase):
-    """Test MongoEngine JSON support without requiring MongoEngine installation"""
-
-    def test_mongoengine_is_json_exception_handling(self):
-        """Test MongoEngine interface exception handling using mocks"""
-        # Test the exception handling logic that would occur in MongoEngine interface
-        # Simulates except block in flask_appbuilder/models/mongoengine/interface.py
-
-        # Simulate the is_json method logic without importing MongoEngine
-        def simulate_is_json_with_exception(col_name):
-            try:
-                # This simulates: isinstance(self.obj._fields[col_name], DictField)
-                # where self.obj._fields[col_name] raises an exception
-                raise Exception("Field not found or access error")
-            except Exception:
-                return False
-
-        # Test that exceptions are properly caught and False is returned
-        result = simulate_is_json_with_exception("test_field")
-        self.assertFalse(result)
-
-
 class JSONFormsCoverageTestCase(JSONCoverageFixTestCase):
     """Test forms JSON support for coverage"""
 
