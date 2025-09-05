@@ -13,8 +13,10 @@ from sqlalchemy import Column, Integer, JSON, String
 from wtforms import TextAreaField
 from wtforms.fields.core import UnboundField
 
+from .base import FABTestCase
 
-class JSONColumnTestCase(unittest.TestCase):
+
+class JSONColumnTestCase(FABTestCase):
     """Test JSON column detection and handling"""
 
     def setUp(self):

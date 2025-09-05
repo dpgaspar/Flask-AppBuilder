@@ -13,8 +13,10 @@ from sqlalchemy import Boolean, Column, Integer, JSON, String, Text
 from wtforms import TextAreaField
 from wtforms.fields.core import UnboundField
 
+from .base import FABTestCase
 
-class JSONEdgeCaseTestCase(unittest.TestCase):
+
+class JSONEdgeCaseTestCase(FABTestCase):
     """Test edge cases and error conditions for JSON support"""
 
     def setUp(self):
