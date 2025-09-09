@@ -1,6 +1,14 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.0.0
+-----------------------------------
+
+- chore: remove mongodb and openid support (v2) (#2390) [Daniel Vaz Gaspar]
+- fix: Add missing items types get_list_schema (#2389) [Kamil Gabryjelski]
+- chore: support sqlalchemy 2.x and flask-sqlalchemy 3 (breaking) (#2241) [Daniel Vaz Gaspar]
+- fix: openapi list permissions return type (#2388) [jfo]
+
 Improvements and Bug fixes on 4.8.1
 -----------------------------------
 
