@@ -36,13 +36,6 @@ Enabling and using the default implementation is easy just configure the followi
     MAIL_DEFAULT_SENDER = 'fabtest10@gmail.com'
 
 
-OpenID Authentication
----------------------
-
-Registering a user when using OpenID authentication is very similar to database authentication, but this time
-all the basic necessary information is fetched from the provider and presented to the user to alter it (or not)
-and submit.
-
 LDAP Authentication
 -------------------
 

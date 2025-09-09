@@ -22,7 +22,6 @@ from .fieldwidgets import (
     Select2ManyWidget,
     Select2Widget,
 )
-from .models.mongoengine.fields import MongoFileField, MongoImageField
 from .upload import (
     BS3FileUploadFieldWidget,
     BS3ImageUploadFieldWidget,
@@ -50,8 +49,6 @@ class FieldConverter:
     conversion_table = (
         ("is_image", ImageUploadField, BS3ImageUploadFieldWidget),
         ("is_file", FileUploadField, BS3FileUploadFieldWidget),
-        ("is_gridfs_file", MongoFileField, BS3FileUploadFieldWidget),
-        ("is_gridfs_image", MongoImageField, BS3ImageUploadFieldWidget),
         ("is_text", TextAreaField, BS3TextAreaFieldWidget),
         ("is_binary", TextAreaField, BS3TextAreaFieldWidget),
         ("is_string", StringField, BS3TextFieldWidget),
