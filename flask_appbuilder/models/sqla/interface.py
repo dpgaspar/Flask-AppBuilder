@@ -688,6 +688,12 @@ class SQLAInterface(BaseInterface):
         except KeyError:
             return False
 
+    def is_json(self, col_name: str) -> bool:
+        try:
+            return _is_sqla_type(self.list_columns[col_name].type, sa_types.JSON)
+        except KeyError:
+            return False
+
     def is_relation(self, col_name: str) -> bool:
         try:
             return isinstance(self.list_properties[col_name], RelationshipProperty)
