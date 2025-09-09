@@ -189,7 +189,141 @@ Some imports have been removed or changed:
     from flask_appbuilder.models.sqla import Model
     from flask_appbuilder import ModelView
 
-**7. Dependency Changes**
+**7. Security Manager Session Access Changes**
+
+The method to access the security manager's database session has changed.
+
+**Before (v4.x):**
+::
+
+    # Old session access method
+    session = appbuilder.sm.get_session
+
+**After (v5.x):**
+::
+
+    # New session access method
+    session = appbuilder.sm.session
+
+**Migration Steps:**
+1. Replace ``appbuilder.sm.get_session`` with ``appbuilder.sm.session``
+2. Update any code that accesses the security manager's database session
+
+**8. Application Context Required for Database Queries**
+
+Database queries through the security manager now require an application context.
+
+**Before (v4.x):**
+::
+
+    # Worked outside application context
+    users = appbuilder.sm.get_all_users()
+
+**After (v5.x):**
+::
+
+    # Requires application context
+    with app.app_context():
+        users = appbuilder.sm.get_all_users()
+
+**Migration Steps:**
+1. Wrap database queries in ``with app.app_context():`` blocks
+2. Ensure application context is available when accessing database through security manager
+3. Test all database operations in your application
+
+**9. SQLAInterface Exception Handling Changes**
+
+The ``SQLAInterface`` class no longer automatically swallows exceptions and includes a new ``commit`` parameter.
+
+**Before (v4.x):**
+::
+
+    # Exceptions were automatically handled
+    interface = SQLAInterface(MyModel)
+    interface.add(item)  # Automatic commit
+
+**After (v5.x):**
+::
+
+    # Exceptions are now propagated, commit parameter available
+    interface = SQLAInterface(MyModel)
+    interface.add(item)  # Default: commit=True
+    
+    # Or with manual commit control
+    interface.add(item, commit=False)
+    # Must call commit manually later
+
+**Migration Steps:**
+1. Add proper exception handling around ``SQLAInterface`` operations
+2. Use ``commit=False`` parameter if you need manual transaction control
+3. Test error handling in your data access code
+
+**10. Application Reference Changes**
+
+The ``appbuilder.get_app`` method has been removed.
+
+**Before (v4.x):**
+::
+
+    # Removed method
+    app = appbuilder.get_app
+
+**After (v5.x):**
+::
+
+    # Use Flask's current_app (recommended)
+    from flask import current_app
+    app = current_app
+    
+    # Or use direct reference (deprecated)
+    app = appbuilder.app
+
+**Migration Steps:**
+1. Replace ``appbuilder.get_app`` calls with ``from flask import current_app``
+2. Use ``current_app`` instead of the removed method
+3. Update imports to include ``current_app`` where needed
+
+**11. Model __tablename__ Requirement**
+
+All user models now require an explicit ``__tablename__`` attribute.
+
+**Before (v4.x):**
+::
+
+    # tablename was optional/auto-generated
+    class MyModel(Model):
+        id = Column(Integer, primary_key=True)
+
+**After (v5.x):**
+::
+
+    # tablename is now required
+    class MyModel(Model):
+        __tablename__ = 'my_model'
+        id = Column(Integer, primary_key=True)
+
+**Migration Steps:**
+1. Add ``__tablename__`` attribute to all model classes
+2. Choose appropriate table names following your naming convention
+3. Ensure table names don't conflict with existing database tables
+
+**12. New Configuration Option: FAB_CREATE_DB**
+
+A new configuration option ``FAB_CREATE_DB`` controls automatic database table creation.
+
+**New in v5.x:**
+::
+
+    # In config.py
+    FAB_CREATE_DB = True   # Default: automatically create tables
+    FAB_CREATE_DB = False  # Disable automatic table creation
+
+**Migration Steps:**
+1. Set ``FAB_CREATE_DB = False`` if you manage database schema manually
+2. Keep default ``True`` value for automatic table creation (existing behavior)
+3. Use this setting to control database initialization in different environments
+
+**13. Dependency Changes**
 
 **Removed Dependencies:**
 - ``flask-mongoengine``
