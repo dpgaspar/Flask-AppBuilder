@@ -3198,7 +3198,7 @@ class APITestCase(FABTestCase):
         uri = "swagger/v1"
         rv = client.get(uri)
         self.assertEqual(rv.status_code, 200)
-        
+
         # Check that the openapi_uri in the response doesn't have APPLICATION_ROOT prefix
         # when APPLICATION_ROOT is not configured
         response_data = rv.get_data(as_text=True)
@@ -3211,27 +3211,27 @@ class APITestCase(FABTestCase):
         from flask import Flask
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.utils.legacy import get_sqla_class
-        
+
         # Create a new app with APPLICATION_ROOT configured
         app_with_root = Flask(__name__)
         app_with_root.config.from_object("tests.config_api")
         app_with_root.config["APPLICATION_ROOT"] = "/myapp"
         app_with_root.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
-        
+
         with app_with_root.app_context():
             SQLA = get_sqla_class()
             db = SQLA(app_with_root)
             appbuilder = AppBuilder(app_with_root, db.session)
             self.create_default_users(appbuilder)
-            
+
             client = app_with_root.test_client()
             self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-            
+
             # Test the swagger UI endpoint
             uri = "swagger/v1"
             rv = client.get(uri)
             self.assertEqual(rv.status_code, 200)
-            
+
             # Check that the openapi_uri in the response includes APPLICATION_ROOT prefix
             response_data = rv.get_data(as_text=True)
             self.assertIn("url: '/myapp/api/v1/_openapi'", response_data)
