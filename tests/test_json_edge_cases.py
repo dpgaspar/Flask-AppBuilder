@@ -5,10 +5,11 @@ Edge case tests for JSON column support in Flask-AppBuilder
 import unittest
 
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.forms import FieldConverter
 from flask_appbuilder.models.sqla.filters import set_value_to_type, SQLAFilterConverter
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.utils.legacy import get_sqla_class
 from sqlalchemy import Boolean, Column, Integer, JSON, String, Text
 from wtforms import TextAreaField
 from wtforms.fields.core import UnboundField
@@ -26,6 +27,7 @@ class JSONEdgeCaseTestCase(FABTestCase):
         self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
 
         # Define models with various column types including JSON

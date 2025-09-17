@@ -5,10 +5,11 @@ Tests for JSON column support in Flask-AppBuilder
 import unittest
 
 from flask import Flask
-from flask_appbuilder import AppBuilder, ModelView, SQLA
+from flask_appbuilder import AppBuilder, ModelView
 from flask_appbuilder.forms import FieldConverter, GeneralModelConverter
 from flask_appbuilder.models.sqla.filters import SQLAFilterConverter
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.utils.legacy import get_sqla_class
 from sqlalchemy import Column, Integer, JSON, String
 from wtforms import TextAreaField
 from wtforms.fields.core import UnboundField
@@ -27,6 +28,7 @@ class JSONColumnTestCase(FABTestCase):
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["WTF_CSRF_ENABLED"] = False
 
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
 
         # Define a test model with JSON columns

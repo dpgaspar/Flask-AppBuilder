@@ -6,10 +6,11 @@ import unittest
 
 # Mock imports removed as they're not needed
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.models.base import BaseInterface
 from flask_appbuilder.models.sqla.filters import set_value_to_type, SQLAFilterConverter
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.utils.legacy import get_sqla_class
 from sqlalchemy import Column, Integer, JSON, String
 
 
@@ -24,6 +25,7 @@ class JSONCoverageFixTestCase(unittest.TestCase):
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["WTF_CSRF_ENABLED"] = False
 
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
 
         # Define a test model with JSON columns
