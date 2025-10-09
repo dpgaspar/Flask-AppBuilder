@@ -97,6 +97,7 @@ For a typical Microsoft AD setup (where all users can perform LDAP searches)::
     # search configs
     AUTH_LDAP_SEARCH = "ou=users,dc=example,dc=org"  # the LDAP search base (if non-empty, a search will ALWAYS happen)
     AUTH_LDAP_UID_FIELD = "uid"  # the username field
+    AUTH_PARTIAL_MATCHING = False # if true allows partial match of OU's when searching for role (if not exact match found)
 
 
 For a typical OpenLDAP setup (where LDAP searches require a special account)::
