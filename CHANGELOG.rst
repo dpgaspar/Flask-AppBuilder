@@ -1,6 +1,15 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.0.1rc1
+-----------------------------------
+
+- Import RequestLimit from public namespace (#2398) [Ali-Akber Saifee]
+- feat: support JSON columns (#2383) [Beto Dealmeida]
+- fix(ci): move ldap to bitnami legacy (#2402) [Daniel Vaz Gaspar]
+- chore: apply APPLICATION_ROOT to swagger URL (#2394) [Elizabeth Thompson]
+- docs: improve 5.0.0 version migration (#2392) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 5.0.0
 -----------------------------------
 
