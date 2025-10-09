@@ -585,6 +585,9 @@ class BaseModelView(BaseView):
     search_widget = SearchWidget
     """ Search widget you can override with your own """
 
+    model_converter = GeneralModelConverter
+    """ Use this property to set a custom model converter """
+
     _base_filters = None
     """ Internal base Filter from class Filters will always filter view """
     _filters = None
@@ -634,7 +637,7 @@ class BaseModelView(BaseView):
         self._filters = self.datamodel.get_filters(self.search_columns)
 
     def _init_forms(self):
-        conv = GeneralModelConverter(self.datamodel)
+        conv = self.model_converter(self.datamodel)
         if not self.search_form:
             self.search_form = conv.create_form(
                 self.label_columns,
@@ -902,7 +905,7 @@ class BaseCRUDView(BaseModelView):
         Init forms for Add and Edit
         """
         super(BaseCRUDView, self)._init_forms()
-        conv = GeneralModelConverter(self.datamodel)
+        conv = self.model_converter(self.datamodel)
         if not self.add_form:
             self.add_form = conv.create_form(
                 self.label_columns,
