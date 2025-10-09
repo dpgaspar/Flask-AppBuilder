@@ -621,6 +621,10 @@ msgstr "Registreer als u nog geen gebruiker bent"
 msgid "Register"
 msgstr "Registreren"
 
+#: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:30
+msgid "Sign In with "
+msgstr "Aanmelden met "
+
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:44
 msgid "Please choose one of the following providers:"
 msgstr "Kies een van de volgende providers:"
