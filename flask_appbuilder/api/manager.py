@@ -87,11 +87,13 @@ class SwaggerView(BaseView):
     @expose("/<version>")
     @has_access
     def show(self, version):
+        # Apply APPLICATION_ROOT config to the swagger URL
+        openapi_uri = request.script_root + self.openapi_uri.format(version)
         return self.render_template(
             current_app.config.get(
                 "FAB_API_SWAGGER_TEMPLATE", "appbuilder/swagger/swagger.html"
             ),
-            openapi_uri=self.openapi_uri.format(version),
+            openapi_uri=openapi_uri,
         )
 
 
