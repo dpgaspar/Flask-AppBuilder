@@ -14,7 +14,7 @@ services:
       - 5432:5432
   ldap:
     container_name: fab-ldap
-    image: bitnami/openldap:2.6.4
+    image: bitnamilegacy/openldap:2.6
     environment:
       LDAP_URI: ldap://openldap:1389
       LDAP_BASE: dc=example,dc=org

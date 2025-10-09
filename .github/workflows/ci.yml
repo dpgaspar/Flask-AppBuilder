@@ -71,7 +71,7 @@ jobs:
             -e LDAP_ADMIN_PASSWORD=admin_password \
             -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
             -p 1389:1389 \
-            bitnami/openldap:2.6.4
+            bitnamilegacy/openldap:2.6
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -121,7 +121,7 @@ jobs:
             -e LDAP_ADMIN_PASSWORD=admin_password \
             -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
             -p 1389:1389 \
-            bitnami/openldap:2.6.4
+            bitnamilegacy/openldap:2.6
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -172,7 +172,7 @@ jobs:
             -e LDAP_ADMIN_PASSWORD=admin_password \
             -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
             -p 1389:1389 \
-            bitnami/openldap:2.6.4
+            bitnamilegacy/openldap:2.6
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -221,7 +221,7 @@ jobs:
             -e LDAP_ADMIN_PASSWORD=admin_password \
             -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
             -p 1389:1389 \
-            bitnami/openldap:2.6.4
+            bitnamilegacy/openldap:2.6
       - name: Install dependencies
         run: |
           sudo apt-get update
