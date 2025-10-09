@@ -2,7 +2,7 @@ import dataclasses
 from typing import Callable, Optional, Tuple, Union
 
 from flask import Response
-from flask_limiter.wrappers import RequestLimit
+from flask_limiter import RequestLimit
 
 
 @dataclasses.dataclass
