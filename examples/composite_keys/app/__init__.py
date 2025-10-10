@@ -1,15 +1,40 @@
-import logging
-
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
+from .views import ItemModelView, RackModelView, InventoryModelView, DatacenterModelView
+from .extensions import appbuilder, db
 
 
-logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
-logging.getLogger().setLevel(logging.DEBUG)
+def create_app() -> Flask:
+    app = Flask(__name__)
+    app.config.from_object("config")
+    with app.app_context():
+        db.init_app(app)
+        appbuilder.init_app(app, db.session)
+        appbuilder.add_view(
+            DatacenterModelView,
+            "List Datacenters",
+            icon="fa-folder-open-o",
+            category="Datacenters",
+            category_icon="fa-envelope",
+        )
+        appbuilder.add_view(
+            RackModelView, "List Racks", icon="fa-envelope", category="Datacenters"
+        )
+        appbuilder.add_view(
+            ItemModelView,
+            "List Items",
+            icon="fa-folder-open-o",
+            category="Datacenters",
+            category_icon="fa-envelope",
+        )
+        appbuilder.add_view(
+            InventoryModelView,
+            "List Inventory",
+            icon="fa-envelope",
+            category="Datacenters",
+        )
 
-app = Flask(__name__)
-app.config.from_object("config")
-db = SQLA(app)
-appbuilder = AppBuilder(app, db.session)
+    return app
 
-from . import models, views  # noqa
+
+# For backward compatibility
+app = create_app()

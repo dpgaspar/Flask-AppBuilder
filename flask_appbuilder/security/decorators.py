@@ -20,7 +20,7 @@ from flask_appbuilder.const import (
 )
 from flask_appbuilder.utils.limit import Limit
 from flask_jwt_extended import verify_jwt_in_request
-from flask_limiter.wrappers import RequestLimit
+from flask_limiter import RequestLimit
 from flask_login import current_user
 from typing_extensions import ParamSpec
 
