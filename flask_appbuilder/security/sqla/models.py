@@ -163,7 +163,7 @@ class User(Model):
     )
     first_name: Mapped[str] = mapped_column(String(64), nullable=False)
     last_name: Mapped[str] = mapped_column(String(64), nullable=False)
-    username: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    username: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
     password: Mapped[Optional[str]] = mapped_column(String(256))
     active: Mapped[Optional[bool]] = mapped_column(Boolean, default=True)
     email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
@@ -301,7 +301,7 @@ class RegisterUser(Model):
     )
     first_name: Mapped[str] = mapped_column(String(64), nullable=False)
     last_name: Mapped[str] = mapped_column(String(64), nullable=False)
-    username: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    username: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
     password: Mapped[Optional[str]] = mapped_column(String(256))
     email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
     registration_date: Mapped[Optional[datetime.datetime]] = mapped_column(
