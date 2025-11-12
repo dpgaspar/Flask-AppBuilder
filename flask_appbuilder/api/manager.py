@@ -87,18 +87,20 @@ class SwaggerView(BaseView):
     @expose("/<version>")
     @has_access
     def show(self, version):
+        # Apply APPLICATION_ROOT config to the swagger URL
+        openapi_uri = request.script_root + self.openapi_uri.format(version)
         return self.render_template(
-            self.appbuilder.app.config.get(
+            current_app.config.get(
                 "FAB_API_SWAGGER_TEMPLATE", "appbuilder/swagger/swagger.html"
             ),
-            openapi_uri=self.openapi_uri.format(version),
+            openapi_uri=openapi_uri,
         )
 
 
 class OpenApiManager(BaseManager):
     def register_views(self):
-        if not self.appbuilder.app.config.get("FAB_ADD_OPENAPI_VIEWS", True):
+        if not current_app.config.get("FAB_ADD_OPENAPI_VIEWS", True):
             return
-        if self.appbuilder.get_app.config.get("FAB_API_SWAGGER_UI", False):
+        if current_app.config.get("FAB_API_SWAGGER_UI", False):
             self.appbuilder.add_api(OpenApi)
             self.appbuilder.add_view_no_menu(SwaggerView)

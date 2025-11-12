@@ -14,7 +14,7 @@ map_args_filter = {}
 """ private map for arg_name and child Filter classes """
 
 
-class BaseFilter(object):
+class BaseFilter:
     """
     Base class for all data filters.
     Sub class to implement your own custom filters
@@ -117,7 +117,7 @@ class BaseFilterConverter:
         log.warning("Filter type not supported for column: %s", col_name)
 
 
-class Filters(object):
+class Filters:
     filters: List[BaseFilter] = []
     """ List of instantiated BaseFilter classes """
     values: List[Any] = []
@@ -226,7 +226,7 @@ class Filters(object):
                 return True
         return False
 
-    def add_filter(self, column_name, filter_class, value):
+    def add_filter(self, column_name: str, filter_class: BaseFilter, value: str):
         self._add_filter(filter_class(column_name, self.datamodel), value)
         return self
 
@@ -295,7 +295,7 @@ class Filters(object):
 
     def apply_all(self, query):
         for flt, values in zip(self.filters, self.values):
-            if isinstance(values, list):
+            if isinstance(values, list) and flt.arg_name not in {"in", "not_in"}:
                 for value in values:
                     query = flt.apply(query, value)
             else:

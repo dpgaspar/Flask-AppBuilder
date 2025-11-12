@@ -1,6 +1,51 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.0.2
+-----------------------------------
+
+- fix: fix pkg name to comply with pypi (#2413) [Daniel Vaz Gaspar]
+- fix: setup pkg filename (#2412) [Daniel Vaz Gaspar]
+- fix: check user is active with is_active (#2410) [Daniel Vaz Gaspar]
+- chore: French translations update messages.po (#2371) [xavier-GitHub76]
+- chore(username): Expand username length (#2409) [Antonio Rivero]
+
+Improvements and Bug fixes on 5.0.1
+-----------------------------------
+
+- Import RequestLimit from public namespace (#2398) [Ali-Akber Saifee]
+- feat: support JSON columns (#2383) [Beto Dealmeida]
+- fix(ci): move ldap to bitnami legacy (#2402) [Daniel Vaz Gaspar]
+- chore: apply APPLICATION_ROOT to swagger URL (#2394) [Elizabeth Thompson]
+- docs: improve 5.0.0 version migration (#2392) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 5.0.0
+-----------------------------------
+
+- chore: remove mongodb and openid support (v2) (#2390) [Daniel Vaz Gaspar]
+- fix: Add missing items types get_list_schema (#2389) [Kamil Gabryjelski]
+- chore: support sqlalchemy 2.x and flask-sqlalchemy 3 (breaking) (#2241) [Daniel Vaz Gaspar]
+- fix: openapi list permissions return type (#2388) [jfo]
+
+Improvements and Bug fixes on 4.8.1
+-----------------------------------
+
+- fix: don't register reset my password when not on AUTH_DB (#2384) [Daniel Vaz Gaspar]
+- fix: Correct is_pk_composite method to return False instead of raising an error. False is not a base exception (#2378) [Kyle Lagerquist]
+
+Improvements and Bug fixes on 4.8.0
+-----------------------------------
+
+- feat: Support the select_columns arg on the Get Item method (#2372) [Vitor Avila]
+
+Improvements and Bug fixes on 4.7.0
+-----------------------------------
+
+- fix: group api, OAS and payload (#2358) [Daniel Vaz Gaspar]
+- fix: order by using mssql database (#2356) [ThomasP0815]
+- feat(filters): add "FilterIn" and "FilterNotIn" operators with unit tests (#2354) [Enzo Martellucci]
+- feat(GroupAPI): Add GroupAPI to FAB (#2339) [Enzo Martellucci]
+
 Improvements and Bug fixes on 4.6.4
 -----------------------------------
 

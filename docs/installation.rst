@@ -69,7 +69,6 @@ Using pip
 
         (venv)$ flask fab create-app
         Your new app name: first_app
-        Your engine type, SQLAlchemy or MongoEngine [SQLAlchemy]:
         Downloaded the skeleton app, good coding!
         (venv)$ cd first_app
         (venv)$ export FLASK_APP=app
@@ -81,8 +80,6 @@ Using pip
         Password:
         Repeat for confirmation:
 
-    .. note:: There are two type of skeletons available you can choose from SQLAlchemy default or MongoEngine for
-            MongoDB. **To use the MongoEngine skeleton you need to install flask-mongoengine extension.**
 
     The framework will immediately insert all possible permissions on the database, these will be associated with
     the *Admin* role that belongs to the *admin* user you just created. Your ready to run:
@@ -96,7 +93,6 @@ Using pip
     You now have a running development server on http://localhost:8080.
 
     The skeleton application is not actually needed for you to run AppBuilder, but it's a good way to start.
-    This first application is SQLAlchemy based.
 
 Initialization
 --------------
@@ -119,9 +115,14 @@ Flask App Builder depends on
     - flask : The web framework, this is what we're extending.
     - flask-sqlalchemy : DB access (see SQLAlchemy).
     - flask-login : Login, session on flask.
-    - flask-openid : Open ID authentication.
     - flask-wtform : Web forms.
     - flask-Babel : For internationalization.
+
+.. note::
+   **Removed Dependencies (Flask-AppBuilder 5.0+)**
+   
+   - **MongoDB/MongoEngine**: MongoDB backend support has been removed. The framework now exclusively uses SQLAlchemy.
+   - **OpenID 2.0**: OpenID 2.0 authentication support has been removed. Use OAuth providers with OpenID Connect for modern authentication.
 
 If you plan to use Image processing or upload, you will need to install Pillow::
 
