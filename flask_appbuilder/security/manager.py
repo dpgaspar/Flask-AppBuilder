@@ -1588,9 +1588,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         Check if current user or public has access to view or menu
         """
-        if current_user.is_authenticated and current_user.active:
+        if current_user.is_authenticated and current_user.is_active:
             return self._has_view_access(g.user, permission_name, view_name)
-        elif current_user_jwt and current_user_jwt.active:
+        elif current_user_jwt and current_user_jwt.is_active:
             return self._has_view_access(current_user_jwt, permission_name, view_name)
         else:
             return self.is_item_public(permission_name, view_name)
