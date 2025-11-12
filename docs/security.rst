@@ -11,21 +11,27 @@ Supported Authentication Types
 ------------------------------
 
 :Database: username and password style that is queried from the database to match. Passwords are kept hashed on the database.
-:Open ID: Uses the user's email field to authenticate on Gmail, Yahoo etc...
 :LDAP: Authentication against an LDAP server, like Microsoft Active Directory.
 :REMOTE_USER: Reads the *REMOTE_USER* web server environ var, and verifies if it's authorized with the framework users table.
        It's the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
        is configured to use kerberos, no need for the user to login with username and password on F.A.B.
 :OAUTH: Authentication using OAUTH (v1 or v2). You need to install authlib.
 
+.. note::
+   **Deprecated Authentication Types (Removed in Flask-AppBuilder 5.0+)**
+   
+   - **OpenID Authentication (AUTH_OID)**: Support for OpenID 2.0 authentication has been removed. 
+     For modern OpenID Connect authentication, use OAuth providers that support OpenID Connect protocol.
+   - **MongoDB/MongoEngine Support**: MongoDB backend support has been removed. Please migrate to SQLAlchemy-supported databases.
+
 Configure the authentication type on config.py, take a look at :doc:`config`
 
-The session is preserved and encrypted using Flask-Login, OpenID requires Flask-OpenID.
+The session is preserved and encrypted using Flask-Login.
 
 Authentication Methods
 ----------------------
 
-You can choose one from 5 authentication methods. Configure the method to be used
+You can choose one from 4 authentication methods. Configure the method to be used
 on the **config.py** (when using the create-app, or following the proposed app structure). First the
 configuration imports the constants for the authentication methods::
 
@@ -33,7 +39,6 @@ configuration imports the constants for the authentication methods::
         AUTH_DB,
         AUTH_LDAP,
         AUTH_OAUTH,
-        AUTH_OID,
         AUTH_REMOTE_USER
     )
 
@@ -64,24 +69,6 @@ username and hashed password field kept on your database.
 Administrators can create users with passwords, and users can change their passwords. This is all done using the UI.
 (You can override and extend the default UI as we'll see on *Your Custom Security*)
 
-Authentication: OpenID
-----------------------
-
-This authentication method uses `Flask-OpenID <https://github.com/mitsuhiko/flask-openid>`_. All configuration is done
-on **config.py** using OPENID_PROVIDERS key, just add or remove from the list the providers you want to enable::
-
-    AUTH_TYPE = AUTH_OID
-    OPENID_PROVIDERS = [
-        { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
-        { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
-        { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
-        { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }
-    ]
-
-Each list entry is a dict with a readable OpenID name and it's url, if the url needs an username just add it using <username>.
-The login template for this method will provide a text box for the user to fillout his/her username.
-
-F.A.B. will ask for the 'email' from OpenID, and if this email belongs to some user on your application he/she will login successfully.
 
 Authentication: LDAP
 --------------------
@@ -860,7 +847,6 @@ This is a must have if your using the factory app pattern, on the config declare
 F.A.B. uses a different user view for each authentication method
 
 :UserDBModelView: For database auth method
-:UserOIDModelView: For Open ID auth method
 :UserLDAPModelView: For LDAP auth method
 
 You can extend or create from scratch your own, and then tell F.A.B. to use them instead, by overriding their
@@ -894,7 +880,6 @@ If you're using:
 :AUTH_DB: Extend UserDBModelView
 :AUTH_LDAP: Extend UserLDAPModelView
 :AUTH_REMOTE_USER: Extend UserRemoteUserModelView
-:AUTH_OID: Extend UserOIDModelView
 :AUTH_OAUTH: Extend UserOAuthModelView
 
 So using AUTH_DB::
@@ -970,7 +955,6 @@ Note that this is for AUTH_DB, so if you're using:
 :AUTH_DB: Override userdbmodelview
 :AUTH_LDAP: Override userldapmodelview
 :AUTH_REMOTE_USER: Override userremoteusermodelview
-:AUTH_OID: Override useroidmodelview
 
 Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
 **AppBuilder** (on __init__.py)::

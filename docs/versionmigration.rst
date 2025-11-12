@@ -1,6 +1,363 @@
 Version Migration
 =================
 
+Migrating to 5.0.0
+------------------
+
+Flask-AppBuilder 5.0.0 introduces major breaking changes to modernize the framework and improve maintainability. This version removes deprecated features and updates dependencies for better compatibility with modern Flask ecosystem.
+
+**Major Changes Summary:**
+
+1. **Removed MongoDB/MongoEngine Support** - Complete removal of deprecated MongoDB backend
+2. **Removed OpenID 2.0 Support** - Deprecated authentication method removed (OAuth 2.0 preserved)
+3. **Removed RestCRUDView** - Deprecated view class removed to simplify inheritance
+4. **Updated SQLAlchemy Support** - Added SQLAlchemy 2.x and Flask-SQLAlchemy 3.x compatibility
+5. **CLI Command Changes** - Updated command-line interface
+
+Breaking Changes and Migration Guide
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**1. MongoDB/MongoEngine Removal**
+
+MongoDB support has been completely removed. If you are using MongoDB:
+
+**Before (v4.x):**
+::
+
+    from flask_appbuilder.security.mongoengine import MongoEngineSecurityManager
+    from flask_appbuilder.models.mongoengine import ModelItem
+    
+    # In config.py
+    SQLALCHEMY_DATABASE_URI = 'mongodb://localhost:27017/mydb'
+    
+    # Security manager
+    appbuilder = AppBuilder(app, db.session, security_manager_class=MongoEngineSecurityManager)
+
+**After (v5.x):**
+::
+
+    from flask_appbuilder.security.sqla import SecurityManager
+    from flask_appbuilder.models.sqla import Model
+    
+    # In config.py  
+    SQLALCHEMY_DATABASE_URI = 'postgresql://user:pass@localhost/mydb'  # Use SQL database
+    
+    # Security manager (default)
+    appbuilder = AppBuilder(app, db.session)
+
+**Migration Steps:**
+1. Export your MongoDB data to SQL format
+2. Set up PostgreSQL, MySQL, or SQLite database
+3. Convert MongoEngine models to SQLAlchemy models
+4. Update imports to use SQLAlchemy interfaces
+5. Remove MongoDB dependencies from requirements.txt
+
+**2. OpenID 2.0 Authentication Removal**
+
+OpenID 2.0 support has been removed. Migrate to OAuth 2.0, LDAP, or database authentication.
+
+**Before (v4.x):**
+::
+
+    # In config.py
+    AUTH_TYPE = AUTH_OID
+    OPENID_PROVIDERS = [
+        {'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id'},
+        {'name': 'Yahoo', 'url': 'https://me.yahoo.com'},
+    ]
+
+**After (v5.x):**
+::
+
+    # In config.py - Use OAuth 2.0 instead
+    AUTH_TYPE = AUTH_OAUTH
+    OAUTH_PROVIDERS = [
+        {
+            'name': 'google',
+            'token_key': 'access_token',
+            'icon': 'fa-google',
+            'remote_app': {
+                'client_id': 'GOOGLE_CLIENT_ID',
+                'client_secret': 'GOOGLE_CLIENT_SECRET',
+                'api_base_url': 'https://www.googleapis.com/oauth2/v2/',
+                'client_kwargs': {'scope': 'email profile'},
+                'server_metadata_url': 'https://accounts.google.com/.well-known/openid_configuration'
+            }
+        }
+    ]
+
+**Migration Steps:**
+1. Remove ``AUTH_OID`` and ``OPENID_PROVIDERS`` from config
+2. Set up OAuth 2.0 providers with proper client credentials
+3. Update authentication type to ``AUTH_OAUTH``, ``AUTH_LDAP``, or ``AUTH_DB``
+4. Test authentication flow with new providers
+
+**3. RestCRUDView Removal**
+
+The deprecated ``RestCRUDView`` class has been removed to simplify inheritance hierarchy.
+
+**Before (v4.x):**
+::
+
+    from flask_appbuilder import RestCRUDView
+    
+    class MyView(RestCRUDView):
+        datamodel = SQLAInterface(MyModel, db.session)
+
+**After (v5.x):**
+::
+
+    from flask_appbuilder import ModelView
+    
+    class MyView(ModelView):
+        datamodel = SQLAInterface(MyModel, db.session)
+
+**Migration Steps:**
+1. Replace ``RestCRUDView`` imports with ``ModelView``
+2. Update class inheritance from ``RestCRUDView`` to ``ModelView``
+3. Remove any usage of deprecated REST API methods
+
+**4. SQLAlchemy 2.x and Flask-SQLAlchemy 3.x Compatibility**
+
+Flask-AppBuilder now supports both SQLAlchemy 1.4+ and 2.x with Flask-SQLAlchemy 2.x and 3.x.
+
+**Key Changes:**
+
+- **Query Syntax Updates**: Some query patterns may need updates for SQLAlchemy 2.x
+- **Session Handling**: Improved session management compatibility
+- **Relationship Loading**: Updated lazy loading syntax support
+
+**Before (SQLAlchemy 1.x patterns):**
+::
+
+    # Old query patterns that may need updates
+    users = session.query(User).filter_by(active=True).all()
+    result = session.execute("SELECT * FROM users WHERE active = 1")
+
+**After (SQLAlchemy 2.x compatible):**
+::
+
+    # Modern patterns (works with both 1.4+ and 2.x)
+    from sqlalchemy import select, text
+    
+    users = session.scalars(select(User).where(User.active == True)).all()
+    result = session.execute(text("SELECT * FROM users WHERE active = :active"), {"active": 1})
+
+**Migration Steps:**
+1. Update SQLAlchemy to 1.4+ or 2.x in your requirements
+2. Update Flask-SQLAlchemy to 2.x or 3.x
+3. Test your application thoroughly
+4. Update any custom query patterns if needed
+
+**5. CLI Command Changes**
+
+The ``fab create-app`` command has been simplified.
+
+**Before (v4.x):**
+::
+
+    fab create-app myapp --engine SQLAlchemy
+
+**After (v5.x):**
+::
+
+    fab create-app myapp
+
+**Migration Steps:**
+1. Remove ``--engine`` parameter from scripts using ``fab create-app``
+2. SQLAlchemy is now the only supported database engine
+
+**6. Import Path Changes**
+
+Some imports have been removed or changed:
+
+**Removed Imports:**
+::
+
+    # These imports will fail in v5.x
+    from flask_appbuilder.const import AUTH_OID  # Removed
+    from flask_appbuilder.security.mongoengine import MongoEngineSecurityManager  # Removed
+    from flask_appbuilder.models.mongoengine import ModelItem  # Removed
+    from flask_appbuilder import RestCRUDView  # Removed
+
+**Updated Imports:**
+::
+
+    # Use these instead
+    from flask_appbuilder.const import AUTH_OAUTH, AUTH_DB, AUTH_LDAP
+    from flask_appbuilder.security.sqla import SecurityManager
+    from flask_appbuilder.models.sqla import Model
+    from flask_appbuilder import ModelView
+
+**7. Security Manager Session Access Changes**
+
+The method to access the security manager's database session has changed.
+
+**Before (v4.x):**
+::
+
+    # Old session access method
+    session = appbuilder.sm.get_session
+
+**After (v5.x):**
+::
+
+    # New session access method
+    session = appbuilder.sm.session
+
+**Migration Steps:**
+1. Replace ``appbuilder.sm.get_session`` with ``appbuilder.sm.session``
+2. Update any code that accesses the security manager's database session
+
+**8. Application Context Required for Database Queries**
+
+Database queries through the security manager now require an application context.
+
+**Before (v4.x):**
+::
+
+    # Worked outside application context
+    users = appbuilder.sm.get_all_users()
+
+**After (v5.x):**
+::
+
+    # Requires application context
+    with app.app_context():
+        users = appbuilder.sm.get_all_users()
+
+**Migration Steps:**
+1. Wrap database queries in ``with app.app_context():`` blocks
+2. Ensure application context is available when accessing database through security manager
+3. Test all database operations in your application
+
+**9. SQLAInterface Exception Handling Changes**
+
+The ``SQLAInterface`` class no longer automatically swallows exceptions and includes a new ``commit`` parameter.
+
+**Before (v4.x):**
+::
+
+    # Exceptions were automatically handled
+    interface = SQLAInterface(MyModel)
+    interface.add(item)  # Automatic commit
+
+**After (v5.x):**
+::
+
+    # Exceptions are now propagated, commit parameter available
+    interface = SQLAInterface(MyModel)
+    interface.add(item)  # Default: commit=True
+    
+    # Or with manual commit control
+    interface.add(item, commit=False)
+    # Must call commit manually later
+
+**Migration Steps:**
+1. Add proper exception handling around ``SQLAInterface`` operations
+2. Use ``commit=False`` parameter if you need manual transaction control
+3. Test error handling in your data access code
+
+**10. Application Reference Changes**
+
+The ``appbuilder.get_app`` method has been removed.
+
+**Before (v4.x):**
+::
+
+    # Removed method
+    app = appbuilder.get_app
+
+**After (v5.x):**
+::
+
+    # Use Flask's current_app (recommended)
+    from flask import current_app
+    app = current_app
+    
+    # Or use direct reference (deprecated)
+    app = appbuilder.app
+
+**Migration Steps:**
+1. Replace ``appbuilder.get_app`` calls with ``from flask import current_app``
+2. Use ``current_app`` instead of the removed method
+3. Update imports to include ``current_app`` where needed
+
+**11. Model __tablename__ Requirement**
+
+All user models now require an explicit ``__tablename__`` attribute.
+
+**Before (v4.x):**
+::
+
+    # tablename was optional/auto-generated
+    class MyModel(Model):
+        id = Column(Integer, primary_key=True)
+
+**After (v5.x):**
+::
+
+    # tablename is now required
+    class MyModel(Model):
+        __tablename__ = 'my_model'
+        id = Column(Integer, primary_key=True)
+
+**Migration Steps:**
+1. Add ``__tablename__`` attribute to all model classes
+2. Choose appropriate table names following your naming convention
+3. Ensure table names don't conflict with existing database tables
+
+**12. New Configuration Option: FAB_CREATE_DB**
+
+A new configuration option ``FAB_CREATE_DB`` controls automatic database table creation.
+
+**New in v5.x:**
+::
+
+    # In config.py
+    FAB_CREATE_DB = True   # Default: automatically create tables
+    FAB_CREATE_DB = False  # Disable automatic table creation
+
+**Migration Steps:**
+1. Set ``FAB_CREATE_DB = False`` if you manage database schema manually
+2. Keep default ``True`` value for automatic table creation (existing behavior)
+3. Use this setting to control database initialization in different environments
+
+**13. Dependency Changes**
+
+**Removed Dependencies:**
+- ``flask-mongoengine``
+- ``mongoengine``
+- ``pymongo``
+- ``flask-openid``
+
+**Updated Dependencies:**
+- SQLAlchemy 1.4+ or 2.x support
+- Flask-SQLAlchemy 2.x or 3.x support
+
+**Migration Steps:**
+1. Remove MongoDB and OpenID dependencies from requirements.txt
+2. Update SQLAlchemy and Flask-SQLAlchemy versions
+3. Install updated dependencies: ``pip install -r requirements.txt``
+
+**Testing Your Migration**
+
+After completing the migration:
+
+1. **Database Setup**: Ensure your SQL database is properly configured
+2. **Authentication Test**: Verify login works with your chosen auth method
+3. **View Testing**: Test all your ModelView-based views
+4. **API Testing**: If using REST APIs, verify they work correctly
+5. **Run Tests**: Execute your test suite to catch any remaining issues
+
+**Getting Help**
+
+If you encounter issues during migration:
+
+1. Check the `Flask-AppBuilder GitHub issues <https://github.com/dpgaspar/Flask-AppBuilder/issues>`_
+2. Review the `Flask-AppBuilder documentation <https://flask-appbuilder.readthedocs.io/>`_
+3. For SQLAlchemy 2.x specific issues, consult the `SQLAlchemy migration guide <https://docs.sqlalchemy.org/en/20/changelog/migration_20.html>`_
+
 Migrating to 1.9.0
 ------------------
 

@@ -16,6 +16,10 @@ class FABException(Exception):
         )
 
 
+class DatabaseException(FABException):
+    """Database related exception"""
+
+
 class InvalidColumnFilterFABException(FABException):
     """Invalid column for filter"""
 
@@ -30,6 +34,12 @@ class InvalidOperationFilterFABException(FABException):
 
 class InvalidOrderByColumnFABException(FABException):
     """Invalid order by column"""
+
+    ...
+
+
+class InvalidColumnArgsFABException(FABException):
+    """Invalid combination of column arguments"""
 
     ...
 

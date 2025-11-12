@@ -104,12 +104,6 @@ LOGMSG_ERR_FAB_ADD_PERMISSION_MENU = "Add Permission on Menu Error: %s"
 LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW = "Add Permission on View Error: %s"
 """ Error when adding a permission to a menu, format with err """
 
-LOGMSG_ERR_DBI_ADD_GENERIC = "Add record error: %s"
-""" Database add generic error, format with err message """
-LOGMSG_ERR_DBI_EDIT_GENERIC = "Edit record error: %s"
-""" Database edit generic error, format with err message """
-LOGMSG_ERR_DBI_DEL_GENERIC = "Delete record error: %s"
-""" Database delete generic error, format with err message """
 LOGMSG_WAR_DBI_AVG_ZERODIV = "Zero division on aggregate_avg"
 
 LOGMSG_WAR_FAB_VIEW_EXISTS = "View already exists %s ignoring"
@@ -132,7 +126,6 @@ FLAMSG_ERR_SEC_ACCESS_DENIED = lazy_gettext("Access is Denied")
 PERMISSION_PREFIX = "can_"
 """ Prefix to be concatenated to permission names, and inserted in the backend """
 
-AUTH_OID = 0
 AUTH_DB = 1
 AUTH_LDAP = 2
 AUTH_REMOTE_USER = 3

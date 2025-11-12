@@ -62,8 +62,6 @@ On this next example we are filtering a view by the logged in user and with colu
     from flask_appbuilder import ModelView
     from flask_appbuilder.models.sqla.interface import SQLAInterface
     from flask_appbuilder.models.sqla.filters import FilterEqualFunction, FilterStartsWith
-    # If you're using Mongo Engine you should import filters like this, everything else is exactly the same
-    # from flask_appbuilder.models.mongoengine.filters import FilterStartsWith, FilterEqualFunction
 
     from .models import MyTable
 
