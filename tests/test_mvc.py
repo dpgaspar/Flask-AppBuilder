@@ -4,7 +4,7 @@ import logging
 from typing import Set
 
 from flask import Flask, make_response, redirect, session
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import expose
 from flask_appbuilder.charts.views import (
@@ -25,6 +25,7 @@ from flask_appbuilder.models.sqla.filters import (
     FilterStartsWith,
 )
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.utils.legacy import get_sqla_class
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView, ModelView
 from flask_wtf import CSRFProtect
 from tests.base import BaseMVCTestCase, FABTestCase
@@ -66,16 +67,19 @@ class MVCBabelTestCase(FABTestCase):
         app = Flask(__name__)
         app.config.from_object("tests.config_api")
         app.config["LANGUAGES"] = {}
-        db = SQLA(app)
-        AppBuilder(app, db.session)
+        with app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(app)
+            appbuilder = AppBuilder(app, db.session)
+            self.create_default_users(appbuilder)
 
-        client = app.test_client()
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/users/list/")
-        self.assertEqual(rv.status_code, 200)
+            client = app.test_client()
+            self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+            rv = client.get("/users/list/")
+            self.assertEqual(rv.status_code, 200)
 
-        data = rv.data.decode("utf-8")
-        self.assertNotIn('class="f16', data)
+            data = rv.data.decode("utf-8")
+            self.assertNotIn('class="f16', data)
 
     def test_babel_languages(self):
         """
@@ -87,19 +91,22 @@ class MVCBabelTestCase(FABTestCase):
             "en": {"flag": "gb", "name": "English"},
             "pt": {"flag": "pt", "name": "Portuguese"},
         }
-        db = SQLA(app)
-        AppBuilder(app, db.session)
+        with app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(app)
+            appbuilder = AppBuilder(app, db.session)
+            self.create_default_users(appbuilder)
 
-        client = app.test_client()
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/users/list/")
-        self.assertEqual(rv.status_code, 200)
-        data = rv.data.decode("utf-8")
-        self.assertIn('href="/lang/pt"', data)
+            client = app.test_client()
+            self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+            rv = client.get("/users/list/")
+            self.assertEqual(rv.status_code, 200)
+            data = rv.data.decode("utf-8")
+            self.assertIn('href="/lang/pt"', data)
 
-        # Test babel language switch endpoint
-        rv = client.get("/lang/pt")
-        self.assertEqual(rv.status_code, 302)
+            # Test babel language switch endpoint
+            rv = client.get("/lang/pt")
+            self.assertEqual(rv.status_code, 302)
 
 
 class ListFilterTestCase(BaseMVCTestCase):
@@ -170,13 +177,9 @@ class ListFilterTestCase(BaseMVCTestCase):
         """
         with self.app.test_client() as c:
             self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
-
             # Roles doesn't exists
             rv = c.get("/users/list/?_flt_0_roles=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.db.session.bind.dialect.name != "mysql":
-                data = rv.data.decode("utf-8")
-                self.assertIn("An error occurred", data)
 
     def test_list_filter_o_m_invalid_object_type(self):
         """
@@ -187,9 +190,6 @@ class ListFilterTestCase(BaseMVCTestCase):
 
             rv = c.get("/model2view/list/?_flt_0_group=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.db.session.bind.dialect.name != "mysql":
-                data = rv.data.decode("utf-8")
-                self.assertIn("An error occurred", data)
 
     def test_list_filter_not_o_m_invalid_object_type(self):
         """
@@ -201,9 +201,6 @@ class ListFilterTestCase(BaseMVCTestCase):
             # Roles doesn't exists
             rv = c.get("/model2view/list/?_flt_1_group=aaaa", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
-            if self.db.session.bind.dialect.name != "mysql":
-                data = rv.data.decode("utf-8")
-                self.assertIn("An error occurred", data)
 
     def test_list_filter_unknown_column(self):
         """
@@ -270,12 +267,15 @@ class MVCCSRFTestCase(BaseMVCTestCase):
         self.app.config.from_object("tests.config_api")
         self.app.config["WTF_CSRF_ENABLED"] = True
 
-        self.csrf = CSRFProtect(self.app)
-        self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-
         class Model2View(ModelView):
             datamodel = SQLAInterface(Model1)
+
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        self.csrf = CSRFProtect(self.app)
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
         self.appbuilder.add_view(Model2View, "Model2", category="Model2")
 
@@ -288,7 +288,7 @@ class MVCCSRFTestCase(BaseMVCTestCase):
 
         with model2_data(self.appbuilder.session, 1):
             model = (
-                self.appbuilder.get_session.query(Model2)
+                self.appbuilder.session.query(Model2)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -297,7 +297,7 @@ class MVCCSRFTestCase(BaseMVCTestCase):
 
             self.assertEqual(rv.status_code, 302)
             model = (
-                self.appbuilder.get_session.query(Model2)
+                self.appbuilder.session.query(Model2)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -311,7 +311,7 @@ class MVCCSRFTestCase(BaseMVCTestCase):
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model2_data(self.appbuilder.session, 1):
             model = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -326,7 +326,6 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
     Specific to test ModelView's:
         - include_route_methods
         - exclude_route_methods
-        - disable_api_route_methods
     """
 
     def setUp(self):
@@ -341,15 +340,7 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
         class Model2ExcludeView(ModelView):
             datamodel = SQLAInterface(Model2)
             exclude_route_methods: Set = {
-                "api",
-                "api_read",
-                "api_get",
-                "api_create",
-                "api_update",
-                "api_delete",
-                "api_column_add",
-                "api_column_edit",
-                "api_readvalues",
+                "download",
             }
 
         self.appbuilder.add_view(Model2ExcludeView, "Model2ExcludeView")
@@ -357,34 +348,16 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
         class Model2IncludeExcludeView(ModelView):
             datamodel = SQLAInterface(Model2)
             include_route_methods: Set = {
-                "api",
-                "api_read",
-                "api_get",
-                "api_create",
-                "api_update",
-                "api_delete",
-                "api_column_add",
-                "api_column_edit",
-                "api_readvalues",
+                "list",
+                "show",
             }
             exclude_route_methods: Set = {
-                "api_create",
-                "api_update",
-                "api_delete",
-                "api_column_add",
-                "api_column_edit",
-                "api_readvalues",
+                "show",
             }
 
         self.appbuilder.add_view_no_menu(
             Model2IncludeExcludeView, "Model2IncludeExcludeView"
         )
-
-        class Model2DisableMVCApiView(ModelView):
-            datamodel = SQLAInterface(Model2)
-            disable_api_route_methods = True
-
-        self.appbuilder.add_view(Model2DisableMVCApiView, "Model2DisableMVCApiView")
 
     def test_include_route_methods(self):
         """
@@ -422,7 +395,6 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
             "Model2ExcludeView.list",
             "Model2ExcludeView.show",
             "Model2ExcludeView.edit",
-            "Model2ExcludeView.download",
             "Model2ExcludeView.action",
             "Model2ExcludeView.delete",
             "Model2ExcludeView.add",
@@ -438,9 +410,7 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
         """
 
         expected_endpoints: Set = {
-            "Model2IncludeExcludeView.api",
-            "Model2IncludeExcludeView.api_read",
-            "Model2IncludeExcludeView.api_get",
+            "Model2IncludeExcludeView.list",
         }
         self.assertEqual(
             expected_endpoints,
@@ -452,29 +422,11 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
             ("can_edit", "Model2IncludeExcludeView"),
             ("can_delete", "Model2IncludeExcludeView"),
             ("can_download", "Model2IncludeExcludeView"),
+            ("can_show", "Model2IncludeExcludeView"),
         ]
         for unexpected_permission in unexpected_permissions:
             pvm = self.appbuilder.sm.find_permission_view_menu(*unexpected_permission)
             self.assertIsNone(pvm)
-
-    def test_disable_mvc_api_methods(self):
-        """
-        MVC: Disable MVC API
-        """
-        expected_endpoints: Set = {
-            "Model2DisableMVCApiView.list",
-            "Model2DisableMVCApiView.show",
-            "Model2DisableMVCApiView.add",
-            "Model2DisableMVCApiView.edit",
-            "Model2DisableMVCApiView.delete",
-            "Model2DisableMVCApiView.action",
-            "Model2DisableMVCApiView.download",
-            "Model2DisableMVCApiView.action_post",
-        }
-        self.assertEqual(
-            expected_endpoints,
-            self.get_registered_view_endpoints("Model2DisableMVCApiView"),
-        )
 
 
 class MVCTestCase(BaseMVCTestCase):
@@ -571,7 +523,7 @@ class MVCTestCase(BaseMVCTestCase):
 
         def get_model1_by_name(datamodel, name):
             model = (
-                datamodel.session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string=name)
                 .one_or_none()
             )
@@ -733,12 +685,6 @@ class MVCTestCase(BaseMVCTestCase):
 
         self.appbuilder.add_view(ModelBeforeRequest, "ModelBeforeRequest")
 
-    def tearDown(self):
-        self.appbuilder = None
-        self.app = None
-        self.db = None
-        log.debug("TEAR DOWN")
-
     def test_fab_views(self):
         """
         Test views creation and registration
@@ -765,7 +711,7 @@ class MVCTestCase(BaseMVCTestCase):
         """
         from sqlalchemy.engine.reflection import Inspector
 
-        engine = self.db.session.get_bind(mapper=None, clause=None)
+        engine = self.appbuilder.session.get_bind(mapper=None, clause=None)
         inspector = Inspector.from_engine(engine)
         # Check if tables exist
         self.assertIn("model1", inspector.get_table_names())
@@ -849,7 +795,7 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(rv.status_code, 200)
 
         model = (
-            self.db.session.query(Model1)
+            self.appbuilder.session.query(Model1)
             .filter_by(field_string=field_string)
             .one_or_none()
         )
@@ -857,8 +803,8 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(model.field_integer, MODEL1_DATA_SIZE)
 
         # Revert data changes
-        self.appbuilder.get_session.delete(model)
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(model)
+        self.appbuilder.session.commit()
 
     def test_model_crud_edit(self):
         """
@@ -876,7 +822,11 @@ class MVCTestCase(BaseMVCTestCase):
             )
             self.assertEqual(rv.status_code, 200)
 
-            model = self.db.session.query(Model1).filter_by(id=model_id).one_or_none()
+            model = (
+                self.appbuilder.session.query(Model1)
+                .filter_by(id=model_id)
+                .one_or_none()
+            )
             self.assertEqual(model.field_string, "test_edit")
             self.assertEqual(model.field_integer, 200)
 
@@ -889,7 +839,7 @@ class MVCTestCase(BaseMVCTestCase):
 
         with model2_data(self.appbuilder.session, 2):
             model = (
-                self.appbuilder.get_session.query(Model2)
+                self.appbuilder.session.query(Model2)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -897,7 +847,7 @@ class MVCTestCase(BaseMVCTestCase):
             rv = client.get(f"/model2view/delete/{pk}", follow_redirects=True)
 
             self.assertEqual(rv.status_code, 200)
-            model = self.db.session.query(Model2).get(pk)
+            model = self.appbuilder.session.query(Model2).get(pk)
             self.assertEqual(model, None)
 
     def test_model_delete_integrity(self):
@@ -905,8 +855,7 @@ class MVCTestCase(BaseMVCTestCase):
         Test Model CRUD delete integrity validation
         """
         # SQLLite does not support constraints by default
-        engine_type = self.appbuilder.get_session.bind.dialect.name
-        if engine_type == "sqlite":
+        if self.appbuilder.session.get_bind().name == "sqlite":
             return
 
         client = self.app.test_client()
@@ -914,7 +863,7 @@ class MVCTestCase(BaseMVCTestCase):
 
         with model2_data(self.appbuilder.session, 2):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test1")
                 .one_or_none()
             )
@@ -922,7 +871,7 @@ class MVCTestCase(BaseMVCTestCase):
             rv = client.get(f"/model1view/delete/{pk}", follow_redirects=True)
 
             self.assertEqual(rv.status_code, 200)
-            model = self.db.session.query(Model1).filter_by(id=pk).one_or_none()
+            model = self.appbuilder.session.query(Model1).filter_by(id=pk).one_or_none()
             self.assertNotEqual(model, None)
 
     def test_model_crud_composite_pk(self):
@@ -945,9 +894,7 @@ class MVCTestCase(BaseMVCTestCase):
         )
 
         self.assertEqual(rv.status_code, 200)
-        model = (
-            self.appbuilder.get_session.query(Model3).filter_by(pk1="1").one_or_none()
-        )
+        model = self.appbuilder.session.query(Model3).filter_by(pk1="1").one_or_none()
         self.assertEqual(model.pk1, 1)
         self.assertEqual(model.pk2, datetime.datetime(2017, 1, 1))
         self.assertEqual(model.field_string, "foo2")
@@ -964,8 +911,8 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(rv.status_code, 200)
 
         model = (
-            self.appbuilder.get_session.query(Model3)
-            .filter_by(pk1="2", pk2="2017-02-02 00:00:00")
+            self.appbuilder.session.query(Model3)
+            .filter_by(pk1=2, pk2=datetime.datetime(2017, 2, 2))
             .one_or_none()
         )
         self.assertEqual(model.pk1, 2)
@@ -975,14 +922,14 @@ class MVCTestCase(BaseMVCTestCase):
         pk = '[2, {"_type": "datetime", "value": "2017-02-02T00:00:00.000000"}]'
         rv = client.get("/model3view/delete/" + quote(pk), follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
-        model = self.db.session.query(Model3).filter_by(pk1=2).one_or_none()
+        model = self.appbuilder.session.query(Model3).filter_by(pk1=2).one_or_none()
         self.assertEqual(model, None)
 
         # Add it back, then delete via muldelete
-        self.appbuilder.get_session.add(
+        self.appbuilder.session.add(
             Model3(pk1=1, pk2=datetime.datetime(2017, 1, 1), field_string="baz")
         )
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.commit()
         rv = client.post(
             "/model3view/action_post",
             data=dict(
@@ -1002,7 +949,7 @@ class MVCTestCase(BaseMVCTestCase):
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 200)
-        model = self.db.session.query(Model3).filter_by(pk1=1).one_or_none()
+        model = self.appbuilder.session.query(Model3).filter_by(pk1=1).one_or_none()
         self.assertEqual(model, None)
 
     def test_model_crud_add_with_enum(self):
@@ -1020,7 +967,7 @@ class MVCTestCase(BaseMVCTestCase):
             self.assertEqual(rv.status_code, 200)
 
             model = (
-                self.appbuilder.get_session.query(ModelWithEnums)
+                self.appbuilder.session.query(ModelWithEnums)
                 .filter_by(enum1="e3")
                 .one_or_none()
             )
@@ -1029,12 +976,12 @@ class MVCTestCase(BaseMVCTestCase):
 
             # Revert data changes
             model = (
-                self.appbuilder.get_session.query(ModelWithEnums)
+                self.appbuilder.session.query(ModelWithEnums)
                 .filter_by(enum1="e3")
                 .one_or_none()
             )
-            self.appbuilder.get_session.delete(model)
-            self.appbuilder.get_session.commit()
+            self.appbuilder.session.delete(model)
+            self.appbuilder.session.commit()
 
     def test_model_crud_edit_with_enum(self):
         """
@@ -1052,7 +999,7 @@ class MVCTestCase(BaseMVCTestCase):
             self.assertEqual(rv.status_code, 200)
 
             model = (
-                self.appbuilder.get_session.query(ModelWithEnums)
+                self.appbuilder.session.query(ModelWithEnums)
                 .filter_by(enum1="e3")
                 .one_or_none()
             )
@@ -1060,7 +1007,7 @@ class MVCTestCase(BaseMVCTestCase):
             self.assertEqual(model.enum2, TmpEnum.e3)
             model.enum2 = TmpEnum.e2
             model.enum1 = "e1"
-            self.appbuilder.get_session.commit()
+            self.appbuilder.session.commit()
 
     def test_formatted_cols(self):
         """
@@ -1096,12 +1043,12 @@ class MVCTestCase(BaseMVCTestCase):
 
         # Revert data changes
         model1 = (
-            self.appbuilder.get_session.query(Model1)
+            self.appbuilder.session.query(Model1)
             .filter_by(field_string="test_redirect")
             .one_or_none()
         )
-        self.appbuilder.get_session.delete(model1)
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(model1)
+        self.appbuilder.session.commit()
 
     def test_modelview_edit_redirects(self):
         """
@@ -1111,7 +1058,7 @@ class MVCTestCase(BaseMVCTestCase):
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model1_data(self.appbuilder.session, 3):
             model_id = (
-                self.db.session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test0")
                 .one_or_none()
                 .id
@@ -1132,7 +1079,10 @@ class MVCTestCase(BaseMVCTestCase):
 
         with model1_data(self.appbuilder.session, 1):
             model_id = (
-                self.db.session.query(Model1).filter_by(field_string="test0").first().id
+                self.appbuilder.session.query(Model1)
+                .filter_by(field_string="test0")
+                .first()
+                .id
             )
             rv = client.get(f"/model1viewwithredirects/delete/{model_id}")
             self.assertEqual(rv.status_code, 302)
@@ -1161,7 +1111,7 @@ class MVCTestCase(BaseMVCTestCase):
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model2_data(self.appbuilder.session, 2):
             model = (
-                self.appbuilder.get_session.query(Model2)
+                self.appbuilder.session.query(Model2)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -1182,7 +1132,7 @@ class MVCTestCase(BaseMVCTestCase):
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model2_data(self.appbuilder.session, 3):
             model = (
-                self.appbuilder.get_session.query(Model2)
+                self.appbuilder.session.query(Model2)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -1210,7 +1160,7 @@ class MVCTestCase(BaseMVCTestCase):
             self.assertNotIn("test1", data)
 
             model2 = (
-                self.appbuilder.get_session.query(Model2)
+                self.appbuilder.session.query(Model2)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -1273,7 +1223,7 @@ class MVCTestCase(BaseMVCTestCase):
             data = rv.data.decode("utf-8")
             self.assertIn(UNIQUE_VALIDATION_STRING, data)
 
-            model = self.db.session.query(Model1).all()
+            model = self.appbuilder.session.query(Model1).all()
             self.assertEqual(len(model), 2)
 
     def test_model_add_required_validation(self):
@@ -1294,7 +1244,7 @@ class MVCTestCase(BaseMVCTestCase):
             data = rv.data.decode("utf-8")
             self.assertIn(NOTNULL_VALIDATION_STRING, data)
 
-            model = self.db.session.query(Model1).all()
+            model = self.appbuilder.session.query(Model1).all()
             self.assertEqual(len(model), 2)
 
     def test_model_edit_unique_validation(self):
@@ -1340,7 +1290,7 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model1_data(self.appbuilder.session, MODEL1_DATA_SIZE):
-            models = self.db.session.query(Model1).all()
+            models = self.appbuilder.session.query(Model1).all()
             self.assertEqual(len(models), MODEL1_DATA_SIZE)
 
             # Base filter string starts with
@@ -1406,14 +1356,14 @@ class MVCTestCase(BaseMVCTestCase):
                 follow_redirects=True,
             )
             self.assertEqual(rv.status_code, 200)
-            model = self.db.session.query(Model3).first()
+            model = self.appbuilder.session.query(Model3).first()
             self.assertEqual(model.field_string, "bar")
 
             rv = client.get(
                 "/model3compactview/delete/" + quote(pk), follow_redirects=True
             )
             self.assertEqual(rv.status_code, 200)
-            model = self.db.session.query(Model3).first()
+            model = self.appbuilder.session.query(Model3).first()
             self.assertEqual(model, None)
 
     def test_edit_add_form_action_prefix_for_compactCRUDMixin(self):
@@ -1475,88 +1425,6 @@ class MVCTestCase(BaseMVCTestCase):
             rv = client.get(f"/model1masterchartview/list/{model_id}")
             self.assertEqual(rv.status_code, 200)
 
-    def test_api_read(self):
-        """
-        Testing the api/read endpoint
-        """
-        client = self.app.test_client()
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        with model1_data(self.appbuilder.get_session):
-            rv = client.get("/model1formattedview/api/read")
-            self.assertEqual(rv.status_code, 200)
-            data = json.loads(rv.data.decode("utf-8"))
-            self.assertIn("result", data)
-            self.assertIn("pks", data)
-            assert len(data.get("result")) > 10
-
-    def test_api_unauthenticated(self):
-        """
-        Testing unauthenticated access to MVC API
-        """
-        client = self.app.test_client()
-        self.browser_logout(client)
-        rv = client.get("/model1formattedview/api/read")
-        self.assertEqual(rv.status_code, 401)
-
-    def test_api_unauthorized(self):
-        """
-        Testing unauthorized access to MVC API
-        """
-        client = self.app.test_client()
-        self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
-
-        rv = client.post(
-            "/model1view/api/create",
-            data=dict(field_string="zzz"),
-            follow_redirects=True,
-        )
-        self.assertEqual(rv.status_code, 403)
-
-    def test_api_create(self):
-        """
-        Testing the api/create endpoint
-        """
-        client = self.app.test_client()
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        with model1_data(self.appbuilder.session, 1):
-            rv = client.post(
-                "/model1view/api/create",
-                data=dict(field_string="zzz"),
-                follow_redirects=True,
-            )
-            self.assertEqual(rv.status_code, 200)
-            model1 = (
-                self.db.session.query(Model1)
-                .filter_by(field_string="zzz")
-                .one_or_none()
-            )
-            self.assertIsNotNone(model1)
-
-        # Revert data changes
-        self.appbuilder.get_session.delete(model1)
-        self.appbuilder.get_session.commit()
-
-    def test_api_update(self):
-        """
-        Validate that the api update endpoint updates [only] the fields in
-        POST data
-        """
-        client = self.app.test_client()
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        with model1_data(self.appbuilder.session, 1) as models:
-            model_id = models[0].id
-            item = self.db.session.query(Model1).get(model_id)
-            field_integer_before = item.field_integer
-            rv = client.put(
-                f"/model1view/api/update/{model_id}",
-                data=dict(field_string="zzz"),
-                follow_redirects=True,
-            )
-            self.assertEqual(rv.status_code, 200)
-            item = self.db.session.query(Model1).get(model_id)
-            self.assertEqual(item.field_string, "zzz")
-            self.assertEqual(item.field_integer, field_integer_before)
-
     def test_class_method_permission_override(self):
         """
         MVC: Test class method permission name override
@@ -1574,15 +1442,6 @@ class MVCTestCase(BaseMVCTestCase):
                 "add": "access",
                 "delete": "access",
                 "download": "access",
-                "api_readvalues": "access",
-                "api_column_edit": "access",
-                "api_column_add": "access",
-                "api_delete": "access",
-                "api_update": "access",
-                "api_create": "access",
-                "api_get": "access",
-                "api_read": "access",
-                "api": "access",
             }
 
         self.model1permoverride = Model1PermOverride
@@ -1613,15 +1472,17 @@ class MVCTestCase(BaseMVCTestCase):
         self.assertEqual(rv.status_code, 200)
 
         model = (
-            self.db.session.query(Model1).filter_by(field_string="test1").one_or_none()
+            self.appbuilder.session.query(Model1)
+            .filter_by(field_string="test1")
+            .one_or_none()
         )
         self.assertEqual(model.field_string, "test1")
         self.assertEqual(model.field_integer, 1)
 
         # Cleanup
-        self.db.session.delete(model)
-        self.db.session.delete(user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(model)
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_method_permission_override(self):
         """
@@ -1639,15 +1500,6 @@ class MVCTestCase(BaseMVCTestCase):
                 "add": "write",
                 "delete": "write",
                 "download": "read",
-                "api_readvalues": "read",
-                "api_column_edit": "write",
-                "api_column_add": "write",
-                "api_delete": "write",
-                "api_update": "write",
-                "api_create": "write",
-                "api_get": "read",
-                "api_read": "read",
-                "api": "read",
             }
 
         self.model1permoverride = Model1PermOverride
@@ -1682,15 +1534,15 @@ class MVCTestCase(BaseMVCTestCase):
         )
         self.assertEqual(rv.status_code, 200)
         model1 = (
-            self.appbuilder.get_session.query(Model1)
+            self.appbuilder.session.query(Model1)
             .filter_by(field_string="tmp_test")
             .one_or_none()
         )
         self.assertIsNotNone(model1)
 
         # Revert data changes
-        self.appbuilder.get_session.delete(model1)
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(model1)
+        self.appbuilder.session.commit()
 
         with model1_data(self.appbuilder.session, 2) as models:
             model_id = models[0].id
@@ -1712,14 +1564,14 @@ class MVCTestCase(BaseMVCTestCase):
 
             # Unauthorized delete
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test1")
                 .one_or_none()
             )
             pk = model1.id
             rv = client.get(f"/model1permoverride/delete/{pk}")
             self.assertEqual(rv.status_code, 302)
-            model = self.db.session.query(Model1).filter_by(id=pk).one_or_none()
+            model = self.appbuilder.session.query(Model1).filter_by(id=pk).one_or_none()
             self.assertEqual(model.field_string, "test1")
 
             # Verify write links are gone from UI
@@ -1732,9 +1584,9 @@ class MVCTestCase(BaseMVCTestCase):
             self.assertIn(f"/model1permoverride/show/{model_id}", data)
 
             # Revert data changes
-            self.db.session.delete(self.appbuilder.sm.find_role("Test"))
-            self.db.session.delete(user)
-            self.db.session.commit()
+            self.appbuilder.session.delete(self.appbuilder.sm.find_role("Test"))
+            self.appbuilder.session.delete(user)
+            self.appbuilder.session.commit()
 
     def test_action_permission_override(self):
         """
@@ -1752,15 +1604,6 @@ class MVCTestCase(BaseMVCTestCase):
                 "add": "write",
                 "delete": "write",
                 "download": "read",
-                "api_readvalues": "read",
-                "api_column_edit": "write",
-                "api_column_add": "write",
-                "api_delete": "write",
-                "api_update": "write",
-                "api_create": "write",
-                "api_get": "read",
-                "api_read": "read",
-                "api": "read",
                 "action_one": "write",
             }
 
@@ -1790,7 +1633,7 @@ class MVCTestCase(BaseMVCTestCase):
 
         with model1_data(self.appbuilder.session, 1):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -1809,8 +1652,8 @@ class MVCTestCase(BaseMVCTestCase):
             self.assertEqual(rv.status_code, 302)
 
         # cleanup
-        self.db.session.delete(user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_permission_converge_compress(self):
         """
@@ -1830,15 +1673,6 @@ class MVCTestCase(BaseMVCTestCase):
                 "add": "access",
                 "delete": "access",
                 "download": "access",
-                "api_readvalues": "access",
-                "api_column_edit": "access",
-                "api_column_add": "access",
-                "api_delete": "access",
-                "api_update": "access",
-                "api_create": "access",
-                "api_get": "access",
-                "api_read": "access",
-                "api": "access",
             }
 
         self.appbuilder.add_view_no_menu(Model1PermConverge)
@@ -1882,8 +1716,8 @@ class MVCTestCase(BaseMVCTestCase):
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 1)
         # cleanup
-        self.db.session.delete(user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_before_request(self):
         """

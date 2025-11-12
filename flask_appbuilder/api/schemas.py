@@ -88,7 +88,16 @@ get_list_schema = {
                             {"type": "number"},
                             {"type": "string"},
                             {"type": "boolean"},
-                            {"type": "array"},
+                            {
+                                "type": "array",
+                                "items": {
+                                    "anyOf": [
+                                        {"type": "number"},
+                                        {"type": "string"},
+                                        {"type": "boolean"},
+                                    ]
+                                },
+                            },
                         ]
                     },
                 },

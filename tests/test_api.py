@@ -2,7 +2,7 @@ import json
 import logging
 import os
 
-from flask_appbuilder import ModelRestApi, SQLA
+from flask_appbuilder import ModelRestApi
 from flask_appbuilder.const import (
     API_ADD_COLUMNS_RES_KEY,
     API_ADD_COLUMNS_RIS_KEY,
@@ -34,6 +34,7 @@ from flask_appbuilder.const import (
 from flask_appbuilder.hooks import before_request
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.utils.legacy import get_sqla_class
 import prison
 from sqlalchemy.sql.expression import func
 from tests.base import FABTestCase
@@ -86,11 +87,19 @@ class APICSRFTestCase(FABTestCase):
         self.app.config.from_object("tests.config_api")
         self.app.config["WTF_CSRF_ENABLED"] = True
 
+        self.ctx = self.app.app_context()
+        self.ctx.push()
         self.csrf = CSRFProtect(self.app)
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
-
         self.create_default_users(self.appbuilder)
+
+    def tearDown(self):
+        self.appbuilder = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     def test_auth_login(self):
         """
@@ -123,15 +132,23 @@ class APIDisableSecViewTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_SECURITY_VIEWS"] = False
-
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+
+    def tearDown(self):
+        self.appbuilder = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     def test_disabled_security_views(self):
         """
         REST Api: Test disabled security views
         """
-        for rule in self.appbuilder.get_app.url_map.iter_rules():
+        for rule in self.app.url_map.iter_rules():
             self.assertIn(rule.endpoint, self.base_fab_endpoint)
 
 
@@ -146,14 +163,23 @@ class APIDisableOpenApiViewTestCase(FABTestCase):
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_ADD_OPENAPI_VIEWS"] = False
 
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+
+    def tearDown(self):
+        self.appbuilder = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     def test_disabled_security_views(self):
         """
         REST Api: Test disabled OpenApi views
         """
-        for rule in self.appbuilder.get_app.url_map.iter_rules():
+        for rule in self.app.url_map.iter_rules():
             self.assertNotIn(rule.endpoint, self.openapi_fab_endpoint)
 
 
@@ -177,6 +203,9 @@ class APITestCase(FABTestCase):
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
 
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
@@ -288,6 +317,12 @@ class APITestCase(FABTestCase):
             base_order = ("field_integer", "desc")
 
         self.appbuilder.add_api(Model1ApiOrder)
+
+        class Model1ApiOrderPk(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            base_order = ("id", "desc")
+
+        self.appbuilder.add_api(Model1ApiOrderPk)
 
         class Model1ApiRestrictedPermissions(ModelRestApi):
             datamodel = SQLAInterface(Model1)
@@ -477,9 +512,11 @@ class APITestCase(FABTestCase):
         self.appbuilder.add_api(Model1BeforeRequest)
 
     def tearDown(self):
-        self.appbuilder.get_session.close()
-        engine = self.db.session.get_bind(mapper=None, clause=None)
-        engine.dispose()
+        self.appbuilder.session.close()
+        self.appbuilder = None
+        self.ctx.pop()
+        self.ctx = None
+        self.app = None
 
     def test_babel(self):
         """
@@ -674,7 +711,7 @@ class APITestCase(FABTestCase):
 
         # Test authorized GET
         with model1_data(self.appbuilder.session, 1):
-            model = self.appbuilder.get_session.query(Model1).first()
+            model = self.appbuilder.session.query(Model1).first()
             model_id = model.id
             uri = f"api/v1/model1apirestrictedpermissions/{model_id}"
             rv = self.auth_client_get(client, token, uri)
@@ -873,7 +910,7 @@ class APITestCase(FABTestCase):
 
     def test_get_item_choose_cols(self):
         """
-        REST Api: Test get item with select columns
+        REST Api: Test get item with the columns arg
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -882,6 +919,30 @@ class APITestCase(FABTestCase):
             uri = (
                 f"api/v1/model1api/{model_id}?"
                 f"q=({API_SELECT_COLUMNS_RIS_KEY}:!(field_integer))"
+            )
+            rv = self.auth_client_get(client, token, uri)
+            data = json.loads(rv.data.decode("utf-8"))
+            self.assertEqual(data[API_RESULT_RES_KEY], {"field_integer": 0})
+            self.assertEqual(
+                data[API_DESCRIPTION_COLUMNS_RES_KEY],
+                {"field_integer": "Field Integer"},
+            )
+            self.assertEqual(
+                data[API_LABEL_COLUMNS_RES_KEY], {"field_integer": "Field Integer"}
+            )
+            self.assertEqual(rv.status_code, 200)
+
+    def test_get_item_choose_select_cols(self):
+        """
+        REST Api: Test get item with the select_columns arg
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        with model1_data(self.appbuilder.session, 1) as models:
+            model_id = models[0].id
+            uri = (
+                f"api/v1/model1api/{model_id}?"
+                f"q=({API_SELECT_SEL_COLUMNS_RIS_KEY}:!(field_integer))"
             )
             rv = self.auth_client_get(client, token, uri)
             data = json.loads(rv.data.decode("utf-8"))
@@ -1433,6 +1494,27 @@ class APITestCase(FABTestCase):
                 },
             )
 
+    def test_get_list_base_order_with_pk(self):
+        """
+        REST Api: Test get list with base order using primary key
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # test string order asc
+        with model1_data(self.appbuilder.session, MODEL1_DATA_SIZE):
+            rv = self.auth_client_get(client, token, "api/v1/model1apiorderpk/")
+            data = json.loads(rv.data.decode("utf-8"))
+            self.assertEqual(
+                data[API_RESULT_RES_KEY][0],
+                {
+                    "field_date": None,
+                    "field_float": float(MODEL1_DATA_SIZE - 1),
+                    "field_integer": MODEL1_DATA_SIZE - 1,
+                    "field_string": "test{}".format(MODEL1_DATA_SIZE - 1),
+                },
+            )
+
     def test_get_list_page(self):
         """
         REST Api: Test get list page params
@@ -1593,6 +1675,88 @@ class APITestCase(FABTestCase):
             self.assertEqual(data[API_RESULT_RES_KEY][0], expected_result)
             self.assertEqual(rv.status_code, 200)
 
+    def test_get_list_filter_in_operator(self):
+        """
+        REST API: Test 'in' filter on field_integer
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        with model1_data(self.appbuilder.session, 5) as models:
+            field_integers = [models[0].field_integer, models[1].field_integer]
+            expected_results = [
+                {
+                    "field_date": (
+                        model.field_date.isoformat() if model.field_date else None
+                    ),
+                    "field_float": float(model.field_float),
+                    "field_integer": model.field_integer,
+                    "field_string": model.field_string,
+                }
+                for model in models[:2]
+            ]
+
+            arguments = {
+                API_FILTERS_RIS_KEY: [
+                    {"col": "field_integer", "opr": "in", "value": field_integers}
+                ],
+                "order_column": "field_integer",
+                "order_direction": "asc",
+            }
+
+            uri = f"api/v1/model1api/?q={prison.dumps(arguments)}"
+            rv = self.auth_client_get(client, token, uri)
+            data = json.loads(rv.data.decode("utf-8"))
+
+            self.assertEqual(rv.status_code, 200)
+            actual_results = data[API_RESULT_RES_KEY]
+            self.assertEqual(len(actual_results), len(expected_results))
+            for result in expected_results:
+                self.assertIn(result, actual_results)
+
+    def test_get_list_filter_not_in_operator(self):
+        """
+        REST API: Test 'not in' filter on field_integer
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        with model1_data(self.appbuilder.session, 5) as models:
+            excluded_field_integers = [models[0].field_integer, models[1].field_integer]
+            expected_results = [
+                {
+                    "field_date": (
+                        model.field_date.isoformat() if model.field_date else None
+                    ),
+                    "field_float": float(model.field_float),
+                    "field_integer": model.field_integer,
+                    "field_string": model.field_string,
+                }
+                for model in models[2:]
+            ]
+
+            arguments = {
+                API_FILTERS_RIS_KEY: [
+                    {
+                        "col": "field_integer",
+                        "opr": "not_in",
+                        "value": excluded_field_integers,
+                    }
+                ],
+                "order_column": "field_integer",
+                "order_direction": "asc",
+            }
+
+            uri = f"api/v1/model1api/?q={prison.dumps(arguments)}"
+            rv = self.auth_client_get(client, token, uri)
+            data = json.loads(rv.data.decode("utf-8"))
+
+            self.assertEqual(rv.status_code, 200)
+            actual_results = data[API_RESULT_RES_KEY]
+            self.assertEqual(len(actual_results), len(expected_results))
+            for result in expected_results:
+                self.assertIn(result, actual_results)
+
     def test_get_list_invalid_filters(self):
         """
         REST Api: Test get list filter params
@@ -1611,7 +1775,7 @@ class APITestCase(FABTestCase):
         """
         REST Api: Test get list filter params with many to many
         """
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
 
         child = ModelMMChild()
         child.field_string = "test_child_tmp"
@@ -1737,7 +1901,7 @@ class APITestCase(FABTestCase):
         """
         REST Api: Test get list multiple search filters
         """
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
         model1_1 = Model1(field_string="abc", field_integer=6)
         session.add(model1_1)
         session.commit()
@@ -1783,7 +1947,7 @@ class APITestCase(FABTestCase):
         """
         REST Api: Test get list custom filters
         """
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
         model1_1 = Model1(field_string="abc", field_integer=2)
         # Custom filter will get this next model (not like 'test' and field_integer=1)
         model1_2 = Model1(field_string="abcd", field_integer=1)
@@ -1993,12 +2157,16 @@ class APITestCase(FABTestCase):
                 {"name": "Greater than", "operator": "gt"},
                 {"name": "Smaller than", "operator": "lt"},
                 {"name": "Not Equal to", "operator": "neq"},
+                {"name": "In", "operator": "in"},
+                {"name": "Not In", "operator": "not_in"},
             ],
             "field_integer": [
                 {"name": "Equal to", "operator": "eq"},
                 {"name": "Greater than", "operator": "gt"},
                 {"name": "Smaller than", "operator": "lt"},
                 {"name": "Not Equal to", "operator": "neq"},
+                {"name": "In", "operator": "in"},
+                {"name": "Not In", "operator": "not_in"},
             ],
             "field_string": [
                 {"name": "Starts with", "operator": "sw"},
@@ -2009,6 +2177,8 @@ class APITestCase(FABTestCase):
                 {"name": "Not Ends with", "operator": "new"},
                 {"name": "Not Contains", "operator": "nct"},
                 {"name": "Not Equal to", "operator": "neq"},
+                {"name": "In", "operator": "in"},
+                {"name": "Not In", "operator": "not_in"},
             ],
         }
         self.assertEqual(data["filters"], expected_filters)
@@ -2186,7 +2356,7 @@ class APITestCase(FABTestCase):
 
         with model2_data(self.appbuilder.session, 3):
             model = (
-                self.appbuilder.get_session.query(Model2)
+                self.appbuilder.session.query(Model2)
                 .filter_by(field_string="test2")
                 .one_or_none()
             )
@@ -2194,7 +2364,7 @@ class APITestCase(FABTestCase):
             uri = f"api/v1/model2api/{model_id}"
             rv = self.auth_client_delete(client, token, uri)
             self.assertEqual(rv.status_code, 200)
-            model = self.db.session.query(Model2).get(model_id)
+            model = self.appbuilder.session.query(Model2).get(model_id)
             self.assertEqual(model, None)
 
     def test_delete_item_integrity(self):
@@ -2202,7 +2372,7 @@ class APITestCase(FABTestCase):
         REST Api: Test delete item integrity
         """
         # SQLLite does not support constraints by default
-        engine_type = self.appbuilder.get_session.bind.dialect.name
+        engine_type = self.appbuilder.session.get_bind().name
         if engine_type == "sqlite":
             return
         client = self.app.test_client()
@@ -2210,7 +2380,7 @@ class APITestCase(FABTestCase):
 
         with model2_data(self.appbuilder.session, 1):
             model = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -2219,7 +2389,7 @@ class APITestCase(FABTestCase):
 
             rv = self.auth_client_delete(client, token, uri)
             self.assertEqual(rv.status_code, 422)
-            model = self.db.session.query(Model1).get(pk)
+            model = self.appbuilder.session.query(Model1).get(pk)
             self.assertIsNotNone(model)
 
     def test_delete_item_not_found(self):
@@ -2230,7 +2400,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         with model1_data(self.appbuilder.session, 2):
-            max_id = self.appbuilder.get_session.query(func.max(Model1.id)).scalar()
+            max_id = self.appbuilder.session.query(func.max(Model1.id)).scalar()
             pk = max_id + 1
             uri = f"api/v1/model1api/{pk}"
             rv = self.auth_client_delete(client, token, uri)
@@ -2245,7 +2415,7 @@ class APITestCase(FABTestCase):
 
         with model1_data(self.appbuilder.session, 4):
             model = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_integer=2)
                 .one_or_none()
             )
@@ -2264,7 +2434,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model1_data(self.appbuilder.session, 3):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test2")
                 .one_or_none()
             )
@@ -2273,7 +2443,7 @@ class APITestCase(FABTestCase):
             uri = f"api/v1/model1api/{model_id}"
             rv = self.auth_client_put(client, token, uri, item)
             self.assertEqual(rv.status_code, 200)
-            model = self.db.session.query(Model1).get(model_id)
+            model = self.appbuilder.session.get(Model1, model_id)
             self.assertEqual(model.field_string, "test_Put")
             self.assertEqual(model.field_integer, 0)
             self.assertEqual(model.field_float, 0.0)
@@ -2286,7 +2456,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model1_data(self.appbuilder.session, 3):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test2")
                 .one_or_none()
             )
@@ -2304,7 +2474,7 @@ class APITestCase(FABTestCase):
         """
         REST Api: Test update item custom schema
         """
-        from .sqla.models import Model1CustomSchema
+        from tests.sqla.models import Model1CustomSchema
 
         class Model1ApiCustomSchema(self.model1api):
             edit_model_schema = Model1CustomSchema()
@@ -2342,7 +2512,7 @@ class APITestCase(FABTestCase):
             self.assertEqual(rv.status_code, 200)
 
             model = (
-                self.db.session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="Atest{}".format(MODEL1_DATA_SIZE + 1))
                 .first()
             )
@@ -2358,7 +2528,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         with model1_data(self.appbuilder.session, 4):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_integer=3)
                 .one_or_none()
             )
@@ -2367,14 +2537,14 @@ class APITestCase(FABTestCase):
             uri = f"api/v1/model1apifiltered/{model_id}"
             rv = self.auth_client_put(client, token, uri, item)
             self.assertEqual(rv.status_code, 200)
-            model = self.db.session.query(Model1).get(model_id)
+            model = self.appbuilder.session.query(Model1).get(model_id)
             self.assertEqual(model.field_string, "test_Put")
             self.assertEqual(model.field_integer, 3)
             self.assertEqual(model.field_float, 3.0)
 
             # We can't update an item that is base filtered
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_integer=1)
                 .one_or_none()
             )
@@ -2391,7 +2561,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         with model1_data(self.appbuilder.session, 2):
-            max_id = self.appbuilder.get_session.query(func.max(Model1.id)).scalar()
+            max_id = self.appbuilder.session.query(func.max(Model1.id)).scalar()
             model_id = max_id + 1
             item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
             uri = f"api/v1/model1api/{model_id}"
@@ -2407,7 +2577,7 @@ class APITestCase(FABTestCase):
 
         with model1_data(self.appbuilder.session, 2):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -2426,7 +2596,7 @@ class APITestCase(FABTestCase):
         """
         REST Api: Test update m-m field
         """
-        session = self.appbuilder.get_session
+        session = self.appbuilder.session
 
         with model_mm_parent_data(session, 1):
             model_id = session.query(ModelMMParent).first().id
@@ -2462,7 +2632,7 @@ class APITestCase(FABTestCase):
 
         with model1_data(self.appbuilder.session, 2):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -2495,7 +2665,7 @@ class APITestCase(FABTestCase):
 
         with model1_data(self.appbuilder.session, 2):
             model1 = (
-                self.appbuilder.get_session.query(Model1)
+                self.appbuilder.session.query(Model1)
                 .filter_by(field_string="test0")
                 .one_or_none()
             )
@@ -2504,7 +2674,7 @@ class APITestCase(FABTestCase):
             uri = f"api/v1/model1apiexcludecols/{model_id}"
             rv = self.auth_client_put(client, token, uri, item)
             self.assertEqual(rv.status_code, 200)
-            model = self.db.session.query(Model1).get(model_id)
+            model = self.appbuilder.session.query(Model1).get(model_id)
             self.assertEqual(model.field_integer, 0)
             self.assertEqual(model.field_float, 0.0)
             self.assertEqual(model.field_date, None)
@@ -2534,7 +2704,9 @@ class APITestCase(FABTestCase):
             self.assertEqual(rv.status_code, 201)
             self.assertEqual(data[API_RESULT_RES_KEY], item)
             model = (
-                self.db.session.query(Model1).filter_by(field_string="test4").first()
+                self.appbuilder.session.query(Model1)
+                .filter_by(field_string="test4")
+                .first()
             )
             self.assertEqual(model.field_string, "test4")
             self.assertEqual(model.field_integer, 4)
@@ -2591,16 +2763,16 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 201)
 
         # Revert test data
-        self.appbuilder.get_session.query(Model1).filter_by(
+        self.appbuilder.session.query(Model1).filter_by(
             field_string=f"A{MODEL1_DATA_SIZE + 1}"
         ).delete()
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.commit()
 
     def test_create_item_custom_schema(self):
         """
         REST Api: Test create item custom schema
         """
-        from .sqla.models import Model1CustomSchema
+        from tests.sqla.models import Model1CustomSchema
 
         class Model1ApiCustomSchema(self.model1api):
             add_model_schema = Model1CustomSchema()
@@ -2636,7 +2808,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 201)
 
         model = (
-            self.db.session.query(Model1)
+            self.appbuilder.session.query(Model1)
             .filter_by(field_string="Atest{}".format(MODEL1_DATA_SIZE + 1))
             .first()
         )
@@ -2645,8 +2817,8 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_float, float(MODEL1_DATA_SIZE + 1))
 
         # Revert data changes
-        self.appbuilder.get_session.delete(model)
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(model)
+        self.appbuilder.session.commit()
 
     def test_create_item_val_size(self):
         """
@@ -2707,7 +2879,7 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 201)
         model = (
-            self.db.session.query(Model1)
+            self.appbuilder.session.query(Model1)
             .filter_by(field_string=f"test{MODEL1_DATA_SIZE + 1}")
             .first()
         )
@@ -2726,13 +2898,13 @@ class APITestCase(FABTestCase):
         self.assertEqual(data, expected_response)
 
         # Revert test data
-        self.appbuilder.get_session.query(Model1).filter_by(
+        self.appbuilder.session.query(Model1).filter_by(
             field_string=f"test{MODEL1_DATA_SIZE + 1}"
         ).delete()
-        self.appbuilder.get_session.query(Model1).filter_by(
+        self.appbuilder.session.query(Model1).filter_by(
             field_string=f"test{MODEL1_DATA_SIZE + 2}"
         ).delete()
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.commit()
 
     def test_list_items_with_enum(self):
         """
@@ -2757,7 +2929,7 @@ class APITestCase(FABTestCase):
         """
         with model_with_enums_data(self.appbuilder.session, 1):
             model1 = (
-                self.appbuilder.get_session.query(ModelWithEnums)
+                self.appbuilder.session.query(ModelWithEnums)
                 .filter(ModelWithEnums.enum1 == "e1")
                 .first()
             )
@@ -2811,15 +2983,13 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, item)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 201)
-        model = self.db.session.query(ModelWithEnums).get(data["id"])
+        model = self.appbuilder.session.query(ModelWithEnums).get(data["id"])
         self.assertEqual(model.enum1, "e1")
         self.assertEqual(model.enum2, TmpEnum.e1)
 
         # Revert test data
-        self.appbuilder.get_session.query(ModelWithEnums).filter_by(
-            id=data["id"]
-        ).delete()
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.query(ModelWithEnums).filter_by(id=data["id"]).delete()
+        self.appbuilder.session.commit()
 
     def test_create_item_with_enum_validation(self):
         """
@@ -2888,18 +3058,18 @@ class APITestCase(FABTestCase):
 
             # Rollback data changes
             model1 = (
-                self.appbuilder.get_session.query(ModelMMParent)
+                self.appbuilder.session.query(ModelMMParent)
                 .filter_by(field_string="new1")
                 .one_or_none()
             )
             model2 = (
-                self.appbuilder.get_session.query(ModelMMParent)
+                self.appbuilder.session.query(ModelMMParent)
                 .filter_by(field_string="new2")
                 .one_or_none()
             )
-            self.appbuilder.get_session.delete(model1)
-            self.appbuilder.get_session.delete(model2)
-            self.appbuilder.get_session.commit()
+            self.appbuilder.session.delete(model1)
+            self.appbuilder.session.delete(model2)
+            self.appbuilder.session.commit()
 
     def test_create_item_om_field(self):
         """
@@ -2909,9 +3079,9 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         child1 = ModelOMChild(field_string="child1")
         child2 = ModelOMChild(field_string="child2")
-        self.appbuilder.get_session.add(child1)
-        self.appbuilder.get_session.add(child2)
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.add(child1)
+        self.appbuilder.session.add(child2)
+        self.appbuilder.session.commit()
 
         item = dict(field_string="new1", children=[child1.id, child2.id])
         uri = "api/v1/modelomparentapi/"
@@ -2924,13 +3094,13 @@ class APITestCase(FABTestCase):
         )
         # Rollback data changes
         model1 = (
-            self.appbuilder.get_session.query(ModelOMParent)
+            self.appbuilder.session.query(ModelOMParent)
             .filter_by(field_string="new1")
             .one_or_none()
         )
 
-        self.appbuilder.get_session.delete(model1)
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(model1)
+        self.appbuilder.session.commit()
 
     def test_get_list_col_function(self):
         """
@@ -3019,6 +3189,53 @@ class APITestCase(FABTestCase):
         rv = client.get(uri)
         self.assertEqual(rv.status_code, 200)
 
+    def test_swagger_ui_backward_compatibility(self):
+        """
+        REST Api: Test Swagger UI backward compatibility (no APPLICATION_ROOT)
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "swagger/v1"
+        rv = client.get(uri)
+        self.assertEqual(rv.status_code, 200)
+
+        # Check that the openapi_uri in the response doesn't have APPLICATION_ROOT prefix
+        # when APPLICATION_ROOT is not configured
+        response_data = rv.get_data(as_text=True)
+        self.assertIn("url: '/api/v1/_openapi'", response_data)
+
+    def test_swagger_ui_with_application_root(self):
+        """
+        REST Api: Test Swagger UI with APPLICATION_ROOT configuration
+        """
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+        from flask_appbuilder.utils.legacy import get_sqla_class
+
+        # Create a new app with APPLICATION_ROOT configured
+        app_with_root = Flask(__name__)
+        app_with_root.config.from_object("tests.config_api")
+        app_with_root.config["APPLICATION_ROOT"] = "/myapp"
+        app_with_root.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
+
+        with app_with_root.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(app_with_root)
+            appbuilder = AppBuilder(app_with_root, db.session)
+            self.create_default_users(appbuilder)
+
+            client = app_with_root.test_client()
+            self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+            # Test the swagger UI endpoint
+            uri = "swagger/v1"
+            rv = client.get(uri)
+            self.assertEqual(rv.status_code, 200)
+
+            # Check that the openapi_uri in the response includes APPLICATION_ROOT prefix
+            response_data = rv.get_data(as_text=True)
+            self.assertIn("url: '/myapp/api/v1/_openapi'", response_data)
+
     def test_class_method_permission_override(self):
         """
         REST Api: Test class method permission name override
@@ -3106,10 +3323,10 @@ class APITestCase(FABTestCase):
             self.assertEqual(rv.status_code, 403)
 
         # Revert test data
-        self.db.session.delete(user)
-        self.db.session.commit()
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
+        self.appbuilder.session.delete(self.appbuilder.sm.find_role("Test"))
+        self.appbuilder.session.commit()
 
     def test_base_permission_override(self):
         """
@@ -3201,9 +3418,9 @@ class APITestCase(FABTestCase):
         self.assertEqual(len(role.permissions), 1)
 
         # Revert test data
-        self.appbuilder.get_session.delete(user)
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
-        self.appbuilder.get_session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.delete(self.appbuilder.sm.find_role("Test"))
+        self.appbuilder.session.commit()
 
     def test_permission_converge_expand(self):
         """
@@ -3263,8 +3480,8 @@ class APITestCase(FABTestCase):
         role = self.appbuilder.sm.find_role("Test")
         self.assertEqual(len(role.permissions), 5)
 
-        self.db.session.delete(user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_before_request(self):
         """

@@ -5,9 +5,10 @@ import unittest
 from unittest.mock import Mock
 
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.security.manager import AUTH_LDAP
 from flask_appbuilder.security.sqla.models import User
+from flask_appbuilder.utils.legacy import get_sqla_class
 import jinja2
 import ldap
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
@@ -35,29 +36,18 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_LASTNAME_FIELD"] = "sn"
         self.app.config["AUTH_LDAP_EMAIL_FIELD"] = "mail"
 
-        # start Database
-        self.db = SQLA(self.app)
-
     def tearDown(self):
         # Remove test user
-        user_alice = self.appbuilder.sm.find_user("alice")
-        if user_alice:
-            self.db.session.delete(user_alice)
-            self.db.session.commit()
-        user_natalie = self.appbuilder.sm.find_user("natalie")
-        if user_natalie:
-            self.db.session.delete(user_natalie)
-            self.db.session.commit()
-
-        # stop Flask
-        self.app = None
-
-        # stop Flask-AppBuilder
-        self.appbuilder = None
-
-        # stop Database
-        self.db.session.remove()
-        self.db = None
+        with self.app.app_context():
+            # Remove test user
+            user_alice = self.appbuilder.sm.find_user("alice")
+            if user_alice:
+                self.appbuilder.session.delete(user_alice)
+                self.appbuilder.session.commit()
+            user_natalie = self.appbuilder.sm.find_user("natalie")
+            if user_natalie:
+                self.appbuilder.session.delete(user_natalie)
+                self.appbuilder.session.commit()
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()
@@ -78,22 +68,25 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # prepare `con` object
-        con = ldap.initialize("ldap://localhost:1389/")
-        sm._ldap_bind_indirect(ldap, con)
+            # prepare `con` object
+            con = ldap.initialize("ldap://localhost:1389/")
+            sm._ldap_bind_indirect(ldap, con)
 
-        # run `_search_ldap` method
-        user_dn, user_attributes = sm._search_ldap(ldap, con, "alice")
+            # run `_search_ldap` method
+            user_dn, user_attributes = sm._search_ldap(ldap, con, "alice")
 
-        # validate - search returned expected data
-        self.assertEqual(user_dn, "cn=alice,ou=users,dc=example,dc=org")
-        self.assertEqual(user_attributes["givenName"], [b"Alice"])
-        self.assertEqual(user_attributes["sn"], [b"Doe"])
-        self.assertEqual(user_attributes["mail"], [b"alice@example.org"])
+            # validate - search returned expected data
+            self.assertEqual(user_dn, "cn=alice,ou=users,dc=example,dc=org")
+            self.assertEqual(user_attributes["givenName"], [b"Alice"])
+            self.assertEqual(user_attributes["sn"], [b"Doe"])
+            self.assertEqual(user_attributes["mail"], [b"alice@example.org"])
 
     def test___search_ldap_filter(self):
         """
@@ -108,22 +101,25 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config[
             "AUTH_LDAP_SEARCH_FILTER"
         ] = "(memberOf=cn=staff,ou=groups,dc=example,dc=org)"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # prepare `con` object
-        con = ldap.initialize("ldap://localhost:1389/")
-        sm._ldap_bind_indirect(ldap, con)
+            # prepare `con` object
+            con = ldap.initialize("ldap://localhost:1389/")
+            sm._ldap_bind_indirect(ldap, con)
 
-        # run `_search_ldap` method
-        user_dn, user_attributes = sm._search_ldap(ldap, con, "alice")
+            # run `_search_ldap` method
+            user_dn, user_attributes = sm._search_ldap(ldap, con, "alice")
 
-        # validate - search returned expected data
-        self.assertEqual(user_dn, "cn=alice,ou=users,dc=example,dc=org")
-        self.assertEqual(user_attributes["givenName"], [b"Alice"])
-        self.assertEqual(user_attributes["sn"], [b"Doe"])
-        self.assertEqual(user_attributes["mail"], [b"alice@example.org"])
+            # validate - search returned expected data
+            self.assertEqual(user_dn, "cn=alice,ou=users,dc=example,dc=org")
+            self.assertEqual(user_attributes["givenName"], [b"Alice"])
+            self.assertEqual(user_attributes["sn"], [b"Doe"])
+            self.assertEqual(user_attributes["mail"], [b"alice@example.org"])
 
     def test___search_ldap_with_search_referrals(self):
         """
@@ -132,71 +128,77 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_USER"] = "uid=admin,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        user_alice = (
-            "cn=alice,ou=users,dc=example,dc=org",
-            {
-                "uid": ["alice"],
-                "userPassword": ["alice_password"],
-                "memberOf": [b"cn=staff,ou=groups,o=test"],
-                "givenName": [b"Alice"],
-                "sn": [b"Doe"],
-                "mail": [b"alice@example.org"],
-            },
-        )
-        # run `_search_ldap` method w/mocked ldap connection
-        mock_con = Mock()
-        mock_con.search_s.return_value = [
-            (
-                None,
-                [
-                    "ldap://ForestDnsZones.mycompany.com/"
-                    "DC=ForestDnsZones,DC=mycompany,DC=com"
-                ],
-            ),
-            user_alice,
-            (None, ["ldap://mycompany.com/CN=Configuration,DC=mycompany,DC=com"]),
-        ]
-        user_dn, user_attributes = sm._search_ldap(ldap, mock_con, "alice")
+            user_alice = (
+                "cn=alice,ou=users,dc=example,dc=org",
+                {
+                    "uid": ["alice"],
+                    "userPassword": ["alice_password"],
+                    "memberOf": [b"cn=staff,ou=groups,o=test"],
+                    "givenName": [b"Alice"],
+                    "sn": [b"Doe"],
+                    "mail": [b"alice@example.org"],
+                },
+            )
+            # run `_search_ldap` method w/mocked ldap connection
+            mock_con = Mock()
+            mock_con.search_s.return_value = [
+                (
+                    None,
+                    [
+                        "ldap://ForestDnsZones.mycompany.com/"
+                        "DC=ForestDnsZones,DC=mycompany,DC=com"
+                    ],
+                ),
+                user_alice,
+                (None, ["ldap://mycompany.com/CN=Configuration,DC=mycompany,DC=com"]),
+            ]
+            user_dn, user_attributes = sm._search_ldap(ldap, mock_con, "alice")
 
-        # validate - search returned expected data
-        self.assertEqual(user_dn, user_alice[0])
-        self.assertEqual(user_attributes["givenName"], user_alice[1]["givenName"])
-        self.assertEqual(user_attributes["sn"], user_alice[1]["sn"])
-        self.assertEqual(user_attributes["mail"], user_alice[1]["mail"])
+            # validate - search returned expected data
+            self.assertEqual(user_dn, user_alice[0])
+            self.assertEqual(user_attributes["givenName"], user_alice[1]["givenName"])
+            self.assertEqual(user_attributes["sn"], user_alice[1]["sn"])
+            self.assertEqual(user_attributes["mail"], user_alice[1]["mail"])
 
-        mock_con.search_s.assert_called()
+            mock_con.search_s.assert_called()
 
     def test__missing_credentials(self):
         """
         LDAP: test login flow for - missing credentials
         """
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # validate - login failure (missing username)
-        self.assertIsNone(sm.auth_user_ldap(None, "password"))
-        self.assertIsNone(sm.auth_user_ldap("", "password"))
+            # validate - login failure (missing username)
+            self.assertIsNone(sm.auth_user_ldap(None, "password"))
+            self.assertIsNone(sm.auth_user_ldap("", "password"))
 
-        # validate - login failure (missing password)
-        self.assertIsNone(sm.auth_user_ldap("username", None))
-        self.assertIsNone(sm.auth_user_ldap("username", ""))
+            # validate - login failure (missing password)
+            self.assertIsNone(sm.auth_user_ldap("username", None))
+            self.assertIsNone(sm.auth_user_ldap("username", ""))
 
-        # validate - login failure (missing username/password)
-        self.assertIsNone(sm.auth_user_ldap(None, None))
-        self.assertIsNone(sm.auth_user_ldap("", None))
-        self.assertIsNone(sm.auth_user_ldap("", ""))
-        self.assertIsNone(sm.auth_user_ldap(None, ""))
+            # validate - login failure (missing username/password)
+            self.assertIsNone(sm.auth_user_ldap(None, None))
+            self.assertIsNone(sm.auth_user_ldap("", None))
+            self.assertIsNone(sm.auth_user_ldap("", ""))
+            self.assertIsNone(sm.auth_user_ldap(None, ""))
 
-        # validate - no users were created
-        self.assertOnlyDefaultUsers()
+            # validate - no users were created
+            self.assertOnlyDefaultUsers()
 
     def test__active_user(self):
         """
@@ -206,33 +208,36 @@ class LDAPSearchTestCase(unittest.TestCase):
             "AUTH_LDAP_USERNAME_FORMAT"
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.com",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # set user inactive
-        new_user.active = True
+            # set user inactive
+            new_user.active = True
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was not allowed to log in
-        self.assertIsNotNone(user)
+            # validate - user was not allowed to log in
+            self.assertIsNotNone(user)
 
     def test__inactive_user(self):
         """
@@ -242,33 +247,36 @@ class LDAPSearchTestCase(unittest.TestCase):
             "AUTH_LDAP_USERNAME_FORMAT"
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.com",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # set user inactive
-        new_user.active = False
+            # set user inactive
+            new_user.active = False
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was not allowed to log in
-        self.assertIsNone(user)
+            # validate - user was not allowed to log in
+            self.assertIsNone(user)
 
     def test__multi_group_user_mapping_to_same_role(self):
         """
@@ -284,32 +292,35 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_ldap("natalie", "natalie_password")
+            # attempt login
+            user = sm.auth_user_ldap("natalie", "natalie_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # validate - user was given the correct roles
-        self.assertUserContainsRoles(user, ["Public", "User"])
+            # validate - user was given the correct roles
+            self.assertUserContainsRoles(user, ["Public", "User"])
 
-        # validate - user was given the correct attributes (read from LDAP)
-        self.assertEqual(user.first_name, "Natalie")
-        self.assertEqual(user.last_name, "Smith")
-        self.assertEqual(user.email, "natalie@example.org")
+            # validate - user was given the correct attributes (read from LDAP)
+            self.assertEqual(user.first_name, "Natalie")
+            self.assertEqual(user.last_name, "Smith")
+            self.assertEqual(user.email, "natalie@example.org")
 
     def test__direct_bind__unregistered(self):
         """
@@ -321,29 +332,32 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # validate - user was given the AUTH_USER_REGISTRATION_ROLE role
-        self.assertEqual(user.roles, [sm.find_role("Public")])
+            # validate - user was given the AUTH_USER_REGISTRATION_ROLE role
+            self.assertEqual(user.roles, [sm.find_role("Public")])
 
-        # validate - user was given the correct attributes (read from LDAP)
-        self.assertEqual(user.first_name, "Alice")
-        self.assertEqual(user.last_name, "Doe")
-        self.assertEqual(user.email, "alice@example.org")
+            # validate - user was given the correct attributes (read from LDAP)
+            self.assertEqual(user.first_name, "Alice")
+            self.assertEqual(user.last_name, "Doe")
+            self.assertEqual(user.email, "alice@example.org")
 
     def test__direct_bind__unregistered__no_self_register(self):
         """
@@ -354,21 +368,24 @@ class LDAPSearchTestCase(unittest.TestCase):
             "AUTH_LDAP_USERNAME_FORMAT"
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = False
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was not allowed to log in
-        self.assertIsNone(user)
+            # validate - user was not allowed to log in
+            self.assertIsNone(user)
 
-        # validate - no users were registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users were registered
+            self.assertOnlyDefaultUsers()
 
     def test__direct_bind__unregistered__no_search(self):
         """
@@ -379,18 +396,22 @@ class LDAPSearchTestCase(unittest.TestCase):
             "AUTH_LDAP_USERNAME_FORMAT"
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was NOT allowed to log in (because registration requires search)
-        self.assertIsNone(user)
+            # validate - user was NOT allowed to log in
+            # (because registration requires search)
+            self.assertIsNone(user)
 
     def test__direct_bind__registered(self):
         """
@@ -400,30 +421,33 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config[
             "AUTH_LDAP_USERNAME_FORMAT"
         ] = "cn=%s,ou=users,dc=example,dc=org"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.org",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
     def test__direct_bind__registered__no_search(self):
         """
@@ -433,30 +457,33 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config[
             "AUTH_LDAP_USERNAME_FORMAT"
         ] = "cn=%s,ou=users,dc=example,dc=org"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.org",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in (because they are already registered)
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in (because they are already registered)
+            self.assertIsInstance(user, sm.user_model)
 
     def test__indirect_bind__unregistered(self):
         """
@@ -467,29 +494,32 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # validate - user was given the AUTH_USER_REGISTRATION_ROLE role
-        self.assertListEqual(user.roles, [sm.find_role("Public")])
+            # validate - user was given the AUTH_USER_REGISTRATION_ROLE role
+            self.assertListEqual(user.roles, [sm.find_role("Public")])
 
-        # validate - user was given the correct attributes (read from LDAP)
-        self.assertEqual(user.first_name, "Alice")
-        self.assertEqual(user.last_name, "Doe")
-        self.assertEqual(user.email, "alice@example.org")
+            # validate - user was given the correct attributes (read from LDAP)
+            self.assertEqual(user.first_name, "Alice")
+            self.assertEqual(user.last_name, "Doe")
+            self.assertEqual(user.email, "alice@example.org")
 
     def test__indirect_bind__unregistered__no_self_register(self):
         """
@@ -499,21 +529,24 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.app.config["AUTH_USER_REGISTRATION"] = False
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was not allowed to log in
-        self.assertIsNone(user)
+            # validate - user was not allowed to log in
+            self.assertIsNone(user)
 
-        # validate - no users were registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users were registered
+            self.assertOnlyDefaultUsers()
 
     def test__indirect_bind__unregistered__no_search(self):
         """
@@ -524,19 +557,22 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was NOT allowed to log in
-        # (because indirect bind requires search)
-        self.assertIsNone(user)
+            # validate - user was NOT allowed to log in
+            # (because indirect bind requires search)
+            self.assertIsNone(user)
 
     def test__indirect_bind__registered(self):
         """
@@ -545,30 +581,33 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.org",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
     def test__indirect_bind__registered__no_search(self):
         """
@@ -577,31 +616,34 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_SEARCH"] = None
         self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.org",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was NOT allowed to log in
-        # (because indirect bind requires search)
-        self.assertIsNone(user)
+            # validate - user was NOT allowed to log in
+            # (because indirect bind requires search)
+            self.assertIsNone(user)
 
     def test__direct_bind__unregistered__single_role(self):
         """
@@ -616,32 +658,35 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # validate - user was given the correct roles
-        self.assertUserContainsRoles(user, ["Admin", "Public"])
+            # validate - user was given the correct roles
+            self.assertUserContainsRoles(user, ["Admin", "Public"])
 
-        # validate - user was given the correct attributes (read from LDAP)
-        self.assertEqual(user.first_name, "Alice")
-        self.assertEqual(user.last_name, "Doe")
-        self.assertEqual(user.email, "alice@example.org")
+            # validate - user was given the correct attributes (read from LDAP)
+            self.assertEqual(user.first_name, "Alice")
+            self.assertEqual(user.last_name, "Doe")
+            self.assertEqual(user.email, "alice@example.org")
 
     def test__direct_bind__unregistered__multi_role(self):
         """
@@ -656,32 +701,35 @@ class LDAPSearchTestCase(unittest.TestCase):
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # validate - user was given the correct roles
-        self.assertUserContainsRoles(user, ["Admin", "Public", "User"])
+            # validate - user was given the correct roles
+            self.assertUserContainsRoles(user, ["Admin", "Public", "User"])
 
-        # validate - user was given the correct attributes (read from LDAP)
-        self.assertEqual(user.first_name, "Alice")
-        self.assertEqual(user.last_name, "Doe")
-        self.assertEqual(user.email, "alice@example.org")
+            # validate - user was given the correct attributes (read from LDAP)
+            self.assertEqual(user.first_name, "Alice")
+            self.assertEqual(user.last_name, "Doe")
+            self.assertEqual(user.email, "alice@example.org")
 
     def test__direct_bind__registered__multi_role__no_role_sync(self):
         """
@@ -695,36 +743,39 @@ class LDAPSearchTestCase(unittest.TestCase):
             "AUTH_LDAP_USERNAME_FORMAT"
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.org",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was given no roles
-        self.assertListEqual(user.roles, [])
+            # validate - user was given no roles
+            self.assertListEqual(user.roles, [])
 
     def test__direct_bind__registered__multi_role__with_role_sync(self):
         """
@@ -738,36 +789,39 @@ class LDAPSearchTestCase(unittest.TestCase):
             "AUTH_LDAP_USERNAME_FORMAT"
         ] = "cn=%s,ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.org",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was given the correct roles
-        self.assertUserContainsRoles(user, ["Admin", "User"])
+            # validate - user was given the correct roles
+            self.assertUserContainsRoles(user, ["Admin", "User"])
 
     def test__indirect_bind__unregistered__single_role(self):
         """
@@ -781,32 +835,35 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # validate - user was given the correct roles
-        self.assertUserContainsRoles(user, ["Public", "User"])
+            # validate - user was given the correct roles
+            self.assertUserContainsRoles(user, ["Public", "User"])
 
-        # validate - user was given the correct attributes (read from LDAP)
-        self.assertEqual(user.first_name, "Alice")
-        self.assertEqual(user.last_name, "Doe")
-        self.assertEqual(user.email, "alice@example.org")
+            # validate - user was given the correct attributes (read from LDAP)
+            self.assertEqual(user.first_name, "Alice")
+            self.assertEqual(user.last_name, "Doe")
+            self.assertEqual(user.email, "alice@example.org")
 
     def test__indirect_bind__unregistered__multi_role(self):
         """
@@ -820,32 +877,35 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # validate - user was given the correct roles
-        self.assertUserContainsRoles(user, ["User", "Public", "Admin"])
+            # validate - user was given the correct roles
+            self.assertUserContainsRoles(user, ["User", "Public", "Admin"])
 
-        # validate - user was given the correct attributes (read from LDAP)
-        self.assertEqual(user.first_name, "Alice")
-        self.assertEqual(user.last_name, "Doe")
-        self.assertEqual(user.email, "alice@example.org")
+            # validate - user was given the correct attributes (read from LDAP)
+            self.assertEqual(user.first_name, "Alice")
+            self.assertEqual(user.last_name, "Doe")
+            self.assertEqual(user.email, "alice@example.org")
 
     def test__indirect_bind__registered__multi_role__no_role_sync(self):
         """
@@ -858,36 +918,39 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.org",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was given no roles
-        self.assertListEqual(user.roles, [])
+            # validate - user was given no roles
+            self.assertListEqual(user.roles, [])
 
     def test__indirect_bind__registered__multi_role__with_role_sync(self):
         """
@@ -900,36 +963,39 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
         self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.org",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # attempt login
-        user = sm.auth_user_ldap("alice", "alice_password")
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was given the correct roles
-        self.assertUserContainsRoles(user, ["User", "Admin"])
+            # validate - user was given the correct roles
+            self.assertUserContainsRoles(user, ["User", "Admin"])
 
     def test_login_failed_keep_next_url(self):
         """
@@ -943,19 +1009,21 @@ class LDAPSearchTestCase(unittest.TestCase):
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
         self.app.config["WTF_CSRF_ENABLED"] = False
         self.app.config["SECRET_KEY"] = "thisismyscretkey"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            client = self.app.test_client()
+            client.get("/logout/")
 
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        client = self.app.test_client()
-        client.get("/logout/")
-
-        response = client.post(
-            "/login/?next=/users/userinfo/",
-            data=dict(username="natalie", password="wrong_natalie_password"),
-            follow_redirects=False,
-        )
-        response = client.post(
-            response.location,
-            data=dict(username="natalie", password="natalie_password"),
-            follow_redirects=False,
-        )
-        assert response.location == "/users/userinfo/"
+            response = client.post(
+                "/login/?next=/users/userinfo/",
+                data=dict(username="natalie", password="wrong_natalie_password"),
+                follow_redirects=False,
+            )
+            response = client.post(
+                response.location,
+                data=dict(username="natalie", password="natalie_password"),
+                follow_redirects=False,
+            )
+            assert response.location == "/users/userinfo/"

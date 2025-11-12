@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from io import BytesIO
 import os
 import shutil
-from typing import Optional, Union
+from typing import Any, Optional, Union
 from urllib.request import urlopen
 from zipfile import ZipFile
 
@@ -10,14 +12,11 @@ from flask import current_app
 from flask.cli import with_appcontext
 import jinja2
 
-from .const import AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_OID, AUTH_REMOTE_USER
+from .const import AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_REMOTE_USER
 
 
 SQLA_REPO_URL = (
-    "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip"
-)
-MONGOENGIE_REPO_URL = (
-    "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip"
+    "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/refs/heads/v5.zip"
 )
 ADDON_REPO_URL = (
     "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-AddOn/archive/master.zip"
@@ -26,18 +25,18 @@ ADDON_REPO_URL = (
 MIN_SECRET_KEY_SIZE = 20
 
 
-def validate_secret_key(ctx, param, value):
+def validate_secret_key(ctx: click.Context, param: click.Option, value: str) -> str:
     if len(value) < MIN_SECRET_KEY_SIZE:
         raise click.BadParameter(f"SECRET_KEY size is less then {MIN_SECRET_KEY_SIZE}")
     return value
 
 
-def echo_header(title):
+def echo_header(title: str) -> None:
     click.echo(click.style(title, fg="green"))
     click.echo(click.style("-" * len(title), fg="green"))
 
 
-def cast_int_like_to_int(cli_arg: Union[None, str, int]) -> Union[None, str, int]:
+def cast_int_like_to_int(cli_arg: Any) -> Union[None, str, int]:
     """Cast int-like objects to int if possible
 
     If the arg cannot be cast to an integer, return the unmodified object instead."""
@@ -53,7 +52,7 @@ def cast_int_like_to_int(cli_arg: Union[None, str, int]) -> Union[None, str, int
 
 
 @click.group()
-def fab():
+def fab() -> None:
     """FAB flask group commands"""
     pass
 
@@ -65,13 +64,14 @@ def fab():
 @click.option("--email", default="admin@fab.org", prompt="Email")
 @click.password_option()
 @with_appcontext
-def create_admin(username, firstname, lastname, email, password):
+def create_admin(
+    username: str, firstname: str, lastname: str, email: str, password: str
+) -> None:
     """
     Creates an admin user
     """
     auth_type = {
         AUTH_DB: "Database Authentications",
-        AUTH_OID: "OpenID Authentication",
         AUTH_LDAP: "LDAP Authentication",
         AUTH_REMOTE_USER: "WebServer REMOTE_USER Authentication",
         AUTH_OAUTH: "OAuth Authentication",
@@ -101,7 +101,7 @@ def create_admin(username, firstname, lastname, email, password):
     if user:
         click.echo(click.style("Admin User {0} created.".format(username), fg="green"))
     else:
-        click.echo(click.style("No user created an error occured", fg="red"))
+        click.echo(click.style("No user created an error occurred", fg="red"))
 
 
 @fab.command("create-user")
@@ -112,7 +112,9 @@ def create_admin(username, firstname, lastname, email, password):
 @click.option("--email", prompt="Email")
 @click.password_option()
 @with_appcontext
-def create_user(role, username, firstname, lastname, email, password):
+def create_user(
+    role: str, username: str, firstname: str, lastname: str, email: str, password: str
+) -> None:
     """
     Create a user
     """
@@ -146,7 +148,7 @@ def create_user(role, username, firstname, lastname, email, password):
 )
 @click.password_option()
 @with_appcontext
-def reset_password(username, password):
+def reset_password(username: str, password: str) -> None:
     """
     Resets a user's password
     """
@@ -160,13 +162,13 @@ def reset_password(username, password):
 
 @fab.command("create-db")
 @with_appcontext
-def create_db():
+def create_db() -> None:
     """
     Create all your database objects (SQLAlchemy specific).
     """
     from flask_appbuilder.models.sqla import Model
 
-    engine = current_app.appbuilder.get_session.get_bind(mapper=None, clause=None)
+    engine = current_app.appbuilder.session.get_bind(mapper=None, clause=None)
     Model.metadata.create_all(engine)
     click.echo(click.style("DB objects created", fg="green"))
 
@@ -196,7 +198,7 @@ def import_roles(path: str) -> None:
 
 @fab.command("version")
 @with_appcontext
-def version():
+def version() -> None:
     """
     Flask-AppBuilder package version
     """
@@ -211,7 +213,7 @@ def version():
 
 @fab.command("security-cleanup")
 @with_appcontext
-def security_cleanup():
+def security_cleanup() -> None:
     """
     Cleanup unused permissions from views and roles.
     """
@@ -224,7 +226,7 @@ def security_cleanup():
     "--dry-run", "-d", is_flag=True, help="Dry run & print state transitions."
 )
 @with_appcontext
-def security_converge(dry_run=False):
+def security_converge(dry_run: bool = False) -> None:
     """
     Converges security deletes previous_class_permission_name
     """
@@ -249,7 +251,7 @@ def security_converge(dry_run=False):
 
 @fab.command("create-permissions")
 @with_appcontext
-def create_permissions():
+def create_permissions() -> None:
     """
     Creates all permissions and add them to the ADMIN Role.
     """
@@ -259,7 +261,7 @@ def create_permissions():
 
 @fab.command("list-views")
 @with_appcontext
-def list_views():
+def list_views() -> None:
     """
     List all registered views
     """
@@ -274,7 +276,7 @@ def list_views():
 
 @fab.command("list-users")
 @with_appcontext
-def list_users():
+def list_users() -> None:
     """
     List all users on the database
     """
@@ -294,13 +296,6 @@ def list_users():
     help="Your application name, directory will have this name",
 )
 @click.option(
-    "--engine",
-    prompt="Your engine type, SQLAlchemy or MongoEngine",
-    type=click.Choice(["SQLAlchemy", "MongoEngine"]),
-    default="SQLAlchemy",
-    help="Write your engine type",
-)
-@click.option(
     "--secret-key",
     prompt="Your app SECRET_KEY. It should be a long random string. Minimal size is 20",
     callback=validate_secret_key,
@@ -309,17 +304,13 @@ def list_users():
     "related needs by extensions or your application."
     "It should be a long random bytes or str",
 )
-def create_app(name: str, engine: str, secret_key: str) -> None:
+def create_app(name: str, secret_key: str) -> None:
     """
     Create a Skeleton application (needs internet connection to github)
     """
     try:
-        if engine.lower() == "sqlalchemy":
-            url = urlopen(SQLA_REPO_URL)
-            dirname = "Flask-AppBuilder-Skeleton-master"
-        elif engine.lower() == "mongoengine":
-            url = urlopen(MONGOENGIE_REPO_URL)
-            dirname = "Flask-AppBuilder-Skeleton-me-master"
+        url = urlopen(SQLA_REPO_URL)
+        dirname = "Flask-AppBuilder-Skeleton-5"
         zipfile = ZipFile(BytesIO(url.read()))
         zipfile.extractall()
         os.rename(dirname, name)
@@ -332,22 +323,11 @@ def create_app(name: str, engine: str, secret_key: str) -> None:
             fd.write(rendered_template)
 
         click.echo(click.style("Downloaded the skeleton app, good coding!", fg="green"))
-        return True
     except Exception as e:
         click.echo(click.style("Something went wrong {0}".format(e), fg="red"))
-        if engine.lower() == "sqlalchemy":
-            click.echo(
-                click.style(
-                    "Try downloading from {0}".format(SQLA_REPO_URL), fg="green"
-                )
-            )
-        elif engine.lower() == "mongoengine":
-            click.echo(
-                click.style(
-                    "Try downloading from {0}".format(MONGOENGIE_REPO_URL), fg="green"
-                )
-            )
-        return False
+        click.echo(
+            click.style("Try downloading from {0}".format(SQLA_REPO_URL), fg="green")
+        )
 
 
 @fab.command("create-addon")
@@ -356,7 +336,7 @@ def create_app(name: str, engine: str, secret_key: str) -> None:
     prompt="Your new addon name",
     help="Your addon name will be prefixed by fab_addon_, directory will have this name",
 )
-def create_addon(name):
+def create_addon(name: str) -> None:
     """
     Create a Skeleton AddOn (needs internet connection to github)
     """
@@ -376,17 +356,15 @@ def create_addon(name):
         click.echo(
             click.style("Downloaded the skeleton addon, good coding!", fg="green")
         )
-        return True
     except Exception as e:
         click.echo(click.style("Something went wrong {0}".format(e), fg="red"))
-        return False
 
 
 @fab.command("collect-static")
 @click.option(
     "--static_folder", default="app/static", help="Your projects static folder"
 )
-def collect_static(static_folder):
+def collect_static(static_folder: str) -> None:
     """
     Copies flask-appbuilder static files to your projects static folder
     """
@@ -422,7 +400,9 @@ def collect_static(static_folder):
 @click.option(
     "--keywords", "-k", multiple=True, default=["lazy_gettext", "gettext", "_", "__"]
 )
-def babel_extract(config, input, output, target, keywords):
+def babel_extract(
+    config: str, input: str, output: str, target: str, keywords: list[str]
+) -> None:
     """
     Babel, Extracts and updates all messages marked for translation
     """
@@ -434,10 +414,10 @@ def babel_extract(config, input, output, target, keywords):
             fg="green",
         )
     )
-    keywords = " -k ".join(keywords)
+    keywords_args = " -k ".join(keywords)
     os.popen(
         "pybabel extract -F {0} -k {1} -o {2} {3}".format(
-            config, keywords, output, input
+            config, keywords_args, output, input
         )
     )
     click.echo(click.style("Starting Update target:{0}".format(target), fg="green"))
@@ -451,7 +431,7 @@ def babel_extract(config, input, output, target, keywords):
     default="app/translations",
     help="The target directory where translations reside",
 )
-def babel_compile(target):
+def babel_compile(target: str) -> None:
     """
     Babel, Compiles all translations
     """

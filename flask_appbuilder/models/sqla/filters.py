@@ -2,6 +2,7 @@ import datetime
 import logging
 
 from dateutil import parser
+from flask import current_app
 from flask_appbuilder.exceptions import ApplyFilterException
 from flask_appbuilder.models.filters import (
     BaseFilter,
@@ -20,11 +21,14 @@ __all__ = [
     "FilterNotStartsWith",
     "FilterStartsWith",
     "FilterContains",
+    "FilterNotContains",
     "FilterNotEqual",
     "FilterEndsWith",
     "FilterEqualFunction",
     "FilterGreater",
     "FilterNotEndsWith",
+    "FilterIn",
+    "FilterNotIn",
     "FilterRelationManyToManyEqual",
     "FilterRelationOneToManyEqual",
     "FilterRelationOneToManyNotEqual",
@@ -77,6 +81,9 @@ def set_value_to_type(datamodel, column_name, value):
             return parser.parse(value)
         except Exception:
             return None
+    elif datamodel.is_json(column_name):
+        # For JSON columns, treat as string for filtering
+        return str(value)
     return value
 
 
@@ -183,6 +190,30 @@ class FilterSmaller(BaseFilter):
         return query.filter(field < value)
 
 
+class FilterIn(BaseFilter):
+    name = lazy_gettext("In")
+    arg_name = "in"
+
+    def apply(self, query, value):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        typed_values = [
+            set_value_to_type(self.datamodel, self.column_name, v) for v in value
+        ]
+        return query.filter(field.in_(typed_values))
+
+
+class FilterNotIn(BaseFilter):
+    name = lazy_gettext("Not In")
+    arg_name = "not_in"
+
+    def apply(self, query, value):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        typed_values = [
+            set_value_to_type(self.datamodel, self.column_name, v) for v in value
+        ]
+        return query.filter(~field.in_(typed_values))
+
+
 class FilterRelationOneToManyEqual(FilterRelation):
     name = lazy_gettext("Relation")
     arg_name = "rel_o_m"
@@ -192,11 +223,9 @@ class FilterRelationOneToManyEqual(FilterRelation):
         try:
             rel_obj = self.datamodel.get_related_obj(self.column_name, value)
         except SQLAlchemyError as exc:
-            logging.warning(
-                "Filter exception for %s with value %s, will not apply", field, value
-            )
+            logging.warning("Filter exception for %s will not apply", field)
             try:
-                self.datamodel.session.rollback()
+                current_app.appbuilder.session.rollback()
             except SQLAlchemyError:
                 # on MSSQL a rollback would fail here
                 pass
@@ -213,11 +242,9 @@ class FilterRelationOneToManyNotEqual(FilterRelation):
         try:
             rel_obj = self.datamodel.get_related_obj(self.column_name, value)
         except SQLAlchemyError as exc:
-            logging.warning(
-                "Filter exception for %s with value %s, will not apply", field, value
-            )
+            log.warning("Filter exception for %s will not apply", field)
             try:
-                self.datamodel.session.rollback()
+                current_app.appbuilder.session.rollback()
             except SQLAlchemyError:
                 # on MSSQL a rollback would fail here
                 pass
@@ -243,7 +270,7 @@ class FilterRelationManyToManyEqual(FilterRelation):
                 value_item,
             )
             try:
-                self.datamodel.session.rollback()
+                current_app.appbuilder.session.rollback()
             except SQLAlchemyError:
                 # on MSSQL a rollback would fail here
                 pass
@@ -252,10 +279,9 @@ class FilterRelationManyToManyEqual(FilterRelation):
         if rel_obj:
             return query.filter(field.contains(rel_obj))
         else:
-            log.error(
-                "Related object for column: %s, value: %s return Null",
+            log.warning(
+                "Related object for column: %s returned Null",
                 self.column_name,
-                value_item,
             )
 
         return query
@@ -319,6 +345,8 @@ class SQLAFilterConverter(BaseFilterConverter):
                 FilterNotEndsWith,
                 FilterNotContains,
                 FilterNotEqual,
+                FilterIn,
+                FilterNotIn,
             ],
         ),
         (
@@ -345,12 +373,57 @@ class SQLAFilterConverter(BaseFilterConverter):
                 FilterNotEndsWith,
                 FilterNotContains,
                 FilterNotEqual,
+                FilterIn,
+                FilterNotIn,
             ],
         ),
-        ("is_integer", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
-        ("is_float", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
-        ("is_numeric", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
+        (
+            "is_integer",
+            [
+                FilterEqual,
+                FilterGreater,
+                FilterSmaller,
+                FilterNotEqual,
+                FilterIn,
+                FilterNotIn,
+            ],
+        ),
+        (
+            "is_float",
+            [
+                FilterEqual,
+                FilterGreater,
+                FilterSmaller,
+                FilterNotEqual,
+                FilterIn,
+                FilterNotIn,
+            ],
+        ),
+        (
+            "is_numeric",
+            [
+                FilterEqual,
+                FilterGreater,
+                FilterSmaller,
+                FilterNotEqual,
+                FilterIn,
+                FilterNotIn,
+            ],
+        ),
         ("is_date", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
         ("is_boolean", [FilterEqual, FilterNotEqual]),
         ("is_datetime", [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual]),
+        (
+            "is_json",
+            [
+                FilterStartsWith,
+                FilterEndsWith,
+                FilterContains,
+                FilterEqual,
+                FilterNotStartsWith,
+                FilterNotEndsWith,
+                FilterNotContains,
+                FilterNotEqual,
+            ],
+        ),
     )
