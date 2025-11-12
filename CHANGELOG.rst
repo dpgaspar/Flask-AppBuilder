@@ -4,6 +4,7 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 5.0.2rc1
 -----------------------------------
 
+- fix: setup pkg filename (#2412) [Daniel Vaz Gaspar]
 - fix: check user is active with is_active (#2410) [Daniel Vaz Gaspar]
 - chore: French translations update messages.po (#2371) [xavier-GitHub76]
 - chore(username): Expand username length (#2409) [Antonio Rivero]
