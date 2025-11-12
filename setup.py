@@ -22,7 +22,7 @@ def desc():
 
 
 setup(
-    name="flask-appbuilder",
+    name="flask_appbuilder",
     version=version,
     url="https://github.com/dpgaspar/flask-appbuilder/",
     license="BSD",
