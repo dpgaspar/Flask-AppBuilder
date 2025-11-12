@@ -636,12 +636,16 @@ class AuthOAuthView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
 
         if provider is None:
-            return self.render_template(
-                self.login_template,
-                providers=self.appbuilder.sm.oauth_providers,
-                title=self.title,
-                appbuilder=self.appbuilder,
-            )
+            providers = self.appbuilder.sm.oauth_providers
+            if len(providers) == 1:
+                provider = providers[0]["name"]
+            else:
+                return self.render_template(
+                    self.login_template,
+                    providers=providers,
+                    title=self.title,
+                    appbuilder=self.appbuilder,
+                )
 
         log.debug("Going to call authorize for: %s", provider)
         random_state = generate_random_string()
