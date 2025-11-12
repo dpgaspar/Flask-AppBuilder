@@ -1,6 +1,13 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.0.2rc1
+-----------------------------------
+
+- fix: check user is active with is_active (#2410) [Daniel Vaz Gaspar]
+- chore: French translations update messages.po (#2371) [xavier-GitHub76]
+- chore(username): Expand username length (#2409) [Antonio Rivero]
+
 Improvements and Bug fixes on 5.0.1
 -----------------------------------
 
