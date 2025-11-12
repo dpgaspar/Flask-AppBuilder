@@ -318,16 +318,17 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
             "remote_app": {
                 "client_id": "AZURE_APPLICATION_ID",
                 "client_secret": "AZURE_SECRET",
-                "api_base_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2",
+                "api_base_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/v2.0",
                 "client_kwargs": {
-                    "scope": "User.read name preferred_username email profile upn",
+                    "scope": "email profile openid",
                     "resource": "AZURE_APPLICATION_ID",
                     # Optionally enforce signature JWT verification
                     "verify_signature": False
                 },
                 "request_token_url": None,
-                "access_token_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/token",
-                "authorize_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/authorize",
+                "access_token_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/v2.0/token",
+                "authorize_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/v2.0/authorize",
+                "jwks_uri": "https://login.microsoftonline.com/common/discovery/v2.0/keys",
             },
         },
         {
