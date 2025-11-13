@@ -38,8 +38,7 @@ class DateTimePickerWidget:
     """
 
     data_template = (
-        '<div class="input-group date appbuilder_datetime" '
-        'data-provide="datepicker" id="datetimepicker">'
+        '<div class="input-group date appbuilder_datetime">'
         '<span class="input-group-addon"><i class="fa fa-calendar cursor-hand"></i>'
         "</span>"
         '<input class="form-control" data-format="yyyy-MM-dd hh:mm:ss" %(text)s />'
