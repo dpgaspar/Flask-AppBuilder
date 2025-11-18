@@ -50,7 +50,7 @@ On your view reference your method as a column on list::
 Base Filtering
 --------------
 
-To filter a views data, just set the *base_filter* property with your base filters. These will allways be applied first on any search.
+To filter a views data, just set the *base_filter* property with your base filters. These will always be applied first on any search.
 
 It's very flexible, you can apply multiple filters with static values, or values based on a function you define.
 On this next example we are filtering a view by the logged in user and with column *name* starting with "a"
