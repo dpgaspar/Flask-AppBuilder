@@ -34,7 +34,7 @@ pyasn1-modules==0.3.0
     # via python-ldap
 pycparser==2.21
     # via cffi
-pyodbc==5.0.1
+pyodbc==5.2.0
     # via -r requirements/extra.in
 python-ldap==3.4.3
     # via -r requirements/extra.in
