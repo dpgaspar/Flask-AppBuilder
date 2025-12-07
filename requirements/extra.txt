@@ -24,7 +24,7 @@ mysqlclient==2.0.1
     # via -r requirements/extra.in
 pillow==10.4.0
     # via -r requirements/extra.in
-psycopg2-binary==2.9.6
+psycopg2-binary==2.9.10
     # via -r requirements/extra.in
 pyasn1==0.5.1
     # via
