@@ -22,7 +22,7 @@ jmespath==1.0.1
     # via -r requirements/extra.in
 mysqlclient==2.0.1
     # via -r requirements/extra.in
-pillow==10.2.0
+pillow==10.4.0
     # via -r requirements/extra.in
 psycopg2-binary==2.9.6
     # via -r requirements/extra.in
