@@ -8,7 +8,7 @@ authlib==1.2.1
     # via -r requirements/extra.in
 certifi==2024.2.2
     # via requests
-cffi==1.16.0
+cffi==1.17.0
     # via cryptography
 charset-normalizer==2.0.12
     # via requests
