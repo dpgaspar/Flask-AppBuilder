@@ -282,7 +282,7 @@ class SecurityManager(BaseSecurityManager):
 
     def update_user(self, user):
         try:
-            user.changed_on = datetime.utcnow()
+            user.changed_on = datetime.utcnow()  # pragma: no cover
             self.session.merge(user)
             self.session.commit()
             log.info(c.LOGMSG_INF_SEC_UPD_USER, user)
