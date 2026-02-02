@@ -126,10 +126,11 @@ class SAMLRegistrationRoleTestCase(unittest.TestCase):
 
     def tearDown(self):
         with self.app.app_context():
-            user_alice = self.appbuilder.sm.find_user("alice")
-            if user_alice:
-                self.appbuilder.session.delete(user_alice)
-                self.appbuilder.session.commit()
+            for username in ("alice", "alice_old", "emailuser@example.com"):
+                user = self.appbuilder.sm.find_user(username)
+                if user:
+                    self.appbuilder.session.delete(user)
+            self.appbuilder.session.commit()
         self.app = None
         self.appbuilder = None
 
