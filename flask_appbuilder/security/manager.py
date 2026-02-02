@@ -1494,19 +1494,34 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             return None
 
+    @staticmethod
+    def _prepare_saml_request() -> Dict[str, Any]:
+        """Prepare Flask request data in the format expected by python3-saml."""
+        return {
+            "https": "on" if request.scheme == "https" else "off",
+            "http_host": request.host,
+            "server_port": request.environ.get("SERVER_PORT", "443"),
+            "script_name": request.path,
+            "get_data": request.args.copy(),
+            "post_data": request.form.copy(),
+            "query_string": request.query_string.decode("utf-8"),
+        }
+
+    def _get_saml_auth(self, idp: str):
+        """Create a OneLogin_Saml2_Auth instance for the given IdP."""
+        from onelogin.saml2.auth import OneLogin_Saml2_Auth
+
+        return OneLogin_Saml2_Auth(
+            self._prepare_saml_request(), self.get_saml_settings(idp)
+        )
+
     def get_saml_login_redirect_url(self, idp: str) -> str:
         """Create a SAML authentication request and return the redirect URL.
 
         :param idp: The SAML identity provider name.
         :returns: The IdP redirect URL for SSO.
         """
-        from onelogin.saml2.auth import OneLogin_Saml2_Auth
-
-        from flask_appbuilder.security.saml.utils import prepare_flask_request
-
-        req = prepare_flask_request()
-        auth = OneLogin_Saml2_Auth(req, self.get_saml_settings(idp))
-        return auth.login()
+        return self._get_saml_auth(idp).login()
 
     def get_saml_userinfo(self, idp: str) -> Optional[Dict[str, Any]]:
         """Process a SAML ACS response and return mapped user info.
@@ -1515,15 +1530,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         :returns: A dict with mapped user info, session_index, and name_id,
                   or None if authentication failed.
         """
-        from onelogin.saml2.auth import OneLogin_Saml2_Auth
+        from flask_appbuilder.security.saml.utils import map_saml_attributes
 
-        from flask_appbuilder.security.saml.utils import (
-            map_saml_attributes,
-            prepare_flask_request,
-        )
-
-        req = prepare_flask_request()
-        auth = OneLogin_Saml2_Auth(req, self.get_saml_settings(idp))
+        auth = self._get_saml_auth(idp)
         auth.process_response()
         errors = auth.get_errors()
 
@@ -1577,12 +1586,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         :param session_index: The SAML session index.
         :returns: Redirect URL, or None if session was cleared locally.
         """
-        from onelogin.saml2.auth import OneLogin_Saml2_Auth
-
-        from flask_appbuilder.security.saml.utils import prepare_flask_request
-
-        req = prepare_flask_request()
-        auth = OneLogin_Saml2_Auth(req, self.get_saml_settings(idp))
+        auth = self._get_saml_auth(idp)
 
         # Incoming SLO request from IdP
         if "SAMLRequest" in request.form or "SAMLRequest" in request.args:
