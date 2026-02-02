@@ -3,7 +3,17 @@ import logging
 import re
 from typing import Any, Optional
 
-from flask import abort, current_app, flash, g, redirect, request, session, url_for
+from flask import (
+    abort,
+    current_app,
+    flash,
+    g,
+    make_response,
+    redirect,
+    request,
+    session,
+    url_for,
+)
 from flask_appbuilder._compat import as_unicode
 from flask_appbuilder.actions import action
 from flask_appbuilder.baseviews import BaseView
@@ -21,6 +31,7 @@ from flask_appbuilder.security.forms import (
     roles_or_groups_required,
     UserInfoEdit,
 )
+from flask_appbuilder.security.saml.metadata import get_sp_metadata
 from flask_appbuilder.security.utils import generate_random_string
 from flask_appbuilder.utils.base import get_safe_redirect, lazy_formatter_gettext
 from flask_appbuilder.validators import PasswordComplexityValidator
@@ -730,6 +741,153 @@ class AuthOAuthView(AuthView):
             if "next" in state and len(state["next"]) > 0:
                 next_url = get_safe_redirect(state["next"][0])
             return redirect(next_url)
+
+
+class UserSAMLModelView(UserModelView):
+    """
+    View that adds SAML specifics to User view.
+    Override to implement your own custom view.
+    Then override usersamlmodelview property on SecurityManager.
+    """
+
+    pass
+
+
+class AuthSAMLView(AuthView):
+    """SAML 2.0 Authentication View."""
+
+    login_template = "appbuilder/general/security/login_saml.html"
+
+    @expose("/login/")
+    @expose("/login/<idp>")
+    @no_cache
+    def login(self, idp: Optional[str] = None) -> WerkzeugResponse:
+        if g.user is not None and g.user.is_authenticated:
+            return redirect(self.appbuilder.get_url_for_index)
+
+        sm = self.appbuilder.sm
+        providers = sm.saml_providers
+
+        if idp is None:
+            if len(providers) == 1:
+                return redirect(url_for(".login", idp=providers[0]["name"]))
+            return self.render_template(
+                self.login_template,
+                providers=providers,
+                title=self.title,
+                appbuilder=self.appbuilder,
+            )
+
+        try:
+            session["saml_idp"] = idp
+            next_url = request.args.get("next", "")
+            if next_url:
+                session["saml_next"] = next_url
+            return redirect(sm.get_saml_login_redirect_url(idp))
+        except Exception as e:
+            log.error("Error initiating SAML login for IdP '%s': %s", idp, e)
+            flash(as_unicode(self.invalid_login_message), "warning")
+            return redirect(self.appbuilder.get_url_for_index)
+
+    @expose("/saml/acs/", methods=["POST"])
+    @no_cache
+    def acs(self) -> WerkzeugResponse:
+        """Assertion Consumer Service - receives SAML responses from IdP."""
+        sm = self.appbuilder.sm
+        try:
+            idp = session.get("saml_idp")
+            if not idp:
+                providers = sm.saml_providers
+                if len(providers) == 1:
+                    idp = providers[0]["name"]
+                else:
+                    flash("Could not determine identity provider.", "warning")
+                    return redirect(self.appbuilder.get_url_for_login)
+
+            userinfo = sm.get_saml_userinfo(idp)
+            if userinfo is None:
+                flash(as_unicode(self.invalid_login_message), "warning")
+                return redirect(self.appbuilder.get_url_for_login)
+
+            user = sm.auth_user_saml(userinfo)
+            if user is None:
+                flash(as_unicode(self.invalid_login_message), "warning")
+                return redirect(self.appbuilder.get_url_for_login)
+
+            # Store SAML session info for SLO
+            session["saml_name_id"] = userinfo.get("saml_name_id")
+            session["saml_session_index"] = userinfo.get("saml_session_index")
+            session["saml_idp"] = idp
+
+            login_user(user, remember=False)
+
+            next_url = session.pop("saml_next", "") or ""
+            if next_url:
+                next_url = get_safe_redirect(next_url)
+            else:
+                next_url = self.appbuilder.get_url_for_index
+            return redirect(next_url)
+
+        except Exception as e:
+            log.error("Error processing SAML ACS: %s", e)
+            flash(as_unicode(self.invalid_login_message), "warning")
+            return redirect(self.appbuilder.get_url_for_login)
+
+    @expose("/saml/slo/", methods=["GET", "POST"])
+    def slo(self) -> WerkzeugResponse:
+        """Single Logout endpoint."""
+        try:
+            idp = session.get("saml_idp")
+            if not idp:
+                logout_user()
+                return redirect(self.appbuilder.get_url_for_index)
+
+            url = self.appbuilder.sm.get_saml_logout_redirect_url(
+                idp,
+                name_id=session.get("saml_name_id"),
+                session_index=session.get("saml_session_index"),
+            )
+            logout_user()
+            return redirect(url or self.appbuilder.get_url_for_index)
+
+        except Exception as e:
+            log.error("Error during SAML SLO: %s", e)
+            logout_user()
+            return redirect(self.appbuilder.get_url_for_index)
+
+    @expose("/logout/")
+    def logout(self) -> WerkzeugResponse:
+        """Override logout to support SAML SLO."""
+        idp = session.get("saml_idp")
+        if idp:
+            try:
+                return redirect(url_for(".slo"))
+            except Exception:
+                pass
+        logout_user()
+        return redirect(
+            current_app.config.get(
+                "LOGOUT_REDIRECT_URL", self.appbuilder.get_url_for_index
+            )
+        )
+
+    @expose("/saml/metadata/")
+    def metadata(self) -> WerkzeugResponse:
+        """SP Metadata endpoint."""
+        try:
+            providers = self.appbuilder.sm.saml_providers
+            if not providers:
+                abort(404)
+
+            saml_settings = self.appbuilder.sm.get_saml_settings(providers[0]["name"])
+            metadata_xml = get_sp_metadata(saml_settings)
+
+            resp = make_response(metadata_xml, 200)
+            resp.headers["Content-Type"] = "text/xml"
+            return resp
+        except Exception as e:
+            log.error("Error generating SP metadata: %s", e)
+            abort(500)
 
 
 class AuthRemoteUserView(AuthView):

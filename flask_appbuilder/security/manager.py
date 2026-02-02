@@ -6,7 +6,7 @@ import logging
 import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
-from flask import current_app, Flask, g, session, url_for
+from flask import current_app, Flask, g, request, session, url_for
 from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
@@ -28,6 +28,7 @@ from .views import (
     AuthLDAPView,
     AuthOAuthView,
     AuthRemoteUserView,
+    AuthSAMLView,
     PermissionModelView,
     PermissionViewModelView,
     RegisterUserModelView,
@@ -40,6 +41,7 @@ from .views import (
     UserLDAPModelView,
     UserOAuthModelView,
     UserRemoteUserModelView,
+    UserSAMLModelView,
     UserStatsChartView,
     ViewMenuModelView,
 )
@@ -49,6 +51,7 @@ from ..const import (
     AUTH_LDAP,
     AUTH_OAUTH,
     AUTH_REMOTE_USER,
+    AUTH_SAML,
     LOGMSG_ERR_SEC_ADD_REGISTER_USER,
     LOGMSG_ERR_SEC_AUTH_LDAP,
     LOGMSG_ERR_SEC_AUTH_LDAP_TLS,
@@ -186,6 +189,11 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Authentication OAuth view """
     authremoteuserview = AuthRemoteUserView
     """ Override if you want your own Authentication REMOTE_USER view """
+    authsamlview = AuthSAMLView
+    """ Override if you want your own Authentication SAML view """
+
+    usersamlmodelview = UserSAMLModelView
+    """ Override if you want your own user SAML view """
 
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
@@ -520,6 +528,41 @@ class BaseSecurityManager(AbstractSecurityManager):
         return current_app.config["OAUTH_PROVIDERS"]
 
     @property
+    def saml_providers(self) -> List[Dict]:
+        return current_app.config.get("SAML_PROVIDERS", [])
+
+    @property
+    def saml_config(self) -> Dict:
+        return current_app.config.get("SAML_CONFIG", {})
+
+    def get_saml_provider(self, name: str) -> Optional[Dict]:
+        """Return a specific SAML provider by name."""
+        for provider in self.saml_providers:
+            if provider["name"] == name:
+                return provider
+        return None
+
+    def get_saml_settings(self, provider_name: str) -> Dict:
+        """Build the python3-saml settings dict for a given provider.
+
+        Merges the global SAML_CONFIG with the provider-specific IdP config.
+        """
+        import copy
+
+        provider = self.get_saml_provider(provider_name)
+        if not provider:
+            raise ValueError(
+                f"SAML provider '{provider_name}' not found in configuration"
+            )
+
+        base_config = copy.deepcopy(self.saml_config)
+
+        if "idp" in provider:
+            base_config["idp"] = provider["idp"]
+
+        return base_config
+
+    @property
     def is_auth_limited(self) -> bool:
         return current_app.config["AUTH_RATE_LIMITED"]
 
@@ -807,6 +850,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         elif self.auth_type == AUTH_REMOTE_USER:
             self.user_view = self.userremoteusermodelview
             self.auth_view = self.authremoteuserview()
+        elif self.auth_type == AUTH_SAML:
+            self.user_view = self.usersamlmodelview
+            self.auth_view = self.authsamlview()
         self.appbuilder.add_view_no_menu(self.auth_view)
 
         # this needs to be done after the view is added, otherwise the blueprint
@@ -1442,6 +1488,217 @@ class BaseSecurityManager(AbstractSecurityManager):
                 return None
 
         # LOGIN SUCCESS (only if user is now registered)
+        if user:
+            self.update_user_auth_stat(user)
+            return user
+        else:
+            return None
+
+    def get_saml_login_redirect_url(self, idp: str) -> str:
+        """Create a SAML authentication request and return the redirect URL.
+
+        :param idp: The SAML identity provider name.
+        :returns: The IdP redirect URL for SSO.
+        """
+        from onelogin.saml2.auth import OneLogin_Saml2_Auth
+
+        from flask_appbuilder.security.saml.utils import prepare_flask_request
+
+        req = prepare_flask_request()
+        auth = OneLogin_Saml2_Auth(req, self.get_saml_settings(idp))
+        return auth.login()
+
+    def get_saml_userinfo(self, idp: str) -> Optional[Dict[str, Any]]:
+        """Process a SAML ACS response and return mapped user info.
+
+        :param idp: The SAML identity provider name.
+        :returns: A dict with mapped user info, session_index, and name_id,
+                  or None if authentication failed.
+        """
+        from onelogin.saml2.auth import OneLogin_Saml2_Auth
+
+        from flask_appbuilder.security.saml.utils import (
+            map_saml_attributes,
+            prepare_flask_request,
+        )
+
+        req = prepare_flask_request()
+        auth = OneLogin_Saml2_Auth(req, self.get_saml_settings(idp))
+        auth.process_response()
+        errors = auth.get_errors()
+
+        if errors:
+            log.error(
+                "SAML ACS errors for IdP '%s': %s (reason: %s)",
+                idp,
+                errors,
+                auth.get_last_error_reason(),
+            )
+            return None
+
+        if not auth.is_authenticated():
+            return None
+
+        saml_attributes = auth.get_attributes()
+        name_id = auth.get_nameid()
+        log.debug(
+            "SAML attributes from IdP '%s': %s, NameID: %s",
+            idp,
+            saml_attributes,
+            name_id,
+        )
+
+        provider = self.get_saml_provider(idp)
+        attribute_mapping = provider.get("attribute_mapping", {})
+        userinfo = map_saml_attributes(saml_attributes, attribute_mapping, name_id)
+
+        # Include session data needed for SLO
+        userinfo["saml_name_id"] = name_id
+        userinfo["saml_session_index"] = auth.get_session_index()
+
+        log.debug("Mapped SAML userinfo: %s", userinfo)
+        return userinfo
+
+    def get_saml_logout_redirect_url(
+        self,
+        idp: str,
+        name_id: Optional[str] = None,
+        session_index: Optional[str] = None,
+    ) -> Optional[str]:
+        """Process SAML SLO or initiate a logout request.
+
+        Handles three cases:
+        - Incoming SLO request from IdP (SAMLRequest)
+        - SLO response from IdP (SAMLResponse)
+        - SP-initiated logout (returns redirect URL to IdP)
+
+        :param idp: The SAML identity provider name.
+        :param name_id: The SAML NameID for the session.
+        :param session_index: The SAML session index.
+        :returns: Redirect URL, or None if session was cleared locally.
+        """
+        from onelogin.saml2.auth import OneLogin_Saml2_Auth
+
+        from flask_appbuilder.security.saml.utils import prepare_flask_request
+
+        req = prepare_flask_request()
+        auth = OneLogin_Saml2_Auth(req, self.get_saml_settings(idp))
+
+        # Incoming SLO request from IdP
+        if "SAMLRequest" in request.form or "SAMLRequest" in request.args:
+            url = auth.process_slo(delete_session_cb=lambda: session.clear())
+            return url
+
+        # SLO response from IdP
+        if "SAMLResponse" in request.form or "SAMLResponse" in request.args:
+            auth.process_slo(delete_session_cb=lambda: session.clear())
+            return None
+
+        # SP-initiated logout
+        return auth.logout(name_id=name_id, session_index=session_index)
+
+    def _saml_calculate_user_roles(self, userinfo) -> List[str]:
+        user_role_objects = set()
+
+        # apply AUTH_ROLES_MAPPING
+        if len(self.auth_roles_mapping) > 0:
+            user_role_keys = userinfo.get("role_keys", [])
+            user_role_objects.update(self.get_roles_from_keys(user_role_keys))
+
+        # apply AUTH_USER_REGISTRATION_ROLE
+        if self.auth_user_registration:
+            registration_role_name = self.auth_user_registration_role
+
+            if self.auth_user_registration_role_jmespath:
+                import jmespath
+
+                registration_role_name = jmespath.search(
+                    self.auth_user_registration_role_jmespath, userinfo
+                )
+
+            fab_role = self.find_role(registration_role_name)
+            if fab_role:
+                user_role_objects.add(fab_role)
+            else:
+                log.warning(
+                    "Can't find AUTH_USER_REGISTRATION role: %s", registration_role_name
+                )
+
+        return list(user_role_objects)
+
+    def auth_user_saml(self, userinfo):
+        """
+        Method for authenticating user with SAML.
+
+        :param userinfo: dict with user information extracted from SAML assertion
+                         (keys are the same as User model columns)
+        """
+        # extract the username from userinfo
+        if "username" in userinfo:
+            username = userinfo["username"]
+        elif "email" in userinfo:
+            username = userinfo["email"]
+        else:
+            log.error("SAML userinfo does not have username or email %s", userinfo)
+            return None
+
+        if (username is None) or username == "":
+            return None
+
+        # Search the DB for this user by username or email
+        user = self.find_user(username=username)
+        if not user and userinfo.get("email"):
+            user = self.find_user(email=userinfo["email"])
+
+        # If user is not active, go away
+        if user and (not user.is_active):
+            return None
+
+        # If user is not registered, and not self-registration, go away
+        if (not user) and (not self.auth_user_registration):
+            return None
+
+        # Sync the user's roles and info
+        if user:
+            updated = False
+
+            if self.auth_roles_sync_at_login:
+                new_roles = self._saml_calculate_user_roles(userinfo)
+                if new_roles:
+                    user.roles = new_roles
+                    updated = True
+                    log.debug(
+                        "Calculated new roles for user='%s' as: %s",
+                        username,
+                        user.roles,
+                    )
+
+            # Update user info from SAML assertion
+            for field in ("first_name", "last_name", "email"):
+                new_val = userinfo.get(field)
+                if new_val and getattr(user, field) != new_val:
+                    setattr(user, field, new_val)
+                    updated = True
+
+            if updated:
+                self.update_user(user)
+
+        # If the user is new, register them
+        if (not user) and self.auth_user_registration:
+            user = self.add_user(
+                username=username,
+                first_name=userinfo.get("first_name", ""),
+                last_name=userinfo.get("last_name", ""),
+                email=userinfo.get("email", "") or f"{username}@email.notfound",
+                role=self._saml_calculate_user_roles(userinfo),
+            )
+            log.debug("New SAML user registered: %s", user)
+
+            if not user:
+                log.error("Error creating a new SAML user %s", username)
+                return None
+
+        # LOGIN SUCCESS
         if user:
             self.update_user_auth_stat(user)
             return user
