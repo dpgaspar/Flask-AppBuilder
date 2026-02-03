@@ -4,7 +4,7 @@ import datetime
 import importlib
 import logging
 import re
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, TYPE_CHECKING, Union
 
 from flask import current_app, Flask, g, request, session, url_for
 from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
@@ -61,6 +61,9 @@ from ..const import (
     MICROSOFT_KEY_SET_URL,
     PERMISSION_PREFIX,
 )
+
+if TYPE_CHECKING:
+    from flask_appbuilder.security.saml.types import SAMLConfig, SAMLProvider
 
 log = logging.getLogger(__name__)
 
@@ -528,21 +531,21 @@ class BaseSecurityManager(AbstractSecurityManager):
         return current_app.config["OAUTH_PROVIDERS"]
 
     @property
-    def saml_providers(self) -> List[Dict]:
+    def saml_providers(self) -> List["SAMLProvider"]:
         return current_app.config.get("SAML_PROVIDERS", [])
 
     @property
-    def saml_config(self) -> Dict:
+    def saml_config(self) -> "SAMLConfig":
         return current_app.config.get("SAML_CONFIG", {})
 
-    def get_saml_provider(self, name: str) -> Optional[Dict]:
+    def get_saml_provider(self, name: str) -> Optional["SAMLProvider"]:
         """Return a specific SAML provider by name."""
         for provider in self.saml_providers:
             if provider["name"] == name:
                 return provider
         return None
 
-    def get_saml_settings(self, provider_name: str) -> Dict:
+    def get_saml_settings(self, provider_name: str) -> "SAMLConfig":
         """Build the python3-saml settings dict for a given provider.
 
         Merges the global SAML_CONFIG with the provider-specific IdP config.
