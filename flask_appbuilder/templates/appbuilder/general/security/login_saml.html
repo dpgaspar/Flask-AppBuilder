@@ -28,16 +28,17 @@
 </div>
 
 <script nonce="{{ baselib.get_nonce() }}">
-    var baseLoginUrl = "{{appbuilder.get_url_for_login}}";
-    var next = "?next=" + "{{request.args.get('next', '') | urlencode}}";
+    var baseLoginUrl = {{ appbuilder.get_url_for_login | tojson }};
+    var nextParam = {{ request.args.get('next', '') | urlencode | tojson }};
+    var next = nextParam ? "?next=" + nextParam : "";
 
     function signin(provider) {
         window.location.href = baseLoginUrl + provider + next;
     }
 
     {% for provider in providers %}
-        document.getElementById("btn-signin-{{provider.name}}")
-            .addEventListener("click", function () { signin("{{provider.name}}") })
+        document.getElementById({{ ("btn-signin-" ~ provider.name) | tojson }})
+            .addEventListener("click", function () { signin({{ provider.name | tojson }}) })
     {% endfor %}
 
 </script>

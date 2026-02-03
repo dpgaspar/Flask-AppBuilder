@@ -778,14 +778,23 @@ class AuthSAMLView(AuthView):
                 appbuilder=self.appbuilder,
             )
 
+        from onelogin.saml2.errors import (
+            OneLogin_Saml2_Error,
+            OneLogin_Saml2_ValidationError,
+        )
+
         try:
             session["saml_idp"] = idp
-            next_url = request.args.get("next", "")
-            if next_url:
+            next_url = get_safe_redirect(request.args.get("next", ""))
+            if next_url and next_url != self.appbuilder.get_url_for_index:
                 session["saml_next"] = next_url
             return redirect(sm.get_saml_login_redirect_url(idp))
-        except Exception as e:
-            log.error("Error initiating SAML login for IdP '%s': %s", idp, e)
+        except (OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError) as e:
+            log.error("SAML error initiating login for IdP '%s': %s", idp, e)
+            flash(as_unicode(self.invalid_login_message), "warning")
+            return redirect(self.appbuilder.get_url_for_index)
+        except ValueError as e:
+            log.error("SAML configuration error for IdP '%s': %s", idp, e)
             flash(as_unicode(self.invalid_login_message), "warning")
             return redirect(self.appbuilder.get_url_for_index)
 
@@ -793,6 +802,11 @@ class AuthSAMLView(AuthView):
     @no_cache
     def acs(self) -> WerkzeugResponse:
         """Assertion Consumer Service - receives SAML responses from IdP."""
+        from onelogin.saml2.errors import (
+            OneLogin_Saml2_Error,
+            OneLogin_Saml2_ValidationError,
+        )
+
         sm = self.appbuilder.sm
         try:
             idp = session.get("saml_idp")
@@ -814,44 +828,61 @@ class AuthSAMLView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
 
-            # Store SAML session info for SLO
-            session["saml_name_id"] = userinfo.get("saml_name_id")
-            session["saml_session_index"] = userinfo.get("saml_session_index")
-            session["saml_idp"] = idp
-
-            login_user(user, remember=False)
-
+            # Calculate redirect URL before login (so failures don't leave partial state)
             next_url = session.pop("saml_next", "") or ""
             if next_url:
                 next_url = get_safe_redirect(next_url)
             else:
                 next_url = self.appbuilder.get_url_for_index
+
+            # Store SAML session info for SLO
+            session["saml_name_id"] = userinfo.get("saml_name_id")
+            session["saml_session_index"] = userinfo.get("saml_session_index")
+            session["saml_idp"] = idp
+
+            # login_user is the last operation before redirect
+            login_user(user, remember=False)
             return redirect(next_url)
 
-        except Exception as e:
-            log.error("Error processing SAML ACS: %s", e)
+        except (OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError) as e:
+            log.error("SAML validation error in ACS: %s", e)
+            flash(as_unicode(self.invalid_login_message), "warning")
+            return redirect(self.appbuilder.get_url_for_login)
+        except ValueError as e:
+            # Provider not found or config error
+            log.error("SAML configuration error in ACS: %s", e)
             flash(as_unicode(self.invalid_login_message), "warning")
             return redirect(self.appbuilder.get_url_for_login)
 
     @expose("/saml/slo/", methods=["GET", "POST"])
     def slo(self) -> WerkzeugResponse:
         """Single Logout endpoint."""
+        from onelogin.saml2.errors import (
+            OneLogin_Saml2_Error,
+            OneLogin_Saml2_ValidationError,
+        )
+
         try:
             idp = session.get("saml_idp")
             if not idp:
                 logout_user()
                 return redirect(self.appbuilder.get_url_for_index)
 
-            url = self.appbuilder.sm.get_saml_logout_redirect_url(
+            url, should_logout = self.appbuilder.sm.get_saml_logout_redirect_url(
                 idp,
                 name_id=session.get("saml_name_id"),
                 session_index=session.get("saml_session_index"),
             )
-            logout_user()
+            if should_logout:
+                logout_user()
             return redirect(url or self.appbuilder.get_url_for_index)
 
-        except Exception as e:
-            log.error("Error during SAML SLO: %s", e)
+        except (OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError) as e:
+            log.error("SAML SLO validation error: %s", e)
+            logout_user()
+            return redirect(self.appbuilder.get_url_for_index)
+        except ValueError as e:
+            log.error("SAML SLO configuration error: %s", e)
             logout_user()
             return redirect(self.appbuilder.get_url_for_index)
 
@@ -872,19 +903,34 @@ class AuthSAMLView(AuthView):
         )
 
     @expose("/saml/metadata/")
-    def metadata(self) -> WerkzeugResponse:
-        """SP Metadata endpoint."""
+    @expose("/saml/metadata/<idp>")
+    def metadata(self, idp: Optional[str] = None) -> WerkzeugResponse:
+        """SP Metadata endpoint.
+
+        Without idp parameter, returns metadata for the first configured provider.
+        With idp parameter, returns metadata for that specific provider.
+        """
         try:
-            providers = self.appbuilder.sm.saml_providers
+            sm = self.appbuilder.sm
+            providers = sm.saml_providers
             if not providers:
                 abort(404)
 
-            saml_settings = self.appbuilder.sm.get_saml_settings(providers[0]["name"])
+            # Use specified IdP or default to first provider
+            provider_name = idp if idp else providers[0]["name"]
+            if idp and not sm.get_saml_provider(idp):
+                log.warning("Metadata requested for unknown IdP: %s", idp)
+                abort(404)
+
+            saml_settings = sm.get_saml_settings(provider_name)
             metadata_xml = get_sp_metadata(saml_settings)
 
             resp = make_response(metadata_xml, 200)
             resp.headers["Content-Type"] = "text/xml"
             return resp
+        except ValueError as e:
+            log.error("SAML metadata configuration error: %s", e)
+            abort(404)
         except Exception as e:
             log.error("Error generating SP metadata: %s", e)
             abort(500)

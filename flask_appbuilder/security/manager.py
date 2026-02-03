@@ -1537,12 +1537,23 @@ class BaseSecurityManager(AbstractSecurityManager):
         errors = auth.get_errors()
 
         if errors:
-            log.error(
-                "SAML ACS errors for IdP '%s': %s (reason: %s)",
-                idp,
-                errors,
-                auth.get_last_error_reason(),
-            )
+            error_reason = auth.get_last_error_reason() or ""
+            # Check for issuer mismatch (multi-tab / wrong IdP scenario)
+            if "issuer" in error_reason.lower():
+                log.error(
+                    "SAML Issuer mismatch for IdP '%s'. This may happen if you "
+                    "initiated login with a different IdP in another tab. "
+                    "Error: %s",
+                    idp,
+                    error_reason,
+                )
+            else:
+                log.error(
+                    "SAML ACS errors for IdP '%s': %s (reason: %s)",
+                    idp,
+                    errors,
+                    error_reason,
+                )
             return None
 
         if not auth.is_authenticated():
@@ -1573,7 +1584,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         idp: str,
         name_id: Optional[str] = None,
         session_index: Optional[str] = None,
-    ) -> Optional[str]:
+    ) -> Tuple[Optional[str], bool]:
         """Process SAML SLO or initiate a logout request.
 
         Handles three cases:
@@ -1584,22 +1595,28 @@ class BaseSecurityManager(AbstractSecurityManager):
         :param idp: The SAML identity provider name.
         :param name_id: The SAML NameID for the session.
         :param session_index: The SAML session index.
-        :returns: Redirect URL, or None if session was cleared locally.
+        :returns: Tuple of (redirect URL or None, should_logout flag).
+                  The caller should call logout_user() if should_logout is True.
         """
         auth = self._get_saml_auth(idp)
+        should_logout = False
+
+        def mark_logout():
+            nonlocal should_logout
+            should_logout = True
 
         # Incoming SLO request from IdP
         if "SAMLRequest" in request.form or "SAMLRequest" in request.args:
-            url = auth.process_slo(delete_session_cb=lambda: session.clear())
-            return url
+            url = auth.process_slo(delete_session_cb=mark_logout)
+            return url, should_logout
 
         # SLO response from IdP
         if "SAMLResponse" in request.form or "SAMLResponse" in request.args:
-            auth.process_slo(delete_session_cb=lambda: session.clear())
-            return None
+            auth.process_slo(delete_session_cb=mark_logout)
+            return None, should_logout
 
         # SP-initiated logout
-        return auth.logout(name_id=name_id, session_index=session_index)
+        return auth.logout(name_id=name_id, session_index=session_index), True
 
     def _saml_calculate_user_roles(self, userinfo) -> List[str]:
         user_role_objects = set()
