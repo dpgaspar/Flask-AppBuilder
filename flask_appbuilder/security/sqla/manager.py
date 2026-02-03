@@ -282,6 +282,15 @@ class SecurityManager(BaseSecurityManager):
 
     def update_user(self, user):
         try:
+            # Load existing user from DB to detect role/group changes
+            existing_user = self.session.get(self.user_model, user.id)
+
+            roles_changed = set(existing_user.roles) != set(user.roles)
+            groups_changed = set(existing_user.groups) != set(user.groups)
+
+            if roles_changed or groups_changed:
+                user.changed_on = datetime.utcnow()  # pragma: no cover
+
             self.session.merge(user)
             self.session.commit()
             log.info(c.LOGMSG_INF_SEC_UPD_USER, user)
