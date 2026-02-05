@@ -42,3 +42,5 @@ requests==2.26.0
     # via -r requirements/extra.in
 urllib3==1.26.18
     # via requests
+python3-saml>=1.15.0
+    # via -r requirements/extra.in
