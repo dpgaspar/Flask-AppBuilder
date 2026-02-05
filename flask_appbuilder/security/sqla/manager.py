@@ -82,6 +82,8 @@ class SecurityManager(BaseSecurityManager):
             self.useroauthmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_REMOTE_USER:
             self.userremoteusermodelview.datamodel = user_datamodel
+        elif self.auth_type == c.AUTH_SAML:
+            self.usersamlmodelview.datamodel = user_datamodel
 
         if self.userstatschartview:
             self.userstatschartview.datamodel = user_datamodel
