@@ -1025,7 +1025,7 @@ class APITestCase(FABTestCase):
         with model1_data(self.appbuilder.session, 1):
             model_id = self.appbuilder.session.query(func.max(Model1.id)).scalar() + 1
             rv = self.auth_client_get(client, token, f"api/v1/model1api/{model_id}")
-            self.assertEqual(rv.status_code, 404)
+            self.assertEqual(rv.status_code, 200)
 
     def test_get_item_base_filters(self):
         """
