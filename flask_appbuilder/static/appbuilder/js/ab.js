@@ -51,8 +51,8 @@ function loadSelectData() {
 //---------------------------------------
 $(function () {
 
-    $('.appbuilder_datetime').datepicker({
-        format: 'yyyy-mm-dd'
+    $('.appbuilder_datetime').datetimepicker({
+        format: 'YYYY-MM-DD HH:mm:ss'
     });
     $('.appbuilder_date').datepicker({
         format: 'yyyy-mm-dd',
