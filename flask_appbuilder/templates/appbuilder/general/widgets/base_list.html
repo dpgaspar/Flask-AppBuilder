@@ -31,7 +31,7 @@
 
     <script nonce="{{ baselib.get_nonce() }}">
         $(document).ready(function() {
-            window.modelActions = new AdminActions();
+            window.modelActions{{ modelview_name }} = new AdminActions('action_form_{{ modelview_name }}');
         });
     </script>
 
