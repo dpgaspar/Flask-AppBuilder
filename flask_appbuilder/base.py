@@ -452,6 +452,7 @@ class AppBuilder:
         category_label: str = "",
         baseview: Optional["AbstractViewApi"] = None,
         cond: Optional[Callable[..., bool]] = None,
+        target: str = "_self",
     ) -> None:
         """
         Add your own links to menu using this method
@@ -481,6 +482,11 @@ class AppBuilder:
             then this link will be a part of the menu. Otherwise, it
             will not be included in the menu items. Defaults to
             :code:`None`, meaning the item will always be present.
+        :param target:
+            Target for the HTML <a> tag. This allows for links to
+            open in a new page or tab and even in seperate iframes.
+            Options are: :code:`_blank`, :code:`_self`, :code:`_parent`,
+            :code:`_top` or a custom iframe. Defaults to :code:`_self`
         """
         if self.menu is None:
             return
@@ -494,6 +500,7 @@ class AppBuilder:
             category_label=category_label,
             baseview=baseview,
             cond=cond,
+            target=target,
         )
         self._add_permissions_menu(name)
         if category:
