@@ -34,9 +34,9 @@ def no_cache(view: Callable[..., Response]) -> Callable[..., Response]:
     @functools.wraps(view)
     def wrapped_view(*args, **kwargs) -> Response:
         response = make_response(view(*args, **kwargs))
-        response.headers[
-            "Cache-Control"
-        ] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Cache-Control"] = (
+            "no-store, no-cache, must-revalidate, max-age=0"
+        )
         response.headers["Pragma"] = "no-cache"
         response.headers["Expires"] = "0"
         return response
@@ -105,9 +105,7 @@ def protect(allow_browser_login=False):
                     current_app.appbuilder.sm._extract_api_key_from_request()
                 )
                 if api_key_string is not None:
-                    user = current_app.appbuilder.sm.validate_api_key(
-                        api_key_string
-                    )
+                    user = current_app.appbuilder.sm.validate_api_key(api_key_string)
                     if user and current_app.appbuilder.sm.has_access(
                         permission_str, class_permission_name
                     ):

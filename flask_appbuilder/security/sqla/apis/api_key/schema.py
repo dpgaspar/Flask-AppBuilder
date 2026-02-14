@@ -32,9 +32,7 @@ class ApiKeyCreateResponseSchema(Schema):
     uuid = fields.String(metadata={"description": "Unique identifier for the key"})
     name = fields.String(metadata={"description": "Friendly name"})
     key = fields.String(
-        metadata={
-            "description": "The plaintext API key (only shown once at creation)"
-        },
+        metadata={"description": "The plaintext API key (only shown once at creation)"},
     )
     key_prefix = fields.String(metadata={"description": "Key prefix (e.g., sst_)"})
     scopes = fields.String(metadata={"description": "Comma-separated scopes"})

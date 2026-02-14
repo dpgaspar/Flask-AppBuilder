@@ -42,15 +42,11 @@ class ApiKeyModelTestCase(unittest.TestCase):
         self.assertFalse(key.is_active)
 
     def test_is_active_expired(self):
-        key = self._make_key(
-            expires_on=datetime.datetime(2020, 1, 1)  # past date
-        )
+        key = self._make_key(expires_on=datetime.datetime(2020, 1, 1))  # past date
         self.assertFalse(key.is_active)
 
     def test_is_active_not_yet_expired(self):
-        key = self._make_key(
-            expires_on=datetime.datetime(2099, 1, 1)  # future date
-        )
+        key = self._make_key(expires_on=datetime.datetime(2099, 1, 1))  # future date
         self.assertTrue(key.is_active)
 
 
@@ -209,9 +205,7 @@ class ApiKeyEndpointTestCase(FABTestCase):
             json={"name": "list-test-key"},
         )
 
-        rv = self.auth_client_get(
-            self.client, self.token, "api/v1/security/api_keys/"
-        )
+        rv = self.auth_client_get(self.client, self.token, "api/v1/security/api_keys/")
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data)
         self.assertIn("result", data)

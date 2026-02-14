@@ -37,7 +37,6 @@ from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import check_password_hash, generate_password_hash
 
-
 log = logging.getLogger(__name__)
 
 
@@ -901,15 +900,11 @@ class SecurityManager(BaseSecurityManager):
         for api_key in candidates:
             if check_password_hash(api_key.key_hash, api_key_string):
                 if not api_key.is_active:
-                    log.warning(
-                        "API key '%s' matched but is not active", api_key.name
-                    )
+                    log.warning("API key '%s' matched but is not active", api_key.name)
                     return None
                 user = api_key.user
                 if not user or not user.is_active:
-                    log.warning(
-                        "API key '%s' user is not active", api_key.name
-                    )
+                    log.warning("API key '%s' user is not active", api_key.name)
                     return None
                 # Update last_used_on
                 api_key.last_used_on = datetime.now()
