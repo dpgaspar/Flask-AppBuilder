@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 import json
 import logging
-from typing import Dict, List, Optional, Tuple, Union
+import secrets
+from typing import Any, Dict, List, Optional, Tuple, Union
 import uuid
 
 from flask import current_app, has_app_context
@@ -20,6 +21,7 @@ from flask_appbuilder.security.sqla.apis import (
     ViewMenuApi,
 )
 from flask_appbuilder.security.sqla.models import (
+    ApiKey,
     assoc_permissionview_role,
     Group,
     Permission,
@@ -33,8 +35,7 @@ from sqlalchemy import and_, func, literal, update
 from sqlalchemy import inspect
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
-from werkzeug.security import generate_password_hash
-
+from werkzeug.security import check_password_hash, generate_password_hash
 
 log = logging.getLogger(__name__)
 
@@ -57,6 +58,7 @@ class SecurityManager(BaseSecurityManager):
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
     registeruser_model = RegisterUser
+    api_key_model = ApiKey
 
     # APIs
     permission_api = PermissionApi
@@ -115,6 +117,10 @@ class SecurityManager(BaseSecurityManager):
             self.appbuilder.add_api(self.view_menu_api)
             self.appbuilder.add_api(self.permission_view_menu_api)
             self.appbuilder.add_api(self.group_api)
+            if current_app.config.get("FAB_API_KEY_ENABLED", False):
+                from flask_appbuilder.security.sqla.apis.api_key import ApiKeyApi
+
+                self.appbuilder.add_api(ApiKeyApi)
 
     def create_db(self) -> None:
         if not current_app.config.get("FAB_CREATE_DB", True):
@@ -131,7 +137,11 @@ class SecurityManager(BaseSecurityManager):
         engine = self.session.get_bind(mapper=None, clause=None)
         inspector = inspect(engine)
         existing_tables = inspector.get_table_names()
-        if "ab_user" not in existing_tables or "ab_group" not in existing_tables:
+        if (
+            "ab_user" not in existing_tables
+            or "ab_group" not in existing_tables
+            or "ab_api_key" not in existing_tables
+        ):
             log.info(c.LOGMSG_INF_SEC_NO_DB)
             Model.metadata.create_all(engine)
             log.info(c.LOGMSG_INF_SEC_ADD_DB)
@@ -852,3 +862,136 @@ class SecurityManager(BaseSecurityManager):
 
         session.add_all(roles)
         session.commit()
+
+    """
+    ----------------------
+     API KEY MANAGEMENT
+    ----------------------
+    """
+
+    def _find_api_keys_by_prefix(self, prefix: str) -> List[ApiKey]:
+        """Find all active API keys matching a given prefix."""
+        return (
+            self.session.query(self.api_key_model)
+            .filter(
+                self.api_key_model.key_prefix == prefix,
+                self.api_key_model.active == True,  # noqa: E712
+                self.api_key_model.revoked_on.is_(None),
+            )
+            .all()
+        )
+
+    def validate_api_key(self, api_key_string: str) -> Optional[User]:
+        """
+        Validate an API key and return the associated User if valid.
+
+        Looks up by prefix, verifies hash, checks active status,
+        updates last_used_on, sets g.user and g._api_key_user.
+        """
+        from flask import g
+
+        # Extract prefix (everything up to and including the underscore)
+        prefix_end = api_key_string.find("_")
+        if prefix_end == -1:
+            return None
+        prefix = api_key_string[: prefix_end + 1]
+
+        candidates = self._find_api_keys_by_prefix(prefix)
+        for api_key in candidates:
+            if check_password_hash(api_key.key_hash, api_key_string):
+                if not api_key.is_active:
+                    log.warning("API key '%s' matched but is not active", api_key.name)
+                    return None
+                user = api_key.user
+                if not user or not user.is_active:
+                    log.warning("API key '%s' user is not active", api_key.name)
+                    return None
+                # Update last_used_on
+                api_key.last_used_on = datetime.now()
+                self.session.commit()
+                # Set Flask globals
+                g.user = user
+                g._api_key_user = True
+                return user
+        return None
+
+    def create_api_key(
+        self,
+        user: Any,
+        name: str,
+        scopes: Optional[str] = None,
+        expires_on: Optional[datetime] = None,
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Create a new API key for a user.
+
+        Returns a dict with key info including the plaintext key
+        (only shown once at creation time).
+        """
+        prefixes = current_app.config.get("FAB_API_KEY_PREFIXES", ["sst_"])
+        prefix = prefixes[0] if prefixes else "sst_"
+        raw_key = prefix + secrets.token_urlsafe(32)
+        key_hash = generate_password_hash(
+            raw_key,
+            method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+            salt_length=current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
+        )
+
+        api_key = self.api_key_model()
+        api_key.name = name
+        api_key.key_hash = key_hash
+        api_key.key_prefix = prefix
+        api_key.user_id = user.id
+        api_key.scopes = scopes
+        api_key.active = True
+        api_key.expires_on = expires_on
+
+        try:
+            self.session.add(api_key)
+            self.session.commit()
+            log.info("API key '%s' created for user '%s'", name, user.username)
+            return {
+                "uuid": api_key.uuid,
+                "name": api_key.name,
+                "key": raw_key,
+                "key_prefix": api_key.key_prefix,
+                "scopes": api_key.scopes,
+                "created_on": api_key.created_on,
+                "expires_on": api_key.expires_on,
+            }
+        except Exception as e:
+            log.error("Error creating API key: %s", e)
+            self.session.rollback()
+            return None
+
+    def revoke_api_key(self, key_uuid: str) -> bool:
+        """Revoke an API key by UUID."""
+        api_key = self.get_api_key_by_uuid(key_uuid)
+        if not api_key:
+            return False
+        try:
+            api_key.revoked_on = datetime.now()
+            self.session.commit()
+            log.info("API key '%s' revoked", api_key.name)
+            return True
+        except Exception as e:
+            log.error("Error revoking API key: %s", e)
+            self.session.rollback()
+            return False
+
+    def find_api_keys_for_user(self, user_id: int) -> List[ApiKey]:
+        """Find all API keys for a user."""
+        return (
+            self.session.query(self.api_key_model)
+            .filter(self.api_key_model.user_id == user_id)
+            .order_by(self.api_key_model.created_on.desc())
+            .all()
+        )
+
+    def get_api_key_by_uuid(self, key_uuid: str) -> Optional[ApiKey]:
+        """Get an API key by its UUID."""
+        return (
+            self.session.query(self.api_key_model)
+            .filter(self.api_key_model.uuid == key_uuid)
+            .one_or_none()
+        )

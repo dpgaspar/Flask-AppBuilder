@@ -1869,6 +1869,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         Check if current user or public has access to view or menu
         """
+        # Check API key authenticated user first
+        if getattr(g, "_api_key_user", False) and hasattr(g, "user"):
+            user = g.user
+            if user and getattr(user, "is_active", False):
+                return self._has_view_access(user, permission_name, view_name)
         if current_user.is_authenticated and current_user.is_active:
             return self._has_view_access(g.user, permission_name, view_name)
         elif current_user_jwt and current_user_jwt.is_active:
@@ -2455,6 +2460,102 @@ class BaseSecurityManager(AbstractSecurityManager):
             # Set flask g.user to JWT user, we can't do it on before request
             g.user = user
             return user
+
+    """
+    ----------------------
+     API KEY AUTHENTICATION
+    ----------------------
+    """
+
+    @staticmethod
+    def _extract_api_key_from_request() -> Optional[str]:
+        """
+        Extract an API key from the request's Authorization header.
+
+        Checks for Bearer tokens that match configured API key prefixes
+        (FAB_API_KEY_PREFIXES config, default: ["sst_"]).
+
+        Returns the raw API key string if a matching prefix is found,
+        or None if the token is not an API key (e.g., a JWT).
+        """
+        auth_header = request.headers.get("Authorization", "")
+        if not auth_header.lower().startswith("bearer "):
+            return None
+        token = auth_header[7:].strip()
+        if not token:
+            return None
+        prefixes = current_app.config.get("FAB_API_KEY_PREFIXES", ["sst_"])
+        for prefix in prefixes:
+            if token.startswith(prefix):
+                return token
+        return None
+
+    def validate_api_key(self, api_key_string: str) -> Optional[Any]:
+        """
+        Validate an API key and return the associated User if valid.
+
+        Looks up the key by its prefix, verifies the hash, checks if active,
+        updates last_used_on, and sets g.user and g._api_key_user.
+
+        Override in subclass to provide storage-specific implementation.
+
+        :param api_key_string: The raw API key (e.g., "sst_abc123...")
+        :return: User object if valid, None otherwise
+        """
+        raise NotImplementedError
+
+    def create_api_key(
+        self,
+        user: Any,
+        name: str,
+        scopes: Optional[str] = None,
+        expires_on: Optional[datetime.datetime] = None,
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Create a new API key for a user.
+
+        Override in subclass to provide storage-specific implementation.
+
+        :param user: The user to create the key for
+        :param name: A friendly name for the key
+        :param scopes: Optional comma-separated scopes
+        :param expires_on: Optional expiration datetime
+        :return: Dict with key info including plaintext key (shown once)
+        """
+        raise NotImplementedError
+
+    def revoke_api_key(self, uuid: str) -> bool:
+        """
+        Revoke an API key by UUID.
+
+        Override in subclass to provide storage-specific implementation.
+
+        :param uuid: The UUID of the key to revoke
+        :return: True if revoked, False if not found
+        """
+        raise NotImplementedError
+
+    def find_api_keys_for_user(self, user_id: int) -> List[Any]:
+        """
+        Find all API keys for a user.
+
+        Override in subclass to provide storage-specific implementation.
+
+        :param user_id: The user's ID
+        :return: List of ApiKey objects
+        """
+        raise NotImplementedError
+
+    def get_api_key_by_uuid(self, uuid: str) -> Optional[Any]:
+        """
+        Get an API key by its UUID.
+
+        Override in subclass to provide storage-specific implementation.
+
+        :param uuid: The API key's UUID
+        :return: ApiKey object or None
+        """
+        raise NotImplementedError
 
     @staticmethod
     def before_request():

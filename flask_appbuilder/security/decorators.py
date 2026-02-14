@@ -99,6 +99,23 @@ def protect(allow_browser_login=False):
                 permission_str, class_permission_name
             ):
                 return f(self, *args, **kwargs)
+            # Check API key authentication (before JWT)
+            if current_app.config.get("FAB_API_KEY_ENABLED", False):
+                api_key_string = (
+                    current_app.appbuilder.sm._extract_api_key_from_request()
+                )
+                if api_key_string is not None:
+                    user = current_app.appbuilder.sm.validate_api_key(api_key_string)
+                    if user and current_app.appbuilder.sm.has_access(
+                        permission_str, class_permission_name
+                    ):
+                        return f(self, *args, **kwargs)
+                    log.warning(
+                        LOGMSG_ERR_SEC_ACCESS_DENIED,
+                        permission_str,
+                        class_permission_name,
+                    )
+                    return self.response_403()
             # if no browser login then verify JWT
             if not (self.allow_browser_login or allow_browser_login):
                 verify_jwt_in_request()
