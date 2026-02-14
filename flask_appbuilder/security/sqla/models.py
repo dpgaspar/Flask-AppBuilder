@@ -1,5 +1,6 @@
 import datetime
 from typing import List, Optional
+from uuid import uuid4
 
 from flask import g
 from flask_appbuilder import Model
@@ -14,6 +15,7 @@ from sqlalchemy import (
     Sequence,
     String,
     Table,
+    Text,
     UniqueConstraint,
 )
 from sqlalchemy.ext.declarative import declared_attr
@@ -308,3 +310,56 @@ class RegisterUser(Model):
         DateTime, default=lambda: datetime.datetime.now(), nullable=True
     )
     registration_hash: Mapped[Optional[str]] = mapped_column(String(256))
+
+
+class ApiKey(Model):
+    __tablename__ = "ab_api_key"
+    __table_args__ = (
+        Index("idx_api_key_prefix", "key_prefix"),
+        Index("idx_api_key_user_id", "user_id"),
+    )
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        Sequence("ab_api_key_id_seq", start=1, increment=1, minvalue=1, cycle=False),
+        primary_key=True,
+    )
+    uuid: Mapped[str] = mapped_column(
+        String(36), unique=True, nullable=False, default=lambda: str(uuid4())
+    )
+    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    key_hash: Mapped[str] = mapped_column(String(256), nullable=False)
+    key_prefix: Mapped[str] = mapped_column(String(16), nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("ab_user.id", ondelete="CASCADE"), nullable=False
+    )
+    user: Mapped["User"] = relationship(
+        "User", backref=backref("api_keys", cascade="all, delete-orphan")
+    )
+    scopes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_on: Mapped[Optional[datetime.datetime]] = mapped_column(
+        DateTime, default=lambda: datetime.datetime.now(), nullable=True
+    )
+    expires_on: Mapped[Optional[datetime.datetime]] = mapped_column(
+        DateTime, nullable=True
+    )
+    revoked_on: Mapped[Optional[datetime.datetime]] = mapped_column(
+        DateTime, nullable=True
+    )
+    last_used_on: Mapped[Optional[datetime.datetime]] = mapped_column(
+        DateTime, nullable=True
+    )
+
+    @property
+    def is_active(self) -> bool:
+        if not self.active:
+            return False
+        if self.revoked_on is not None:
+            return False
+        if self.expires_on is not None and self.expires_on < datetime.datetime.now():
+            return False
+        return True
+
+    def __repr__(self):
+        return f"ApiKey(name={self.name}, prefix={self.key_prefix})"
