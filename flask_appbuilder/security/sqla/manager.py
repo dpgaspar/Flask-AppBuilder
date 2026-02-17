@@ -265,7 +265,17 @@ class SecurityManager(BaseSecurityManager):
             if current_app.config.get("FAB_API_KEY_ENABLED", False):
                 from flask_appbuilder.security.sqla.apis.api_key import ApiKeyApi
 
-                self.appbuilder.add_api(ApiKeyApi)
+                api_key_view = self.appbuilder.add_api(ApiKeyApi)
+                # Ensure ApiKey permissions are created and assigned to
+                # the Admin role even when update_perms is False.
+                # Some frameworks like Superset use update_perms=False
+                # and defer permission sync to a CLI command, but API key
+                # permissions should be available as soon as the feature
+                # is enabled so the endpoints are not 403 by default.
+                self.add_permissions_view(
+                    api_key_view.base_permissions,
+                    api_key_view.class_permission_name,
+                )
 
     def create_db(self) -> None:
         if not current_app.config.get("FAB_CREATE_DB", True):

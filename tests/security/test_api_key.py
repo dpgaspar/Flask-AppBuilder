@@ -324,5 +324,78 @@ class ApiKeyProtectDecoratorTestCase(FABTestCase):
         self.assertIsNotNone(api_key_obj.last_used_on)
 
 
+class ApiKeyPermissionsTestCase(FABTestCase):
+    """Test that ApiKey permissions are created even when update_perms=False."""
+
+    def setUp(self):
+        self.app = Flask(__name__)
+        self.app.config.from_object("tests.config_security_api")
+        self.app.config["FAB_API_KEY_ENABLED"] = True
+        self.app.config["FAB_API_KEY_PREFIXES"] = ["sst_"]
+        logging.basicConfig(level=logging.ERROR)
+
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        # Pass update_perms=False to simulate how Superset initializes FAB
+        self.appbuilder = AppBuilder(self.app, self.db.session, update_perms=False)
+        self.create_default_users(self.appbuilder)
+        self.client = self.app.test_client()
+        self.token = self.login(self.client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+    def tearDown(self):
+        self.appbuilder.session.query(ApiKey).delete()
+        self.appbuilder.session.commit()
+        self.ctx.pop()
+        self.appbuilder = None
+        self.app = None
+
+    def test_api_key_permissions_exist_with_update_perms_false(self):
+        """ApiKey permissions should exist even when update_perms=False."""
+        sm = self.appbuilder.sm
+        expected_perms = {"can_list", "can_create", "can_get", "can_revoke"}
+        for perm_name in expected_perms:
+            pvm = sm.find_permission_view_menu(perm_name, "ApiKey")
+            self.assertIsNotNone(
+                pvm,
+                f"Permission '{perm_name}' on 'ApiKey' should exist "
+                f"even with update_perms=False",
+            )
+
+    def test_admin_role_has_api_key_permissions_with_update_perms_false(self):
+        """Admin role should have ApiKey permissions even when update_perms=False."""
+        sm = self.appbuilder.sm
+        admin_role = sm.find_role("Admin")
+        self.assertIsNotNone(admin_role)
+
+        admin_perm_names = set()
+        for pvm in admin_role.permissions:
+            if pvm.view_menu and pvm.view_menu.name == "ApiKey":
+                admin_perm_names.add(pvm.permission.name)
+
+        expected_perms = {"can_list", "can_create", "can_get", "can_revoke"}
+        for perm_name in expected_perms:
+            self.assertIn(
+                perm_name,
+                admin_perm_names,
+                f"Admin role should have '{perm_name}' on 'ApiKey' "
+                f"even with update_perms=False",
+            )
+
+    def test_api_key_endpoint_works_with_update_perms_false(self):
+        """API key CRUD should work even when update_perms=False."""
+        rv = self.auth_client_post(
+            self.client,
+            self.token,
+            "api/v1/security/api_keys/",
+            json={"name": "perms-test-key"},
+        )
+        self.assertEqual(rv.status_code, 201)
+
+        rv = self.auth_client_get(self.client, self.token, "api/v1/security/api_keys/")
+        self.assertEqual(rv.status_code, 200)
+
+
 if __name__ == "__main__":
     unittest.main()
