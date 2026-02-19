@@ -517,11 +517,13 @@ class TransactionIsolationTestCase(SecuritySignalsTestCase):
             """Handler that records it was called during transaction."""
             # In a real scenario, this would add to the session
             # For testing, we just record that we were called
-            modifications_made.append({
-                "model_type": event.model_type,
-                "model_id": event.model_id,
-                "is_committed": event.is_committed,
-            })
+            modifications_made.append(
+                {
+                    "model_type": event.model_type,
+                    "model_id": event.model_id,
+                    "is_committed": event.is_committed,
+                }
+            )
 
         user_creating.connect(pre_commit_modifier)
 
