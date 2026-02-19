@@ -7,32 +7,28 @@ for User, Role, and Group CRUD operations.
 
 import unittest
 import uuid
-from unittest.mock import MagicMock, patch, call
 
 from flask import Flask
 from flask_appbuilder import AppBuilder
-from flask_appbuilder.security.events import SecurityModelChangeEvent
 from flask_appbuilder.security.signals import (
-    # Pre-commit signals
-    user_creating,
-    user_updating,
-    user_deleting,
-    role_creating,
-    role_updating,
-    role_deleting,
-    group_creating,
-    group_updating,
-    group_deleting,
-    # Post-commit signals
-    user_created,
-    user_updated,
-    user_deleted,
-    role_created,
-    role_updated,
-    role_deleted,
     group_created,
-    group_updated,
+    group_creating,
     group_deleted,
+    group_deleting,
+    group_updated,
+    group_updating,
+    role_created,
+    role_creating,
+    role_deleted,
+    role_deleting,
+    role_updated,
+    role_updating,
+    user_created,
+    user_creating,
+    user_deleted,
+    user_deleting,
+    user_updated,
+    user_updating,
 )
 from flask_appbuilder.utils.legacy import get_sqla_class
 
