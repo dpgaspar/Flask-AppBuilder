@@ -51,10 +51,17 @@ class SecuritySignalsTestCase(unittest.TestCase):
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_SECURITY_SIGNALS_ENABLED"] = True
 
-        with self.app.app_context():
-            SQLA = get_sqla_class()
-            self.db = SQLA(self.app)
-            self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        # Track created entities for cleanup
+        self.created_users = []
+        self.created_roles = []
+        self.created_groups = []
 
         # Track signal emissions
         self.pre_commit_events = []
@@ -66,8 +73,47 @@ class SecuritySignalsTestCase(unittest.TestCase):
     def tearDown(self):
         """Clean up after tests."""
         self._disconnect_handlers()
-        with self.app.app_context():
-            self.db.session.remove()
+
+        # Clean up created entities
+        sm = self.appbuilder.sm
+
+        # Delete users (except admin)
+        for user in self.created_users:
+            try:
+                existing = sm.get_user_by_id(user.id)
+                if existing:
+                    sm.session.delete(existing)
+            except Exception:
+                pass
+
+        # Delete roles (except built-in roles)
+        for role in self.created_roles:
+            try:
+                existing = sm.find_role(role.name)
+                if existing:
+                    sm.session.delete(existing)
+            except Exception:
+                pass
+
+        # Delete groups
+        for group in self.created_groups:
+            try:
+                group_model = sm.group_model
+                existing = sm.session.query(group_model).get(group.id)
+                if existing:
+                    existing.users = []
+                    existing.roles = []
+                    sm.session.delete(existing)
+            except Exception:
+                pass
+
+        try:
+            sm.session.commit()
+        except Exception:
+            sm.session.rollback()
+
+        self.db.session.remove()
+        self.ctx.pop()
 
     def _connect_handlers(self):
         """Connect test signal handlers."""
@@ -136,135 +182,134 @@ class UserSignalsTestCase(SecuritySignalsTestCase):
 
     def test_add_user_emits_signals(self):
         """Test that add_user emits pre and post commit signals."""
-        with self.app.app_context():
-            sm = self.appbuilder.sm
-            username = unique_name("signal_test_user")
+        sm = self.appbuilder.sm
+        username = unique_name("signal_test_user")
 
-            user = sm.add_user(
-                username=username,
-                first_name="Signal",
-                last_name="Test",
-                email=f"{username}@test.com",
-                password="password123",
-            )
+        user = sm.add_user(
+            username=username,
+            first_name="Signal",
+            last_name="Test",
+            email=f"{username}@test.com",
+            password="password123",
+        )
 
-            self.assertIsNotNone(user)
-            self.assertNotEqual(user, False)
-            self.assertEqual(len(self.pre_commit_events), 1)
-            self.assertEqual(len(self.post_commit_events), 1)
+        self.assertIsNotNone(user)
+        self.assertNotEqual(user, False)
+        self.created_users.append(user)
 
-            # Check pre-commit event
-            pre_event = self.pre_commit_events[0]
-            self.assertEqual(pre_event.model_type, "user")
-            self.assertEqual(pre_event.action, "creating")
-            self.assertEqual(pre_event.model_id, user.id)
-            self.assertEqual(pre_event.model, user)
-            self.assertFalse(pre_event.is_committed)
+        self.assertEqual(len(self.pre_commit_events), 1)
+        self.assertEqual(len(self.post_commit_events), 1)
 
-            # Check post-commit event
-            post_event = self.post_commit_events[0]
-            self.assertEqual(post_event.model_type, "user")
-            self.assertEqual(post_event.action, "created")
-            self.assertEqual(post_event.model_id, user.id)
-            self.assertTrue(post_event.is_committed)
+        # Check pre-commit event
+        pre_event = self.pre_commit_events[0]
+        self.assertEqual(pre_event.model_type, "user")
+        self.assertEqual(pre_event.action, "creating")
+        self.assertEqual(pre_event.model_id, user.id)
+        self.assertEqual(pre_event.model, user)
+        self.assertFalse(pre_event.is_committed)
+
+        # Check post-commit event
+        post_event = self.post_commit_events[0]
+        self.assertEqual(post_event.model_type, "user")
+        self.assertEqual(post_event.action, "created")
+        self.assertEqual(post_event.model_id, user.id)
+        self.assertTrue(post_event.is_committed)
 
     def test_add_user_no_commit_only_pre_signal(self):
         """Test that add_user with commit=False only emits pre-commit signal."""
-        with self.app.app_context():
-            sm = self.appbuilder.sm
-            username = unique_name("no_commit_user")
+        sm = self.appbuilder.sm
+        username = unique_name("no_commit_user")
 
-            user = sm.add_user(
-                username=username,
-                first_name="NoCommit",
-                last_name="Test",
-                email=f"{username}@test.com",
-                password="password123",
-                commit=False,
-            )
+        user = sm.add_user(
+            username=username,
+            first_name="NoCommit",
+            last_name="Test",
+            email=f"{username}@test.com",
+            password="password123",
+            commit=False,
+        )
 
-            self.assertIsNotNone(user)
-            self.assertNotEqual(user, False)
-            self.assertEqual(len(self.pre_commit_events), 1)
-            self.assertEqual(len(self.post_commit_events), 0)
+        self.assertIsNotNone(user)
+        self.assertNotEqual(user, False)
+        self.assertEqual(len(self.pre_commit_events), 1)
+        self.assertEqual(len(self.post_commit_events), 0)
 
-            # Rollback to clean up
-            sm.session.rollback()
+        # Rollback to clean up
+        sm.session.rollback()
 
     def test_update_user_emits_signals(self):
         """Test that update_user emits pre and post commit signals."""
-        with self.app.app_context():
-            sm = self.appbuilder.sm
-            username = unique_name("update_test_user")
+        sm = self.appbuilder.sm
+        username = unique_name("update_test_user")
 
-            # First create a user
-            user = sm.add_user(
-                username=username,
-                first_name="Update",
-                last_name="Test",
-                email=f"{username}@test.com",
-                password="password123",
-            )
-            self.assertNotEqual(user, False)
-            self._clear_events()
+        # First create a user
+        user = sm.add_user(
+            username=username,
+            first_name="Update",
+            last_name="Test",
+            email=f"{username}@test.com",
+            password="password123",
+        )
+        self.assertNotEqual(user, False)
+        self.created_users.append(user)
+        self._clear_events()
 
-            # Now update the user
-            user.first_name = "Updated"
-            sm.update_user(user)
+        # Now update the user
+        user.first_name = "Updated"
+        sm.update_user(user)
 
-            self.assertEqual(len(self.pre_commit_events), 1)
-            self.assertEqual(len(self.post_commit_events), 1)
+        self.assertEqual(len(self.pre_commit_events), 1)
+        self.assertEqual(len(self.post_commit_events), 1)
 
-            # Check pre-commit event
-            pre_event = self.pre_commit_events[0]
-            self.assertEqual(pre_event.model_type, "user")
-            self.assertEqual(pre_event.action, "updating")
-            # Changes may or may not be detected depending on SQLAlchemy state
-            # The important thing is that the signal was emitted
+        # Check pre-commit event
+        pre_event = self.pre_commit_events[0]
+        self.assertEqual(pre_event.model_type, "user")
+        self.assertEqual(pre_event.action, "updating")
+        # Changes may or may not be detected depending on SQLAlchemy state
+        # The important thing is that the signal was emitted
 
-            # Check post-commit event
-            post_event = self.post_commit_events[0]
-            self.assertEqual(post_event.model_type, "user")
-            self.assertEqual(post_event.action, "updated")
-            self.assertTrue(post_event.is_committed)
+        # Check post-commit event
+        post_event = self.post_commit_events[0]
+        self.assertEqual(post_event.model_type, "user")
+        self.assertEqual(post_event.action, "updated")
+        self.assertTrue(post_event.is_committed)
 
     def test_delete_user_emits_signals(self):
         """Test that delete_user emits pre and post commit signals."""
-        with self.app.app_context():
-            sm = self.appbuilder.sm
-            username = unique_name("delete_test_user")
+        sm = self.appbuilder.sm
+        username = unique_name("delete_test_user")
 
-            # First create a user
-            user = sm.add_user(
-                username=username,
-                first_name="Delete",
-                last_name="Test",
-                email=f"{username}@test.com",
-                password="password123",
-            )
-            self.assertNotEqual(user, False)
-            user_id = user.id
-            self._clear_events()
+        # First create a user
+        user = sm.add_user(
+            username=username,
+            first_name="Delete",
+            last_name="Test",
+            email=f"{username}@test.com",
+            password="password123",
+        )
+        self.assertNotEqual(user, False)
+        user_id = user.id
+        self._clear_events()
 
-            # Now delete the user
-            result = sm.delete_user(user)
+        # Now delete the user (no need to track - it's being deleted)
+        result = sm.delete_user(user)
 
-            self.assertTrue(result)
-            self.assertEqual(len(self.pre_commit_events), 1)
-            self.assertEqual(len(self.post_commit_events), 1)
+        self.assertTrue(result)
+        self.assertEqual(len(self.pre_commit_events), 1)
+        self.assertEqual(len(self.post_commit_events), 1)
 
-            # Check pre-commit event
-            pre_event = self.pre_commit_events[0]
-            self.assertEqual(pre_event.model_type, "user")
-            self.assertEqual(pre_event.action, "deleting")
-            self.assertEqual(pre_event.model_id, user_id)
+        # Check pre-commit event
+        pre_event = self.pre_commit_events[0]
+        self.assertEqual(pre_event.model_type, "user")
+        self.assertEqual(pre_event.action, "deleting")
+        self.assertEqual(pre_event.model_id, user_id)
 
-            # Check post-commit event
-            post_event = self.post_commit_events[0]
-            self.assertEqual(post_event.model_type, "user")
-            self.assertEqual(post_event.action, "deleted")
-            self.assertEqual(post_event.model_id, user_id)
-            self.assertIsNone(post_event.model)  # Model is None after delete
+        # Check post-commit event
+        post_event = self.post_commit_events[0]
+        self.assertEqual(post_event.model_type, "user")
+        self.assertEqual(post_event.action, "deleted")
+        self.assertEqual(post_event.model_id, user_id)
+        self.assertIsNone(post_event.model)  # Model is None after delete
 
 
 class RoleSignalsTestCase(SecuritySignalsTestCase):
@@ -272,91 +317,91 @@ class RoleSignalsTestCase(SecuritySignalsTestCase):
 
     def test_add_role_emits_signals(self):
         """Test that add_role emits pre and post commit signals."""
-        with self.app.app_context():
-            sm = self.appbuilder.sm
-            role_name = unique_name("SignalTestRole")
+        sm = self.appbuilder.sm
+        role_name = unique_name("SignalTestRole")
 
-            role = sm.add_role(role_name)
+        role = sm.add_role(role_name)
 
-            self.assertIsNotNone(role)
-            self.assertEqual(len(self.pre_commit_events), 1)
-            self.assertEqual(len(self.post_commit_events), 1)
+        self.assertIsNotNone(role)
+        self.created_roles.append(role)
 
-            # Check pre-commit event
-            pre_event = self.pre_commit_events[0]
-            self.assertEqual(pre_event.model_type, "role")
-            self.assertEqual(pre_event.action, "creating")
-            self.assertEqual(pre_event.model_id, role.id)
-            self.assertFalse(pre_event.is_committed)
+        self.assertEqual(len(self.pre_commit_events), 1)
+        self.assertEqual(len(self.post_commit_events), 1)
 
-            # Check post-commit event
-            post_event = self.post_commit_events[0]
-            self.assertEqual(post_event.model_type, "role")
-            self.assertEqual(post_event.action, "created")
-            self.assertTrue(post_event.is_committed)
+        # Check pre-commit event
+        pre_event = self.pre_commit_events[0]
+        self.assertEqual(pre_event.model_type, "role")
+        self.assertEqual(pre_event.action, "creating")
+        self.assertEqual(pre_event.model_id, role.id)
+        self.assertFalse(pre_event.is_committed)
+
+        # Check post-commit event
+        post_event = self.post_commit_events[0]
+        self.assertEqual(post_event.model_type, "role")
+        self.assertEqual(post_event.action, "created")
+        self.assertTrue(post_event.is_committed)
 
     def test_add_role_existing_no_signals(self):
         """Test that add_role for existing role doesn't emit signals."""
-        with self.app.app_context():
-            sm = self.appbuilder.sm
-            role_name = unique_name("ExistingRole")
+        sm = self.appbuilder.sm
+        role_name = unique_name("ExistingRole")
 
-            # Create role first
-            role1 = sm.add_role(role_name)
-            self._clear_events()
+        # Create role first
+        role1 = sm.add_role(role_name)
+        self.created_roles.append(role1)
+        self._clear_events()
 
-            # Try to add same role again
-            role2 = sm.add_role(role_name)
+        # Try to add same role again
+        role2 = sm.add_role(role_name)
 
-            # Should return existing role without emitting signals
-            self.assertEqual(role1.id, role2.id)
-            self.assertEqual(len(self.pre_commit_events), 0)
-            self.assertEqual(len(self.post_commit_events), 0)
+        # Should return existing role without emitting signals
+        self.assertEqual(role1.id, role2.id)
+        self.assertEqual(len(self.pre_commit_events), 0)
+        self.assertEqual(len(self.post_commit_events), 0)
 
     def test_update_role_emits_signals(self):
         """Test that update_role emits pre and post commit signals."""
-        with self.app.app_context():
-            sm = self.appbuilder.sm
-            role_name = unique_name("UpdateTestRole")
-            new_role_name = unique_name("UpdatedRoleName")
+        sm = self.appbuilder.sm
+        role_name = unique_name("UpdateTestRole")
+        new_role_name = unique_name("UpdatedRoleName")
 
-            role = sm.add_role(role_name)
-            self._clear_events()
+        role = sm.add_role(role_name)
+        self.created_roles.append(role)
+        self._clear_events()
 
-            # Update the role
-            sm.update_role(role.id, new_role_name)
+        # Update the role
+        sm.update_role(role.id, new_role_name)
 
-            self.assertEqual(len(self.pre_commit_events), 1)
-            self.assertEqual(len(self.post_commit_events), 1)
+        self.assertEqual(len(self.pre_commit_events), 1)
+        self.assertEqual(len(self.post_commit_events), 1)
 
-            # Check events
-            pre_event = self.pre_commit_events[0]
-            self.assertEqual(pre_event.model_type, "role")
-            self.assertEqual(pre_event.action, "updating")
-            self.assertIsNotNone(pre_event.changes)
-            self.assertIn("name", pre_event.changes)
+        # Check events
+        pre_event = self.pre_commit_events[0]
+        self.assertEqual(pre_event.model_type, "role")
+        self.assertEqual(pre_event.action, "updating")
+        self.assertIsNotNone(pre_event.changes)
+        self.assertIn("name", pre_event.changes)
 
     def test_delete_role_emits_signals(self):
         """Test that delete_role emits pre and post commit signals."""
-        with self.app.app_context():
-            sm = self.appbuilder.sm
-            role_name = unique_name("DeleteTestRole")
+        sm = self.appbuilder.sm
+        role_name = unique_name("DeleteTestRole")
 
-            role = sm.add_role(role_name)
-            role_id = role.id
-            self._clear_events()
+        role = sm.add_role(role_name)
+        role_id = role.id
+        self._clear_events()
 
-            # Delete the role
-            result = sm.delete_role(role)
+        # Delete the role (no need to track - it's being deleted)
+        result = sm.delete_role(role)
 
-            self.assertTrue(result)
-            self.assertEqual(len(self.pre_commit_events), 1)
-            self.assertEqual(len(self.post_commit_events), 1)
+        self.assertTrue(result)
+        self.assertEqual(len(self.pre_commit_events), 1)
+        self.assertEqual(len(self.post_commit_events), 1)
 
-            pre_event = self.pre_commit_events[0]
-            self.assertEqual(pre_event.model_type, "role")
-            self.assertEqual(pre_event.action, "deleting")
-            self.assertEqual(pre_event.model_id, role_id)
+        pre_event = self.pre_commit_events[0]
+        self.assertEqual(pre_event.model_type, "role")
+        self.assertEqual(pre_event.action, "deleting")
+        self.assertEqual(pre_event.model_id, role_id)
 
 
 class GroupSignalsTestCase(SecuritySignalsTestCase):
@@ -364,56 +409,56 @@ class GroupSignalsTestCase(SecuritySignalsTestCase):
 
     def test_add_group_emits_signals(self):
         """Test that add_group emits pre and post commit signals."""
-        with self.app.app_context():
-            sm = self.appbuilder.sm
-            group_name = unique_name("signal_test_group")
+        sm = self.appbuilder.sm
+        group_name = unique_name("signal_test_group")
 
-            group = sm.add_group(
-                name=group_name,
-                label="Signal Test Group",
-                description="Test group for signals",
-            )
+        group = sm.add_group(
+            name=group_name,
+            label="Signal Test Group",
+            description="Test group for signals",
+        )
 
-            self.assertIsNotNone(group)
-            self.assertEqual(len(self.pre_commit_events), 1)
-            self.assertEqual(len(self.post_commit_events), 1)
+        self.assertIsNotNone(group)
+        self.created_groups.append(group)
 
-            # Check pre-commit event
-            pre_event = self.pre_commit_events[0]
-            self.assertEqual(pre_event.model_type, "group")
-            self.assertEqual(pre_event.action, "creating")
-            self.assertEqual(pre_event.model_id, group.id)
+        self.assertEqual(len(self.pre_commit_events), 1)
+        self.assertEqual(len(self.post_commit_events), 1)
 
-            # Check post-commit event
-            post_event = self.post_commit_events[0]
-            self.assertEqual(post_event.model_type, "group")
-            self.assertEqual(post_event.action, "created")
+        # Check pre-commit event
+        pre_event = self.pre_commit_events[0]
+        self.assertEqual(pre_event.model_type, "group")
+        self.assertEqual(pre_event.action, "creating")
+        self.assertEqual(pre_event.model_id, group.id)
+
+        # Check post-commit event
+        post_event = self.post_commit_events[0]
+        self.assertEqual(post_event.model_type, "group")
+        self.assertEqual(post_event.action, "created")
 
     def test_delete_group_emits_signals(self):
         """Test that delete_group emits pre and post commit signals."""
-        with self.app.app_context():
-            sm = self.appbuilder.sm
-            group_name = unique_name("delete_test_group")
+        sm = self.appbuilder.sm
+        group_name = unique_name("delete_test_group")
 
-            group = sm.add_group(
-                name=group_name,
-                label="Delete Test Group",
-                description="Test group for delete signals",
-            )
-            group_id = group.id
-            self._clear_events()
+        group = sm.add_group(
+            name=group_name,
+            label="Delete Test Group",
+            description="Test group for delete signals",
+        )
+        group_id = group.id
+        self._clear_events()
 
-            # Delete the group
-            result = sm.delete_group(group)
+        # Delete the group (no need to track - it's being deleted)
+        result = sm.delete_group(group)
 
-            self.assertTrue(result)
-            self.assertEqual(len(self.pre_commit_events), 1)
-            self.assertEqual(len(self.post_commit_events), 1)
+        self.assertTrue(result)
+        self.assertEqual(len(self.pre_commit_events), 1)
+        self.assertEqual(len(self.post_commit_events), 1)
 
-            pre_event = self.pre_commit_events[0]
-            self.assertEqual(pre_event.model_type, "group")
-            self.assertEqual(pre_event.action, "deleting")
-            self.assertEqual(pre_event.model_id, group_id)
+        pre_event = self.pre_commit_events[0]
+        self.assertEqual(pre_event.model_type, "group")
+        self.assertEqual(pre_event.action, "deleting")
+        self.assertEqual(pre_event.model_id, group_id)
 
 
 class SignalsDisabledTestCase(SecuritySignalsTestCase):
@@ -425,10 +470,17 @@ class SignalsDisabledTestCase(SecuritySignalsTestCase):
         self.app.config.from_object("tests.config_api")
         self.app.config["FAB_SECURITY_SIGNALS_ENABLED"] = False
 
-        with self.app.app_context():
-            SQLA = get_sqla_class()
-            self.db = SQLA(self.app)
-            self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        # Track created entities for cleanup
+        self.created_users = []
+        self.created_roles = []
+        self.created_groups = []
 
         self.pre_commit_events = []
         self.post_commit_events = []
@@ -436,21 +488,22 @@ class SignalsDisabledTestCase(SecuritySignalsTestCase):
 
     def test_signals_disabled_no_events(self):
         """Test that no signals are emitted when disabled."""
-        with self.app.app_context():
-            sm = self.appbuilder.sm
-            username = unique_name("disabled_signals_user")
+        sm = self.appbuilder.sm
+        username = unique_name("disabled_signals_user")
 
-            user = sm.add_user(
-                username=username,
-                first_name="Disabled",
-                last_name="Signals",
-                email=f"{username}@test.com",
-                password="password123",
-            )
+        user = sm.add_user(
+            username=username,
+            first_name="Disabled",
+            last_name="Signals",
+            email=f"{username}@test.com",
+            password="password123",
+        )
 
-            self.assertIsNotNone(user)
-            self.assertEqual(len(self.pre_commit_events), 0)
-            self.assertEqual(len(self.post_commit_events), 0)
+        self.assertIsNotNone(user)
+        self.created_users.append(user)
+
+        self.assertEqual(len(self.pre_commit_events), 0)
+        self.assertEqual(len(self.post_commit_events), 0)
 
 
 class TransactionIsolationTestCase(SecuritySignalsTestCase):
@@ -473,21 +526,22 @@ class TransactionIsolationTestCase(SecuritySignalsTestCase):
         user_creating.connect(pre_commit_modifier)
 
         try:
-            with self.app.app_context():
-                sm = self.appbuilder.sm
-                username = unique_name("transaction_test_user")
+            sm = self.appbuilder.sm
+            username = unique_name("transaction_test_user")
 
-                user = sm.add_user(
-                    username=username,
-                    first_name="Transaction",
-                    last_name="Test",
-                    email=f"{username}@test.com",
-                    password="password123",
-                )
+            user = sm.add_user(
+                username=username,
+                first_name="Transaction",
+                last_name="Test",
+                email=f"{username}@test.com",
+                password="password123",
+            )
 
-                self.assertEqual(len(modifications_made), 1)
-                self.assertEqual(modifications_made[0]["model_type"], "user")
-                self.assertFalse(modifications_made[0]["is_committed"])
+            self.created_users.append(user)
+
+            self.assertEqual(len(modifications_made), 1)
+            self.assertEqual(modifications_made[0]["model_type"], "user")
+            self.assertFalse(modifications_made[0]["is_committed"])
         finally:
             user_creating.disconnect(pre_commit_modifier)
 
@@ -501,24 +555,23 @@ class TransactionIsolationTestCase(SecuritySignalsTestCase):
         user_creating.connect(failing_handler)
 
         try:
-            with self.app.app_context():
-                sm = self.appbuilder.sm
+            sm = self.appbuilder.sm
 
-                # This should fail and rollback
-                user = sm.add_user(
-                    username=username,
-                    first_name="Failing",
-                    last_name="User",
-                    email=f"{username}@test.com",
-                    password="password123",
-                )
+            # This should fail and rollback
+            user = sm.add_user(
+                username=username,
+                first_name="Failing",
+                last_name="User",
+                email=f"{username}@test.com",
+                password="password123",
+            )
 
-                # add_user returns False on error
-                self.assertFalse(user)
+            # add_user returns False on error
+            self.assertFalse(user)
 
-                # User should not exist in DB
-                found_user = sm.find_user(username=username)
-                self.assertIsNone(found_user)
+            # User should not exist in DB (no cleanup needed)
+            found_user = sm.find_user(username=username)
+            self.assertIsNone(found_user)
         finally:
             user_creating.disconnect(failing_handler)
 
