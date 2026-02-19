@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 import hashlib
+import hmac
 import json
 import logging
 import secrets
@@ -1276,21 +1277,27 @@ class SecurityManager(BaseSecurityManager):
 
     @staticmethod
     def _compute_lookup_hash(api_key_string: str) -> str:
-        """Compute a fast hash for O(1) API key lookup.
+        """Compute an HMAC for O(1) API key lookup.
 
-        The algorithm is configurable via FAB_API_KEY_LOOKUP_HASH_METHOD
-        (default: "sha256"). Any algorithm supported by hashlib can be used.
+        Uses HMAC with the application SECRET_KEY so that lookup hashes
+        cannot be pre-computed without access to the server secret.
+        The digest algorithm is configurable via FAB_API_KEY_LOOKUP_HASH_METHOD
+        (default: "sha256").
         """
         method = "sha256"
+        secret = ""
         try:
             from flask import current_app
 
             method = current_app.config.get("FAB_API_KEY_LOOKUP_HASH_METHOD", "sha256")
+            secret = current_app.config.get("SECRET_KEY", "")
         except RuntimeError:
             pass
-        h = hashlib.new(method)
-        h.update(api_key_string.encode("utf-8"))
-        return h.hexdigest()
+        return hmac.new(
+            secret.encode("utf-8"),
+            api_key_string.encode("utf-8"),
+            method,
+        ).hexdigest()
 
     def validate_api_key(self, api_key_string: str) -> Optional[User]:
         """
