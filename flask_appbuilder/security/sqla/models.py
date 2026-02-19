@@ -330,7 +330,9 @@ class ApiKey(Model):
     )
     name: Mapped[str] = mapped_column(String(256), nullable=False)
     key_hash: Mapped[str] = mapped_column(String(256), nullable=False)
-    lookup_hash: Mapped[Optional[str]] = mapped_column(String(256), unique=True, nullable=True)
+    lookup_hash: Mapped[Optional[str]] = mapped_column(
+        String(256), unique=True, nullable=True
+    )
     key_prefix: Mapped[str] = mapped_column(String(16), nullable=False)
     user_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("ab_user.id", ondelete="CASCADE"), nullable=False

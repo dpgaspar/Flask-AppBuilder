@@ -1285,9 +1285,7 @@ class SecurityManager(BaseSecurityManager):
         try:
             from flask import current_app
 
-            method = current_app.config.get(
-                "FAB_API_KEY_LOOKUP_HASH_METHOD", "sha256"
-            )
+            method = current_app.config.get("FAB_API_KEY_LOOKUP_HASH_METHOD", "sha256")
         except RuntimeError:
             pass
         h = hashlib.new(method)
