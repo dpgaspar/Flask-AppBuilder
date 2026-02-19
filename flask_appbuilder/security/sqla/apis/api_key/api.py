@@ -1,4 +1,4 @@
-from flask import current_app, g, request
+from flask import current_app, request
 from flask_appbuilder.api import BaseApi, expose, safe
 from flask_appbuilder.const import API_RESULT_RES_KEY
 from flask_appbuilder.security.decorators import permission_name, protect
@@ -7,18 +7,7 @@ from flask_appbuilder.security.sqla.apis.api_key.schema import (
     ApiKeyPostSchema,
     ApiKeyResponseSchema,
 )
-from flask_jwt_extended import current_user as current_user_jwt
 from marshmallow import ValidationError
-
-
-def _get_current_user():
-    """Get the current authenticated user from g.user or JWT."""
-    user = getattr(g, "user", None)
-    if user and getattr(user, "is_authenticated", False):
-        return user
-    if current_user_jwt and getattr(current_user_jwt, "is_authenticated", False):
-        return current_user_jwt
-    return None
 
 
 class ApiKeyApi(BaseApi):
@@ -62,7 +51,7 @@ class ApiKeyApi(BaseApi):
               $ref: '#/components/responses/500'
         """
         sm = current_app.appbuilder.sm
-        user = _get_current_user()
+        user = sm.current_user
         api_keys = sm.find_api_keys_for_user(user.id)
         result = self.response_schema.dump(api_keys, many=True)
         return self.response(200, **{API_RESULT_RES_KEY: result})
@@ -105,16 +94,13 @@ class ApiKeyApi(BaseApi):
             return self.response_400(message=error.messages)
 
         sm = current_app.appbuilder.sm
-        user = _get_current_user()
+        user = sm.current_user
         result = sm.create_api_key(
             user=user,
             name=item["name"],
             scopes=item.get("scopes"),
             expires_on=item.get("expires_on"),
         )
-        if not result:
-            return self.response_500(message="Failed to create API key")
-
         return self.response(
             201,
             **{API_RESULT_RES_KEY: self.create_response_schema.dump(result)},
@@ -152,7 +138,7 @@ class ApiKeyApi(BaseApi):
         """
         sm = current_app.appbuilder.sm
         api_key = sm.get_api_key_by_uuid(key_uuid)
-        user = _get_current_user()
+        user = sm.current_user
         if not api_key or api_key.user_id != user.id:
             return self.response_404()
         result = self.response_schema.dump(api_key)
@@ -190,10 +176,9 @@ class ApiKeyApi(BaseApi):
         """
         sm = current_app.appbuilder.sm
         api_key = sm.get_api_key_by_uuid(key_uuid)
-        user = _get_current_user()
+        user = sm.current_user
         if not api_key or api_key.user_id != user.id:
             return self.response_404()
 
-        if sm.revoke_api_key(key_uuid):
-            return self.response(200, message="API key revoked")
-        return self.response_500(message="Failed to revoke API key")
+        sm.revoke_api_key(key_uuid)
+        return self.response(200, message="API key revoked")

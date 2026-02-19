@@ -575,6 +575,8 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     @property
     def current_user(self):
+        if getattr(g, "_api_key_user", False) and hasattr(g, "user"):
+            return g.user
         if current_user.is_authenticated:
             return g.user
         elif current_user_jwt:
@@ -1872,7 +1874,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Check API key authenticated user first
         if getattr(g, "_api_key_user", False) and hasattr(g, "user"):
             user = g.user
-            if user and getattr(user, "is_active", False):
+            if user and user.is_active:
                 return self._has_view_access(user, permission_name, view_name)
         if current_user.is_authenticated and current_user.is_active:
             return self._has_view_access(g.user, permission_name, view_name)
@@ -2494,8 +2496,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         Validate an API key and return the associated User if valid.
 
-        Looks up the key by its prefix, verifies the hash, checks if active,
-        updates last_used_on, and sets g.user and g._api_key_user.
+        Uses a fast lookup hash (configurable via FAB_API_KEY_LOOKUP_HASH_METHOD,
+        default: "sha256") for O(1) retrieval, then verifies against the slow
+        key_hash for defense in depth.
 
         Override in subclass to provide storage-specific implementation.
 

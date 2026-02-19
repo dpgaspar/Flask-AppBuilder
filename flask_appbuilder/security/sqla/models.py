@@ -317,6 +317,7 @@ class ApiKey(Model):
     __table_args__ = (
         Index("idx_api_key_prefix", "key_prefix"),
         Index("idx_api_key_user_id", "user_id"),
+        Index("idx_api_key_lookup_hash", "lookup_hash", unique=True),
     )
 
     id: Mapped[int] = mapped_column(
@@ -329,6 +330,7 @@ class ApiKey(Model):
     )
     name: Mapped[str] = mapped_column(String(256), nullable=False)
     key_hash: Mapped[str] = mapped_column(String(256), nullable=False)
+    lookup_hash: Mapped[Optional[str]] = mapped_column(String(256), unique=True, nullable=True)
     key_prefix: Mapped[str] = mapped_column(String(16), nullable=False)
     user_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("ab_user.id", ondelete="CASCADE"), nullable=False

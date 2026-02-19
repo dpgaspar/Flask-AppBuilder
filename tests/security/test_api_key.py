@@ -1,4 +1,5 @@
 import datetime
+import hashlib
 import json
 import logging
 import os
@@ -81,6 +82,25 @@ class ApiKeySecurityManagerTestCase(FABTestCase):
         self.assertTrue(result["key"].startswith("sst_"))
         self.assertIn("uuid", result)
 
+    def test_create_api_key_stores_lookup_hash(self):
+        user = self.appbuilder.sm.find_user(USERNAME_ADMIN)
+        result = self.appbuilder.sm.create_api_key(user=user, name="lookup-test")
+        raw_key = result["key"]
+
+        api_key = self.appbuilder.sm.get_api_key_by_uuid(result["uuid"])
+        expected_hash = hashlib.sha256(raw_key.encode("utf-8")).hexdigest()
+        self.assertEqual(api_key.lookup_hash, expected_hash)
+
+    def test_validate_api_key_uses_lookup_hash(self):
+        """Validate that O(1) lookup works via lookup_hash column."""
+        user = self.appbuilder.sm.find_user(USERNAME_ADMIN)
+        result = self.appbuilder.sm.create_api_key(user=user, name="hash-lookup-test")
+        raw_key = result["key"]
+
+        validated_user = self.appbuilder.sm.validate_api_key(raw_key)
+        self.assertIsNotNone(validated_user)
+        self.assertEqual(validated_user.username, USERNAME_ADMIN)
+
     def test_validate_api_key_valid(self):
         user = self.appbuilder.sm.find_user(USERNAME_ADMIN)
         result = self.appbuilder.sm.create_api_key(user=user, name="test-key")
@@ -153,6 +173,109 @@ class ApiKeySecurityManagerTestCase(FABTestCase):
     def test_get_api_key_by_uuid_not_found(self):
         api_key = self.appbuilder.sm.get_api_key_by_uuid("nonexistent")
         self.assertIsNone(api_key)
+
+
+class ApiKeyLookupHashConfigTestCase(FABTestCase):
+    """Test configurable lookup hash algorithm."""
+
+    def setUp(self):
+        self.app = Flask(__name__)
+        self.app.config.from_object("tests.config_security_api")
+        self.app.config["FAB_API_KEY_ENABLED"] = True
+        self.app.config["FAB_API_KEY_PREFIXES"] = ["sst_"]
+        self.app.config["FAB_API_KEY_LOOKUP_HASH_METHOD"] = "sha512"
+        logging.basicConfig(level=logging.ERROR)
+
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.create_default_users(self.appbuilder)
+
+    def tearDown(self):
+        self.appbuilder.session.query(ApiKey).delete()
+        self.appbuilder.session.commit()
+        self.ctx.pop()
+        self.appbuilder = None
+        self.app = None
+
+    def test_custom_lookup_hash_algorithm(self):
+        user = self.appbuilder.sm.find_user(USERNAME_ADMIN)
+        result = self.appbuilder.sm.create_api_key(user=user, name="sha512-test")
+        raw_key = result["key"]
+
+        api_key = self.appbuilder.sm.get_api_key_by_uuid(result["uuid"])
+        expected_hash = hashlib.sha512(raw_key.encode("utf-8")).hexdigest()
+        self.assertEqual(api_key.lookup_hash, expected_hash)
+
+    def test_validate_with_custom_hash_algorithm(self):
+        user = self.appbuilder.sm.find_user(USERNAME_ADMIN)
+        result = self.appbuilder.sm.create_api_key(user=user, name="sha512-validate")
+        raw_key = result["key"]
+
+        validated_user = self.appbuilder.sm.validate_api_key(raw_key)
+        self.assertIsNotNone(validated_user)
+        self.assertEqual(validated_user.username, USERNAME_ADMIN)
+
+
+class ApiKeySlowHashConfigTestCase(FABTestCase):
+    """Test configurable slow hash (key_hash) algorithm."""
+
+    def setUp(self):
+        self.app = Flask(__name__)
+        self.app.config.from_object("tests.config_security_api")
+        self.app.config["FAB_API_KEY_ENABLED"] = True
+        self.app.config["FAB_API_KEY_PREFIXES"] = ["sst_"]
+        # Use pbkdf2 with 1000 iterations for API keys (fast for tests)
+        self.app.config["FAB_API_KEY_HASH_METHOD"] = "pbkdf2:sha256:1000"
+        self.app.config["FAB_API_KEY_HASH_SALT_LENGTH"] = 8
+        logging.basicConfig(level=logging.ERROR)
+
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.create_default_users(self.appbuilder)
+
+    def tearDown(self):
+        self.appbuilder.session.query(ApiKey).delete()
+        self.appbuilder.session.commit()
+        self.ctx.pop()
+        self.appbuilder = None
+        self.app = None
+
+    def test_api_key_uses_custom_hash_method(self):
+        user = self.appbuilder.sm.find_user(USERNAME_ADMIN)
+        result = self.appbuilder.sm.create_api_key(user=user, name="pbkdf2-test")
+
+        api_key = self.appbuilder.sm.get_api_key_by_uuid(result["uuid"])
+        # key_hash should use pbkdf2:sha256 method, not scrypt
+        self.assertTrue(api_key.key_hash.startswith("pbkdf2:sha256:1000$"))
+
+    def test_validate_with_custom_hash_method(self):
+        user = self.appbuilder.sm.find_user(USERNAME_ADMIN)
+        result = self.appbuilder.sm.create_api_key(user=user, name="pbkdf2-validate")
+        raw_key = result["key"]
+
+        validated_user = self.appbuilder.sm.validate_api_key(raw_key)
+        self.assertIsNotNone(validated_user)
+        self.assertEqual(validated_user.username, USERNAME_ADMIN)
+
+    def test_api_key_hash_independent_of_password_hash(self):
+        """API key hash config should be independent of password hash config."""
+        # Password hash uses default scrypt, API key hash uses pbkdf2
+        self.assertNotIn("FAB_PASSWORD_HASH_METHOD", self.app.config)
+        self.assertEqual(
+            self.app.config["FAB_API_KEY_HASH_METHOD"], "pbkdf2:sha256:1000"
+        )
+
+        user = self.appbuilder.sm.find_user(USERNAME_ADMIN)
+        result = self.appbuilder.sm.create_api_key(user=user, name="independent-test")
+        api_key = self.appbuilder.sm.get_api_key_by_uuid(result["uuid"])
+        # Confirm API key uses pbkdf2, not the default scrypt
+        self.assertTrue(api_key.key_hash.startswith("pbkdf2:sha256:1000$"))
 
 
 class ApiKeyEndpointTestCase(FABTestCase):
@@ -322,79 +445,6 @@ class ApiKeyProtectDecoratorTestCase(FABTestCase):
         # Refresh and check
         self.appbuilder.session.refresh(api_key_obj)
         self.assertIsNotNone(api_key_obj.last_used_on)
-
-
-class ApiKeyPermissionsTestCase(FABTestCase):
-    """Test that ApiKey permissions are created even when update_perms=False."""
-
-    def setUp(self):
-        self.app = Flask(__name__)
-        self.app.config.from_object("tests.config_security_api")
-        self.app.config["FAB_API_KEY_ENABLED"] = True
-        self.app.config["FAB_API_KEY_PREFIXES"] = ["sst_"]
-        logging.basicConfig(level=logging.ERROR)
-
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-        SQLA = get_sqla_class()
-        self.db = SQLA(self.app)
-        # Pass update_perms=False to simulate how Superset initializes FAB
-        self.appbuilder = AppBuilder(self.app, self.db.session, update_perms=False)
-        self.create_default_users(self.appbuilder)
-        self.client = self.app.test_client()
-        self.token = self.login(self.client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-    def tearDown(self):
-        self.appbuilder.session.query(ApiKey).delete()
-        self.appbuilder.session.commit()
-        self.ctx.pop()
-        self.appbuilder = None
-        self.app = None
-
-    def test_api_key_permissions_exist_with_update_perms_false(self):
-        """ApiKey permissions should exist even when update_perms=False."""
-        sm = self.appbuilder.sm
-        expected_perms = {"can_list", "can_create", "can_get", "can_revoke"}
-        for perm_name in expected_perms:
-            pvm = sm.find_permission_view_menu(perm_name, "ApiKey")
-            self.assertIsNotNone(
-                pvm,
-                f"Permission '{perm_name}' on 'ApiKey' should exist "
-                f"even with update_perms=False",
-            )
-
-    def test_admin_role_has_api_key_permissions_with_update_perms_false(self):
-        """Admin role should have ApiKey permissions even when update_perms=False."""
-        sm = self.appbuilder.sm
-        admin_role = sm.find_role("Admin")
-        self.assertIsNotNone(admin_role)
-
-        admin_perm_names = set()
-        for pvm in admin_role.permissions:
-            if pvm.view_menu and pvm.view_menu.name == "ApiKey":
-                admin_perm_names.add(pvm.permission.name)
-
-        expected_perms = {"can_list", "can_create", "can_get", "can_revoke"}
-        for perm_name in expected_perms:
-            self.assertIn(
-                perm_name,
-                admin_perm_names,
-                f"Admin role should have '{perm_name}' on 'ApiKey' "
-                f"even with update_perms=False",
-            )
-
-    def test_api_key_endpoint_works_with_update_perms_false(self):
-        """API key CRUD should work even when update_perms=False."""
-        rv = self.auth_client_post(
-            self.client,
-            self.token,
-            "api/v1/security/api_keys/",
-            json={"name": "perms-test-key"},
-        )
-        self.assertEqual(rv.status_code, 201)
-
-        rv = self.auth_client_get(self.client, self.token, "api/v1/security/api_keys/")
-        self.assertEqual(rv.status_code, 200)
 
 
 if __name__ == "__main__":

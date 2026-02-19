@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
+import hashlib
 import json
 import logging
 import secrets
 from typing import Any, Dict, List, Optional, Tuple, Union
 import uuid
 
-from flask import current_app, has_app_context
+from flask import current_app, g, has_app_context
 from flask_appbuilder import const as c
 from flask_appbuilder import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -32,6 +33,7 @@ from flask_appbuilder.security.signals import (
     user_updating,
 )
 from flask_appbuilder.security.sqla.apis import (
+    ApiKeyApi,
     GroupApi,
     PermissionApi,
     PermissionViewMenuApi,
@@ -263,19 +265,7 @@ class SecurityManager(BaseSecurityManager):
             self.appbuilder.add_api(self.permission_view_menu_api)
             self.appbuilder.add_api(self.group_api)
             if current_app.config.get("FAB_API_KEY_ENABLED", False):
-                from flask_appbuilder.security.sqla.apis.api_key import ApiKeyApi
-
-                api_key_view = self.appbuilder.add_api(ApiKeyApi)
-                # Ensure ApiKey permissions are created and assigned to
-                # the Admin role even when update_perms is False.
-                # Some frameworks like Superset use update_perms=False
-                # and defer permission sync to a CLI command, but API key
-                # permissions should be available as soon as the feature
-                # is enabled so the endpoints are not 403 by default.
-                self.add_permissions_view(
-                    api_key_view.base_permissions,
-                    api_key_view.class_permission_name,
-                )
+                self.appbuilder.add_api(ApiKeyApi)
 
     def create_db(self) -> None:
         if not current_app.config.get("FAB_CREATE_DB", True):
@@ -1284,51 +1274,59 @@ class SecurityManager(BaseSecurityManager):
     ----------------------
     """
 
-    def _find_api_keys_by_prefix(self, prefix: str) -> List[ApiKey]:
-        """Find all active API keys matching a given prefix."""
-        return (
-            self.session.query(self.api_key_model)
-            .filter(
-                self.api_key_model.key_prefix == prefix,
-                self.api_key_model.active == True,  # noqa: E712
-                self.api_key_model.revoked_on.is_(None),
+    @staticmethod
+    def _compute_lookup_hash(api_key_string: str) -> str:
+        """Compute a fast hash for O(1) API key lookup.
+
+        The algorithm is configurable via FAB_API_KEY_LOOKUP_HASH_METHOD
+        (default: "sha256"). Any algorithm supported by hashlib can be used.
+        """
+        method = "sha256"
+        try:
+            from flask import current_app
+
+            method = current_app.config.get(
+                "FAB_API_KEY_LOOKUP_HASH_METHOD", "sha256"
             )
-            .all()
-        )
+        except RuntimeError:
+            pass
+        h = hashlib.new(method)
+        h.update(api_key_string.encode("utf-8"))
+        return h.hexdigest()
 
     def validate_api_key(self, api_key_string: str) -> Optional[User]:
         """
         Validate an API key and return the associated User if valid.
 
-        Looks up by prefix, verifies hash, checks active status,
-        updates last_used_on, sets g.user and g._api_key_user.
+        Uses a fast lookup hash (indexed, unique) for O(1) retrieval,
+        then verifies against the slow key_hash for defense in depth.
+        Updates last_used_on, sets g.user and g._api_key_user.
         """
-        from flask import g
-
-        # Extract prefix (everything up to and including the underscore)
-        prefix_end = api_key_string.find("_")
-        if prefix_end == -1:
+        lookup = self._compute_lookup_hash(api_key_string)
+        api_key = (
+            self.session.query(self.api_key_model)
+            .filter(self.api_key_model.lookup_hash == lookup)
+            .one_or_none()
+        )
+        if api_key is None:
             return None
-        prefix = api_key_string[: prefix_end + 1]
-
-        candidates = self._find_api_keys_by_prefix(prefix)
-        for api_key in candidates:
-            if check_password_hash(api_key.key_hash, api_key_string):
-                if not api_key.is_active:
-                    log.warning("API key '%s' matched but is not active", api_key.name)
-                    return None
-                user = api_key.user
-                if not user or not user.is_active:
-                    log.warning("API key '%s' user is not active", api_key.name)
-                    return None
-                # Update last_used_on
-                api_key.last_used_on = datetime.now()
-                self.session.commit()
-                # Set Flask globals
-                g.user = user
-                g._api_key_user = True
-                return user
-        return None
+        if not check_password_hash(api_key.key_hash, api_key_string):
+            log.warning("API key lookup hash matched but slow hash failed")
+            return None
+        if not api_key.is_active:
+            log.warning("API key '%s' matched but is not active", api_key.name)
+            return None
+        user = api_key.user
+        if not user or not user.is_active:
+            log.warning("API key '%s' user is not active", api_key.name)
+            return None
+        # Update last_used_on
+        api_key.last_used_on = datetime.now()
+        self.session.commit()
+        # Set Flask globals
+        g.user = user
+        g._api_key_user = True
+        return user
 
     def create_api_key(
         self,
@@ -1346,15 +1344,25 @@ class SecurityManager(BaseSecurityManager):
         prefixes = current_app.config.get("FAB_API_KEY_PREFIXES", ["sst_"])
         prefix = prefixes[0] if prefixes else "sst_"
         raw_key = prefix + secrets.token_urlsafe(32)
+        # Use API key-specific hash config, falling back to password hash config
+        hash_method = current_app.config.get(
+            "FAB_API_KEY_HASH_METHOD",
+            current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+        )
+        salt_length = current_app.config.get(
+            "FAB_API_KEY_HASH_SALT_LENGTH",
+            current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
+        )
         key_hash = generate_password_hash(
             raw_key,
-            method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
-            salt_length=current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
+            method=hash_method,
+            salt_length=salt_length,
         )
 
         api_key = self.api_key_model()
         api_key.name = name
         api_key.key_hash = key_hash
+        api_key.lookup_hash = self._compute_lookup_hash(raw_key)
         api_key.key_prefix = prefix
         api_key.user_id = user.id
         api_key.scopes = scopes
