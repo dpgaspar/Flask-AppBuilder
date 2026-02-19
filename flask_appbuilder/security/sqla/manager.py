@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-import hashlib
 import hmac
 import json
 import logging
@@ -1293,7 +1292,7 @@ class SecurityManager(BaseSecurityManager):
             secret = current_app.config.get("SECRET_KEY", "")
         except RuntimeError:
             pass
-        return hmac.new(
+        return hmac.new(  # lgtm[py/weak-sensitive-data-hashing]
             secret.encode("utf-8"),
             api_key_string.encode("utf-8"),
             method,

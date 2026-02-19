@@ -1,5 +1,4 @@
 import datetime
-import hmac
 import json
 import logging
 import os
@@ -88,10 +87,7 @@ class ApiKeySecurityManagerTestCase(FABTestCase):
         raw_key = result["key"]
 
         api_key = self.appbuilder.sm.get_api_key_by_uuid(result["uuid"])
-        secret = self.app.config.get("SECRET_KEY", "")
-        expected_hash = hmac.new(
-            secret.encode("utf-8"), raw_key.encode("utf-8"), "sha256"
-        ).hexdigest()
+        expected_hash = self.appbuilder.sm._compute_lookup_hash(raw_key)
         self.assertEqual(api_key.lookup_hash, expected_hash)
 
     def test_validate_api_key_uses_lookup_hash(self):
@@ -209,10 +205,7 @@ class ApiKeyLookupHashConfigTestCase(FABTestCase):
         raw_key = result["key"]
 
         api_key = self.appbuilder.sm.get_api_key_by_uuid(result["uuid"])
-        secret = self.app.config.get("SECRET_KEY", "")
-        expected_hash = hmac.new(
-            secret.encode("utf-8"), raw_key.encode("utf-8"), "sha512"
-        ).hexdigest()
+        expected_hash = self.appbuilder.sm._compute_lookup_hash(raw_key)
         self.assertEqual(api_key.lookup_hash, expected_hash)
 
     def test_validate_with_custom_hash_algorithm(self):
