@@ -174,50 +174,6 @@ class ApiKeySecurityManagerTestCase(FABTestCase):
         self.assertIsNone(api_key)
 
 
-class ApiKeyLookupHashConfigTestCase(FABTestCase):
-    """Test configurable lookup hash algorithm."""
-
-    def setUp(self):
-        self.app = Flask(__name__)
-        self.app.config.from_object("tests.config_security_api")
-        self.app.config["FAB_API_KEY_ENABLED"] = True
-        self.app.config["FAB_API_KEY_PREFIXES"] = ["sst_"]
-        self.app.config["FAB_API_KEY_LOOKUP_HASH_METHOD"] = "sha512"
-        logging.basicConfig(level=logging.ERROR)
-
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-        SQLA = get_sqla_class()
-        self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        self.create_default_users(self.appbuilder)
-
-    def tearDown(self):
-        self.appbuilder.session.query(ApiKey).delete()
-        self.appbuilder.session.commit()
-        self.ctx.pop()
-        self.appbuilder = None
-        self.app = None
-
-    def test_custom_lookup_hash_algorithm(self):
-        user = self.appbuilder.sm.find_user(USERNAME_ADMIN)
-        result = self.appbuilder.sm.create_api_key(user=user, name="sha512-test")
-        raw_key = result["key"]
-
-        api_key = self.appbuilder.sm.get_api_key_by_uuid(result["uuid"])
-        expected_hash = self.appbuilder.sm._compute_lookup_hash(raw_key)
-        self.assertEqual(api_key.lookup_hash, expected_hash)
-
-    def test_validate_with_custom_hash_algorithm(self):
-        user = self.appbuilder.sm.find_user(USERNAME_ADMIN)
-        result = self.appbuilder.sm.create_api_key(user=user, name="sha512-validate")
-        raw_key = result["key"]
-
-        validated_user = self.appbuilder.sm.validate_api_key(raw_key)
-        self.assertIsNotNone(validated_user)
-        self.assertEqual(validated_user.username, USERNAME_ADMIN)
-
-
 class ApiKeySlowHashConfigTestCase(FABTestCase):
     """Test configurable slow hash (key_hash) algorithm."""
 

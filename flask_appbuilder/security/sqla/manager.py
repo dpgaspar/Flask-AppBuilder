@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-import hmac
+import hashlib
 import json
 import logging
 import secrets
@@ -1276,26 +1276,26 @@ class SecurityManager(BaseSecurityManager):
 
     @staticmethod
     def _compute_lookup_hash(api_key_string: str) -> str:
-        """Compute an HMAC for O(1) API key lookup.
+        """Compute a keyed hash for O(1) API key lookup.
 
-        Uses HMAC with the application SECRET_KEY so that lookup hashes
-        cannot be pre-computed without access to the server secret.
-        The digest algorithm is configurable via FAB_API_KEY_LOOKUP_HASH_METHOD
-        (default: "sha256").
+        Uses BLAKE2b with the application SECRET_KEY for keyed hashing.
+        This prevents pre-computation of lookup hashes without the server
+        secret. BLAKE2b is fast by design and supports native keying
+        (no HMAC wrapper needed).
         """
-        method = "sha256"
-        secret = ""
+        key = b""
         try:
             from flask import current_app
 
-            method = current_app.config.get("FAB_API_KEY_LOOKUP_HASH_METHOD", "sha256")
             secret = current_app.config.get("SECRET_KEY", "")
+            # BLAKE2b key must be at most 64 bytes
+            key = secret.encode("utf-8")[:64]
         except RuntimeError:
             pass
-        return hmac.new(  # lgtm[py/weak-sensitive-data-hashing]
-            secret.encode("utf-8"),
+        return hashlib.blake2b(
             api_key_string.encode("utf-8"),
-            method,
+            key=key,
+            digest_size=32,
         ).hexdigest()
 
     def validate_api_key(self, api_key_string: str) -> Optional[User]:
