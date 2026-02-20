@@ -6,7 +6,7 @@ import logging
 from typing import Any, Dict, List, Optional, Tuple, Union
 import uuid
 
-from flask import current_app, g, has_app_context
+from flask import current_app, has_app_context
 from flask_appbuilder import const as c
 from flask_appbuilder import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -93,13 +93,6 @@ class SecurityManager(BaseSecurityManager):
         """Check if security model signals are enabled."""
         return current_app.config.get("FAB_SECURITY_SIGNALS_ENABLED", True)
 
-    def _get_current_user(self) -> Optional[Any]:
-        """Get the current user if available."""
-        try:
-            return getattr(g, "user", None)
-        except RuntimeError:
-            return None
-
     def _emit_pre_signal(
         self,
         signal,
@@ -125,7 +118,7 @@ class SecurityManager(BaseSecurityManager):
             model=model,
             timestamp=datetime.utcnow(),
             changes=changes,
-            triggered_by=self._get_current_user(),
+            triggered_by=self.current_user,
             is_committed=False,
         )
         try:
@@ -159,7 +152,7 @@ class SecurityManager(BaseSecurityManager):
             model=model,
             timestamp=datetime.utcnow(),
             changes=changes,
-            triggered_by=self._get_current_user(),
+            triggered_by=self.current_user,
             is_committed=True,
         )
         try:
