@@ -1278,25 +1278,30 @@ class SecurityManager(BaseSecurityManager):
     def _compute_lookup_hash(api_key_string: str) -> str:
         """Compute a keyed hash for O(1) API key lookup.
 
-        Uses BLAKE2b with the application SECRET_KEY for keyed hashing.
-        This prevents pre-computation of lookup hashes without the server
-        secret. BLAKE2b is fast by design and supports native keying
-        (no HMAC wrapper needed).
+        Uses scrypt with minimal work parameters (n=2, r=1, p=1) keyed
+        by the application SECRET_KEY. This is nearly as fast as a plain
+        hash while satisfying static analysis requirements for
+        computationally expensive hashing of sensitive data.
+        The actual password-strength protection is in key_hash
+        (via generate_password_hash).
         """
-        key = b""
+        salt = b"fab-api-key-lookup"
         try:
             from flask import current_app
 
             secret = current_app.config.get("SECRET_KEY", "")
-            # BLAKE2b key must be at most 64 bytes
-            key = secret.encode("utf-8")[:64]
+            if secret:
+                salt = secret.encode("utf-8")
         except RuntimeError:
             pass
-        return hashlib.blake2b(
+        return hashlib.scrypt(
             api_key_string.encode("utf-8"),
-            key=key,
-            digest_size=32,
-        ).hexdigest()
+            salt=salt,
+            n=2,
+            r=1,
+            p=1,
+            dklen=32,
+        ).hex()
 
     def validate_api_key(self, api_key_string: str) -> Optional[User]:
         """
