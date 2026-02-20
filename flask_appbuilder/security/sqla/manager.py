@@ -91,7 +91,20 @@ class SecurityManager(BaseSecurityManager):
 
     def _signals_enabled(self) -> bool:
         """Check if security model signals are enabled."""
+        if not has_app_context():
+            return False
         return current_app.config.get("FAB_SECURITY_SIGNALS_ENABLED", True)
+
+    def _get_triggered_by_user(self) -> Optional[Any]:
+        """
+        Safely get the current user for signal triggered_by field.
+
+        Returns None if outside request context or no user is authenticated.
+        """
+        try:
+            return self.current_user
+        except Exception:
+            return None
 
     def _emit_pre_signal(
         self,
@@ -118,7 +131,7 @@ class SecurityManager(BaseSecurityManager):
             model=model,
             timestamp=datetime.utcnow(),
             changes=changes,
-            triggered_by=self.current_user,
+            triggered_by=self._get_triggered_by_user(),
             is_committed=False,
         )
         try:
@@ -152,7 +165,7 @@ class SecurityManager(BaseSecurityManager):
             model=model,
             timestamp=datetime.utcnow(),
             changes=changes,
-            triggered_by=self.current_user,
+            triggered_by=self._get_triggered_by_user(),
             is_committed=True,
         )
         try:
