@@ -716,31 +716,23 @@ class PostCommitErrorHandlingTestCase(SecuritySignalsTestCase):
             user_created.disconnect(failing_post_handler)
 
 
-class NoAppContextTestCase(unittest.TestCase):
+class NoAppContextTestCase(SecuritySignalsTestCase):
     """Test signal behavior outside app context."""
 
     def test_signals_disabled_without_app_context(self):
         """Test that _signals_enabled returns False outside app context."""
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-        from flask_appbuilder.utils.legacy import get_sqla_class
+        from unittest.mock import patch
 
-        app = Flask(__name__)
-        app.config.from_object("tests.config_api")
-        app.config["FAB_SECURITY_SIGNALS_ENABLED"] = True
+        sm = self.appbuilder.sm
 
-        # Create the app within context
-        with app.app_context():
-            SQLA = get_sqla_class()
-            db = SQLA(app)
-            appbuilder = AppBuilder(app, db.session)
-            sm = appbuilder.sm
+        # Within context, signals should be enabled
+        self.assertTrue(sm._signals_enabled())
 
-            # Within context, signals should be enabled
-            self.assertTrue(sm._signals_enabled())
-
-        # Outside context, signals should be disabled
-        self.assertFalse(sm._signals_enabled())
+        # Mock has_app_context to return False
+        with patch(
+            "flask_appbuilder.security.sqla.manager.has_app_context", return_value=False
+        ):
+            self.assertFalse(sm._signals_enabled())
 
 
 class TriggeredByUserTestCase(SecuritySignalsTestCase):
