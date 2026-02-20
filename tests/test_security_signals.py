@@ -574,5 +574,186 @@ class TransactionIsolationTestCase(SecuritySignalsTestCase):
             user_creating.disconnect(failing_handler)
 
 
+class EventPropertiesTestCase(unittest.TestCase):
+    """Test SecurityModelChangeEvent properties."""
+
+    def test_is_pre_commit_true_when_not_committed(self):
+        """Test is_pre_commit returns True when is_committed is False."""
+        from flask_appbuilder.security.events import SecurityModelChangeEvent
+
+        event = SecurityModelChangeEvent(
+            model_type="user",
+            action="creating",
+            model_id=1,
+            is_committed=False,
+        )
+        self.assertTrue(event.is_pre_commit)
+
+    def test_is_pre_commit_false_when_committed(self):
+        """Test is_pre_commit returns False when is_committed is True."""
+        from flask_appbuilder.security.events import SecurityModelChangeEvent
+
+        event = SecurityModelChangeEvent(
+            model_type="user",
+            action="created",
+            model_id=1,
+            is_committed=True,
+        )
+        self.assertFalse(event.is_pre_commit)
+
+    def test_is_create_for_creating_action(self):
+        """Test is_create returns True for 'creating' action."""
+        from flask_appbuilder.security.events import SecurityModelChangeEvent
+
+        event = SecurityModelChangeEvent(
+            model_type="user",
+            action="creating",
+            model_id=1,
+        )
+        self.assertTrue(event.is_create)
+        self.assertFalse(event.is_update)
+        self.assertFalse(event.is_delete)
+
+    def test_is_create_for_created_action(self):
+        """Test is_create returns True for 'created' action."""
+        from flask_appbuilder.security.events import SecurityModelChangeEvent
+
+        event = SecurityModelChangeEvent(
+            model_type="user",
+            action="created",
+            model_id=1,
+        )
+        self.assertTrue(event.is_create)
+        self.assertFalse(event.is_update)
+        self.assertFalse(event.is_delete)
+
+    def test_is_update_for_updating_action(self):
+        """Test is_update returns True for 'updating' action."""
+        from flask_appbuilder.security.events import SecurityModelChangeEvent
+
+        event = SecurityModelChangeEvent(
+            model_type="role",
+            action="updating",
+            model_id=1,
+        )
+        self.assertFalse(event.is_create)
+        self.assertTrue(event.is_update)
+        self.assertFalse(event.is_delete)
+
+    def test_is_update_for_updated_action(self):
+        """Test is_update returns True for 'updated' action."""
+        from flask_appbuilder.security.events import SecurityModelChangeEvent
+
+        event = SecurityModelChangeEvent(
+            model_type="role",
+            action="updated",
+            model_id=1,
+        )
+        self.assertFalse(event.is_create)
+        self.assertTrue(event.is_update)
+        self.assertFalse(event.is_delete)
+
+    def test_is_delete_for_deleting_action(self):
+        """Test is_delete returns True for 'deleting' action."""
+        from flask_appbuilder.security.events import SecurityModelChangeEvent
+
+        event = SecurityModelChangeEvent(
+            model_type="group",
+            action="deleting",
+            model_id=1,
+        )
+        self.assertFalse(event.is_create)
+        self.assertFalse(event.is_update)
+        self.assertTrue(event.is_delete)
+
+    def test_is_delete_for_deleted_action(self):
+        """Test is_delete returns True for 'deleted' action."""
+        from flask_appbuilder.security.events import SecurityModelChangeEvent
+
+        event = SecurityModelChangeEvent(
+            model_type="group",
+            action="deleted",
+            model_id=1,
+        )
+        self.assertFalse(event.is_create)
+        self.assertFalse(event.is_update)
+        self.assertTrue(event.is_delete)
+
+
+class PostCommitErrorHandlingTestCase(SecuritySignalsTestCase):
+    """Test error handling in post-commit signals."""
+
+    def test_post_commit_error_is_logged_not_raised(self):
+        """Test that errors in post-commit handlers are logged but not raised."""
+        username = unique_name("post_error_user")
+
+        def failing_post_handler(sender, event):
+            raise ValueError("Intentional post-commit error")
+
+        user_created.connect(failing_post_handler)
+
+        try:
+            sm = self.appbuilder.sm
+
+            # This should succeed despite post-commit handler error
+            user = sm.add_user(
+                username=username,
+                first_name="PostError",
+                last_name="User",
+                email=f"{username}@test.com",
+                password="password123",
+            )
+
+            # User should be created successfully
+            self.assertIsNotNone(user)
+            self.assertNotEqual(user, False)
+            self.created_users.append(user)
+
+            # Pre-commit should have fired
+            self.assertEqual(len(self.pre_commit_events), 1)
+            # Post-commit event was sent (handler failed but event was emitted)
+        finally:
+            user_created.disconnect(failing_post_handler)
+
+
+class NoAppContextTestCase(unittest.TestCase):
+    """Test signal behavior outside app context."""
+
+    def test_signals_disabled_without_app_context(self):
+        """Test that _signals_enabled returns False outside app context."""
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+        from flask_appbuilder.utils.legacy import get_sqla_class
+
+        app = Flask(__name__)
+        app.config.from_object("tests.config_api")
+        app.config["FAB_SECURITY_SIGNALS_ENABLED"] = True
+
+        # Create the app within context
+        with app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(app)
+            appbuilder = AppBuilder(app, db.session)
+            sm = appbuilder.sm
+
+            # Within context, signals should be enabled
+            self.assertTrue(sm._signals_enabled())
+
+        # Outside context, signals should be disabled
+        self.assertFalse(sm._signals_enabled())
+
+
+class TriggeredByUserTestCase(SecuritySignalsTestCase):
+    """Test _get_triggered_by_user behavior."""
+
+    def test_triggered_by_user_returns_none_without_request(self):
+        """Test that _get_triggered_by_user returns None without request context."""
+        sm = self.appbuilder.sm
+
+        # Outside request context, should return None without error
+        result = sm._get_triggered_by_user()
+        self.assertIsNone(result)
+
+
 if __name__ == "__main__":
     unittest.main()
