@@ -299,7 +299,7 @@ class UserSignalsTestCase(SecuritySignalsTestCase):
         self.assertEqual(pre_event.model_type, "user")
         self.assertEqual(pre_event.action, "deleting")
         self.assertEqual(pre_event.model_id, user_id)
-        self.assertIsEqual(pre_event.model, user)
+        self.assertEqual(pre_event.model, user)
         self.assertFalse(pre_event.is_committed)
 
         # Check post-commit event
