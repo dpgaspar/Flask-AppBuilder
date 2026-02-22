@@ -308,6 +308,7 @@ class UserSignalsTestCase(SecuritySignalsTestCase):
         self.assertEqual(post_event.action, "deleted")
         self.assertEqual(post_event.model_id, user_id)
         self.assertIsNone(post_event.model)  # Model is None after delete
+        self.assertTrue(post_event.is_committed)
 
 
 class RoleSignalsTestCase(SecuritySignalsTestCase):
