@@ -355,6 +355,10 @@ class ApiKeyProtectDecoratorTestCase(FABTestCase):
 
     def tearDown(self):
         self.appbuilder.session.query(ApiKey).delete()
+        # Clean up test users created during tests
+        noperms_user = self.appbuilder.sm.find_user("noperms_user")
+        if noperms_user:
+            self.appbuilder.session.delete(noperms_user)
         self.appbuilder.session.commit()
         self.ctx.pop()
         self.appbuilder = None
