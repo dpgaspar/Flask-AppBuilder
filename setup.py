@@ -69,6 +69,7 @@ setup(
     extras_require={
         "jmespath": ["jmespath>=0.9.5"],
         "oauth": ["Authlib>=0.14, <2.0.0"],
+        "saml": ["python3-saml>=1.15.0"],
         "talisman": ["flask-talisman>=1.0.0, <2.0"],
     },
     tests_require=["nose2==0.14.0", "mockldap>=0.3.0", "hiro>=0.5.1"],

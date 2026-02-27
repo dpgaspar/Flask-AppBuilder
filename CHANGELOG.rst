@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.1.0
+-----------------------------------
+
+- feat: SAML Authentication (#2426) [Daniel Vaz Gaspar]
+- fix: update user.changed_on when roles are modified (#2423) [alok kumar priyadarshi]
+
 Improvements and Bug fixes on 5.0.2
 -----------------------------------
 
