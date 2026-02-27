@@ -9,7 +9,7 @@ from flask_appbuilder import AppBuilder
 from flask_appbuilder.security.sqla.models import ApiKey
 from flask_appbuilder.utils.legacy import get_sqla_class
 from tests.base import FABTestCase
-from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
+from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN, USERNAME_READONLY
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
