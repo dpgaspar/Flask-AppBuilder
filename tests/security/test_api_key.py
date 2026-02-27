@@ -374,10 +374,23 @@ class ApiKeyProtectDecoratorTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
 
     def test_invalid_api_key_on_protected_endpoint(self):
-        """Test that an invalid API key returns 403."""
+        """Test that an invalid API key returns 401."""
         rv = self.client.get(
             "api/v1/security/roles/",
             headers={"Authorization": "Bearer sst_invalidkey12345"},
+        )
+        self.assertEqual(rv.status_code, 401)
+
+    def test_valid_api_key_no_permission_returns_403(self):
+        """Test that a valid API key without permission returns 403."""
+        user = self.appbuilder.sm.find_user(USERNAME_READONLY)
+        result = self.appbuilder.sm.create_api_key(user=user, name="no-perm-test")
+        api_key = result["key"]
+
+        # ReadOnly user should not have access to roles endpoint
+        rv = self.client.get(
+            "api/v1/security/roles/",
+            headers={"Authorization": f"Bearer {api_key}"},
         )
         self.assertEqual(rv.status_code, 403)
 

@@ -2470,7 +2470,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     """
 
     @staticmethod
-    def _extract_api_key_from_request() -> Optional[str]:
+    def extract_api_key_from_request() -> Optional[str]:
         """
         Extract an API key from the request's Authorization header.
 

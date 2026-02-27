@@ -581,6 +581,47 @@ The rate can be changed by adjusting ``AUTH_RATE_LIMIT`` to, for example, ``1 pe
 at the `documentation <https://flask-limiter.readthedocs.io/en/stable/>`_ of Flask-Limiter for more options and
 examples.
 
+Authentication: API Keys
+------------------------
+
+FAB supports API key authentication as an alternative to JWT tokens. API keys are long-lived
+credentials that can be used for service-to-service communication or automation.
+
+**Enabling API Key Authentication**
+
+Set the following in your config::
+
+    FAB_API_KEY_ENABLED = True
+
+**Creating API Keys**
+
+API keys are managed through the ``SecurityManager``. You can create keys programmatically::
+
+    from flask import current_app
+
+    sm = current_app.appbuilder.sm
+    api_key = sm.create_api_key(user=user, name="my-service-key")
+
+The returned key string should be stored securely -- it cannot be retrieved again after creation.
+
+**Using API Keys**
+
+Pass the API key as a Bearer token in the ``Authorization`` header::
+
+    $ curl http://localhost:8080/api/v1/example/private \
+      -H "Authorization: Bearer sst_<YOUR_API_KEY>"
+
+API keys use the same permission system as regular users. The key inherits the roles and
+permissions of the user it belongs to.
+
+**Configuration Options**
+
+The following configuration options are available:
+
+- ``FAB_API_KEY_ENABLED`` -- Set to ``True`` to enable API key authentication (default: ``False``).
+- ``FAB_API_KEY_PREFIXES`` -- List of prefixes that identify API keys vs JWT tokens
+  (default: ``["sst_"]``).
+
 Role based
 ----------
 
