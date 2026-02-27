@@ -9,7 +9,7 @@ from flask_appbuilder import AppBuilder
 from flask_appbuilder.security.sqla.models import ApiKey
 from flask_appbuilder.utils.legacy import get_sqla_class
 from tests.base import FABTestCase
-from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN, USERNAME_READONLY
+from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -383,11 +383,20 @@ class ApiKeyProtectDecoratorTestCase(FABTestCase):
 
     def test_valid_api_key_no_permission_returns_403(self):
         """Test that a valid API key without permission returns 403."""
-        user = self.appbuilder.sm.find_user(USERNAME_READONLY)
+        # Create a role with no permissions and a user assigned to it
+        self.appbuilder.sm.add_role("NoPerms")
+        user = self.appbuilder.sm.add_user(
+            "noperms_user",
+            "No",
+            "Perms",
+            "noperms@fab.org",
+            self.appbuilder.sm.find_role("NoPerms"),
+            password="password",
+        )
         result = self.appbuilder.sm.create_api_key(user=user, name="no-perm-test")
         api_key = result["key"]
 
-        # ReadOnly user should not have access to roles endpoint
+        # User with NoPerms role should not have access to roles endpoint
         rv = self.client.get(
             "api/v1/security/roles/",
             headers={"Authorization": f"Bearer {api_key}"},
