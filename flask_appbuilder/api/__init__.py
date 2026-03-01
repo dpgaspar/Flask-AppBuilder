@@ -132,7 +132,7 @@ def safe(f: Callable[..., Any]) -> Callable[..., Any]:
 
 
 def rison(
-    schema: Optional[Dict[str, Any]] = None
+    schema: Optional[Dict[str, Any]] = None,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
     Use this decorator to parse URI *Rison* arguments to
@@ -701,7 +701,7 @@ class BaseApi(AbstractViewApi):
                 # Merge docs spec and override spec
                 operation_spec.update(override_method_spec.get(method.lower(), {}))
                 if self.get_method_permission(func.__name__):
-                    operation_spec["security"] = [{"jwt": []}]
+                    operation_spec["security"] = [{"jwt": []}, {"api_key": []}]
                 operations[method.lower()] = operation_spec
             else:
                 operations[method.lower()] = {}
