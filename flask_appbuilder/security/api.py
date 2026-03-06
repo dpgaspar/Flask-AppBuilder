@@ -28,6 +28,13 @@ class SecurityApi(BaseApi):
         jwt_scheme = {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
         api_spec.components.security_scheme("jwt", jwt_scheme)
         api_spec.components.security_scheme("jwt_refresh", jwt_scheme)
+        api_key_scheme = {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "API Key",
+            "description": "API key authentication using Bearer token",
+        }
+        api_spec.components.security_scheme("api_key", api_key_scheme)
 
     @expose("/login", methods=["POST"])
     @safe

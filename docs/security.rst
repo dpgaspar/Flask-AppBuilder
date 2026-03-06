@@ -16,6 +16,7 @@ Supported Authentication Types
        It's the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
        is configured to use kerberos, no need for the user to login with username and password on F.A.B.
 :OAUTH: Authentication using OAUTH (v1 or v2). You need to install authlib.
+:SAML: Authentication using SAML 2.0 (e.g., Microsoft Entra ID, Okta, OneLogin). You need to install python3-saml.
 
 .. note::
    **Deprecated Authentication Types (Removed in Flask-AppBuilder 5.0+)**
@@ -31,7 +32,7 @@ The session is preserved and encrypted using Flask-Login.
 Authentication Methods
 ----------------------
 
-You can choose one from 4 authentication methods. Configure the method to be used
+You can choose one from 5 authentication methods. Configure the method to be used
 on the **config.py** (when using the create-app, or following the proposed app structure). First the
 configuration imports the constants for the authentication methods::
 
@@ -39,7 +40,8 @@ configuration imports the constants for the authentication methods::
         AUTH_DB,
         AUTH_LDAP,
         AUTH_OAUTH,
-        AUTH_REMOTE_USER
+        AUTH_REMOTE_USER,
+        AUTH_SAML,
     )
 
 Next you will use the **AUTH_TYPE** key to choose the type::
@@ -438,6 +440,138 @@ Therefore, you can send tweets, post on the users Facebook, retrieve the user's 
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
 to get an idea of a simple use for this.
 
+Authentication: SAML
+--------------------
+
+This method will authenticate users via SAML 2.0 identity providers such as
+Microsoft Entra ID (formerly Azure AD), Okta, OneLogin, etc.
+
+.. note:: To use SAML you need to install `python3-saml <https://github.com/SAML-Toolkits/python3-saml>`_:
+   ``pip install flask-appbuilder[saml]``
+
+Configure your SAML providers and SP settings in **config.py**::
+
+    AUTH_TYPE = AUTH_SAML
+
+    # registration configs
+    AUTH_USER_REGISTRATION = True
+    AUTH_USER_REGISTRATION_ROLE = "Public"
+
+    # Sync roles at login from SAML assertion
+    AUTH_ROLES_SYNC_AT_LOGIN = True
+
+    # Map SAML group names to FAB roles
+    AUTH_ROLES_MAPPING = {
+        "admins": ["Admin"],
+        "users": ["Public"],
+    }
+
+    # SAML Identity Providers
+    SAML_PROVIDERS = [
+        {
+            "name": "entra_id",
+            "icon": "fa-microsoft",
+            "idp": {
+                "entityId": "https://sts.windows.net/<TENANT_ID>/",
+                "singleSignOnService": {
+                    "url": "https://login.microsoftonline.com/<TENANT_ID>/saml2",
+                    "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+                },
+                "singleLogoutService": {
+                    "url": "https://login.microsoftonline.com/<TENANT_ID>/saml2",
+                    "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+                },
+                "x509cert": "<IDP_CERTIFICATE_BASE64>",
+            },
+            "attribute_mapping": {
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": "email",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname": "first_name",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname": "last_name",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": "username",
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/groups": "role_keys",
+            },
+        },
+    ]
+
+    # Global SAML Service Provider configuration
+    SAML_CONFIG = {
+        "strict": True,
+        "debug": False,
+        "sp": {
+            "entityId": "https://myapp.example.com/saml/metadata/",
+            "assertionConsumerService": {
+                "url": "https://myapp.example.com/saml/acs/",
+                "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
+            },
+            "singleLogoutService": {
+                "url": "https://myapp.example.com/saml/slo/",
+                "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+            },
+            "NameIDFormat": "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
+            "x509cert": "",
+            # "privateKey": "",
+        },
+        "security": {
+            "nameIdEncrypted": False,
+            "authnRequestsSigned": False,
+            "logoutRequestSigned": False,
+            "logoutResponseSigned": False,
+            "signMetadata": False,
+            "wantMessagesSigned": False,
+            "wantAssertionsSigned": True,
+            "wantAssertionsEncrypted": False,
+            "wantNameId": True,
+            "wantNameIdEncrypted": False,
+            "wantAttributeStatement": True,
+        },
+    }
+
+Each SAML provider entry has the following keys:
+
+:name: A unique name for the identity provider.
+:icon: A Font Awesome icon class for the login button.
+:idp: The IdP SAML metadata (entityId, SSO/SLO URLs, and signing certificate).
+:attribute_mapping: Maps SAML assertion attribute names (left) to FAB user fields (right).
+    Supported FAB fields: ``username``, ``email``, ``first_name``, ``last_name``, ``role_keys``.
+
+The ``SAML_CONFIG`` dict holds the global Service Provider settings. The ``sp`` section defines
+your application's SAML endpoints. These URLs must match what you configure on the IdP side.
+
+SAML Endpoints
+~~~~~~~~~~~~~~
+
+The following endpoints are automatically registered:
+
+- ``/login/`` — Login page with IdP selection (or auto-redirect for single IdP)
+- ``/login/<idp>`` — Initiate SSO with a specific IdP
+- ``/saml/acs/`` — Assertion Consumer Service (receives SAML responses)
+- ``/saml/slo/`` — Single Logout endpoint
+- ``/saml/metadata/`` — SP metadata XML (configure this URL on your IdP)
+
+SAML Role Mapping
+~~~~~~~~~~~~~~~~~
+
+You can map SAML group claims to FAB roles, just like with OAuth and LDAP::
+
+    AUTH_ROLES_MAPPING = {
+        "admins": ["Admin"],
+        "users": ["User"],
+    }
+
+    AUTH_ROLES_SYNC_AT_LOGIN = True
+
+    PERMANENT_SESSION_LIFETIME = 1800
+
+The ``role_keys`` field in ``attribute_mapping`` defines which SAML attribute contains the
+user's group memberships.
+
+You can also use JMESPath expressions for dynamic role assignment::
+
+    AUTH_USER_REGISTRATION_ROLE_JMESPATH = "role_keys[0]"
+
+Take a look at the `SAML example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/saml>`_
+
+
 Authentication: Rate limiting
 -----------------------------
 
@@ -447,6 +581,47 @@ only 10 POST requests can be made every 20 seconds. This can be enabled by setti
 The rate can be changed by adjusting ``AUTH_RATE_LIMIT`` to, for example, ``1 per 10 seconds``. Take a look
 at the `documentation <https://flask-limiter.readthedocs.io/en/stable/>`_ of Flask-Limiter for more options and
 examples.
+
+Authentication: API Keys
+------------------------
+
+FAB supports API key authentication as an alternative to JWT tokens. API keys are long-lived
+credentials that can be used for service-to-service communication or automation.
+
+**Enabling API Key Authentication**
+
+Set the following in your config::
+
+    FAB_API_KEY_ENABLED = True
+
+**Creating API Keys**
+
+API keys are managed through the ``SecurityManager``. You can create keys programmatically::
+
+    from flask import current_app
+
+    sm = current_app.appbuilder.sm
+    api_key = sm.create_api_key(user=user, name="my-service-key")
+
+The returned key string should be stored securely -- it cannot be retrieved again after creation.
+
+**Using API Keys**
+
+Pass the API key as a Bearer token in the ``Authorization`` header::
+
+    $ curl http://localhost:8080/api/v1/example/private \
+      -H "Authorization: Bearer sst_<YOUR_API_KEY>"
+
+API keys use the same permission system as regular users. The key inherits the roles and
+permissions of the user it belongs to.
+
+**Configuration Options**
+
+The following configuration options are available:
+
+- ``FAB_API_KEY_ENABLED`` -- Set to ``True`` to enable API key authentication (default: ``False``).
+- ``FAB_API_KEY_PREFIXES`` -- List of prefixes that identify API keys vs JWT tokens
+  (default: ``["sst_"]``).
 
 Role based
 ----------
@@ -849,6 +1024,9 @@ F.A.B. uses a different user view for each authentication method
 
 :UserDBModelView: For database auth method
 :UserLDAPModelView: For LDAP auth method
+:UserOAuthModelView: For OAuth auth method
+:UserRemoteUserModelView: For Remote User auth method
+:UserSAMLModelView: For SAML auth method
 
 You can extend or create from scratch your own, and then tell F.A.B. to use them instead, by overriding their
 correspondent lower case properties on **SecurityManager** (just like on the given example).
@@ -882,6 +1060,7 @@ If you're using:
 :AUTH_LDAP: Extend UserLDAPModelView
 :AUTH_REMOTE_USER: Extend UserRemoteUserModelView
 :AUTH_OAUTH: Extend UserOAuthModelView
+:AUTH_SAML: Extend UserSAMLModelView
 
 So using AUTH_DB::
 
@@ -956,6 +1135,8 @@ Note that this is for AUTH_DB, so if you're using:
 :AUTH_DB: Override userdbmodelview
 :AUTH_LDAP: Override userldapmodelview
 :AUTH_REMOTE_USER: Override userremoteusermodelview
+:AUTH_OAUTH: Override useroauthmodelview
+:AUTH_SAML: Override usersamlmodelview
 
 Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
 **AppBuilder** (on __init__.py)::

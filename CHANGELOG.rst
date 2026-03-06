@@ -1,6 +1,19 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.2.0
+-----------------------------------
+
+- feat: add API key authentication support (#2431) [Amin Ghadersohi]
+- ci: add py3.13 to the test matrix (#2419) [jnahmias]
+- feat: Add security model signals for User, Role, and Group CRUD operations (#2432) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 5.1.0
+-----------------------------------
+
+- feat: SAML Authentication (#2426) [Daniel Vaz Gaspar]
+- fix: update user.changed_on when roles are modified (#2423) [alok kumar priyadarshi]
+
 Improvements and Bug fixes on 5.0.2
 -----------------------------------
 
