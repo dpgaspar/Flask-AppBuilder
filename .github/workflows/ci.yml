@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     env:
       SQLALCHEMY_DATABASE_URI:
         postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
@@ -141,7 +141,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.10", "3.13"]
     env:
       SQLALCHEMY_DATABASE_URI: |
         mysql+mysqldb://mysqluser:mysqluserpassword@127.0.0.1:13306/app?charset=utf8mb4&binary_prefix=true
@@ -192,7 +192,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.10", "3.13"]
     env:
       SQLALCHEMY_DATABASE_URI: |
         mssql+pyodbc://sa:Password_123@localhost:11433/master?driver=FreeTDS
