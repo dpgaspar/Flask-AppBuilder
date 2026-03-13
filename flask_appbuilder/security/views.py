@@ -698,7 +698,7 @@ class AuthOAuthView(AuthView):
         if resp is None:
             flash("You denied the request to sign in.", "warning")
             return redirect(self.appbuilder.get_url_for_login)
-        log.debug("OAUTH Authorized resp: %s", resp)
+        log.debug("OAUTH Authorized resp received for provider: %s", provider)
         # Retrieves specific user info from the provider
         try:
             self.appbuilder.sm.set_oauth_session(provider, resp)
