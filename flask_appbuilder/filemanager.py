@@ -224,7 +224,7 @@ class ImageManager(FileManager):
 
 
 def uuid_namegen(file_data):
-    return str(uuid.uuid1()) + "_sep_" + file_data.filename
+    return str(uuid.uuid4()) + "_sep_" + file_data.filename
 
 
 def get_file_original_name(name):

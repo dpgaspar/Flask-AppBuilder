@@ -326,7 +326,7 @@ class SecurityManager(BaseSecurityManager):
                 method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
                 salt_length=current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
             )
-        register_user.registration_hash = str(uuid.uuid1())
+        register_user.registration_hash = str(uuid.uuid4())
         try:
             self.session.add(register_user)
             self.session.commit()
