@@ -251,8 +251,8 @@ msgid ""
 "Must have at least two capital letters, one special character, two "
 "digits, three lower case letters and a minimal length of 10."
 msgstr ""
-"Tajā jābūt vismaz diviem lielajiem burtiem, vienam īpašajam simbolam, diviem "
-"cipariem, trim mazajiem burtiem un minimālajam garumam 10."
+"Jāsatur vismaz divus lielos burtus, vienu īpašo simbolu, divus "
+"ciparus, trīs mazos burtus un minimālais garums ir 10."
 
 #: flask_appbuilder/charts/views.py:35
 msgid "Group by"
@@ -306,7 +306,7 @@ msgstr "Satur"
 
 #: flask_appbuilder/models/generic/filters.py:31
 msgid "Contains (insensitive)"
-msgstr "Satur (nejūtīgs)"
+msgstr "Satur (nav reģistrjutīgs)"
 
 #: flask_appbuilder/models/generic/filters.py:38
 #: flask_appbuilder/models/mongoengine/filters.py:84
@@ -621,7 +621,7 @@ msgstr "Lietotāja parole autentifikācijai"
 
 #: flask_appbuilder/security/views.py:178
 msgid "It's not a good policy to remove a user, just make it inactive"
-msgstr "Nav laba prakse dzēst lietotāju, vienkārši padariet to neaktīvu"
+msgstr "Nav laba prakse dzēst lietotāju, vienkārši deaktivizējiet to"
 
 #: flask_appbuilder/security/views.py:181
 msgid "The user's email, this will also be used for OID auth"
