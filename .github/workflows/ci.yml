@@ -27,7 +27,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements/dev.txt
       - name: black
-        run: black --check setup.py flask_appbuilder
+        run: black --check flask_appbuilder
       - name: flake8
         run: flake8 flask_appbuilder
       - name: mypy
