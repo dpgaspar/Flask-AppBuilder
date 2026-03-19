@@ -4,7 +4,6 @@ import re
 
 from setuptools import find_packages, setup
 
-
 with io.open("flask_appbuilder/__init__.py", "rt", encoding="utf8") as f:
     version = re.search(r"__version__ = \"(.*?)\"", f.read()).group(1)
 
@@ -85,6 +84,7 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     python_requires="~=3.7",
