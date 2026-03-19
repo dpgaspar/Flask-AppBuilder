@@ -8,6 +8,13 @@ try:
 except PackageNotFoundError:
     pass
 
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("Flask-AppBuilder")
+except PackageNotFoundError:
+    pass
+
 from .actions import action  # noqa: F401
 from .api import ModelRestApi  # noqa: F401
 from .base import AppBuilder  # noqa: F401
