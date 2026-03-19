@@ -123,6 +123,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                 class Meta:
                     model = _model
                     fields = columns
+                    include_fk = True
                     load_instance = True
                     sqla_session = current_app.appbuilder.session
                     # The parent_schema_name is useful to humanize nested schema names
@@ -134,6 +135,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         class MetaSchema(SQLAlchemyAutoSchema, class_mixin):  # type: ignore
             class Meta:
                 model = _model
+                include_fk = True
                 load_instance = True
                 sqla_session = current_app.appbuilder.session
                 # The parent_schema_name is useful to humanize nested schema names
