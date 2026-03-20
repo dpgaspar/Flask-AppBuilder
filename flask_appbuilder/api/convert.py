@@ -75,6 +75,7 @@ class BaseModel2SchemaConverter(object):
         columns: List[str],
         model: Optional[Type[Model]] = None,
         nested: bool = True,
+        include_fk: bool = True,
         parent_schema_name: Optional[str] = None,
     ) -> SQLAlchemyAutoSchema:
         pass
