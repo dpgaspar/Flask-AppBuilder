@@ -8,7 +8,7 @@ authlib==1.2.1
     # via -r requirements/extra.in
 certifi==2024.2.2
     # via requests
-cffi==1.17.0
+cffi==2.0.0
     # via cryptography
 charset-normalizer==2.0.12
     # via requests
@@ -20,11 +20,11 @@ idna==3.6
     # via requests
 jmespath==1.0.1
     # via -r requirements/extra.in
-mysqlclient==2.0.1
+mysqlclient==2.2.8
     # via -r requirements/extra.in
 pillow==10.4.0
     # via -r requirements/extra.in
-psycopg2-binary==2.9.10
+psycopg2-binary==2.9.11
     # via -r requirements/extra.in
 pyasn1==0.5.1
     # via
@@ -34,7 +34,7 @@ pyasn1-modules==0.3.0
     # via python-ldap
 pycparser==2.21
     # via cffi
-pyodbc==5.2.0
+pyodbc==5.3.0
     # via -r requirements/extra.in
 python-ldap==3.4.3
     # via -r requirements/extra.in
