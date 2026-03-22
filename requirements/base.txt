@@ -108,7 +108,7 @@ referencing==0.30.2
     #   jsonschema-specifications
 rich==13.6.0
     # via flask-limiter
-rpds-py==0.10.6
+rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
