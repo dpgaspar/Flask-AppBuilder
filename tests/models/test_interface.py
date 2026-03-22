@@ -15,6 +15,7 @@ from flask_appbuilder.security.sqla.models import (
 from flask_appbuilder.utils.legacy import get_sqla_class
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
+
 from tests.base import FABTestCase
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
 
@@ -23,9 +24,7 @@ from tests.const import USERNAME_ADMIN, USERNAME_READONLY
 def assert_no_queries(engine: Engine):
     queries = []
 
-    def before_cursor_execute(
-        conn, cursor, statement, parameters, context, executemany
-    ):
+    def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
         queries.append(statement)
 
     event.listen(engine, "before_cursor_execute", before_cursor_execute)

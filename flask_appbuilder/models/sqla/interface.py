@@ -4,14 +4,14 @@ from contextlib import suppress
 import logging
 from typing import Any, Iterable, Optional, Tuple, Type
 
-from flask import current_app, Request
+from flask import Request, current_app
 from flask_appbuilder.exceptions import DatabaseException, FABException
 from flask_appbuilder.filemanager import FileManager, ImageManager
 from flask_appbuilder.models.base import BaseInterface
 from flask_appbuilder.models.filters import Filters
 from flask_appbuilder.models.group import GroupByCol, GroupByDateMonth, GroupByDateYear
 from flask_appbuilder.models.mixins import FileColumn, ImageColumn
-from flask_appbuilder.models.sqla import filters, Model
+from flask_appbuilder.models.sqla import Model, filters
 from flask_appbuilder.utils.base import (
     get_column_leaf,
     get_column_root_relation,
@@ -20,7 +20,7 @@ from flask_appbuilder.utils.base import (
 from sqlalchemy import asc, desc
 from sqlalchemy import types as sa_types
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import aliased, class_mapper, ColumnProperty, contains_eager, Load
+from sqlalchemy.orm import ColumnProperty, Load, aliased, class_mapper, contains_eager
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.orm.query import Query
@@ -301,9 +301,7 @@ class SQLAInterface(BaseInterface):
                         self.get_alias_mapping(root_relation, aliases_mapping)
                     )
                     # Add relation FK to avoid N+1 performance issue
-                    query = self._apply_relation_fks_select_options(
-                        query, root_relation
-                    )
+                    query = self._apply_relation_fks_select_options(query, root_relation)
                     joined_models.append(root_relation)
 
                 related_model = self.get_alias_mapping(root_relation, aliases_mapping)
@@ -320,9 +318,7 @@ class SQLAInterface(BaseInterface):
                 )
         return query
 
-    def get_outer_query_from_inner_query(
-        self, query: Query, inner_query: Query
-    ) -> Query:
+    def get_outer_query_from_inner_query(self, query: Query, inner_query: Query) -> Query:
         pk = self.get_pk()
         pk_name = self.get_pk_name()
 
@@ -994,16 +990,12 @@ class SQLAInterface(BaseInterface):
 
     def get_file_column_list(self) -> list[str]:
         return [
-            i.name
-            for i in self.obj.__mapper__.columns
-            if isinstance(i.type, FileColumn)
+            i.name for i in self.obj.__mapper__.columns if isinstance(i.type, FileColumn)
         ]
 
     def get_image_column_list(self) -> list[str]:
         return [
-            i.name
-            for i in self.obj.__mapper__.columns
-            if isinstance(i.type, ImageColumn)
+            i.name for i in self.obj.__mapper__.columns if isinstance(i.type, ImageColumn)
         ]
 
     def get_property_first_col(self, col_name: str) -> ColumnProperty:

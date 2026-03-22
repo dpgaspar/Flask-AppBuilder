@@ -10,8 +10,8 @@ from wtforms import (
     IntegerField,
     StringField,
     TextAreaField,
+    validators,
 )
-from wtforms import validators
 
 from .fields import EnumField, QuerySelectField, QuerySelectMultipleField
 from .fieldwidgets import (
@@ -61,9 +61,7 @@ class FieldConverter:
         ("is_datetime", DateTimeField, DateTimePickerWidget),
     )
 
-    def __init__(
-        self, datamodel, colname, label, description, validators, default=None
-    ):
+    def __init__(self, datamodel, colname, label, description, validators, default=None):
         self.datamodel = datamodel
         self.colname = colname
         self.label = label

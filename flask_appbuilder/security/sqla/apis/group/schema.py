@@ -1,5 +1,5 @@
 from flask_appbuilder.security.sqla.models import Group
-from marshmallow import fields, Schema
+from marshmallow import Schema, fields
 from marshmallow.validate import Length
 
 name_description = "Group name"

@@ -187,9 +187,7 @@ def export_roles(
 
 @fab.command("import-roles")
 @with_appcontext
-@click.option(
-    "--path", "-p", help="Path to a JSON file containing roles", required=True
-)
+@click.option("--path", "-p", help="Path to a JSON file containing roles", required=True)
 def import_roles(path: str) -> None:
     """Imports roles with permissions and view menus from JSON file"""
     current_app.appbuilder.sm.import_roles(path)
@@ -221,9 +219,7 @@ def security_cleanup() -> None:
 
 
 @fab.command("security-converge")
-@click.option(
-    "--dry-run", "-d", is_flag=True, help="Dry run & print state transitions."
-)
+@click.option("--dry-run", "-d", is_flag=True, help="Dry run & print state transitions.")
 @with_appcontext
 def security_converge(dry_run: bool = False) -> None:
     """
@@ -352,17 +348,13 @@ def create_addon(name: str) -> None:
         f.write("ADDON_NAME='" + name + "'\n")
         f.write("FULL_ADDON_NAME='fab_addon_' + ADDON_NAME\n")
         f.close()
-        click.echo(
-            click.style("Downloaded the skeleton addon, good coding!", fg="green")
-        )
+        click.echo(click.style("Downloaded the skeleton addon, good coding!", fg="green"))
     except Exception as e:
         click.echo(click.style("Something went wrong {0}".format(e), fg="red"))
 
 
 @fab.command("collect-static")
-@click.option(
-    "--static_folder", default="app/static", help="Your projects static folder"
-)
+@click.option("--static_folder", default="app/static", help="Your projects static folder")
 def collect_static(static_folder: str) -> None:
     """
     Copies flask-appbuilder static files to your projects static folder

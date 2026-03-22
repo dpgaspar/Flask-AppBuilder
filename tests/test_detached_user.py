@@ -9,7 +9,7 @@ Verifies that:
 """
 
 import unittest
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, PropertyMock, patch
 
 from flask import Flask, g
 from flask_appbuilder import AppBuilder
