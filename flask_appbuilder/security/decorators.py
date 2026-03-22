@@ -3,13 +3,13 @@ import logging
 from typing import Callable, List, Optional, TypeVar, Union
 
 from flask import (
+    Response,
     current_app,
     flash,
     jsonify,
     make_response,
     redirect,
     request,
-    Response,
     url_for,
 )
 from flask_appbuilder._compat import as_unicode
@@ -34,9 +34,9 @@ def no_cache(view: Callable[..., Response]) -> Callable[..., Response]:
     @functools.wraps(view)
     def wrapped_view(*args, **kwargs) -> Response:
         response = make_response(view(*args, **kwargs))
-        response.headers[
-            "Cache-Control"
-        ] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Cache-Control"] = (
+            "no-store, no-cache, must-revalidate, max-age=0"
+        )
         response.headers["Pragma"] = "no-cache"
         response.headers["Expires"] = "0"
         return response
@@ -101,9 +101,7 @@ def protect(allow_browser_login=False):
                 return f(self, *args, **kwargs)
             # Check API key authentication (before JWT)
             if current_app.config.get("FAB_API_KEY_ENABLED", False):
-                api_key_string = (
-                    current_app.appbuilder.sm.extract_api_key_from_request()
-                )
+                api_key_string = current_app.appbuilder.sm.extract_api_key_from_request()
                 if api_key_string is not None:
                     user = current_app.appbuilder.sm.validate_api_key(api_key_string)
                     if not user:

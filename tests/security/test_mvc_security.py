@@ -5,6 +5,7 @@ from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.sqla.models import Group, User
+
 from tests.base import BaseMVCTestCase
 from tests.const import (
     INVALID_LOGIN_STRING,

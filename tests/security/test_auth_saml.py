@@ -9,6 +9,7 @@ from flask_appbuilder.const import AUTH_SAML
 from flask_appbuilder.security.saml.utils import map_saml_attributes
 from flask_appbuilder.utils.legacy import get_sqla_class
 import jinja2
+
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
 from tests.fixtures.users import create_default_users
 
@@ -359,9 +360,9 @@ class SAMLRegistrationRoleTestCase(unittest.TestCase):
         SAML: test login flow for - unregistered user - jmespath registration role
         """
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
+        )
         with self.app.app_context():
             SQLA = get_sqla_class()
             db = SQLA(self.app)
@@ -480,9 +481,9 @@ class SAMLRegistrationRoleTestCase(unittest.TestCase):
         """  # noqa
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = False
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
+        )
         with self.app.app_context():
             SQLA = get_sqla_class()
             db = SQLA(self.app)
@@ -523,9 +524,9 @@ class SAMLRegistrationRoleTestCase(unittest.TestCase):
         """  # noqa
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
+        )
         with self.app.app_context():
             SQLA = get_sqla_class()
             db = SQLA(self.app)

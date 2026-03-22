@@ -19,7 +19,7 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import backref, Mapped, relationship
+from sqlalchemy.orm import Mapped, backref, relationship
 
 try:
     from sqlalchemy.orm import mapped_column

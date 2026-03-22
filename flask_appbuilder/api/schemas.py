@@ -1,4 +1,4 @@
-from marshmallow import post_load, Schema
+from marshmallow import Schema, post_load
 
 from ..const import (
     API_ADD_COLUMNS_RIS_KEY,
