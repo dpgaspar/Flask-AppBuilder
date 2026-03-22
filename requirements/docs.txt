@@ -202,7 +202,7 @@ rich==13.6.0
     # via
     #   -r requirements/base.txt
     #   flask-limiter
-rpds-py==0.10.6
+rpds-py==0.30.0
     # via
     #   -r requirements/base.txt
     #   jsonschema
