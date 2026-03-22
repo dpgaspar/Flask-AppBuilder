@@ -9,7 +9,7 @@ Verifies that:
 """
 
 import unittest
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, PropertyMock, patch
 
 from flask import Flask, g
 from flask_appbuilder import AppBuilder
@@ -85,6 +85,30 @@ class SafeUserTestCase(unittest.TestCase):
         sm = self.appbuilder.sm
         anon = AnonymousUserMixin()
         self.assertFalse(sm._is_user_detached(anon))
+
+    def test_get_safe_user_returns_none_when_identity_inspection_fails(self):
+        sm = self.appbuilder.sm
+        user = object()
+        with (
+            patch.object(sm, "_is_user_detached", return_value=True),
+            patch(
+                "flask_appbuilder.security.manager.sa_inspect",
+                side_effect=ValueError("cannot inspect user"),
+            ),
+        ):
+            self.assertIsNone(sm._get_safe_user(user))
+
+    def test_get_safe_user_returns_none_without_persisted_identity(self):
+        sm = self.appbuilder.sm
+        user = object()
+        with (
+            patch.object(sm, "_is_user_detached", return_value=True),
+            patch("flask_appbuilder.security.manager.sa_inspect") as inspect,
+            patch.object(sm, "get_user_by_id") as get_user_by_id,
+        ):
+            inspect.return_value.identity = None
+            self.assertIsNone(sm._get_safe_user(user))
+            get_user_by_id.assert_not_called()
 
 
 class DetachedUserViewTestCase(unittest.TestCase):

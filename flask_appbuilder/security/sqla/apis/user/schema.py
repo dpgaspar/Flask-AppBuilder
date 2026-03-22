@@ -1,11 +1,11 @@
 from flask_appbuilder.security.sqla.models import User
-from marshmallow import fields, Schema, validates_schema, ValidationError
+from marshmallow import Schema, ValidationError, fields, validates_schema
 from marshmallow.validate import Length
 
 from .validator import PasswordComplexityValidator
 
 active_description = (
-    "Is user active?" "It's not a good policy to remove a user, just make it inactive"
+    "Is user active?It's not a good policy to remove a user, just make it inactive"
 )
 email_description = "The user's email"
 first_name_description = "The user's first name"
@@ -65,9 +65,7 @@ class UserPostSchema(Schema):
 class UserPutSchema(Schema):
     model_cls = User
 
-    active = fields.Boolean(
-        required=False, metadata={"description": active_description}
-    )
+    active = fields.Boolean(required=False, metadata={"description": active_description})
     email = fields.String(required=False, metadata={"description": email_description})
     first_name = fields.String(
         required=False, metadata={"description": first_name_description}

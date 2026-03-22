@@ -285,9 +285,7 @@ class BaseProcessData(object):
         # Create Structure to identify the grouped columns
         for group_col in self.group_bys_cols:
             label = "" or as_unicode(labels[group_col])
-            json_data["cols"].append(
-                {"id": group_col, "label": label, "type": "string"}
-            )
+            json_data["cols"].append({"id": group_col, "label": label, "type": "string"})
         # Create Structure to identify the Aggregated columns
         for aggr_col in self.aggr_by_cols:
             if isinstance(aggr_col, tuple):

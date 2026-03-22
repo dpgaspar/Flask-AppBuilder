@@ -18,6 +18,7 @@ from flask_appbuilder.models.sqla.filters import (
 )
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.utils.legacy import get_sqla_class
+
 from tests.sqla.models import Model1
 
 
