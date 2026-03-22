@@ -4,20 +4,36 @@ import datetime
 import importlib
 import logging
 import re
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
-from flask import current_app, Flask, g, request, session, url_for
+from flask import Flask, current_app, g, request, session, url_for
 from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
 from flask_babel import lazy_gettext as _
-from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
+from flask_jwt_extended import current_user as current_user_jwt
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_login import current_user, LoginManager
+from flask_login import LoginManager, current_user
 import jwt
 from packaging.version import Version
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from ..basemanager import BaseManager
+from ..const import (
+    AUTH_DB,
+    AUTH_LDAP,
+    AUTH_OAUTH,
+    AUTH_REMOTE_USER,
+    AUTH_SAML,
+    LOGMSG_ERR_SEC_ADD_REGISTER_USER,
+    LOGMSG_ERR_SEC_AUTH_LDAP,
+    LOGMSG_ERR_SEC_AUTH_LDAP_TLS,
+    LOGMSG_WAR_SEC_LOGIN_FAILED,
+    LOGMSG_WAR_SEC_NO_USER,
+    LOGMSG_WAR_SEC_NOLDAP_OBJ,
+    MICROSOFT_KEY_SET_URL,
+    PERMISSION_PREFIX,
+)
 from .api import SecurityApi
 from .registerviews import (
     RegisterUserDBView,
@@ -44,22 +60,6 @@ from .views import (
     UserSAMLModelView,
     UserStatsChartView,
     ViewMenuModelView,
-)
-from ..basemanager import BaseManager
-from ..const import (
-    AUTH_DB,
-    AUTH_LDAP,
-    AUTH_OAUTH,
-    AUTH_REMOTE_USER,
-    AUTH_SAML,
-    LOGMSG_ERR_SEC_ADD_REGISTER_USER,
-    LOGMSG_ERR_SEC_AUTH_LDAP,
-    LOGMSG_ERR_SEC_AUTH_LDAP_TLS,
-    LOGMSG_WAR_SEC_LOGIN_FAILED,
-    LOGMSG_WAR_SEC_NO_USER,
-    LOGMSG_WAR_SEC_NOLDAP_OBJ,
-    MICROSOFT_KEY_SET_URL,
-    PERMISSION_PREFIX,
 )
 
 if TYPE_CHECKING:
@@ -643,9 +643,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         session["oauth_provider"] = provider
 
-    def get_oauth_user_info(
-        self, provider: str, resp: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def get_oauth_user_info(self, provider: str, resp: Dict[str, Any]) -> Dict[str, Any]:
         """
         Since there are different OAuth APIs with different ways to
         retrieve user info
@@ -736,9 +734,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             }
         # for Keycloak
         if provider in ["keycloak", "keycloak_before_17"]:
-            me = self.appbuilder.sm.oauth_remotes[provider].get(
-                "openid-connect/userinfo"
-            )
+            me = self.appbuilder.sm.oauth_remotes[provider].get("openid-connect/userinfo")
             me.raise_for_status()
             data = me.json()
             log.debug("User info from Keycloak: %s", data)
@@ -773,7 +769,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             "verify_signature", False
         )
         if verify_signature:
-            from authlib.jose import JsonWebKey, jwt as authlib_jwt
+            from authlib.jose import JsonWebKey
+            from authlib.jose import jwt as authlib_jwt
 
             keyset = JsonWebKey.import_key_set(self._get_microsoft_jwks())
             claims = authlib_jwt.decode(id_token, keyset)
@@ -791,7 +788,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         return False
 
     def _validate_jwt(self, id_token, jwks):
-        from authlib.jose import JsonWebKey, jwt as authlib_jwt
+        from authlib.jose import JsonWebKey
+        from authlib.jose import jwt as authlib_jwt
 
         keyset = JsonWebKey.import_key_set(jwks)
         claims = authlib_jwt.decode(id_token, keyset)
@@ -1105,9 +1103,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         except (IndexError, NameError):
             return None, None
 
-    def _ldap_calculate_user_roles(
-        self, user_attributes: Dict[str, bytes]
-    ) -> List[str]:
+    def _ldap_calculate_user_roles(self, user_attributes: Dict[str, bytes]) -> List[str]:
         user_role_objects = set()
 
         # apply AUTH_ROLES_MAPPING
@@ -1172,9 +1168,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             return False
 
     @staticmethod
-    def ldap_extract(
-        ldap_dict: Dict[str, bytes], field_name: str, fallback: str
-    ) -> str:
+    def ldap_extract(ldap_dict: Dict[str, bytes], field_name: str, fallback: str) -> str:
         raw_value = ldap_dict.get(field_name, [bytes()])
         # decode - if empty string, default to fallback, otherwise take first element
         return raw_value[0].decode("utf-8") or fallback
@@ -1221,9 +1215,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             if self.auth_ldap_tls_cacertdir:
                 ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, self.auth_ldap_tls_cacertdir)
             if self.auth_ldap_tls_cacertfile:
-                ldap.set_option(
-                    ldap.OPT_X_TLS_CACERTFILE, self.auth_ldap_tls_cacertfile
-                )
+                ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.auth_ldap_tls_cacertfile)
             if self.auth_ldap_tls_certfile:
                 ldap.set_option(ldap.OPT_X_TLS_CERTFILE, self.auth_ldap_tls_certfile)
             if self.auth_ldap_tls_keyfile:
@@ -2014,9 +2006,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 method_name
             )
             # Actions do not get prefix when normally defined
-            if hasattr(baseview, "actions") and baseview.actions.get(
-                old_permission_name
-            ):
+            if hasattr(baseview, "actions") and baseview.actions.get(old_permission_name):
                 permission_prefix = ""
             else:
                 permission_prefix = PERMISSION_PREFIX
@@ -2285,9 +2275,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def find_group(self, name: str):
         raise NotImplementedError
 
-    def add_group(
-        self, name: str, label: str, description: str, roles=None, users=None
-    ):
+    def add_group(self, name: str, label: str, description: str, roles=None, users=None):
         raise NotImplementedError
 
     """
@@ -2314,9 +2302,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def find_roles_permission_view_menus(
-        self, permission_name: str, role_ids: List[int]
-    ):
+    def find_roles_permission_view_menus(self, permission_name: str, role_ids: List[int]):
         raise NotImplementedError
 
     def exist_permission_on_roles(

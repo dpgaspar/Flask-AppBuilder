@@ -6,13 +6,12 @@ from authlib.jose.errors import BadSignatureError
 from flask import Flask
 from flask_appbuilder import AppBuilder
 from flask_appbuilder.const import AUTH_OAUTH
-from flask_appbuilder.exceptions import InvalidLoginAttempt
-from flask_appbuilder.exceptions import OAuthProviderUnknown
+from flask_appbuilder.exceptions import InvalidLoginAttempt, OAuthProviderUnknown
 from flask_appbuilder.utils.legacy import get_sqla_class
 import jinja2
 import jwt
-from tests.const import USERNAME_ADMIN
-from tests.const import USERNAME_READONLY
+
+from tests.const import USERNAME_ADMIN, USERNAME_READONLY
 from tests.fixtures.users import create_default_users
 
 
@@ -306,9 +305,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         OAUTH: test login flow for - unregistered user - jmespath registration role
         """
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
+        )
         with self.app.app_context():
             SQLA = get_sqla_class()
             db = SQLA(self.app)
@@ -427,9 +426,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         """  # noqa
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = False
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
+        )
         with self.app.app_context():
             SQLA = get_sqla_class()
             db = SQLA(self.app)
@@ -470,9 +469,9 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         """  # noqa
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
+        )
         with self.app.app_context():
             SQLA = get_sqla_class()
             db = SQLA(self.app)
@@ -788,10 +787,10 @@ class OAuthAuthentikTestCase(unittest.TestCase):
                         "verify_signature": False,
                     },
                     "access_token_url": (
-                        "https://authentik.mydomain.com" "/application/o/token/"
+                        "https://authentik.mydomain.com/application/o/token/"
                     ),
                     "authorize_url": (
-                        "https://authentik.mydomain.com/" "application/o/authorize/"
+                        "https://authentik.mydomain.com/application/o/authorize/"
                     ),
                     "request_token_url": None,
                     "client_id": "CLIENT_ID",
@@ -863,10 +862,10 @@ class OAuthAuthentikTestCase(unittest.TestCase):
                         "verify_signature": True,
                     },
                     "access_token_url": (
-                        "https://authentik.mydomain.com" "/application/o/token/"
+                        "https://authentik.mydomain.com/application/o/token/"
                     ),
                     "authorize_url": (
-                        "https://authentik.mydomain.com/" "application/o/authorize/"
+                        "https://authentik.mydomain.com/application/o/authorize/"
                     ),
                     "request_token_url": None,
                     "client_id": "CLIENT_ID",
@@ -975,10 +974,10 @@ r9+EFRsxA5GNYA==
                         "verify_signature": True,
                     },
                     "access_token_url": (
-                        "https://authentik.mydomain.com" "/application/o/token/"
+                        "https://authentik.mydomain.com/application/o/token/"
                     ),
                     "authorize_url": (
-                        "https://authentik.mydomain.com/" "application/o/authorize/"
+                        "https://authentik.mydomain.com/application/o/authorize/"
                     ),
                     "request_token_url": None,
                     "client_id": "CLIENT_ID",
@@ -1072,10 +1071,10 @@ BVl433tgTTQ=
                         "verify_signature": True,
                     },
                     "access_token_url": (
-                        "https://authentik.mydomain.com" "/application/o/token/"
+                        "https://authentik.mydomain.com/application/o/token/"
                     ),
                     "authorize_url": (
-                        "https://authentik.mydomain.com/" "application/o/authorize/"
+                        "https://authentik.mydomain.com/application/o/authorize/"
                     ),
                     "request_token_url": None,
                     "client_id": "CLIENT_ID",

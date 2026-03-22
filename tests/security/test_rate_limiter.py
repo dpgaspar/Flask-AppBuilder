@@ -7,6 +7,7 @@ from flask_appbuilder.security.decorators import limit
 from flask_appbuilder.utils.legacy import get_sqla_class
 import hiro
 import jinja2
+
 from tests.base import FABTestCase
 from tests.const import INVALID_LOGIN_STRING, PASSWORD_ADMIN, USERNAME_ADMIN
 

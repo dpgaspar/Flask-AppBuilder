@@ -28,14 +28,14 @@ from flask_appbuilder.security.forms import (
     DynamicForm,
     LoginForm_db,
     ResetPasswordForm,
-    roles_or_groups_required,
     UserInfoEdit,
+    roles_or_groups_required,
 )
 from flask_appbuilder.security.saml.metadata import get_sp_metadata
 from flask_appbuilder.security.utils import generate_random_string
 from flask_appbuilder.utils.base import get_safe_redirect, lazy_formatter_gettext
 from flask_appbuilder.validators import PasswordComplexityValidator
-from flask_appbuilder.views import expose, ModelView, SimpleFormView
+from flask_appbuilder.views import ModelView, SimpleFormView, expose
 from flask_appbuilder.widgets import ListWidget, ShowWidget
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
@@ -44,7 +44,6 @@ from werkzeug.security import generate_password_hash
 from werkzeug.wrappers import Response as WerkzeugResponse
 from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
-
 
 log = logging.getLogger(__name__)
 
@@ -598,9 +597,7 @@ class AuthDBView(AuthView):
         form = LoginForm_db()
         if form.validate_on_submit():
             next_url = get_safe_redirect(request.args.get("next", ""))
-            user = self.appbuilder.sm.auth_user_db(
-                form.username.data, form.password.data
-            )
+            user = self.appbuilder.sm.auth_user_db(form.username.data, form.password.data)
             if not user:
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login_with(next_url))

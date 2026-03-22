@@ -3,11 +3,11 @@ from inspect import isclass
 import json
 import logging
 import re
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 from flask import (
-    abort,
     Blueprint,
+    abort,
     current_app,
     flash,
     render_template,
@@ -24,11 +24,11 @@ from flask_appbuilder.hooks import (
     wrap_route_handler_with_hooks,
 )
 from flask_appbuilder.urltools import (
+    Stack,
     get_filter_args,
     get_order_args,
     get_page_args,
     get_page_size_args,
-    Stack,
 )
 from flask_appbuilder.widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
 from flask_babel import lazy_gettext
@@ -85,8 +85,7 @@ class AbstractViewApi:
         appbuilder: "AppBuilder",
         endpoint: Optional[str] = None,
         static_folder: Optional[str] = None,
-    ):
-        ...
+    ): ...
 
     def get_uninit_inner_views(self):
         """
@@ -209,9 +208,7 @@ class BaseView(AbstractViewApi):
         # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
             self.previous_class_permission_name = self.__class__.__name__
-        self.class_permission_name = (
-            self.class_permission_name or self.__class__.__name__
-        )
+        self.class_permission_name = self.class_permission_name or self.__class__.__name__
 
         # Init previous permission override attrs
         is_collect_previous = False
@@ -890,8 +887,8 @@ class BaseCRUDView(BaseModelView):
                 if self.method_permission_name.get(attr_name):
                     if not self.previous_method_permission_name.get(attr_name):
                         self.previous_method_permission_name[attr_name] = action.name
-                    permission_name = (
-                        PERMISSION_PREFIX + self.method_permission_name.get(attr_name)
+                    permission_name = PERMISSION_PREFIX + self.method_permission_name.get(
+                        attr_name
                     )
                 if permission_name not in self.base_permissions:
                     self.base_permissions.append(permission_name)
@@ -958,9 +955,8 @@ class BaseCRUDView(BaseModelView):
         list_cols = self.datamodel.get_user_columns_list()
         self.list_columns = self.list_columns or [list_cols[0]]
         self._gen_labels_columns(self.list_columns)
-        self.order_columns = (
-            self.order_columns
-            or self.datamodel.get_order_columns_list(list_columns=self.list_columns)
+        self.order_columns = self.order_columns or self.datamodel.get_order_columns_list(
+            list_columns=self.list_columns
         )
         if self.show_fieldsets:
             self.show_columns = []
@@ -976,9 +972,7 @@ class BaseCRUDView(BaseModelView):
         if self.add_fieldsets:
             self.add_columns = []
             for fieldset_item in self.add_fieldsets:
-                self.add_columns = self.add_columns + list(
-                    fieldset_item[1].get("fields")
-                )
+                self.add_columns = self.add_columns + list(fieldset_item[1].get("fields"))
         else:
             if not self.add_columns:
                 self.add_columns = [
@@ -1123,9 +1117,7 @@ class BaseCRUDView(BaseModelView):
         )
         return widgets
 
-    def _get_show_widget(
-        self, pk, item, widgets=None, actions=None, show_fieldsets=None
-    ):
+    def _get_show_widget(self, pk, item, widgets=None, actions=None, show_fieldsets=None):
         widgets = widgets or {}
         actions = actions or self.actions
         show_fieldsets = show_fieldsets or self.show_fieldsets
@@ -1188,9 +1180,7 @@ class BaseCRUDView(BaseModelView):
         returns list and search widget
         """
         if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(
-                self.__class__.__name__
-            )
+            order_column, order_direction = get_order_args().get(self.__class__.__name__)
         else:
             order_column, order_direction = "", ""
         page = get_page_args().get(self.__class__.__name__)
