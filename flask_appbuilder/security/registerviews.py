@@ -5,11 +5,11 @@ import logging
 from flask import current_app, flash, redirect, request, url_for
 from flask_babel import lazy_gettext
 
-from .forms import RegisterUserDBForm
 from .. import const as c
 from .._compat import as_unicode
 from ..validators import Unique
-from ..views import expose, PublicFormView
+from ..views import PublicFormView, expose
+from .forms import RegisterUserDBForm
 
 log = logging.getLogger(__name__)
 

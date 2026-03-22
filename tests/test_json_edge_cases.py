@@ -7,10 +7,10 @@ import unittest
 from flask import Flask
 from flask_appbuilder import AppBuilder
 from flask_appbuilder.forms import FieldConverter
-from flask_appbuilder.models.sqla.filters import set_value_to_type, SQLAFilterConverter
+from flask_appbuilder.models.sqla.filters import SQLAFilterConverter, set_value_to_type
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.utils.legacy import get_sqla_class
-from sqlalchemy import Boolean, Column, Integer, JSON, String, Text
+from sqlalchemy import JSON, Boolean, Column, Integer, String, Text
 from wtforms import TextAreaField
 from wtforms.fields.core import UnboundField
 
@@ -133,9 +133,7 @@ class JSONFormFieldEdgeCasesTestCase(JSONEdgeCaseTestCase):
             # (JSON should be checked before text/string)
             self.assertTrue(interface.is_json("json_data"))
             self.assertFalse(interface.is_text("json_data"))  # Should not match text
-            self.assertFalse(
-                interface.is_string("json_data")
-            )  # Should not match string
+            self.assertFalse(interface.is_string("json_data"))  # Should not match string
 
     def test_no_error_on_json_conversion(self):
         """Test that JSON field conversion doesn't log errors"""

@@ -9,10 +9,10 @@ from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.security.sqla.models import Permission, Role, User, ViewMenu
 from flask_appbuilder.utils.legacy import get_sqla_class
 import prison
-from tests.base import FABTestCase
-from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
 from werkzeug.security import generate_password_hash
 
+from tests.base import FABTestCase
+from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
 
 log = logging.getLogger(__name__)
 
@@ -167,9 +167,7 @@ class UserAPITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         admin_role_id = self.appbuilder.sm.find_role("Admin").id
-        query = {
-            "filters": [{"col": "roles", "opr": "rel_m_m", "value": admin_role_id}]
-        }
+        query = {"filters": [{"col": "roles", "opr": "rel_m_m", "value": admin_role_id}]}
         uri = f"api/v1/security/users/?q={prison.dumps(query)}"
         rv = self.auth_client_get(client, token, uri)
         response = json.loads(rv.data)
@@ -323,12 +321,8 @@ class UserAPITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        group_1 = self.appbuilder.sm.add_group(
-            "test_group_1", "label_1", "description_1"
-        )
-        group_2 = self.appbuilder.sm.add_group(
-            "test_group_2", "label_2", "description_2"
-        )
+        group_1 = self.appbuilder.sm.add_group("test_group_1", "label_1", "description_1")
+        group_2 = self.appbuilder.sm.add_group("test_group_2", "label_2", "description_2")
 
         uri = "api/v1/security/users/"
         create_user_payload = {
@@ -741,9 +735,7 @@ class RolePermissionAPITestCase(FABTestCase):
         rv = self.auth_client_put(client, token, uri, {"name": new_view_name})
         put_permission_response = json.loads(rv.data)
         self.assertEqual(rv.status_code, 200)
-        self.assertEqual(
-            put_permission_response["result"].get("name", ""), new_view_name
-        )
+        self.assertEqual(put_permission_response["result"].get("name", ""), new_view_name)
 
         new_view = self.appbuilder.sm.find_view_menu(new_view_name)
         assert new_view
@@ -820,9 +812,7 @@ class RolePermissionAPITestCase(FABTestCase):
         assert "id" and "result" in add_permission_response
         self.assertEqual(create_permission_payload, add_permission_response["result"])
 
-        self.appbuilder.sm.del_permission_view_menu(
-            permission_name, view_menu_name, True
-        )
+        self.appbuilder.sm.del_permission_view_menu(permission_name, view_menu_name, True)
 
     def test_edit_permission_view_api(self):
         client = self.app.test_client()
@@ -839,9 +829,7 @@ class RolePermissionAPITestCase(FABTestCase):
         new_view_menu_id = new_view_menu.id
 
         uri = f"api/v1/security/permissions-resources/{permission_view_menu.id}"
-        rv = self.auth_client_put(
-            client, token, uri, {"view_menu_id": new_view_menu.id}
-        )
+        rv = self.auth_client_put(client, token, uri, {"view_menu_id": new_view_menu.id})
         put_permission_response = json.loads(rv.data)
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(
@@ -850,9 +838,7 @@ class RolePermissionAPITestCase(FABTestCase):
         )
 
         self.appbuilder.sm.del_view_menu(view_name)
-        self.appbuilder.sm.del_permission_view_menu(
-            permission_name, new_view_name, True
-        )
+        self.appbuilder.sm.del_permission_view_menu(permission_name, new_view_name, True)
 
     def test_delete_permission_view_api(self):
         client = self.app.test_client()
@@ -922,9 +908,9 @@ class RolePermissionAPITestCase(FABTestCase):
 
         num = 3
         role_name = f"test_edit_role_api_{num}"
-        role_2_name = f"test_edit_role_api_{num+1}"
+        role_2_name = f"test_edit_role_api_{num + 1}"
         permission_1_name = f"test_edit_role_permission_{num}"
-        permission_2_name = f"test_edit_role_permission_{num+1}"
+        permission_2_name = f"test_edit_role_permission_{num + 1}"
         view_menu_name = f"test_edit_role_view_menu_{num}"
 
         role = self.appbuilder.sm.add_role(role_name)
@@ -961,7 +947,7 @@ class RolePermissionAPITestCase(FABTestCase):
         num = 1
         role_name = f"test_edit_role_api_{num}"
         permission_1_name = f"test_edit_role_permission_{num}"
-        permission_2_name = f"test_edit_role_permission_{num+1}"
+        permission_2_name = f"test_edit_role_permission_{num + 1}"
         view_menu_name = f"test_edit_role_view_menu_{num}"
 
         permission_1_view_menu = self.appbuilder.sm.add_permission_view_menu(
@@ -1038,7 +1024,7 @@ class RolePermissionAPITestCase(FABTestCase):
 
         num = 1
         permission_1_name = f"test_edit_role_permission_{num}"
-        permission_2_name = f"test_edit_role_permission_{num+1}"
+        permission_2_name = f"test_edit_role_permission_{num + 1}"
         view_menu_name = f"test_edit_role_view_menu_{num}"
 
         permission_1_view_menu = self.appbuilder.sm.add_permission_view_menu(
@@ -1106,12 +1092,8 @@ class RolePermissionAPITestCase(FABTestCase):
         role_name = "test_role_with_groups"
         test_role = self.appbuilder.sm.add_role(name=role_name)
 
-        group_1 = self.appbuilder.sm.add_group(
-            "test_group_1", "label_1", "description_1"
-        )
-        group_2 = self.appbuilder.sm.add_group(
-            "test_group_2", "label_2", "description_2"
-        )
+        group_1 = self.appbuilder.sm.add_group("test_group_1", "label_1", "description_1")
+        group_2 = self.appbuilder.sm.add_group("test_group_2", "label_2", "description_2")
 
         uri = f"api/v1/security/roles/{test_role.id}/groups"
         payload = {"group_ids": [group_1.id, group_2.id]}
@@ -1223,7 +1205,7 @@ class RolePermissionAPITestCase(FABTestCase):
         num = 1
         role_name = f"test_list_role_api_{num}"
         permission_1_name = f"test_list_role_permission_{num}"
-        permission_2_name = f"test_list_role_permission_{num+1}"
+        permission_2_name = f"test_list_role_permission_{num + 1}"
         view_menu_name = f"test_list_role_view_menu_{num}"
 
         permission_1_view_menu = self.appbuilder.sm.add_permission_view_menu(

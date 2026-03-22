@@ -209,9 +209,10 @@ class DetachedUserHasAccessTestCase(unittest.TestCase):
 
             g.user = mock_user
 
-            with patch(
-                "flask_appbuilder.security.manager.current_user", mock_current
-            ), patch.object(sm, "_get_safe_user", return_value=None):
+            with (
+                patch("flask_appbuilder.security.manager.current_user", mock_current),
+                patch.object(sm, "_get_safe_user", return_value=None),
+            ):
                 result = sm.has_access("can_list", "SomeView")
                 self.assertFalse(result)
 
