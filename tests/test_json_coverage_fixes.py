@@ -8,10 +8,10 @@ import unittest
 from flask import Flask
 from flask_appbuilder import AppBuilder
 from flask_appbuilder.models.base import BaseInterface
-from flask_appbuilder.models.sqla.filters import set_value_to_type, SQLAFilterConverter
+from flask_appbuilder.models.sqla.filters import SQLAFilterConverter, set_value_to_type
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.utils.legacy import get_sqla_class
-from sqlalchemy import Column, Integer, JSON, String
+from sqlalchemy import JSON, Column, Integer, String
 
 
 class JSONCoverageFixTestCase(unittest.TestCase):

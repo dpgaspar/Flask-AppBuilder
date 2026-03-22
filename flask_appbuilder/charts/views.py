@@ -2,13 +2,13 @@ import logging
 
 from flask_babel import lazy_gettext
 
-from .jsontools import dict_to_json
-from .widgets import ChartWidget, DirectChartWidget
 from ..baseviews import BaseModelView, expose
 from ..models.group import DirectProcessData, GroupByProcessData
 from ..security.decorators import has_access
 from ..urltools import get_filter_args
 from ..widgets import SearchWidget
+from .jsontools import dict_to_json
+from .widgets import ChartWidget, DirectChartWidget
 
 log = logging.getLogger(__name__)
 
@@ -323,9 +323,7 @@ class BaseSimpleDirectChartView(BaseChartView):  # pragma: no cover
 
     def __init__(self, **kwargs):
         if not self.direct_columns:
-            raise Exception(
-                "Base Chart View property <direct_columns> must not be empty"
-            )
+            raise Exception("Base Chart View property <direct_columns> must not be empty")
         else:
             super(BaseSimpleDirectChartView, self).__init__(**kwargs)
 

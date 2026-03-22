@@ -1,5 +1,5 @@
-from . import filters
 from ..base import BaseInterface
+from . import filters
 
 
 def _include_filters(obj):

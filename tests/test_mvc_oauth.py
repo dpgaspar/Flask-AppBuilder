@@ -3,6 +3,7 @@ from urllib.parse import quote
 from flask_appbuilder.security.sqla.models import User
 from flask_login import current_user
 import jwt
+
 from tests.base import FABTestCase
 
 
@@ -28,9 +29,9 @@ class OAuthRemoteMock:
 class MVCOAuthTestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
-        from flask_wtf import CSRFProtect
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.utils.legacy import get_sqla_class
+        from flask_wtf import CSRFProtect
 
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_oauth")

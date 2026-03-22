@@ -9,6 +9,7 @@ from flask_appbuilder.const import AUTH_SAML
 from flask_appbuilder.security.saml.utils import map_saml_attributes
 from flask_appbuilder.utils.legacy import get_sqla_class
 import jinja2
+
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
 from tests.fixtures.users import create_default_users
 
