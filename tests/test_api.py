@@ -76,6 +76,15 @@ from tests.sqla.models import (
 
 log = logging.getLogger(__name__)
 
+_basedir = os.path.abspath(os.path.dirname(__file__))
+
+
+def tearDownModule():
+    for suffix in ("", "-journal", "-wal", "-shm"):
+        path = os.path.join(_basedir, f"app.db{suffix}")
+        if os.path.exists(path):
+            os.remove(path)
+
 
 class APICSRFTestCase(FABTestCase):
     def setUp(self):

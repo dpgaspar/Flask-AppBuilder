@@ -143,6 +143,9 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security_cli")
+            app.config[
+                "SQLALCHEMY_DATABASE_URI"
+            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
             with app.app_context():
                 SQLA = get_sqla_class()
                 db = SQLA(app)
@@ -188,6 +191,9 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("src_app")
             app.config.from_object("tests.config_security_cli")
+            app.config[
+                "SQLALCHEMY_DATABASE_URI"
+            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
             with app.app_context():
                 SQLA = get_sqla_class()
                 db = SQLA(app)
@@ -207,23 +213,32 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
     @patch("json.dumps")
     def test_export_roles_indent(self, mock_json_dumps):
         """Test that json.dumps is called with the correct argument passed from CLI."""
-        app = Flask("src_app")
-        app.config.from_object("tests.config_security_cli")
-        with app.app_context():
-            SQLA = get_sqla_class()
-            db = SQLA(app)
-            app_builder = AppBuilder(app, db.session)  # noqa: F841
-            cli_runner = app.test_cli_runner()
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            app = Flask("src_app")
+            app.config.from_object("tests.config_security_cli")
+            app.config[
+                "SQLALCHEMY_DATABASE_URI"
+            ] = f"sqlite:///{os.path.join(tmp_dir, 'src.db')}"
+            with app.app_context():
+                SQLA = get_sqla_class()
+                db = SQLA(app)
+                app_builder = AppBuilder(app, db.session)  # noqa: F841
 
-            cli_runner.invoke(export_roles)
-            mock_json_dumps.assert_called_with(ANY, indent=None)
-            mock_json_dumps.reset_mock()
+                owd = os.getcwd()
+                os.chdir(tmp_dir)
+                cli_runner = app.test_cli_runner()
 
-            example_cli_args = ["", "foo", -1, 0, 1]
-            for arg in example_cli_args:
-                cli_runner.invoke(export_roles, [f"--indent={arg}"])
-                mock_json_dumps.assert_called_with(ANY, indent=arg)
+                cli_runner.invoke(export_roles)
+                mock_json_dumps.assert_called_with(ANY, indent=None)
                 mock_json_dumps.reset_mock()
+
+                example_cli_args = ["", "foo", -1, 0, 1]
+                for arg in example_cli_args:
+                    cli_runner.invoke(export_roles, [f"--indent={arg}"])
+                    mock_json_dumps.assert_called_with(ANY, indent=arg)
+                    mock_json_dumps.reset_mock()
+
+                os.chdir(owd)
 
     def test_import_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:

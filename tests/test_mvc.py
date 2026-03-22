@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import os
 from typing import Set
 
 from flask import Flask, make_response, redirect, session
@@ -57,6 +58,15 @@ UNIQUE_VALIDATION_STRING = "Already exists"
 NOTNULL_VALIDATION_STRING = "This field is required"
 
 log = logging.getLogger(__name__)
+
+_basedir = os.path.abspath(os.path.dirname(__file__))
+
+
+def tearDownModule():
+    for suffix in ("", "-journal", "-wal", "-shm"):
+        path = os.path.join(_basedir, f"app.db{suffix}")
+        if os.path.exists(path):
+            os.remove(path)
 
 
 class MVCBabelTestCase(FABTestCase):
