@@ -1,6 +1,7 @@
 -r tests.in
 
 black
+build
 coverage
 flake8-import-order
 flake8
