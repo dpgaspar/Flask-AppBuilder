@@ -4,6 +4,7 @@ from random import randint
 from typing import List
 
 from sqlalchemy.orm import Session
+
 from tests.const import MODEL1_DATA_SIZE, MODEL2_DATA_SIZE
 from tests.sqla.models import (
     Model1,
@@ -296,9 +297,7 @@ def insert_model_with_property(
 
 
 @contextmanager
-def model_with_property_data(
-    session: Session, count: int = 1
-) -> List[ModelWithProperty]:
+def model_with_property_data(session: Session, count: int = 1) -> List[ModelWithProperty]:
     models = insert_model_with_property(session, count)
     model_ids = [model.id for model in models]
 

@@ -3,6 +3,7 @@ import os
 
 from flask_appbuilder import AppBuilder, IndexView
 from flask_appbuilder.utils.legacy import get_sqla_class
+
 from tests.base import FABTestCase
 
 log = logging.getLogger(__name__)
@@ -19,9 +20,7 @@ class FlaskTestCase(FABTestCase):
         self.app = Flask(__name__, template_folder=".")
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("tests.config_api")
-        self.app.config[
-            "FAB_INDEX_VIEW"
-        ] = "tests.test_custom_indexview.CustomIndexView"
+        self.app.config["FAB_INDEX_VIEW"] = "tests.test_custom_indexview.CustomIndexView"
 
     def test_custom_indexview(self):
         """

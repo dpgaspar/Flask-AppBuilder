@@ -2,7 +2,7 @@ import enum
 
 from flask_appbuilder import Model
 from flask_appbuilder.api.schemas import BaseModelSchema
-from marshmallow import fields, ValidationError
+from marshmallow import ValidationError, fields
 from sqlalchemy import (
     Column,
     Date,
