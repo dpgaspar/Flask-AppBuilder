@@ -975,6 +975,27 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         self.update_user(user)
 
+    def on_user_login(self, user) -> None:
+        """Called after a successful user login.
+        Override to add custom logic (e.g., audit logging).
+
+        :param user: The authenticated user model
+        """
+
+    def on_user_login_failed(self, user) -> None:
+        """Called after a failed user login attempt.
+        Override to add custom logic (e.g., audit logging).
+
+        :param user: The identified (but not authenticated) user model
+        """
+
+    def on_user_logout(self, user) -> None:
+        """Called when a user logs out.
+        Override to add custom logic (e.g., audit logging).
+
+        :param user: The user model that is logging out
+        """
+
     def update_user_auth_stat(self, user, success=True):
         """
         Update user authentication stats upon successful/unsuccessful
@@ -997,8 +1018,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             user.login_count += 1
             user.last_login = datetime.datetime.now()
             user.fail_login_count = 0
+            self.on_user_login(user)
         else:
             user.fail_login_count += 1
+            self.on_user_login_failed(user)
         self.update_user(user)
 
     def auth_user_db(self, username, password):

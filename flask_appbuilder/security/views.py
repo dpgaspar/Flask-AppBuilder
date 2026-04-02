@@ -577,9 +577,22 @@ class AuthView(BaseView):
     def login(self):
         pass
 
+    def _get_authenticated_user(self):
+        """Resolve the current user before logout clears the session.
+        Returns the User model or None if not authenticated.
+        Note: g.user is a LocalProxy that becomes anonymous after
+        logout_user(), so we must resolve it beforehand.
+        """
+        if g.user is not None and g.user.is_authenticated:
+            return self.appbuilder.sm.get_user_by_id(g.user.id)
+        return None
+
     @expose("/logout/")
     def logout(self):
+        user = self._get_authenticated_user()
         logout_user()
+        if user is not None:
+            self.appbuilder.sm.on_user_logout(user)
         return redirect(
             current_app.config.get(
                 "LOGOUT_REDIRECT_URL", self.appbuilder.get_url_for_index
@@ -865,7 +878,10 @@ class AuthSAMLView(AuthView):
         try:
             idp = session.get("saml_idp")
             if not idp:
+                user = self._get_authenticated_user()
                 logout_user()
+                if user is not None:
+                    self.appbuilder.sm.on_user_logout(user)
                 return redirect(self.appbuilder.get_url_for_index)
 
             url, should_logout = self.appbuilder.sm.get_saml_logout_redirect_url(
@@ -874,16 +890,25 @@ class AuthSAMLView(AuthView):
                 session_index=session.get("saml_session_index"),
             )
             if should_logout:
+                user = self._get_authenticated_user()
                 logout_user()
+                if user is not None:
+                    self.appbuilder.sm.on_user_logout(user)
             return redirect(url or self.appbuilder.get_url_for_index)
 
         except (OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError) as e:
             log.error("SAML SLO validation error: %s", e)
+            user = self._get_authenticated_user()
             logout_user()
+            if user is not None:
+                self.appbuilder.sm.on_user_logout(user)
             return redirect(self.appbuilder.get_url_for_index)
         except ValueError as e:
             log.error("SAML SLO configuration error: %s", e)
+            user = self._get_authenticated_user()
             logout_user()
+            if user is not None:
+                self.appbuilder.sm.on_user_logout(user)
             return redirect(self.appbuilder.get_url_for_index)
 
     @expose("/logout/")
@@ -895,7 +920,10 @@ class AuthSAMLView(AuthView):
                 return redirect(url_for(".slo"))
             except Exception:
                 pass
+        user = self._get_authenticated_user()
         logout_user()
+        if user is not None:
+            self.appbuilder.sm.on_user_logout(user)
         return redirect(
             current_app.config.get(
                 "LOGOUT_REDIRECT_URL", self.appbuilder.get_url_for_index
