@@ -579,12 +579,14 @@ class AuthView(BaseView):
 
     def _get_authenticated_user(self):
         """Resolve the current user before logout clears the session.
-        Returns the User model or None if not authenticated.
+        Returns a fresh User model from DB, or None if not authenticated.
         Note: g.user is a LocalProxy that becomes anonymous after
         logout_user(), so we must resolve it beforehand.
+        Uses _get_safe_user to handle detached users gracefully.
         """
-        if g.user is not None and g.user.is_authenticated:
-            return self.appbuilder.sm.get_user_by_id(g.user.id)
+        user = self.appbuilder.sm._get_safe_user(getattr(g, "user", None))
+        if user is not None and getattr(user, "is_authenticated", False):
+            return user
         return None
 
     @expose("/logout/")

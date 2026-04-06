@@ -16,6 +16,7 @@ from flask_limiter.util import get_remote_address
 from flask_login import current_user, LoginManager
 import jwt
 from packaging.version import Version
+from sqlalchemy import inspect as sa_inspect
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .api import SecurityApi
@@ -1018,11 +1019,13 @@ class BaseSecurityManager(AbstractSecurityManager):
             user.login_count += 1
             user.last_login = datetime.datetime.now()
             user.fail_login_count = 0
-            self.on_user_login(user)
         else:
             user.fail_login_count += 1
-            self.on_user_login_failed(user)
         self.update_user(user)
+        if success:
+            self.on_user_login(user)
+        else:
+            self.on_user_login_failed(user)
 
     def auth_user_db(self, username, password):
         """
@@ -1890,21 +1893,46 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         return result
 
+    def _is_user_detached(self, user) -> bool:
+        """Check if a SQLAlchemy user instance is detached from the session."""
+        try:
+            return sa_inspect(user).detached
+        except Exception:
+            return False
+
+    def _get_safe_user(self, user):
+        """Return an attached user instance, re-fetching from DB if detached.
+        Returns None if the user cannot be resolved.
+        """
+        if user is None:
+            return None
+        if self._is_user_detached(user):
+            try:
+                identity = sa_inspect(user).identity
+            except Exception:
+                return None
+            if identity:
+                return self.get_user_by_id(identity[0])
+            return None
+        return user
+
     def has_access(self, permission_name: str, view_name: str) -> bool:
         """
         Check if current user or public has access to view or menu
         """
         # Check API key authenticated user first
         if getattr(g, "_api_key_user", False) and hasattr(g, "user"):
-            user = g.user
+            user = self._get_safe_user(g.user)
             if user and user.is_active:
                 return self._has_view_access(user, permission_name, view_name)
-        if current_user.is_authenticated and current_user.is_active:
-            return self._has_view_access(g.user, permission_name, view_name)
-        elif current_user_jwt and current_user_jwt.is_active:
+        if current_user.is_authenticated:
+            user = self._get_safe_user(g.user)
+            if user and user.is_active:
+                return self._has_view_access(user, permission_name, view_name)
+            return False
+        if current_user_jwt and current_user_jwt.is_active:
             return self._has_view_access(current_user_jwt, permission_name, view_name)
-        else:
-            return self.is_item_public(permission_name, view_name)
+        return self.is_item_public(permission_name, view_name)
 
     def get_user_menu_access(self, menu_names: List[str] = None) -> Set[str]:
         if current_user.is_authenticated:
