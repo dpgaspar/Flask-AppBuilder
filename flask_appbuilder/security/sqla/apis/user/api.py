@@ -165,6 +165,7 @@ class UserApi(ModelRestApi):
 
             self.pre_add(model)
             self.datamodel.add(model)
+            self.post_add(model)
             return self.response(201, id=model.id)
         except ValidationError as error:
             return self.response_400(message=error.messages)
@@ -281,6 +282,7 @@ class UserApi(ModelRestApi):
 
             self.pre_update(model, item)
             self.datamodel.edit(model)
+            self.post_update(model)
             return self.response(
                 200,
                 **{API_RESULT_RES_KEY: self.edit_model_schema.dump(item, many=False)},
