@@ -119,6 +119,11 @@ class BaseView(AbstractViewApi):
     route_base = None
     """ Override this if you want to define your own relative url """
 
+    csrf_exempt = False
+    """
+    If using flask-wtf CSRFProtect exempt the View from check
+    """
+
     template_folder = "templates"
     """ The template folder relative location """
     static_folder = "static"
@@ -299,6 +304,13 @@ class BaseView(AbstractViewApi):
                 static_folder=static_folder,
             )
         self._register_urls()
+
+        # Exempt from CSRF if the view opts in
+        if getattr(self, "csrf_exempt", False):
+            csrf = current_app.extensions.get("csrf")
+            if csrf:
+                csrf.exempt(self.blueprint)
+
         return self.blueprint
 
     def _register_urls(self):
