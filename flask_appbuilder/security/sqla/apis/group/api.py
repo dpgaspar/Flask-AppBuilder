@@ -120,6 +120,7 @@ class GroupApi(ModelRestApi):
 
             self.pre_add(model)
             self.datamodel.add(model)
+            self.post_add(model)
 
             return self.response(201, id=model.id)
 
@@ -216,6 +217,7 @@ class GroupApi(ModelRestApi):
                 model.users = users
             self.pre_update(model)
             self.datamodel.edit(model)
+            self.post_update(model)
             return self.response(
                 200,
                 **{API_RESULT_RES_KEY: self.edit_model_schema.dump(item, many=False)},
