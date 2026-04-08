@@ -1901,7 +1901,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             return False
 
     def _get_safe_user(self, user):
-        """Return an attached user instance, re-fetching from DB if detached.
+        """Return an attached ORM user instance, re-fetching from DB if needed.
+        Handles detached ORM instances and non-ORM objects (e.g. LocalProxy).
         Returns None if the user cannot be resolved.
         """
         if user is None:
@@ -1913,6 +1914,12 @@ class BaseSecurityManager(AbstractSecurityManager):
                 return None
             if identity:
                 return self.get_user_by_id(identity[0])
+            return None
+        # If user is not an ORM instance (e.g. LocalProxy), resolve by id
+        if not hasattr(user, "_sa_instance_state"):
+            user_id = getattr(user, "id", None)
+            if user_id is not None:
+                return self.get_user_by_id(user_id)
             return None
         return user
 
