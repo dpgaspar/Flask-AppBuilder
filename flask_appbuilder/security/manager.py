@@ -1915,13 +1915,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             if identity:
                 return self.get_user_by_id(identity[0])
             return None
-        try:
-            user_id = user.id
-        except Exception:
-            return None
-        if user_id is not None:
-            return self.get_user_by_id(user_id)
-        return None
+        return user
 
     def has_access(self, permission_name: str, view_name: str) -> bool:
         """
