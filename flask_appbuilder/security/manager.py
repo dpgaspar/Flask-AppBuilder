@@ -1915,13 +1915,13 @@ class BaseSecurityManager(AbstractSecurityManager):
             if identity:
                 return self.get_user_by_id(identity[0])
             return None
-        # If user is not an ORM instance (e.g. LocalProxy), resolve by id
-        if not hasattr(user, "_sa_instance_state"):
-            user_id = getattr(user, "id", None)
-            if user_id is not None:
-                return self.get_user_by_id(user_id)
+        try:
+            user_id = user.id
+        except Exception:
             return None
-        return user
+        if user_id is not None:
+            return self.get_user_by_id(user_id)
+        return None
 
     def has_access(self, permission_name: str, view_name: str) -> bool:
         """
