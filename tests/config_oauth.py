@@ -26,7 +26,24 @@ OAUTH_PROVIDERS = [
             "access_token_url": "https://accounts.google.com/o/oauth2/token",
             "authorize_url": "https://accounts.google.com/o/oauth2/auth",
         },
-    }
+    },
+    {  # For Azure response_mode=form_post POST callback endpoint test
+        "name": "azure",
+        "icon": "fa-windows",
+        "token_key": "access_token",
+        "remote_app": {
+            "client_id": "CLIENT_ID",
+            "client_secret": "CLIENT_SECRET",
+            "api_base_url": "https://login.microsoftonline.com/D/oauth2/v2.0",
+            "client_kwargs": {
+                "scope": "email profile",
+                "response_mode": "form_post",
+            },
+            "request_token_url": None,
+            "access_token_url": "https://login.microsoftonline.com/D/oauth2/v2.0/token",
+            "authorize_url": "https://login.microsoftonline.com/D/oauth2/v2.0/authorize",
+        },
+    },
 ]
 
 # Will allow user self registration

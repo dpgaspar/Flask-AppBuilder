@@ -660,6 +660,8 @@ class AuthLDAPView(AuthView):
 
 
 class AuthOAuthView(AuthView):
+    # csrf_exempt is needed for the POST /oauth-authorized/<provider> endpoint
+    csrf_exempt = True
     login_template = "appbuilder/general/security/login_oauth.html"
 
     @expose("/login/")
@@ -706,7 +708,8 @@ class AuthOAuthView(AuthView):
             flash(as_unicode(self.invalid_login_message), "warning")
             return redirect(self.appbuilder.get_url_for_index)
 
-    @expose("/oauth-authorized/<provider>")
+    # Microsoft Entra ID supports response_mode=fom_post which uses a POST callback.
+    @expose("/oauth-authorized/<provider>", methods=("GET", "POST"))
     def oauth_authorized(self, provider: str) -> WerkzeugResponse:
         log.debug("Authorized init")
         if provider not in self.appbuilder.sm.oauth_remotes:
@@ -752,8 +755,12 @@ class AuthOAuthView(AuthView):
             return redirect(self.appbuilder.get_url_for_login)
         else:
             try:
+                if request.method == "GET":
+                    state_from_request = request.args["state"]
+                else:
+                    state_from_request = request.form["state"]
                 state = jwt.decode(
-                    request.args["state"], session["oauth_state"], algorithms=["HS256"]
+                    state_from_request, session["oauth_state"], algorithms=["HS256"]
                 )
             except (jwt.InvalidTokenError, KeyError):
                 flash(as_unicode("Invalid state signature"), "warning")
