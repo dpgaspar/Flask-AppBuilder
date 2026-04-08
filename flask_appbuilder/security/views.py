@@ -580,26 +580,23 @@ class AuthView(BaseView):
     def _get_authenticated_user(self):
         """Resolve the current user before logout clears the session.
         Returns a fresh User model from DB, or None if not authenticated.
-        Note: g.user may be a LocalProxy (via flask_login.current_user)
-        that becomes anonymous after logout_user(). We must resolve it
-        to a concrete ORM instance before logout clears the session.
-        Uses _get_safe_user to handle detached instances, then ensures
-        the result is a real ORM object (not a LocalProxy) by re-fetching
-        from the DB when needed.
+        Note: g.user may be a LocalProxy that becomes anonymous after
+        logout_user(), or a detached ORM instance whose attribute access
+        raises DetachedInstanceError. We extract the id and re-fetch
+        a concrete, session-bound instance before logout.
         """
-        user = self.appbuilder.sm._get_safe_user(getattr(g, "user", None))
-        if user is None or not getattr(user, "is_authenticated", False):
-            return None
-        # _get_safe_user may return the original object (including a
-        # LocalProxy) when it has _sa_instance_state. Ensure we hold a
-        # concrete ORM instance so it survives logout_user().
-        if not hasattr(user, "_sa_instance_state"):
+        user = getattr(g, "user", None)
+        if user is None:
             return None
         try:
+            if not user.is_authenticated:
+                return None
             user_id = user.id
         except Exception:
             return None
-        return self.appbuilder.sm.get_user_by_id(user_id)
+        if user_id is not None:
+            return self.appbuilder.sm.get_user_by_id(user_id)
+        return None
 
     @expose("/logout/")
     def logout(self):
