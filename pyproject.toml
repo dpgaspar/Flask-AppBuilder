@@ -1,0 +1,141 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Flask-AppBuilder"
+dynamic = ["version"]
+description = "Simple and rapid application development framework, built on top of Flask. includes detailed security, auto CRUD generation for your models, google charts and much more."
+readme = "README.rst"
+license = "BSD-3-Clause"
+requires-python = ">=3.10"
+authors = [
+    { name = "Daniel Vaz Gaspar", email = "danielvazgaspar@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "apispec[yaml]>=6.0.0, <7",
+    "colorama>=0.3.9, <1",
+    "click>=8, <9",
+    "email_validator>=1.0.5",
+    "Flask>=2, <4",
+    "Flask-Babel>=3, <5",
+    "Flask-Limiter>3, <4",
+    "Flask-Login>=0.3, <0.7",
+    "Flask-SQLAlchemy>=2.4.0, <4",
+    "Flask-WTF>=0.14.2, <2",
+    "Flask-JWT-Extended>=4.0.0, <5.0.0",
+    "jsonschema>=3, <5",
+    "marshmallow>=3.18.0, <5",
+    "marshmallow-sqlalchemy>=0.22.0, <3.0.0",
+    "python-dateutil>=2.3, <3",
+    "prison>=0.2.1, <1.0.0",
+    "PyJWT>=2.0.0, <3.0.0",
+    "SQLAlchemy>=1.4.0, <3",
+    "sqlalchemy-utils>=0.32.21, <1",
+    "WTForms<4",
+    "werkzeug<4",
+]
+
+[project.optional-dependencies]
+jmespath = ["jmespath>=0.9.5"]
+oauth = ["Authlib>=0.14, <2.0.0"]
+saml = ["python3-saml>=1.15.0"]
+talisman = ["flask-talisman>=1.0.0, <2.0"]
+
+[project.urls]
+Homepage = "https://github.com/dpgaspar/flask-appbuilder/"
+
+[project.entry-points."flask.commands"]
+fab = "flask_appbuilder.cli:fab"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["flask_appbuilder*"]
+
+[tool.setuptools.package-data]
+flask_appbuilder = [
+    "static/**/*",
+    "templates/**/*",
+    "translations/**/*",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "flask_appbuilder.__version__" }
+
+[tool.mypy]
+follow_imports = "skip"
+ignore_missing_imports = true
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "flask_appbuilder.validators"
+ignore_errors = false
+check_untyped_defs = true
+disallow_untyped_calls = false
+disallow_untyped_defs = true
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = "flask_appbuilder.base"
+ignore_errors = false
+check_untyped_defs = true
+disallow_untyped_calls = false
+disallow_untyped_defs = true
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = "flask_appbuilder.cli"
+ignore_errors = false
+check_untyped_defs = true
+disallow_untyped_calls = false
+disallow_untyped_defs = true
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = "flask_appbuilder.models.sqla"
+ignore_errors = false
+check_untyped_defs = true
+disallow_untyped_calls = false
+disallow_untyped_defs = true
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = "flask_appbuilder.models.sqla.interface"
+ignore_errors = false
+check_untyped_defs = true
+disallow_untyped_calls = false
+disallow_untyped_defs = true
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = "flask_appbuilder.models.sqla.base"
+ignore_errors = false
+check_untyped_defs = true
+disallow_untyped_calls = false
+disallow_untyped_defs = true
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = "flask_appbuilder.api.convert"
+ignore_errors = false
+check_untyped_defs = true
+disallow_untyped_calls = false
+disallow_untyped_defs = true
+warn_unused_ignores = false
+
+[tool.coverage.run]
+source = ["flask_appbuilder"]
