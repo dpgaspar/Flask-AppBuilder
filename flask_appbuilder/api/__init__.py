@@ -6,6 +6,7 @@ import logging
 import re
 import traceback
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -14,14 +15,13 @@ from typing import (
     Set,
     Tuple,
     Type,
-    TYPE_CHECKING,
     Union,
 )
 import urllib.parse
 
 from apispec import APISpec, yaml_utils
 from apispec.exceptions import DuplicateComponentNameError
-from flask import Blueprint, current_app, jsonify, make_response, request, Response
+from flask import Blueprint, Response, current_app, jsonify, make_response, request
 from flask_appbuilder._compat import as_unicode
 from flask_appbuilder.api.convert import Model2SchemaConverter
 from flask_appbuilder.api.schemas import (
@@ -507,9 +507,7 @@ class BaseApi(AbstractViewApi):
         # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
             self.previous_class_permission_name = self.__class__.__name__
-        self.class_permission_name = (
-            self.class_permission_name or self.__class__.__name__
-        )
+        self.class_permission_name = self.class_permission_name or self.__class__.__name__
 
         # Init previous permission override attrs
         is_collect_previous = False
@@ -1244,9 +1242,8 @@ class ModelRestApi(BaseApi):
             ]
         self.list_select_columns = self.list_select_columns or self.list_columns
 
-        self.order_columns = (
-            self.order_columns
-            or self.datamodel.get_order_columns_list(list_columns=self.list_columns)
+        self.order_columns = self.order_columns or self.datamodel.get_order_columns_list(
+            list_columns=self.list_columns
         )
         # Process excluded columns
         if not self.show_columns:
@@ -1256,9 +1253,7 @@ class ModelRestApi(BaseApi):
         self.show_select_columns = self.show_select_columns or self.show_columns
 
         if not self.add_columns:
-            self.add_columns = [
-                x for x in list_cols if x not in self.add_exclude_columns
-            ]
+            self.add_columns = [x for x in list_cols if x not in self.add_exclude_columns]
         if not self.edit_columns:
             self.edit_columns = [
                 x for x in list_cols if x not in self.edit_exclude_columns
@@ -1345,9 +1340,7 @@ class ModelRestApi(BaseApi):
         else:
             response[API_SHOW_COLUMNS_RES_KEY] = self.show_columns
 
-    def merge_description_columns(
-        self, response: Dict[str, Any], **kwargs: Any
-    ) -> None:
+    def merge_description_columns(self, response: Dict[str, Any], **kwargs: Any) -> None:
         pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if pruned_select_cols:
             response[API_DESCRIPTION_COLUMNS_RES_KEY] = self._description_columns_json(
@@ -1397,9 +1390,7 @@ class ModelRestApi(BaseApi):
     @safe
     @rison(get_info_schema)
     @permission_name("info")
-    @merge_response_func(
-        BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY
-    )
+    @merge_response_func(BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY)
     @merge_response_func(merge_add_field_info, API_ADD_COLUMNS_RIS_KEY)
     @merge_response_func(merge_edit_field_info, API_EDIT_COLUMNS_RIS_KEY)
     @merge_response_func(merge_search_filters, API_FILTERS_RIS_KEY)
@@ -1998,9 +1989,7 @@ class ModelRestApi(BaseApi):
         select_columns_arg = args.get(API_SELECT_SEL_COLUMNS_RIS_KEY, [])
         response_columns_arg = args.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if select_columns_arg and response_columns_arg:
-            raise InvalidColumnArgsFABException(
-                "Cannot use both select and sel columns"
-            )
+            raise InvalidColumnArgsFABException("Cannot use both select and sel columns")
         select_columns = default_select_columns
         response_columns = []
         if select_columns_arg:

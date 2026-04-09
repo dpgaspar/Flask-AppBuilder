@@ -37,6 +37,7 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.utils.legacy import get_sqla_class
 import prison
 from sqlalchemy.sql.expression import func
+
 from tests.base import FABTestCase
 from tests.const import (
     MAX_PAGE_SIZE,
@@ -80,8 +81,8 @@ log = logging.getLogger(__name__)
 class APICSRFTestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
-        from flask_wtf import CSRFProtect
         from flask_appbuilder import AppBuilder
+        from flask_wtf import CSRFProtect
 
         self.app = Flask(__name__)
         self.app.config.from_object("tests.config_api")
@@ -187,16 +188,16 @@ class APITestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
-        from flask_appbuilder.models.filters import BaseFilter
-        from flask_appbuilder.models.sqla.interface import SQLAInterface
         from flask_appbuilder.api import (
             BaseApi,
             ModelRestApi,
-            protect,
             expose,
+            protect,
             rison,
             safe,
         )
+        from flask_appbuilder.models.filters import BaseFilter
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
@@ -763,9 +764,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 400)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(data, {"message": "Not a valid rison/json argument"})
-        uri = "api/v1/model1api/1?{}={}".format(
-            API_URI_RIS_KEY, "(columns!(not_valid))"
-        )
+        uri = "api/v1/model1api/1?{}={}".format(API_URI_RIS_KEY, "(columns!(not_valid))")
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 400)
         data = json.loads(rv.data.decode("utf-8"))
@@ -893,9 +892,7 @@ class APITestCase(FABTestCase):
             },
         )
         # test descriptions
-        self.assertEqual(
-            data["description_columns"], self.model1api.description_columns
-        )
+        self.assertEqual(data["description_columns"], self.model1api.description_columns)
         # test labels
         self.assertEqual(
             data[API_LABEL_COLUMNS_RES_KEY],
@@ -1214,8 +1211,7 @@ class APITestCase(FABTestCase):
 
         arguments = {"order_column": "field_string", "order_direction": "asc"}
         uri = (
-            f"api/v1/model2dottednotationapi/?"
-            f"{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+            f"api/v1/model2dottednotationapi/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         )
         with model2_data(self.appbuilder.session, MODEL2_DATA_SIZE):
             rv = self.auth_client_get(client, token, uri)
@@ -1248,9 +1244,7 @@ class APITestCase(FABTestCase):
                 {"field_string": child.field_string, "id": child.id}
                 for child in models[0].children
             ]
-            self.assertEqual(
-                data[API_RESULT_RES_KEY][0]["children"], expected_rel_field
-            )
+            self.assertEqual(data[API_RESULT_RES_KEY][0]["children"], expected_rel_field)
 
     def test_get_list_dotted_om_field(self):
         """
@@ -1342,8 +1336,7 @@ class APITestCase(FABTestCase):
 
         arguments = {"order_column": "group.field_string", "order_direction": "desc"}
         uri = (
-            f"api/v1/model2dottednotationapi/?"
-            f"{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+            f"api/v1/model2dottednotationapi/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         )
         with model2_data(self.appbuilder.session, MODEL1_DATA_SIZE):
             rv = self.auth_client_get(client, token, uri)
@@ -1815,9 +1808,7 @@ class APITestCase(FABTestCase):
             self.assertEqual(data["count"], 2)
 
         parent_ = (
-            session.query(ModelMMParent)
-            .filter_by(field_string="test_tmp")
-            .one_or_none()
+            session.query(ModelMMParent).filter_by(field_string="test_tmp").one_or_none()
         )
         child_ = (
             session.query(ModelMMChild)
@@ -2646,9 +2637,7 @@ class APITestCase(FABTestCase):
             rv = self.auth_client_put(client, token, uri, item)
             self.assertEqual(rv.status_code, 422)
             data = json.loads(rv.data.decode("utf-8"))
-            self.assertEqual(
-                data["message"]["field_integer"][0], "Not a valid integer."
-            )
+            self.assertEqual(data["message"]["field_integer"][0], "Not a valid integer.")
 
             item = dict(field_string=11, field_integer=11, field_float=11.0)
             rv = self.auth_client_put(client, token, uri, item)
@@ -2918,9 +2907,7 @@ class APITestCase(FABTestCase):
             rv = self.auth_client_get(client, token, uri)
             data = json.loads(rv.data.decode("utf-8"))
             self.assertEqual(rv.status_code, 200)
-            self.assertEqual(
-                data["result"], [{"enum1": "e1", "enum2": 2, "enum3": "e3"}]
-            )
+            self.assertEqual(data["result"], [{"enum1": "e1", "enum2": 2, "enum3": "e3"}])
             self.assertEqual(data["count"], 1)
 
     def test_get_item_with_enums(self):
@@ -3259,9 +3246,7 @@ class APITestCase(FABTestCase):
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu("can_access", "api")
         self.appbuilder.sm.add_permission_role(role, pvm)
-        self.appbuilder.sm.add_user(
-            "test", "test", "user", "test@fab.org", role, "test"
-        )
+        self.appbuilder.sm.add_user("test", "test", "user", "test@fab.org", role, "test")
 
         client = self.app.test_client()
         token = self.login(client, "test", "test")

@@ -2,13 +2,13 @@ import logging
 
 from flask_babel import lazy_gettext
 
-from .jsontools import dict_to_json
-from .widgets import ChartWidget, DirectChartWidget
 from ..baseviews import BaseModelView, expose
 from ..models.group import DirectProcessData, GroupByProcessData
 from ..security.decorators import has_access
 from ..urltools import get_filter_args
 from ..widgets import SearchWidget
+from .jsontools import dict_to_json
+from .widgets import ChartWidget, DirectChartWidget
 
 log = logging.getLogger(__name__)
 
@@ -158,7 +158,7 @@ class GroupByChartView(BaseChartView):
         direct=None,
         height=None,
         definition="",
-        **args
+        **args,
     ):
         height = height or self.height
         widgets = widgets or dict()
@@ -186,7 +186,7 @@ class GroupByChartView(BaseChartView):
             height=height,
             value_columns=value_columns,
             modelview_name=self.__class__.__name__,
-            **args
+            **args,
         )
         return widgets
 
@@ -290,7 +290,7 @@ class BaseSimpleGroupByChartView(BaseChartView):  # pragma: no cover
         widgets=None,
         group_by=None,
         height=None,
-        **args
+        **args,
     ):
         height = height or self.height
         widgets = widgets or dict()
@@ -308,7 +308,7 @@ class BaseSimpleGroupByChartView(BaseChartView):  # pragma: no cover
             height=height,
             value_columns=value_columns,
             modelview_name=self.__class__.__name__,
-            **args
+            **args,
         )
         return widgets
 
@@ -323,9 +323,7 @@ class BaseSimpleDirectChartView(BaseChartView):  # pragma: no cover
 
     def __init__(self, **kwargs):
         if not self.direct_columns:
-            raise Exception(
-                "Base Chart View property <direct_columns> must not be empty"
-            )
+            raise Exception("Base Chart View property <direct_columns> must not be empty")
         else:
             super(BaseSimpleDirectChartView, self).__init__(**kwargs)
 
@@ -344,7 +342,7 @@ class BaseSimpleDirectChartView(BaseChartView):  # pragma: no cover
         widgets=None,
         direct=None,
         height=None,
-        **args
+        **args,
     ):
         height = height or self.height
         widgets = widgets or dict()
@@ -367,7 +365,7 @@ class BaseSimpleDirectChartView(BaseChartView):  # pragma: no cover
             height=height,
             value_columns=value_columns,
             modelview_name=self.__class__.__name__,
-            **args
+            **args,
         )
         return widgets
 
@@ -427,7 +425,7 @@ class TimeChartView(BaseSimpleGroupByChartView):  # pragma: no cover
         group_by=None,
         period=None,
         height=None,
-        **args
+        **args,
     ):
         height = height or self.height
         widgets = widgets or dict()
@@ -451,7 +449,7 @@ class TimeChartView(BaseSimpleGroupByChartView):  # pragma: no cover
             height=height,
             value_columns=value_columns,
             modelview_name=self.__class__.__name__,
-            **args
+            **args,
         )
         return widgets
 

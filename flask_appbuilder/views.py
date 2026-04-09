@@ -29,7 +29,6 @@ from flask_appbuilder.urltools import (
 )
 from flask_appbuilder.widgets import GroupFormListWidget, ListMasterWidget
 
-
 log = logging.getLogger(__name__)
 
 

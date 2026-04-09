@@ -7,9 +7,8 @@ from flask_appbuilder.const import (
     AUTH_DB,
     AUTH_LDAP,
 )
-from marshmallow import fields, Schema, ValidationError
+from marshmallow import Schema, ValidationError, fields
 from marshmallow.validate import Length, OneOf
-
 
 provider_to_auth_type = {"db": AUTH_DB, "ldap": AUTH_LDAP}
 

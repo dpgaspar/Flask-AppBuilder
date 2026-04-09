@@ -10,7 +10,6 @@ from flask import current_app
 
 from ._compat import as_unicode
 
-
 log = logging.getLogger(__name__)
 
 

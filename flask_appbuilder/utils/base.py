@@ -8,7 +8,6 @@ from flask import current_app, request
 from flask_babel import gettext
 from flask_babel.speaklater import LazyString
 
-
 log = logging.getLogger(__name__)
 
 
