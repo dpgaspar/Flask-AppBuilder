@@ -1,6 +1,13 @@
 __author__ = "Daniel Vaz Gaspar"
 __version__ = "5.2.1"
 
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("Flask-AppBuilder")
+except PackageNotFoundError:
+    pass
+
 from .actions import action  # noqa: F401
 from .api import ModelRestApi  # noqa: F401
 from .base import AppBuilder  # noqa: F401
