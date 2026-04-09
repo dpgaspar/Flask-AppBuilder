@@ -569,6 +569,7 @@ class SQLAInterface(BaseInterface):
             page,
             page_size,
             select_columns,
+            outer_default_load,
         )
         query_results = query.all()
 
