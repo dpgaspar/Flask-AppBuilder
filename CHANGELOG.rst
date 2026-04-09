@@ -1,6 +1,13 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.2.1
+-----------------------------------
+
+- fix: pass outer_default_load to apply_all (#2449) [skrepkaq]
+- feat: add missing CRUD hooks and auth event hooks (#2450) [Daniel Vaz Gaspar]
+- fix(security): remove OAuth token values from debug log statements (#2440) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 5.2.0
 -----------------------------------
 
