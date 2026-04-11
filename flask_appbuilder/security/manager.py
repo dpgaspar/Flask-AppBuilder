@@ -16,6 +16,7 @@ from flask_limiter.util import get_remote_address
 from flask_login import current_user, LoginManager
 import jwt
 from packaging.version import Version
+from sqlalchemy import inspect as sa_inspect
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .api import SecurityApi
@@ -975,6 +976,27 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         self.update_user(user)
 
+    def on_user_login(self, user) -> None:
+        """Called after a successful user login.
+        Override to add custom logic (e.g., audit logging).
+
+        :param user: The authenticated user model
+        """
+
+    def on_user_login_failed(self, user) -> None:
+        """Called after a failed user login attempt.
+        Override to add custom logic (e.g., audit logging).
+
+        :param user: The identified (but not authenticated) user model
+        """
+
+    def on_user_logout(self, user) -> None:
+        """Called when a user logs out.
+        Override to add custom logic (e.g., audit logging).
+
+        :param user: The user model that is logging out
+        """
+
     def update_user_auth_stat(self, user, success=True):
         """
         Update user authentication stats upon successful/unsuccessful
@@ -1000,6 +1022,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             user.fail_login_count += 1
         self.update_user(user)
+        if success:
+            self.on_user_login(user)
+        else:
+            self.on_user_login_failed(user)
 
     def auth_user_db(self, username, password):
         """
@@ -1867,21 +1893,47 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         return result
 
+    def _is_user_detached(self, user) -> bool:
+        """Check if a SQLAlchemy user instance is detached from the session."""
+        try:
+            return sa_inspect(user).detached
+        except Exception:
+            return False
+
+    def _get_safe_user(self, user):
+        """Return an attached ORM user instance, re-fetching from DB if needed.
+        Handles detached ORM instances and non-ORM objects (e.g. LocalProxy).
+        Returns None if the user cannot be resolved.
+        """
+        if user is None:
+            return None
+        if self._is_user_detached(user):
+            try:
+                identity = sa_inspect(user).identity
+            except Exception:
+                return None
+            if identity:
+                return self.get_user_by_id(identity[0])
+            return None
+        return user
+
     def has_access(self, permission_name: str, view_name: str) -> bool:
         """
         Check if current user or public has access to view or menu
         """
         # Check API key authenticated user first
         if getattr(g, "_api_key_user", False) and hasattr(g, "user"):
-            user = g.user
+            user = self._get_safe_user(g.user)
             if user and user.is_active:
                 return self._has_view_access(user, permission_name, view_name)
-        if current_user.is_authenticated and current_user.is_active:
-            return self._has_view_access(g.user, permission_name, view_name)
-        elif current_user_jwt and current_user_jwt.is_active:
+        if current_user.is_authenticated:
+            user = self._get_safe_user(g.user)
+            if user and user.is_active:
+                return self._has_view_access(user, permission_name, view_name)
+            return False
+        if current_user_jwt and current_user_jwt.is_active:
             return self._has_view_access(current_user_jwt, permission_name, view_name)
-        else:
-            return self.is_item_public(permission_name, view_name)
+        return self.is_item_public(permission_name, view_name)
 
     def get_user_menu_access(self, menu_names: List[str] = None) -> Set[str]:
         if current_user.is_authenticated:
