@@ -429,6 +429,7 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
 class MVCTestCase(BaseMVCTestCase):
     def setUp(self):
         super().setUp()
+
         class Model2View(ModelView):
             datamodel = SQLAInterface(Model2)
             list_columns = [
