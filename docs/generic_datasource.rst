@@ -1,98 +1,83 @@
 Generic Data Sources
 ====================
 
-This feature is still beta, but you can already use it, it allows you to use alternative/generic datasources.
-With it you can use python libraries, systems commands or whatever with the framework as if they were
-SQLAlchemy models.
+This feature allows you to use alternative/generic datasources.
+With it you can use python libraries, external APIs or any custom data with the framework
+as if they were SQLAlchemy models.
 
-PS Command example
-------------------
+Book catalog example
+--------------------
 
-Already on the framework, and intended to be an example, is a data source that holds the output from
-the linux 'ps -ef' command, and shows it as if it were a SQLA model.
+As an example, here is a data source that holds a simple in-memory book catalog
+and exposes it as if it were a SQLA model.
 
-Your own generic data source must subclass from **GenericSession** and implement at least the **all** method
+Your own generic data source must subclass from **GenericSession** and implement at least the **all** method.
 
-The **GenericSession** mimics a subset of SQLA **Session** class and it's query feature, so if you
-override the all method you will implement the data generation at it's heart.
+The **GenericSession** mimics a subset of SQLA **Session** class and its query feature, so if you
+override the all method you will implement the data generation at its heart.
 
-On our example you must first define the **Model** you will represent::
+First define the **Model** you will represent::
 
     from flask_appbuilder.models.generic import GenericModel, GenericSession, GenericColumn
 
-    class PSModel(GenericModel):
-        UID = GenericColumn(str)
-        PID = GenericColumn(int, primary_key=True)
-        PPID = GenericColumn(int)
-        C = GenericColumn(int)
-        STIME = GenericColumn(str)
-        TTY = GenericColumn(str)
-        TIME = GenericColumn(str)
-        CMD = GenericColumn(str)
+    class BookModel(GenericModel):
+        id = GenericColumn(int, primary_key=True)
+        title = GenericColumn(str)
+        author = GenericColumn(str)
+        year = GenericColumn(int)
+        genre = GenericColumn(str)
 
-As you can see, we are subclassing from **GenericModel** and use **GenericColumn** much like SQLAlchemy.
-except type are really python types. No type obligation is implemented, but you should respect it when
-implementing your own data generation
+As you can see, we are subclassing from **GenericModel** and use **GenericColumn** much like SQLAlchemy,
+except types are really python types. No type obligation is implemented, but you should respect it when
+implementing your own data generation.
 
-For your data generation, and regarding our example::
+For your data generation::
 
-    class PSSession(GenericSession):
-        regexp = "(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n"
+    class BookSession(GenericSession):
 
-        def _add_object(self, line):
-            import re
+        BOOKS = [
+            {"id": 1, "title": "1984", "author": "George Orwell", "year": 1949, "genre": "Dystopian"},
+            {"id": 2, "title": "Brave New World", "author": "Aldous Huxley", "year": 1932, "genre": "Dystopian"},
+            {"id": 3, "title": "Dune", "author": "Frank Herbert", "year": 1965, "genre": "Science Fiction"},
+        ]
 
-            group = re.findall(self.regexp, line)
-            if group:
-                model = PSModel()
-                model.UID = group[0][0]
-                model.PID = int(group[0][1])
-                model.PPID = int(group[0][2])
-                model.C = int(group[0][3])
-                model.STIME = group[0][4]
-                model.TTY = group[0][5]
-                model.TIME = group[0][6]
-                model.CMD = group[0][7]
-                self.add(model)
+        def _load_books(self):
+            self.delete_all(BookModel())
+            for entry in self.BOOKS:
+                book = BookModel()
+                book.id = entry["id"]
+                book.title = entry["title"]
+                book.author = entry["author"]
+                book.year = entry["year"]
+                book.genre = entry["genre"]
+                self.add(book)
 
         def get(self, pk):
-            self.delete_all(PSModel())
-            out = os.popen('ps -p {0} -f'.format(pk))
-            for line in out.readlines():
-                self._add_object(line)
-            return super(PSSession, self).get(pk)
-
+            self._load_books()
+            return super(BookSession, self).get(pk)
 
         def all(self):
-            self.delete_all(PSModel())
-            out = os.popen('ps -ef')
-            for line in out.readlines():
-                self._add_object(line)
-            return super(PSSession, self).all()
+            self._load_books()
+            return super(BookSession, self).all()
 
-So each time the framework queries the data source, it will **delete_all** records, and
-call 'ps -ef' for a query all records, or 'ps -p <PID>' for a single record.
+Each time the framework queries the data source, it will reload the data.
+In a real application, the ``all`` and ``get`` methods could fetch data from an external API,
+read from a file, query LDAP, or any other source.
 
 The **GenericSession** class will implement by itself the Filters and order by methods
 to be applied prior to your *all* method. So that everything works much like SQLAlchemy.
 
-I implemented this feature out of the necessity of representing LDAP queries, but of course
-you can use it to wherever your imagination/necessity drives you.
-
 Finally you can use it on the framework like this::
 
-    sess = PSSession()
+    sess = BookSession()
 
 
-    class PSView(ModelView):
-        datamodel = GenericInterface(PSModel, sess)
+    class BookView(ModelView):
+        datamodel = GenericInterface(BookModel, sess)
         base_permissions = ['can_list', 'can_show']
-        list_columns = ['UID', 'C', 'CMD', 'TIME']
-        search_columns = ['UID', 'C', 'CMD']
+        list_columns = ['title', 'author', 'year', 'genre']
+        search_columns = ['title', 'author', 'genre']
 
 And then register it like a normal ModelView.
-
-
-You can try this example on `quickhowto2 example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto2>`
 
 I know this is still a short doc for such a complex feature, any doubts you may have just open an issue.
