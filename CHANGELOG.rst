@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.2.2rc1
+-----------------------------------
+
+- chore: remove PSModel/PSSession example classes from package (#2457) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 5.2.1
 -----------------------------------
 
