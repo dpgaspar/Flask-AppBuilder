@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.2.2
+-----------------------------------
+
+- fix(ci): update MSSQL Docker image to 2022-latest (#2460) [Daniel Vaz Gaspar]
+- chore: remove PSModel/PSSession example classes from package (#2457) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 5.2.1
 -----------------------------------
 
