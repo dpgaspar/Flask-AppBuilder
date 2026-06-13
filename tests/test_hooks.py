@@ -243,3 +243,9 @@ class AuthEventHooksTestCase(FABTestCase):
         called_user = self.appbuilder.sm.on_user_login.call_args[0][0]
         self.assertIsInstance(called_user, User)
         self.assertTrue(called_user.is_authenticated)
+
+    def test_on_user_logout_not_called_when_no_user(self):
+        client = self.app.test_client()
+        rv = client.get("/logout/", follow_redirects=False)
+        self.assertIn(rv.status_code, (301, 302))
+        self.appbuilder.sm.on_user_logout.assert_not_called()
