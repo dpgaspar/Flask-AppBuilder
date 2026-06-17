@@ -15,9 +15,6 @@ from flask_appbuilder.charts.views import (
     TimeChartView,
 )
 from flask_appbuilder.hooks import before_request
-from flask_appbuilder.models.generic import PSModel
-from flask_appbuilder.models.generic import PSSession
-from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 from flask_appbuilder.models.sqla.filters import (
     FilterEqual,
@@ -432,13 +429,6 @@ class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
 class MVCTestCase(BaseMVCTestCase):
     def setUp(self):
         super().setUp()
-        sess = PSSession()
-
-        class PSView(ModelView):
-            datamodel = GenericInterface(PSModel, sess)
-            base_permissions = ["can_list", "can_show"]
-            list_columns = ["UID", "C", "CMD", "TIME"]
-            search_columns = ["UID", "C", "CMD"]
 
         class Model2View(ModelView):
             datamodel = SQLAInterface(Model2)
@@ -668,7 +658,6 @@ class MVCTestCase(BaseMVCTestCase):
 
         self.appbuilder.add_view(ModelWithEnumsView, "ModelWithEnums")
 
-        self.appbuilder.add_view(PSView, "Generic DS PS View", category="PSView")
         role_admin = self.appbuilder.sm.find_role("Admin")
         self.appbuilder.sm.add_user(
             "admin", "admin", "user", "admin@fab.org", role_admin, "general"
@@ -689,7 +678,7 @@ class MVCTestCase(BaseMVCTestCase):
         """
         Test views creation and registration
         """
-        self.assertEqual(len(self.appbuilder.baseviews), 39)
+        self.assertEqual(len(self.appbuilder.baseviews), 38)
 
     def test_back(self):
         """
@@ -764,15 +753,6 @@ class MVCTestCase(BaseMVCTestCase):
         rv = client.get("/")
         data = rv.data.decode("utf-8")
         self.assertIn(DEFAULT_INDEX_STRING, data)
-
-    def test_generic_interface(self):
-        """
-        Test Generic Interface for generic-alter datasource
-        """
-        client = self.app.test_client()
-        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/psview/list", follow_redirects=True)
-        self.assertEqual(rv.status_code, 200)
 
     def test_model_crud_add(self):
         """
