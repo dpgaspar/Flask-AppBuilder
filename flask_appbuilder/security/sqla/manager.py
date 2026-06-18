@@ -379,9 +379,7 @@ class SecurityManager(BaseSecurityManager):
                 if self.auth_username_ci:
                     return (
                         self.session.query(self.user_model)
-                        .filter(
-                            func.lower(self.user_model.email) == func.lower(email)
-                        )
+                        .filter(func.lower(self.user_model.email) == func.lower(email))
                         .one_or_none()
                     )
                 else:
