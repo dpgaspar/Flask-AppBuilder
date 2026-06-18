@@ -368,7 +368,7 @@ class SecurityManager(BaseSecurityManager):
                 else:
                     return (
                         self.session.query(self.user_model)
-                        .filter(self.user_model.username == username)
+                        .filter_by(username=username)
                         .one_or_none()
                     )
             except MultipleResultsFound:
@@ -376,11 +376,20 @@ class SecurityManager(BaseSecurityManager):
                 return None
         elif email:
             try:
-                return (
-                    self.session.query(self.user_model)
-                    .filter_by(email=email)
-                    .one_or_none()
-                )
+                if self.auth_username_ci:
+                    return (
+                        self.session.query(self.user_model)
+                        .filter(
+                            func.lower(self.user_model.email) == func.lower(email)
+                        )
+                        .one_or_none()
+                    )
+                else:
+                    return (
+                        self.session.query(self.user_model)
+                        .filter_by(email=email)
+                        .one_or_none()
+                    )
             except MultipleResultsFound:
                 log.error("Multiple results found for user with email %s", email)
                 return None
