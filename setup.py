@@ -50,7 +50,7 @@ setup(
         "email_validator>=1.0.5",
         "Flask>=2, <4",
         "Flask-Babel>=3, <5",
-        "Flask-Limiter>3,<4",
+        "Flask-Limiter>3,<5",
         "Flask-Login>=0.3, <0.7",
         "Flask-SQLAlchemy>=2.4.0, <4",
         "Flask-WTF>=0.14.2, <2",
