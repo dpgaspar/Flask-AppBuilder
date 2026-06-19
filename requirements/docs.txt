@@ -73,7 +73,7 @@ flask-jwt-extended==4.5.3
     # via
     #   -r requirements/base.txt
     #   flask-appbuilder
-flask-limiter==3.7.0
+flask-limiter==4.1.1
     # via
     #   -r requirements/base.txt
     #   flask-appbuilder
