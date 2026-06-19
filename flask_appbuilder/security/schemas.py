@@ -22,7 +22,7 @@ def validate_password(value: Union[bytes, bytearray, str]) -> None:
 def validate_provider(value: Union[bytes, bytearray, str]) -> None:
     if not current_app.appbuilder.sm.api_login_allow_multiple_providers:
         provider_name = current_app.appbuilder.sm.auth_type_provider_name
-        if provider_name and provider_name != value:
+        if provider_name is None or provider_name != value:
             raise ValidationError("Alternative authentication provider is not allowed")
 
 
