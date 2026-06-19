@@ -18,13 +18,14 @@ from flask_appbuilder.security.sqla.models import Group, User
 from flask_appbuilder.utils.legacy import get_sqla_class
 from hiro import Timeline
 import jinja2
+from werkzeug.test import TestResponse
+
 from tests.const import (
     PASSWORD_ADMIN,
     PASSWORD_READONLY,
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
-from werkzeug.test import TestResponse
 
 
 class FABTestCase(unittest.TestCase):

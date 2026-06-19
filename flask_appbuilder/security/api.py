@@ -1,4 +1,4 @@
-from flask import request, Response
+from flask import Response, request
 from flask_appbuilder.api import BaseApi, safe
 from flask_appbuilder.const import (
     API_SECURITY_ACCESS_TOKEN_KEY,

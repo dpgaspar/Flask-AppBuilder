@@ -25,6 +25,7 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.utils.legacy import get_sqla_class
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView, ModelView
 from flask_wtf import CSRFProtect
+
 from tests.base import BaseMVCTestCase, FABTestCase
 from tests.const import (
     MODEL1_DATA_SIZE,
@@ -761,7 +762,7 @@ class MVCTestCase(BaseMVCTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        field_string = f"test{MODEL1_DATA_SIZE+1}"
+        field_string = f"test{MODEL1_DATA_SIZE + 1}"
         rv = client.post(
             "/model1view/add",
             data=dict(
@@ -803,9 +804,7 @@ class MVCTestCase(BaseMVCTestCase):
             self.assertEqual(rv.status_code, 200)
 
             model = (
-                self.appbuilder.session.query(Model1)
-                .filter_by(id=model_id)
-                .one_or_none()
+                self.appbuilder.session.query(Model1).filter_by(id=model_id).one_or_none()
             )
             self.assertEqual(model.field_string, "test_edit")
             self.assertEqual(model.field_integer, 200)
@@ -941,9 +940,7 @@ class MVCTestCase(BaseMVCTestCase):
 
         with model_with_enums_data(self.appbuilder.session, 1):
             data = {"enum1": "e3", "enum2": "e3", "enum3": "e3"}
-            rv = client.post(
-                "/modelwithenumsview/add", data=data, follow_redirects=True
-            )
+            rv = client.post("/modelwithenumsview/add", data=data, follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
 
             model = (
@@ -1170,7 +1167,7 @@ class MVCTestCase(BaseMVCTestCase):
             )
             self.assertEqual(rv.status_code, 200)
             data = rv.data.decode("utf-8")
-            self.assertIn(f"test{MODEL1_DATA_SIZE-1}", data)
+            self.assertIn(f"test{MODEL1_DATA_SIZE - 1}", data)
 
     def test_model_list_order_related(self):
         """
@@ -1572,7 +1569,7 @@ class MVCTestCase(BaseMVCTestCase):
         """
         MVC: Test action permission name override
         """
-        from flask_appbuilder import action, ModelView
+        from flask_appbuilder import ModelView, action
         from flask_appbuilder.models.sqla.interface import SQLAInterface
 
         class Model1PermOverride(ModelView):
@@ -1732,9 +1729,7 @@ class MVCTestCase(BaseMVCTestCase):
             rv = client.get("/modelbeforerequest/list/")
             self.assertEqual(rv.status_code, 404)
 
-            rv = client.get(
-                f"/modelbeforerequest/show/{model_id}", follow_redirects=True
-            )
+            rv = client.get(f"/modelbeforerequest/show/{model_id}", follow_redirects=True)
             self.assertEqual(rv.status_code, 404)
 
             # Now list is available, but not show
@@ -1747,9 +1742,7 @@ class MVCTestCase(BaseMVCTestCase):
             rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
 
-            rv = client.get(
-                f"/modelbeforerequest/show/{model_id}", follow_redirects=True
-            )
+            rv = client.get(f"/modelbeforerequest/show/{model_id}", follow_redirects=True)
             self.assertEqual(rv.status_code, 404)
 
             # Everything is available
@@ -1763,7 +1756,5 @@ class MVCTestCase(BaseMVCTestCase):
             rv = client.get("/modelbeforerequest/list/", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)
 
-            rv = client.get(
-                f"/modelbeforerequest/show/{model_id}", follow_redirects=True
-            )
+            rv = client.get(f"/modelbeforerequest/show/{model_id}", follow_redirects=True)
             self.assertEqual(rv.status_code, 200)

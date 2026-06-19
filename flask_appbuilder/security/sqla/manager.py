@@ -9,8 +9,8 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import uuid
 
 from flask import current_app, g, has_app_context
-from flask_appbuilder import const as c
 from flask_appbuilder import Model
+from flask_appbuilder import const as c
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.events import SecurityModelChangeEvent
 from flask_appbuilder.security.manager import BaseSecurityManager
@@ -43,7 +43,6 @@ from flask_appbuilder.security.sqla.apis import (
 )
 from flask_appbuilder.security.sqla.models import (
     ApiKey,
-    assoc_permissionview_role,
     Group,
     Permission,
     PermissionView,
@@ -51,9 +50,9 @@ from flask_appbuilder.security.sqla.models import (
     Role,
     User,
     ViewMenu,
+    assoc_permissionview_role,
 )
-from sqlalchemy import and_, func, literal, update
-from sqlalchemy import inspect
+from sqlalchemy import and_, func, inspect, literal, update
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -237,17 +236,13 @@ class SecurityManager(BaseSecurityManager):
         if self.userstatschartview:
             self.userstatschartview.datamodel = user_datamodel
         if self.auth_user_registration:
-            self.registerusermodelview.datamodel = SQLAInterface(
-                self.registeruser_model
-            )
+            self.registerusermodelview.datamodel = SQLAInterface(self.registeruser_model)
 
         self.rolemodelview.datamodel = SQLAInterface(self.role_model)
         self.groupmodelview.datamodel = SQLAInterface(self.group_model)
         self.permissionmodelview.datamodel = SQLAInterface(self.permission_model)
         self.viewmenumodelview.datamodel = SQLAInterface(self.viewmenu_model)
-        self.permissionviewmodelview.datamodel = SQLAInterface(
-            self.permissionview_model
-        )
+        self.permissionviewmodelview.datamodel = SQLAInterface(self.permissionview_model)
         self.create_db()
 
     @property
@@ -619,9 +614,7 @@ class SecurityManager(BaseSecurityManager):
                     self.session.commit()
                     log.info(c.LOGMSG_INF_SEC_ADD_ROLE, name)
                     # Post-commit signal
-                    self._emit_post_signal(
-                        role_created, "role", "created", role.id, role
-                    )
+                    self._emit_post_signal(role_created, "role", "created", role.id, role)
 
                 return role
             except Exception as e:
@@ -767,9 +760,7 @@ class SecurityManager(BaseSecurityManager):
                 self.session.commit()
                 log.info(c.LOGMSG_INF_SEC_ADD_GROUP, name)
                 # Post-commit signal
-                self._emit_post_signal(
-                    group_created, "group", "created", group.id, group
-                )
+                self._emit_post_signal(group_created, "group", "created", group.id, group)
 
             return group
         except Exception as e:
@@ -805,9 +796,7 @@ class SecurityManager(BaseSecurityManager):
                 self.session.commit()
                 log.info(c.LOGMSG_INF_SEC_DEL_GROUP, group_id)
                 # Post-commit signal
-                self._emit_post_signal(
-                    group_deleted, "group", "deleted", group_id, None
-                )
+                self._emit_post_signal(group_deleted, "group", "deleted", group_id, None)
 
             return True
         except Exception as e:
@@ -867,9 +856,7 @@ class SecurityManager(BaseSecurityManager):
             return self.session.query(literal(True)).filter(q).scalar()
         return self.session.query(q).scalar()
 
-    def find_roles_permission_view_menus(
-        self, permission_name: str, role_ids: List[int]
-    ):
+    def find_roles_permission_view_menus(self, permission_name: str, role_ids: List[int]):
         return (
             self.session.query(self.permissionview_model)
             .join(
@@ -1015,9 +1002,7 @@ class SecurityManager(BaseSecurityManager):
         """
         Finds and returns a ViewMenu by name
         """
-        return (
-            self.session.query(self.viewmenu_model).filter_by(name=name).one_or_none()
-        )
+        return self.session.query(self.viewmenu_model).filter_by(name=name).one_or_none()
 
     def get_all_view_menu(self):
         return self.session.query(self.viewmenu_model).all()
