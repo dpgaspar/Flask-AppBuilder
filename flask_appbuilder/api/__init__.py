@@ -1982,9 +1982,12 @@ class ModelRestApi(BaseApi):
         return order_column, order_direction
 
     def _handle_filters_args(self, rison_args: Dict[str, Any]) -> Filters:
-        self._filters.clear_filters()
-        self._filters.rest_add_filters(rison_args.get(API_FILTERS_RIS_KEY, []))
-        return self._filters.get_joined_filters(self._base_filters)
+        # self._filters.clear_filters()
+        filters = self.datamodel.get_filters(
+            search_columns=self.search_columns, search_filters=self.search_filters
+        )
+        filters.rest_add_filters(rison_args.get(API_FILTERS_RIS_KEY, []))
+        return filters.get_joined_filters(self._base_filters)
 
     def _handle_columns_args(
         self,
