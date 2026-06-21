@@ -30,6 +30,8 @@ from flask_appbuilder.const import (
     API_SHOW_COLUMNS_RIS_KEY,
     API_SHOW_TITLE_RIS_KEY,
     API_URI_RIS_KEY,
+    AUTH_OAUTH,
+    AUTH_REMOTE_USER,
 )
 from flask_appbuilder.hooks import before_request
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
@@ -647,6 +649,75 @@ class APITestCase(FABTestCase):
                 }
             },
         )
+
+    def test_auth_login_provider_db_rejected_when_oauth(self):
+        """
+        REST Api: Test that provider=db is rejected when AUTH_TYPE=AUTH_OAUTH
+        and AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS=False
+        """
+        self.app.config["AUTH_TYPE"] = AUTH_OAUTH
+        self.app.config["AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS"] = False
+        try:
+            client = self.app.test_client()
+            rv = client.post(
+                "api/v1/security/login",
+                json={
+                    "username": USERNAME_ADMIN,
+                    "password": PASSWORD_ADMIN,
+                    "provider": "db",
+                },
+            )
+            self.assertEqual(rv.status_code, 400)
+            response = json.loads(rv.data.decode("utf-8"))
+            self.assertIn("provider", response["message"])
+        finally:
+            self.app.config["AUTH_TYPE"] = 1  # AUTH_DB
+
+    def test_auth_login_provider_db_rejected_when_remote_user(self):
+        """
+        REST Api: Test that provider=db is rejected when AUTH_TYPE=AUTH_REMOTE_USER
+        and AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS=False
+        """
+        self.app.config["AUTH_TYPE"] = AUTH_REMOTE_USER
+        self.app.config["AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS"] = False
+        try:
+            client = self.app.test_client()
+            rv = client.post(
+                "api/v1/security/login",
+                json={
+                    "username": USERNAME_ADMIN,
+                    "password": PASSWORD_ADMIN,
+                    "provider": "db",
+                },
+            )
+            self.assertEqual(rv.status_code, 400)
+            response = json.loads(rv.data.decode("utf-8"))
+            self.assertIn("provider", response["message"])
+        finally:
+            self.app.config["AUTH_TYPE"] = 1  # AUTH_DB
+
+    def test_auth_login_provider_db_allowed_when_oauth_multiple_providers(self):
+        """
+        REST Api: Test that provider=db is allowed when AUTH_TYPE=AUTH_OAUTH
+        but AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS=True
+        """
+        self.app.config["AUTH_TYPE"] = AUTH_OAUTH
+        self.app.config["AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS"] = True
+        try:
+            client = self.app.test_client()
+            rv = client.post(
+                "api/v1/security/login",
+                json={
+                    "username": USERNAME_ADMIN,
+                    "password": PASSWORD_ADMIN,
+                    "provider": "db",
+                },
+            )
+            # Should succeed authentication (not blocked by provider validation)
+            self.assertEqual(rv.status_code, 200)
+        finally:
+            self.app.config["AUTH_TYPE"] = 1  # AUTH_DB
+            self.app.config["AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS"] = False
 
     def test_auth_login_bad(self):
         """
