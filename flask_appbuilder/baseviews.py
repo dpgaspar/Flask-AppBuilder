@@ -698,6 +698,8 @@ class BaseCRUDView(BaseModelView):
     """
     _related_views = None
     """ internal list with ref to instantiated view classes """
+    allowed_related_views = None
+    """ Holds related views where the user has 'can_list' permission. """
     list_title = ""
     """ List Title, if not configured the default is 'List ' with pretty model name """
     show_title = ""
@@ -1051,8 +1053,15 @@ class BaseCRUDView(BaseModelView):
             Model View widgets
         """
         widgets = widgets or {}
+        self.allowed_related_views = []
         widgets["related_views"] = []
         for view in self._related_views:
+            # Skip related views if the current user does not have 'can_list' permission
+            if not self.appbuilder.sm.has_access("can_list", view.__class__.__name__):
+                continue
+
+            self.allowed_related_views.append(view)
+
             if orders.get(view.__class__.__name__):
                 order_column, order_direction = orders.get(view.__class__.__name__)
             else:
