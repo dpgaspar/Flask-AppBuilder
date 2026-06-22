@@ -39,7 +39,7 @@ flask-babel==4.0.0
     # via flask-appbuilder
 flask-jwt-extended==4.5.3
     # via flask-appbuilder
-flask-limiter==3.7.0
+flask-limiter==4.1.1
     # via flask-appbuilder
 flask-login==0.6.3
     # via flask-appbuilder
@@ -63,7 +63,7 @@ jsonschema==4.19.1
     # via flask-appbuilder
 jsonschema-specifications==2023.7.1
     # via jsonschema
-limits==3.6.0
+limits==5.8.0
     # via flask-limiter
 markdown-it-py==3.0.0
     # via rich
