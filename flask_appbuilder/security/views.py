@@ -737,7 +737,9 @@ class AuthOAuthView(AuthView):
                 whitelist = self.appbuilder.sm.oauth_whitelists[provider]
                 allow = False
                 for email in whitelist:
-                    if "email" in userinfo and re.search(email, userinfo["email"]):
+                    if "email" in userinfo and re.search(
+                        email + "$", userinfo["email"]
+                    ):
                         allow = True
                         break
                 if not allow:

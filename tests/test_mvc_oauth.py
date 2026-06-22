@@ -129,6 +129,57 @@ class MVCOAuthTestCase(FABTestCase):
         response = client.get(f"/oauth-authorized/google?state={state}")
         self.assertEqual(response.location, "/")
 
+    def test_oauth_whitelist_match(self):
+        """
+        OAuth: Test that email whitelist allows matching emails
+        """
+        self.appbuilder.sm.oauth_remotes = {"google": OAuthRemoteMock()}
+        self.appbuilder.sm.oauth_whitelists = {"google": ["@fab\\.org"]}
+
+        raw_state = {}
+        state = jwt.encode(raw_state, "random_state", algorithm="HS256")
+
+        with self.app.test_client() as client:
+            with client.session_transaction() as session_:
+                session_["oauth_state"] = "random_state"
+            client.get(f"/oauth-authorized/google?state={state}")
+            # user1@fab.org should match @fab\.org
+            self.assertEqual(current_user.email, "user1@fab.org")
+
+    def test_oauth_whitelist_rejects_domain_suffix(self):
+        """
+        OAuth: Test that email whitelist rejects emails where the
+        whitelisted domain is only a prefix of the actual domain
+        """
+
+        class EvilEmailUserInfoMock:
+            def json(self):
+                return {
+                    "id": "2",
+                    "given_name": "evil",
+                    "family_name": "user",
+                    "email": "user@fab.org.evil.com",
+                }
+
+        class EvilOAuthRemoteMock(OAuthRemoteMock):
+            def get(self, item):
+                if item == "userinfo":
+                    return EvilEmailUserInfoMock()
+
+        self.appbuilder.sm.oauth_remotes = {"google": EvilOAuthRemoteMock()}
+        self.appbuilder.sm.oauth_whitelists = {"google": ["@fab\\.org"]}
+
+        raw_state = {}
+        state = jwt.encode(raw_state, "random_state", algorithm="HS256")
+
+        with self.app.test_client() as client:
+            with client.session_transaction() as session_:
+                session_["oauth_state"] = "random_state"
+            response = client.get(f"/oauth-authorized/google?state={state}")
+            # user@fab.org.evil.com should NOT match @fab\.org
+            self.assertFalse(current_user.is_authenticated)
+            self.assertEqual(response.location, "/login/")
+
     def test_oauth_next_login_param(self):
         """
         OAuth: Test next quoted next_url param
