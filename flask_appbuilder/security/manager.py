@@ -1077,12 +1077,18 @@ class BaseSecurityManager(AbstractSecurityManager):
         assert self.auth_ldap_search, "AUTH_LDAP_SEARCH must be set"
 
         # build the filter string for the LDAP search
+        # escape LDAP filter metacharacters in username
+        from ldap.filter import escape_filter_chars
+
+        escaped_username = escape_filter_chars(username)
         if self.auth_ldap_search_filter:
             filter_str = "(&{0}({1}={2}))".format(
-                self.auth_ldap_search_filter, self.auth_ldap_uid_field, username
+                self.auth_ldap_search_filter,
+                self.auth_ldap_uid_field,
+                escaped_username,
             )
         else:
-            filter_str = "({0}={1})".format(self.auth_ldap_uid_field, username)
+            filter_str = "({0}={1})".format(self.auth_ldap_uid_field, escaped_username)
 
         # build what fields to request in the LDAP search
         request_fields = [
