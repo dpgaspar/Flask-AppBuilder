@@ -121,6 +121,60 @@ class LDAPSearchTestCase(unittest.TestCase):
             self.assertEqual(user_attributes["sn"], [b"Doe"])
             self.assertEqual(user_attributes["mail"], [b"alice@example.org"])
 
+    def test___search_ldap_escapes_username(self):
+        """
+        LDAP: test that _search_ldap escapes LDAP filter metacharacters
+        """
+        self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
+        self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            mock_con = Mock()
+            mock_con.search_s.return_value = []
+
+            # use a username with LDAP filter metacharacters
+            sm._search_ldap(ldap, mock_con, "admin)(|(cn=*)")
+
+            # verify the filter passed to search_s has escaped metacharacters
+            call_args = mock_con.search_s.call_args
+            filter_used = call_args[0][2]
+            self.assertNotIn(")(|(cn=*)", filter_used)
+            self.assertIn("\\29\\28|\\28cn=\\2a\\29", filter_used)
+
+    def test___search_ldap_escapes_username_with_filter(self):
+        """
+        LDAP: test that _search_ldap escapes username when AUTH_LDAP_SEARCH_FILTER is set
+        """
+        self.app.config["AUTH_LDAP_BIND_USER"] = "cn=admin,dc=example,dc=org"
+        self.app.config["AUTH_LDAP_BIND_PASSWORD"] = "admin_password"
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
+        self.app.config[
+            "AUTH_LDAP_SEARCH_FILTER"
+        ] = "(memberOf=cn=staff,ou=groups,dc=example,dc=org)"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            mock_con = Mock()
+            mock_con.search_s.return_value = []
+
+            # use a username with LDAP filter metacharacters with search filter
+            sm._search_ldap(ldap, mock_con, "admin)(|(cn=*)")
+
+            # verify the filter has escaped metacharacters
+            call_args = mock_con.search_s.call_args
+            filter_used = call_args[0][2]
+            self.assertNotIn(")(|(cn=*)", filter_used)
+
     def test___search_ldap_with_search_referrals(self):
         """
         LDAP: test `_search_ldap` method w/returned search referrals
