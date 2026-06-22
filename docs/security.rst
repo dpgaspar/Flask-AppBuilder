@@ -324,8 +324,8 @@ Specify a list of OAUTH_PROVIDERS in **config.py** that you want to allow for yo
                 "client_kwargs": {
                     "scope": "User.read name preferred_username email profile upn",
                     "resource": "AZURE_APPLICATION_ID",
-                    # Optionally enforce signature JWT verification
-                    "verify_signature": False
+                    # Recommended: verify Azure JWT signature
+                    "verify_signature": True
                 },
                 "request_token_url": None,
                 "access_token_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/token",

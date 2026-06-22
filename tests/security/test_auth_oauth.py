@@ -608,6 +608,33 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
                 },
             )
 
+    def test_oauth_user_info_azure_no_verify_signature_warning(self):
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            claims = {
+                "aud": "test-aud",
+                "iss": "https://sts.windows.net/test/",
+                "iat": 7282182129,
+                "nbf": 7282182129,
+                "exp": 1000000000,
+                "email": "test@gmail.com",
+                "family_name": "user",
+                "given_name": "test",
+                "oid": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+            }
+            unsigned_jwt = jwt.encode(claims, key=None, algorithm="none")
+            with self.assertLogs(
+                "flask_appbuilder.security.manager", level="WARNING"
+            ) as cm:
+                self.appbuilder.sm.get_oauth_user_info(
+                    "azure", {"access_token": "", "id_token": unsigned_jwt}
+                )
+            self.assertTrue(
+                any("signature verification is disabled" in msg for msg in cm.output)
+            )
+
     def test_oauth_user_info_azure_with_jwt_validation(self):
         self.app.config["OAUTH_PROVIDERS"] = [
             {
