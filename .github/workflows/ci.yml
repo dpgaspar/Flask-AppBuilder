@@ -62,16 +62,24 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
         run: |
-          docker run -d \
-            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
-            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
-            -e LDAP_URI=ldap://openldap:1389 \
-            -e LDAP_BASE=dc=example,dc=org \
-            -e LDAP_ADMIN_USERNAME=admin \
-            -e LDAP_ADMIN_PASSWORD=admin_password \
-            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
-            -p 1389:1389 \
-            bitnamilegacy/openldap:2.6
+          for attempt in 1 2 3; do
+            if docker run -d \
+              -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+              -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+              -e LDAP_URI=ldap://openldap:1389 \
+              -e LDAP_BASE=dc=example,dc=org \
+              -e LDAP_ADMIN_USERNAME=admin \
+              -e LDAP_ADMIN_PASSWORD=admin_password \
+              -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+              -p 1389:1389 \
+              bitnamilegacy/openldap:2.6; then
+              break
+            fi
+            if [ "${attempt}" -eq 3 ]; then
+              exit 1
+            fi
+            sleep 5
+          done
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -112,16 +120,24 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
         run: |
-          docker run -d \
-            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
-            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
-            -e LDAP_URI=ldap://openldap:1389 \
-            -e LDAP_BASE=dc=example,dc=org \
-            -e LDAP_ADMIN_USERNAME=admin \
-            -e LDAP_ADMIN_PASSWORD=admin_password \
-            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
-            -p 1389:1389 \
-            bitnamilegacy/openldap:2.6
+          for attempt in 1 2 3; do
+            if docker run -d \
+              -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+              -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+              -e LDAP_URI=ldap://openldap:1389 \
+              -e LDAP_BASE=dc=example,dc=org \
+              -e LDAP_ADMIN_USERNAME=admin \
+              -e LDAP_ADMIN_PASSWORD=admin_password \
+              -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+              -p 1389:1389 \
+              bitnamilegacy/openldap:2.6; then
+              break
+            fi
+            if [ "${attempt}" -eq 3 ]; then
+              exit 1
+            fi
+            sleep 5
+          done
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -163,16 +179,24 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
         run: |
-          docker run -d \
-            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
-            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
-            -e LDAP_URI=ldap://openldap:1389 \
-            -e LDAP_BASE=dc=example,dc=org \
-            -e LDAP_ADMIN_USERNAME=admin \
-            -e LDAP_ADMIN_PASSWORD=admin_password \
-            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
-            -p 1389:1389 \
-            bitnamilegacy/openldap:2.6
+          for attempt in 1 2 3; do
+            if docker run -d \
+              -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+              -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+              -e LDAP_URI=ldap://openldap:1389 \
+              -e LDAP_BASE=dc=example,dc=org \
+              -e LDAP_ADMIN_USERNAME=admin \
+              -e LDAP_ADMIN_PASSWORD=admin_password \
+              -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+              -p 1389:1389 \
+              bitnamilegacy/openldap:2.6; then
+              break
+            fi
+            if [ "${attempt}" -eq 3 ]; then
+              exit 1
+            fi
+            sleep 5
+          done
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -212,16 +236,24 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
         run: |
-          docker run -d \
-            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
-            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
-            -e LDAP_URI=ldap://openldap:1389 \
-            -e LDAP_BASE=dc=example,dc=org \
-            -e LDAP_ADMIN_USERNAME=admin \
-            -e LDAP_ADMIN_PASSWORD=admin_password \
-            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
-            -p 1389:1389 \
-            bitnamilegacy/openldap:2.6
+          for attempt in 1 2 3; do
+            if docker run -d \
+              -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+              -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+              -e LDAP_URI=ldap://openldap:1389 \
+              -e LDAP_BASE=dc=example,dc=org \
+              -e LDAP_ADMIN_USERNAME=admin \
+              -e LDAP_ADMIN_PASSWORD=admin_password \
+              -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+              -p 1389:1389 \
+              bitnamilegacy/openldap:2.6; then
+              break
+            fi
+            if [ "${attempt}" -eq 3 ]; then
+              exit 1
+            fi
+            sleep 5
+          done
       - name: Install dependencies
         run: |
           sudo apt-get update
