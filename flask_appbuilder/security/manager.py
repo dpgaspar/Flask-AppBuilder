@@ -781,6 +781,12 @@ class BaseSecurityManager(AbstractSecurityManager):
             claims.validate()
             return claims
 
+        log.warning(
+            "Azure OAuth JWT signature verification is disabled. "
+            "Set 'verify_signature': True in your Azure OAuth provider's "
+            "client_kwargs to enable it. A future major release will change "
+            "the default to True."
+        )
         return jwt.decode(id_token, options={"verify_signature": False})
 
     def _get_authentik_jwks(self, jwks_url) -> dict:
