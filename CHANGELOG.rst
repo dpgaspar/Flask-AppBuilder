@@ -1,6 +1,19 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.2.2
+-----------------------------------
+
+- fix: anchor OAuth email whitelist regex to end of string (#2470) [Daniel Vaz Gaspar]
+- fix: switch from uuid1 to uuid4 for better randomness (#2435) [Rin]
+- fix: escape special characters in LDAP search filter username (#2469) [Daniel Vaz Gaspar]
+- fix: warn when Azure OAuth JWT signature verification is disabled (#2468) [Daniel Vaz Gaspar]
+- ci: restore Python 3.11 and 3.12 to CI test matrix (#2467) [Daniel Vaz Gaspar]
+- chore: Increase upper bound for Flask-Limiter dependency (#2465) [Erik Cederstrand]
+- fix: enforce API login provider validation when AUTH_TYPE has no API provider (#2462) [Daniel Vaz Gaspar]
+- fix(ci): update MSSQL Docker image to 2022-latest (#2460) [Daniel Vaz Gaspar]
+- chore: remove PSModel/PSSession example classes from package (#2457) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 5.2.1
 -----------------------------------
 
