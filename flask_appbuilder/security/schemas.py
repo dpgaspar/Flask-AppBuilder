@@ -10,7 +10,6 @@ from flask_appbuilder.const import (
 from marshmallow import fields, Schema, ValidationError
 from marshmallow.validate import Length, OneOf
 
-
 provider_to_auth_type = {"db": AUTH_DB, "ldap": AUTH_LDAP}
 
 

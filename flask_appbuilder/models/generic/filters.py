@@ -2,7 +2,6 @@ from flask_babel import lazy_gettext
 
 from ..filters import BaseFilter, BaseFilterConverter
 
-
 __all__ = [
     "GenericFilterConverter",
     "FilterNotContains",

@@ -7,7 +7,6 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
 import sqlalchemy.types as types
 
-
 log = logging.getLogger(__name__)
 
 

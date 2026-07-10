@@ -14,7 +14,6 @@ import jinja2
 
 from .const import AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_REMOTE_USER
 
-
 SQLA_REPO_URL = (
     "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/refs/heads/v5.zip"
 )

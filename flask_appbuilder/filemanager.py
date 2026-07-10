@@ -197,7 +197,7 @@ class ImageManager(FileManager):
             :param image: The image object
             :param size: size is PIL tuple (width, height, force) ex: (200,100,True)
         """
-        (width, height, force) = size
+        width, height, force = size
 
         if image.size[0] > width or image.size[1] > height:
             if force:
