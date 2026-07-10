@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements/dev.in
 #
-black==23.10.0
+black==26.3.1
     # via -r requirements/dev.in
 build==1.0.3
     # via pip-tools
@@ -18,7 +18,7 @@ coverage==5.5
     #   nose2
 distlib==0.3.8
     # via virtualenv
-filelock==3.13.1
+filelock==3.20.3
     # via
     #   tox
     #   virtualenv
@@ -41,14 +41,14 @@ mypy-extensions==0.4.3
     #   mypy
 nose2[coverage_plugin]==0.14.0
     # via -r requirements/tests.in
-packaging==23.2
+packaging==24.2
     # via
     #   black
     #   build
     #   tox
 parameterized==0.8.1
     # via -r requirements/tests.in
-pathspec==0.12.1
+pathspec==1.1.1
     # via black
 pip-tools==7.4.1
     # via -r requirements/dev.in
@@ -80,11 +80,11 @@ tox==3.24.3
     # via -r requirements/dev.in
 types-pyyaml==6.0.12.2
     # via -r requirements/dev.in
-typing-extensions==4.12.2
+typing-extensions==4.13.2
     # via mypy
-virtualenv==20.25.0
+virtualenv==20.36.1
     # via tox
-wheel==0.42.0
+wheel==0.46.2
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:

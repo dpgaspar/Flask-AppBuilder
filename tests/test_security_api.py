@@ -13,7 +13,6 @@ from tests.base import FABTestCase
 from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
 from werkzeug.security import generate_password_hash
 
-
 log = logging.getLogger(__name__)
 
 

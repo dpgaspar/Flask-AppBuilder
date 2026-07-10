@@ -45,7 +45,6 @@ from werkzeug.wrappers import Response as WerkzeugResponse
 from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
 
-
 log = logging.getLogger(__name__)
 
 
