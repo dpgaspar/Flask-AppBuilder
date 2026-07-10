@@ -48,7 +48,7 @@ packaging==23.2
     #   tox
 parameterized==0.8.1
     # via -r requirements/tests.in
-pathspec==0.12.1
+pathspec==1.1.1
     # via black
 pip-tools==7.4.1
     # via -r requirements/dev.in
