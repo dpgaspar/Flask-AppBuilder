@@ -359,9 +359,9 @@ class SAMLRegistrationRoleTestCase(unittest.TestCase):
         SAML: test login flow for - unregistered user - jmespath registration role
         """
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
+        )
         with self.app.app_context():
             SQLA = get_sqla_class()
             db = SQLA(self.app)
@@ -480,9 +480,9 @@ class SAMLRegistrationRoleTestCase(unittest.TestCase):
         """  # noqa
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = False
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
+        )
         with self.app.app_context():
             SQLA = get_sqla_class()
             db = SQLA(self.app)
@@ -523,9 +523,9 @@ class SAMLRegistrationRoleTestCase(unittest.TestCase):
         """  # noqa
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
+        )
         with self.app.app_context():
             SQLA = get_sqla_class()
             db = SQLA(self.app)

@@ -228,9 +228,9 @@ class SQLAlchemyImportExportTestCase(FABTestCase):
     def test_import_roles(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             app = Flask("dst_app")
-            app.config[
-                "SQLALCHEMY_DATABASE_URI"
-            ] = f"sqlite:///{os.path.join(tmp_dir, 'dst.db')}"
+            app.config["SQLALCHEMY_DATABASE_URI"] = (
+                f"sqlite:///{os.path.join(tmp_dir, 'dst.db')}"
+            )
             with app.app_context():
                 SQLA = get_sqla_class()
                 db = SQLA(app)

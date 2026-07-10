@@ -4,7 +4,6 @@ import os
 from tests.base import FABTestCase
 from tests.fixtures.addon_manager import DummyAddOnManager
 
-
 log = logging.getLogger(__name__)
 
 

@@ -10,7 +10,6 @@ from flask_appbuilder.utils.legacy import get_sqla_class
 from tests.base import FABTestCase
 from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
 
-
 log = logging.getLogger(__name__)
 
 
