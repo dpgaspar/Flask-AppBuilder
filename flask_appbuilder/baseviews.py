@@ -86,7 +86,7 @@ class AbstractViewApi:
         endpoint: Optional[str] = None,
         static_folder: Optional[str] = None,
     ):
-        ...
+        pass
 
     def get_uninit_inner_views(self):
         """
