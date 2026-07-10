@@ -8,7 +8,7 @@ authlib==1.6.12
     # via -r requirements/extra.in
 certifi==2024.2.2
     # via requests
-cffi==1.17.0
+cffi==2.1.0
     # via cryptography
 charset-normalizer==2.0.12
     # via requests
@@ -30,7 +30,7 @@ pyasn1==0.6.3
     # via
     #   pyasn1-modules
     #   python-ldap
-pyasn1-modules==0.3.0
+pyasn1-modules==0.4.2
     # via python-ldap
 pycparser==2.21
     # via cffi
