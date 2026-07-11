@@ -59,7 +59,10 @@ class ResetPasswordForm(DynamicForm):
     conf_password = PasswordField(
         lazy_gettext("Confirm Password"),
         description=lazy_gettext("Please rewrite the password to confirm"),
-        validators=[EqualTo("password", message=lazy_gettext("Passwords must match"))],
+        validators=[
+            DataRequired(),
+            EqualTo("password", message=lazy_gettext("Passwords must match")),
+        ],
         widget=BS3PasswordFieldWidget(),
     )
 
@@ -97,7 +100,10 @@ class RegisterUserDBForm(DynamicForm):
     conf_password = PasswordField(
         lazy_gettext("Confirm Password"),
         description=lazy_gettext("Please rewrite the password to confirm"),
-        validators=[EqualTo("password", message=lazy_gettext("Passwords must match"))],
+        validators=[
+            DataRequired(),
+            EqualTo("password", message=lazy_gettext("Passwords must match")),
+        ],
         widget=BS3PasswordFieldWidget(),
     )
     recaptcha = RecaptchaField()
