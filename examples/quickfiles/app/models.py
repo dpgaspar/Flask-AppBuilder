@@ -1,6 +1,6 @@
 from flask import Markup, url_for
 from flask_appbuilder.models.mixins import AuditMixin, FileColumn
-from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model
 from flask_appbuilder.filemanager import get_file_original_name
