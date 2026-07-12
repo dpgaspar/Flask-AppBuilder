@@ -8,6 +8,7 @@ from flask import Flask
 from flask_appbuilder import AppBuilder
 from flask_appbuilder.security.sqla.models import ApiKey
 from flask_appbuilder.utils.legacy import get_sqla_class
+
 from tests.base import FABTestCase
 from tests.const import PASSWORD_ADMIN, USERNAME_ADMIN
 
@@ -222,9 +223,7 @@ class ApiKeySlowHashConfigTestCase(FABTestCase):
         """API key hash config should be independent of password hash config."""
         # Password hash uses default scrypt, API key hash uses pbkdf2
         self.assertNotIn("FAB_PASSWORD_HASH_METHOD", self.app.config)
-        self.assertEqual(
-            self.app.config["FAB_API_KEY_HASH_METHOD"], "pbkdf2:sha256:1000"
-        )
+        self.assertEqual(self.app.config["FAB_API_KEY_HASH_METHOD"], "pbkdf2:sha256:1000")
 
         user = self.appbuilder.sm.find_user(USERNAME_ADMIN)
         result = self.appbuilder.sm.create_api_key(user=user, name="independent-test")

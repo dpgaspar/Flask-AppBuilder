@@ -21,6 +21,7 @@ from flask_appbuilder.cli import (
     # reset_password,
 )
 from flask_appbuilder.utils.legacy import get_sqla_class
+
 from tests.base import FABTestCase
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
@@ -63,7 +64,7 @@ class FlaskTestCase(FABTestCase):
                 create_app,
                 [
                     f"--name={APP_DIR}",
-                    f"--secret-key={10*'SECRET'}",
+                    f"--secret-key={10 * 'SECRET'}",
                 ],
             )
             self.assertIn("Downloaded the skeleton app, good coding!", result.output)

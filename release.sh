@@ -1,13 +1,12 @@
 echo #
-echo Removing old dist files
+echo Removing old build artifacts
 echo #
-rm -Rf ./dist
+rm -Rf ./dist ./build
 echo #
 echo Generating dist
 echo #
-python setup.py clean --all sdist bdist_wheel
+python -m build
 echo #
 echo Upload to Pypi
 echo #
 twine upload dist/*
-

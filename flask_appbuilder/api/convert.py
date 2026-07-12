@@ -3,10 +3,9 @@ from typing import Any, Callable, Dict, List, Optional, Type
 from flask import current_app
 from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from marshmallow import fields, Schema
+from marshmallow import Schema, fields
 from marshmallow.fields import Field
-from marshmallow_sqlalchemy import field_for
-from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, field_for
 
 
 class TreeNode:
