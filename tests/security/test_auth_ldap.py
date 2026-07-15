@@ -20,6 +20,9 @@ log = logging.getLogger(__name__)
 
 
 class LDAPSearchTestCase(unittest.TestCase):
+
+    ldap = True
+
     def setUp(self):
         # start MockLdap
         # start Flask
