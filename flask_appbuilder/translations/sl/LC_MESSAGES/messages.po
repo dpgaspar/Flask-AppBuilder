@@ -662,7 +662,7 @@ msgid "Register"
 msgstr "Registracija"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:30
-msgid "Sign In with "
+msgid "Sign in with "
 msgstr "Prijava z "
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:89

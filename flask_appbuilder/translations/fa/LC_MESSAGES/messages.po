@@ -778,7 +778,7 @@ msgid "Register"
 msgstr "ثبت نام"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:20
-msgid "Sign In with "
+msgid "Sign in with "
 msgstr "ورود با"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:15

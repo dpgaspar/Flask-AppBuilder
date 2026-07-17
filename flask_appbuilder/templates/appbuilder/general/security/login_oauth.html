@@ -17,7 +17,7 @@
                         class="btn btn-primary btn-block"
                         type="submit"
                     >
-                        {{_('Sign In with ')}}{{ provider.name }}
+                        {{_('Sign in with ')}}{{ provider.name | capitalize}}
                         <i id="{{provider.name}}" class="provider-select fa {{provider.icon}} fa-1x"></i>
                     </a>
                     {% endfor %}
