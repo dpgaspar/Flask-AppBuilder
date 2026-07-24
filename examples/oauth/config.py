@@ -72,18 +72,19 @@ OAUTH_PROVIDERS = [
         "remote_app": {
             "client_id": os.environ.get("AZURE_APPLICATION_ID"),
             "client_secret": os.environ.get("AZURE_SECRET"),
-            "api_base_url": f"https://login.microsoftonline.com/{os.environ.get('AZURE_TENANT_ID')}/oauth2",
+            "api_base_url": f"https://login.microsoftonline.com/{os.environ.get('AZURE_TENANT_ID')}/oauth2/v2.0",
             "client_kwargs": {
-                "scope": "User.read name preferred_username email profile upn",
+                "scope": "email profile openid",
                 "resource": os.environ.get("AZURE_APPLICATION_ID"),
             },
             "request_token_url": None,
             "access_token_url": f"https://login.microsoftonline.com/"
             f"{os.environ.get('AZURE_TENANT_ID')}/"
-            "oauth2/token",
+            "oauth2/v2.0/token",
             "authorize_url": f"https://login.microsoftonline.com/"
             f"{os.environ.get('AZURE_TENANT_ID')}/"
-            f"oauth2/authorize",
+            f"oauth2/v2.0/authorize",
+            "jwks_uri": "https://login.microsoftonline.com/common/discovery/v2.0/keys",
         },
     },
     {
