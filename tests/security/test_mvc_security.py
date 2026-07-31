@@ -284,6 +284,27 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         assert response.status_code == 302
         assert response.location == "https://localhost/something"
 
+    def test_back_redirect_untrusted_history_entry_disallowed(self):
+        """
+        Ensure /back does not redirect off-site when page_history holds an
+        off-origin entry.
+
+        Entries are pushed from request.url, which is derived from the Host
+        header, so a deployment behind a proxy that rewrites Host can end up
+        with an absolute off-origin URL in a user's history.
+        """
+        self.app.config["FAB_SAFE_REDIRECT_HOSTS"] = ["localhost"]  # trusted dev host
+        self.browser_logout(self.client)
+        self.browser_login(self.client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        with self.client.session_transaction() as sess:
+            sess["page_history"] = ["https://example.com/", "https://example.com/"]
+
+        response = self.client.get("/back", follow_redirects=False)
+
+        assert response.status_code == 302
+        assert "example.com" not in response.location
+
     def test_login_next_url_allowed_config_wildcard(self):
         """
         Ensure a spoofed Host header does not allow redirection to an untrusted domain
