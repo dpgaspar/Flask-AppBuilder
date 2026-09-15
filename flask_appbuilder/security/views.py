@@ -578,7 +578,8 @@ class AuthView(BaseView):
 
     def _get_safe_next_url(self) -> str:
         """Return the requested redirect target, or the application index."""
-        return get_safe_redirect(request.args.get("next", ""))
+        next_url = request.args.get("next", self.appbuilder.get_url_for_index)
+        return get_safe_redirect(next_url)
 
     def _get_authenticated_user(self):
         """Resolve the current user before logout clears the session.

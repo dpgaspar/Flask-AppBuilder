@@ -16,7 +16,7 @@ class AuthViewsTestCase(TestCase):
         """Every browser authentication type handles an existing session alike."""
         app = Flask(__name__)
         appbuilder = SimpleNamespace(
-            get_url_for_index="/",
+            get_url_for_index="/index",
             sm=SimpleNamespace(auth_remote_user_env_var="REMOTE_USER"),
         )
         app.appbuilder = appbuilder
@@ -28,16 +28,19 @@ class AuthViewsTestCase(TestCase):
             AuthSAMLView,
             AuthRemoteUserView,
         )
-        redirects = (("/users/list/", "/users/list/"), ("https://example.com/", "/"))
+        redirects = (
+            ("/users/list/", "/users/list/"),
+            ("https://example.com/", "/index"),
+            (None, "/index"),
+        )
 
         for view_class in view_classes:
             view = view_class()
             view.appbuilder = appbuilder
             for next_url, expected in redirects:
                 with self.subTest(view_class=view_class, next_url=next_url):
-                    with app.test_request_context(
-                        "/login/", query_string={"next": next_url}
-                    ):
+                    query_string = {"next": next_url} if next_url is not None else None
+                    with app.test_request_context("/login/", query_string=query_string):
                         g.user = SimpleNamespace(is_authenticated=True)
                         response = view.login()
 
