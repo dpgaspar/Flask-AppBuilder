@@ -1550,7 +1550,7 @@ class MVCTestCase(BaseMVCTestCase):
             )
             pk = model1.id
             rv = client.get(f"/model1permoverride/delete/{pk}")
-            self.assertEqual(rv.status_code, 302)
+            self.assertEqual(rv.status_code, 403)
             model = self.appbuilder.session.query(Model1).filter_by(id=pk).one_or_none()
             self.assertEqual(model.field_string, "test1")
 

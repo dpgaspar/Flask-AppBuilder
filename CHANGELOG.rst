@@ -4,6 +4,7 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 5.2.2
 -----------------------------------
 
+- fix: preserve safe login redirects for authenticated users and return 403 on authorization failures
 - fix: anchor OAuth email whitelist regex to end of string (#2470) [Daniel Vaz Gaspar]
 - fix: switch from uuid1 to uuid4 for better randomness (#2435) [Rin]
 - fix: escape special characters in LDAP search filter username (#2469) [Daniel Vaz Gaspar]

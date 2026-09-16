@@ -162,6 +162,25 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         assert response.location == "/users/list/"
 
+    def test_authenticated_db_login_valid_next_url(self):
+        """An authenticated login request retains a safe next URL."""
+        self.browser_login(self.client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        response = self.client.get("/login/?next=/users/list/", follow_redirects=False)
+
+        assert response.status_code == 302
+        assert response.location == "/users/list/"
+
+    def test_authenticated_access_denial_returns_forbidden(self):
+        """A logged-in user lacking permission is not sent back to login."""
+        self.browser_login(self.client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        with patch.object(self.appbuilder.sm, "has_access", return_value=False):
+            response = self.client.get("/model1view/list/", follow_redirects=False)
+
+        assert response.status_code == 403
+        assert response.location is None
+
     def test_db_login_valid_http_scheme_url(self):
         """
         Test Security valid http scheme next URL
@@ -371,10 +390,10 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             self.assertEqual(rv.status_code, 200)
             # Test unauthorized EDIT
             rv = client.get(f"/model1view/edit/{model_id}")
-            self.assertEqual(rv.status_code, 302)
+            self.assertEqual(rv.status_code, 403)
             # Test unauthorized DELETE
             rv = client.get(f"/model1view/delete/{model_id}")
-            self.assertEqual(rv.status_code, 302)
+            self.assertEqual(rv.status_code, 403)
 
     def test_sec_reset_password(self):
         """
