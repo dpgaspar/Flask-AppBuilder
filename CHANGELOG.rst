@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.2.3
+-----------------------------------
+
+- fix: distinguish authentication from authorization redirects (#2479) [Amin Ghadersohi]
+- fix: bump pinned dependencies to address vulnerabilities (#2474) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 5.2.2
 -----------------------------------
 
