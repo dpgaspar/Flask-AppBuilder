@@ -15,6 +15,6 @@ Release protocol
 
 7 - checkout and pull master branch
 
-8 - Upload package to Pypi: `python setup.py sdist upload`
+8 - Upload package to PyPI: `python -m build && twine upload dist/*`
 
 9 - Update readthedocs with the new master version
