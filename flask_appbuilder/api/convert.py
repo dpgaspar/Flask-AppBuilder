@@ -75,6 +75,7 @@ class BaseModel2SchemaConverter(object):
         columns: List[str],
         model: Optional[Type[Model]] = None,
         nested: bool = True,
+        include_fk: bool = True,
         parent_schema_name: Optional[str] = None,
     ) -> SQLAlchemyAutoSchema:
         pass
@@ -105,6 +106,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         columns: List[str],
         model: Optional[Type[Model]],
         class_mixin: Type[Schema],
+        include_fk: bool = False,
         parent_schema_name: Optional[str] = None,
     ) -> Type[SQLAlchemyAutoSchema]:
         """
@@ -113,16 +115,19 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         :param columns: a list of columns to mix
         :param model: Model
         :param class_mixin: a marshamallow Schema to mix
+        :param include_fk: Include foreign keys
         :return: ModelSchema
         """
         _model = model
         _parent_schema_name = parent_schema_name
+        _include_fk = include_fk
         if columns:
 
             class MetaSchema(SQLAlchemyAutoSchema, class_mixin):  # type: ignore
                 class Meta:
                     model = _model
                     fields = columns
+                    include_fk = _include_fk
                     load_instance = True
                     sqla_session = current_app.appbuilder.session
                     # The parent_schema_name is useful to humanize nested schema names
@@ -134,6 +139,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         class MetaSchema(SQLAlchemyAutoSchema, class_mixin):  # type: ignore
             class Meta:
                 model = _model
+                include_fk = _include_fk
                 load_instance = True
                 sqla_session = current_app.appbuilder.session
                 # The parent_schema_name is useful to humanize nested schema names
@@ -171,7 +177,11 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             nested_model = datamodel.get_related_model(column.name)
             lst = [item.name for item in column.children]
             nested_schema = self.convert(
-                lst, nested_model, nested=False, parent_schema_name=parent_schema_name
+                lst,
+                nested_model,
+                nested=False,
+                include_fk=False,
+                parent_schema_name=parent_schema_name,
             )
             if datamodel.is_relation_many_to_one(column.name):
                 many = False
@@ -242,6 +252,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         columns: List[str],
         model: Optional[Type[Model]] = None,
         nested: bool = True,
+        include_fk: bool = True,
         parent_schema_name: Optional[str] = None,
     ) -> SQLAlchemyAutoSchema:
         """
@@ -251,6 +262,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         :param columns: List with columns to include, if empty converts all on model
         :param model: Override Model to convert
         :param nested: Generate relation with nested schemas
+        :param include_fk: Include foreign keys
         :return: ModelSchema object
         """
         super(Model2SchemaConverter, self).convert(
@@ -276,5 +288,9 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         for k, v in ma_sqla_fields_override.items():
             setattr(SchemaMixin, k, v)
         return self._meta_schema_factory(
-            _columns, _model, SchemaMixin, parent_schema_name=parent_schema_name
+            _columns,
+            _model,
+            SchemaMixin,
+            include_fk=include_fk,
+            parent_schema_name=parent_schema_name,
         )()
