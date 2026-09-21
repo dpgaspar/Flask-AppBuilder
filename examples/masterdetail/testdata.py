@@ -51,5 +51,5 @@ for i in range(1, 50):
     try:
         db.session.commit()
         print("inserted {0}".format(c))
-    except Exception as e:
+    except Exception:
         db.session.rollback()

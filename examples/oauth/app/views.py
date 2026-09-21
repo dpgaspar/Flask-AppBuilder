@@ -1,6 +1,5 @@
 from flask import session, flash
-from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder import ModelView, SimpleFormView
+from flask_appbuilder import SimpleFormView
 from .forms import TweetForm
 from app import appbuilder, db
 
