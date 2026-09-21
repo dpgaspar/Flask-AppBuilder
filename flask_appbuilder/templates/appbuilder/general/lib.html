@@ -16,7 +16,7 @@
         {% set endpoint = modelview_name + '.action' %}
         {% set path = endpoint | safe_url_for(name = action.name, pk = pk) %}
         {% if path %}
-            <form id="action_form" action="{{ path }}" method="POST" style="display: none">
+            <form id="action_form_{{ modelview_name }}" action="{{ path }}" method="POST" style="display: none">
                 {% if csrf_token is defined and csrf_token %}
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 {% endif %}
@@ -35,10 +35,10 @@
                 document.getElementById("btn-action-{{ endpoint }}-{{ action.name }}")
                     .addEventListener("click", function () {
                         {% if action.confirmation %}
-                            const adminAction = new AdminActions();
+                            const adminAction = new AdminActions('action_form_{{ modelview_name }}');
                             return adminAction.execute_single('{{path}}','{{action.confirmation}}');
                         {% else %}
-                            const adminAction = new AdminActions();
+                            const adminAction = new AdminActions('action_form_{{ modelview_name }}');
                             return adminAction.execute_single('{{path}}',false);
                         {% endif %}
                     })
@@ -52,7 +52,7 @@
         {% set endpoint = modelview_name + '.action_post' %}
         {% set path = endpoint | safe_url_for %}
         {% if path %}
-            <form id="action_form" action="{{ path }}" method="POST" style="display: none">
+            <form id="action_form_{{ modelview_name }}" action="{{ path }}" method="POST" style="display: none">
                 {% if csrf_token is defined and csrf_token %}
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 {% endif %}
@@ -60,7 +60,7 @@
             </form>
         {% endif %}
     {% else %}
-        <form id="delete_form" action="" method="POST" style="display: none">
+        <form id="action_form_{{ modelview_name }}" action="" method="POST" style="display: none">
             {% if csrf_token is defined and csrf_token %}
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             {% endif %}
@@ -93,9 +93,9 @@
         {% set action = actions.get(action_key) %}
         $('.{{action.name}}_menu_item').on('click', function(){
             {% if action.confirmation %}
-                return modelActions.execute_multiple('{{action.name}}','{{action.confirmation}}');
+                return modelActions{{ modelview_name }}.execute_multiple('{{action.name}}','{{action.confirmation}}');
             {% else %}
-                return modelActions.execute_multiple('{{action.name}}', false);
+                return modelActions{{ modelview_name }}.execute_multiple('{{action.name}}', false);
             {% endif %}
         })
     {% endfor %}
@@ -356,7 +356,7 @@
             {% set endpoint = modelview_name + '.delete' %}
             {% set path = endpoint | safe_url_for(pk=pk) %}
             {% if path %}
-                {{ lnk_delete(path) }}
+                {{ lnk_delete(path, modelview_name) }}
             {% endif %}
         {% endif %}
     </div>
@@ -401,7 +401,8 @@
     </a>
 {% endmacro %}
 
-{% macro lnk_delete(my_href) %}
+{% macro lnk_delete(my_href, modelview_name) %}
+    {% set path = endpoint | safe_url_for(pk=pk) %}
     <a
         id="btn-delete-{{ my_href }}"
         href="#"
@@ -415,7 +416,7 @@
     <script nonce="{{ baselib.get_nonce() }}">
         document.getElementById("btn-delete-{{ my_href }}")
             .addEventListener("click", function () {
-                const adminAction = new AdminActions();
+                const adminAction = new AdminActions('action_form_{{ modelview_name }}');
                 return adminAction.execute_single_delete('{{my_href}}','{{_('Are you sure you want to delete this item?')}}');
             })
     </script>
