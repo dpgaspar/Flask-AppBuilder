@@ -58,3 +58,20 @@ a single record::
             else:
                 self.datamodel.delete(items)
             return redirect(self.get_redirect())
+
+To customize the button color when the ``single`` parameter is ``True``, you can assign 
+the ``btn_class`` value based on the intended action. 
+::
+
+        @action("delete", "Delete", "Delete all Really?", "fa-rocket", btn_class="btn-danger")
+        def muldelete(self, items):
+            if isinstance(items, list):
+                self.datamodel.delete_all(items)
+                self.update_redirect()
+            else:
+                self.datamodel.delete(items)
+            return redirect(self.get_redirect())
+
+In this example, the ``btn_class`` parameter 
+is explicitly set to **btn-danger** to reflect the critical nature of the **Delete** action, ensuring 
+the button visually communicates its purpose effectively.
