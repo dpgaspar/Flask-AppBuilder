@@ -3,12 +3,12 @@ import logging
 import re
 
 from flask_sqlalchemy import (
-    _QueryProperty,
     DefaultMeta,
-    get_state,
     SessionBase,
     SignallingSession,
     SQLAlchemy,
+    _QueryProperty,
+    get_state,
 )
 from sqlalchemy import orm
 

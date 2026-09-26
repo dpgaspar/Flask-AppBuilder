@@ -9,7 +9,7 @@ Verifies that:
 """
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 from flask import Flask, g
 from flask_appbuilder import AppBuilder
@@ -86,6 +86,30 @@ class SafeUserTestCase(unittest.TestCase):
         anon = AnonymousUserMixin()
         self.assertFalse(sm._is_user_detached(anon))
 
+    def test_get_safe_user_returns_none_when_identity_inspection_fails(self):
+        sm = self.appbuilder.sm
+        user = object()
+        with (
+            patch.object(sm, "_is_user_detached", return_value=True),
+            patch(
+                "flask_appbuilder.security.manager.sa_inspect",
+                side_effect=ValueError("cannot inspect user"),
+            ),
+        ):
+            self.assertIsNone(sm._get_safe_user(user))
+
+    def test_get_safe_user_returns_none_without_persisted_identity(self):
+        sm = self.appbuilder.sm
+        user = object()
+        with (
+            patch.object(sm, "_is_user_detached", return_value=True),
+            patch("flask_appbuilder.security.manager.sa_inspect") as inspect,
+            patch.object(sm, "get_user_by_id") as get_user_by_id,
+        ):
+            inspect.return_value.identity = None
+            self.assertIsNone(sm._get_safe_user(user))
+            get_user_by_id.assert_not_called()
+
 
 class DetachedUserViewTestCase(unittest.TestCase):
     """Test _get_authenticated_user resilience to detached users."""
@@ -140,6 +164,36 @@ class DetachedUserViewTestCase(unittest.TestCase):
             fresh = sm.get_user_by_id(user_id)
             if fresh:
                 sm.delete_user(fresh)
+
+    def test_get_authenticated_user_unauthenticated_returns_none(self):
+        auth_view = self.appbuilder.sm.auth_view
+        with self.app.test_request_context("/"):
+            mock_user = MagicMock()
+            mock_user.is_authenticated = False
+            g.user = mock_user
+            result = auth_view._get_authenticated_user()
+            self.assertIsNone(result)
+
+    def test_get_authenticated_user_exception_returns_none(self):
+        auth_view = self.appbuilder.sm.auth_view
+        with self.app.test_request_context("/"):
+            mock_user = MagicMock()
+            type(mock_user).is_authenticated = PropertyMock(
+                side_effect=Exception("detached")
+            )
+            g.user = mock_user
+            result = auth_view._get_authenticated_user()
+            self.assertIsNone(result)
+
+    def test_get_authenticated_user_id_none_returns_none(self):
+        auth_view = self.appbuilder.sm.auth_view
+        with self.app.test_request_context("/"):
+            mock_user = MagicMock()
+            mock_user.is_authenticated = True
+            mock_user.id = None
+            g.user = mock_user
+            result = auth_view._get_authenticated_user()
+            self.assertIsNone(result)
 
     def test_get_authenticated_user_normal_user_works(self):
         """Normal (non-detached) user should be resolved correctly."""
@@ -209,9 +263,10 @@ class DetachedUserHasAccessTestCase(unittest.TestCase):
 
             g.user = mock_user
 
-            with patch(
-                "flask_appbuilder.security.manager.current_user", mock_current
-            ), patch.object(sm, "_get_safe_user", return_value=None):
+            with (
+                patch("flask_appbuilder.security.manager.current_user", mock_current),
+                patch.object(sm, "_get_safe_user", return_value=None),
+            ):
                 result = sm.has_access("can_list", "SomeView")
                 self.assertFalse(result)
 

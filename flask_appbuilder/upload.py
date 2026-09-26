@@ -1,7 +1,7 @@
 from flask_babel import gettext
 from markupsafe import Markup
 from werkzeug.datastructures import FileStorage
-from wtforms import fields, ValidationError
+from wtforms import ValidationError, fields
 from wtforms.widgets import html_params
 
 from .filemanager import FileManager, ImageManager
