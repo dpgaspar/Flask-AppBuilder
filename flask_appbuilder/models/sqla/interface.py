@@ -3,6 +3,7 @@ from __future__ import annotations
 from contextlib import suppress
 import logging
 from typing import Any, Iterable, Optional, Tuple, Type
+from uuid import UUID
 
 from flask import current_app, Request
 from flask_appbuilder.exceptions import DatabaseException, FABException
@@ -30,7 +31,6 @@ from sqlalchemy.sql import ColumnElement, visitors
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.sqltypes import TypeEngine
-from sqlalchemy_utils.types.uuid import UUIDType
 
 log = logging.getLogger(__name__)
 
@@ -628,11 +628,16 @@ class SQLAInterface(BaseInterface):
 
     def is_string(self, col_name: str) -> bool:
         try:
-            return (
-                _is_sqla_type(self.list_columns[col_name].type, sa_types.String)
-                or self.list_columns[col_name].type.__class__ == UUIDType
-            )
+            column_type = self.list_columns[col_name].type
         except KeyError:
+            return False
+
+        if _is_sqla_type(column_type, sa_types.String):
+            return True
+
+        try:
+            return column_type.python_type in (str, UUID)
+        except NotImplementedError:
             return False
 
     def is_text(self, col_name: str) -> bool:
