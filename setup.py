@@ -61,7 +61,6 @@ setup(
         "prison>=0.2.1, <1.0.0",
         "PyJWT>=2.0.0, <3.0.0",
         "SQLAlchemy>=1.4.0, <3",
-        "sqlalchemy-utils>=0.32.21, <1",
         "WTForms<4",
         "werkzeug<4",
     ],
