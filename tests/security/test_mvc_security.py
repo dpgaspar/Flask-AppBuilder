@@ -15,6 +15,7 @@ from tests.const import (
 )
 from tests.fixtures.data_models import model1_data
 from tests.sqla.models import Model1, Model2
+from werkzeug.security import check_password_hash
 
 PASSWORD_COMPLEXITY_ERROR = (
     "Must have at least two capital letters, "
@@ -137,6 +138,73 @@ class MVCSecurityTestCase(BaseMVCTestCase):
 
         self.appbuilder.session.delete(test_user)
         self.appbuilder.session.commit()
+
+    def test_add_user_without_password_is_unusable(self):
+        """
+        Test Security add_user without a password stores an unusable credential
+        """
+        self.browser_logout(self.client)
+        username = "provisioned_user"
+        existing = self.appbuilder.sm.find_user(username=username)
+        if existing:
+            self.appbuilder.session.delete(existing)
+            self.appbuilder.session.commit()
+
+        # Provision a user the way non-DB auth backends do: no password supplied
+        user = self.appbuilder.sm.add_user(
+            username=username,
+            first_name="provisioned",
+            last_name="user",
+            email="provisioned@fab.org",
+            role=self.appbuilder.sm.find_role("Admin"),
+        )
+        self.assertTrue(user)
+        # The stored hash must not match an empty or NUL-only password
+        self.assertFalse(check_password_hash(user.password, ""))
+        self.assertFalse(check_password_hash(user.password, "\x00"))
+        self.assertFalse(check_password_hash(user.password, "\x00\x00"))
+
+        # And such a user cannot log in through the database auth path
+        self.browser_login(self.client, username, "\x00")
+        rv = self.client.get("/model1view/list/")
+        self.assertEqual(rv.status_code, 302)
+
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
+
+    def test_db_login_rejects_null_password(self):
+        """
+        Test Security auth_user_db rejects empty and NUL-only passwords
+        """
+        username = "testuser_null_pw"
+        test_user = self.create_user(
+            self.appbuilder,
+            username,
+            "password",
+            "Admin",
+            "user",
+            "user",
+            "testuser_null_pw@fab.org",
+        )
+        try:
+            self.assertIsNone(self.appbuilder.sm.auth_user_db(username, ""))
+            self.assertIsNone(self.appbuilder.sm.auth_user_db(username, "\x00"))
+            self.assertIsNone(self.appbuilder.sm.auth_user_db(username, "\x00\x00"))
+            # A correct password still authenticates
+            self.assertIsNotNone(self.appbuilder.sm.auth_user_db(username, "password"))
+        finally:
+            self.appbuilder.session.delete(test_user)
+            self.appbuilder.session.commit()
+
+    def test_db_login_null_password_rejected_over_http(self):
+        """
+        Test Security HTTP login rejects a NUL-only password
+        """
+        self.browser_logout(self.client)
+        rv = self.browser_login(self.client, USERNAME_ADMIN, "\x00")
+        self.assertIn(INVALID_LOGIN_STRING, rv.data.decode("utf-8"))
+        rv = self.client.get("/model1view/list/")
+        self.assertEqual(rv.status_code, 302)
 
     def test_db_login_no_next_url(self):
         """

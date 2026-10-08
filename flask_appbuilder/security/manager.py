@@ -24,6 +24,7 @@ from .registerviews import (
     RegisterUserDBView,
     RegisterUserOAuthView,
 )
+from .utils import is_null_password
 from .views import (
     AuthDBView,
     AuthLDAPView,
@@ -1043,6 +1044,12 @@ class BaseSecurityManager(AbstractSecurityManager):
             The password, will be tested against hashed password on db
         """
         if username is None or username == "":
+            return None
+        # Reject empty or NUL-only passwords up front: their hash is
+        # indistinguishable from an unset password, so they must never
+        # authenticate regardless of what is stored for the user.
+        if is_null_password(password):
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED, username)
             return None
         first_user = self.get_first_user()
         user = self.find_user(username=username)
