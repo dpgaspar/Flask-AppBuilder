@@ -3,7 +3,6 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.models.sqla.filters import FilterEqualFunction
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from . import appbuilder
 from .models import Company, Contact, ContactGroup
 
 
