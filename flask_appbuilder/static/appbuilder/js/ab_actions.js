@@ -17,10 +17,11 @@ var AdminActions = function() {
     var action_confirmation = '';
     var row_checked_class = 'success';
 
-    this.execute_multiple = function(name, confirmation) {
+    this.execute_multiple = function(name, confirmation, url) {
         multiple = true;
         action_name = name;
         action_confirmation = confirmation;
+        action_url = url;
         var selected = $('input.action_check:checked').length;
 
         if (selected == 0) {
@@ -68,6 +69,7 @@ var AdminActions = function() {
         // Update hidden form and submit it
         var form = $('#action_form');
         $('#action', form).val(action_name);
+        $(form).attr('action', action_url)
 
         $('input.action_check', form).remove();
         $('input.action_check:checked').each(function() {
