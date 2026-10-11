@@ -8,16 +8,22 @@
     <ul class="nav nav-tabs"  style="{{"display: none;" if not related_views else "" }}">
     <li class="active"><a href="#Home" data-toggle="tab">{{ _("Detail") }}</a> </li>
         {% for view in related_views %}
-            <li>
-                <a href="#{{view.__class__.__name__}}" data-toggle="tab">{{view.title}}</a>
-            </li>
+            {% set can_list = "can_list" | is_item_visible(view.__class__.__name__) %}
+            {% if can_list %}
+                <li>
+                    <a href="#{{view.__class__.__name__}}" data-toggle="tab">{{view.title}}</a>
+                </li>
+            {% endif %}
         {% endfor %}
     </ul>
 
     <div class="tab-content">
+    {% set widget_related_views = widgets.get('related_views') %}
     {% for view in related_views %}
         <div id="{{view.__class__.__name__}}" class="tab-pane">
-            {{ widgets.get('related_views')[loop.index - 1](pk = pk)|safe }}
+            {% if loop.index0 < widget_related_views|length %}
+                {{ widget_related_views[loop.index0](pk=pk)|safe }}
+            {% endif %}
         </div>
     {% endfor %}
 {% endif %}

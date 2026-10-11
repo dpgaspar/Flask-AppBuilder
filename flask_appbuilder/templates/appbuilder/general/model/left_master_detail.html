@@ -8,11 +8,14 @@
    	        {{ widgets.get('list')()|safe }}
     {{ lib.panel_end() }}
 </div>
+{% set widget_related_views = widgets.get('related_views') %}
 {% for view in related_views %}
     <div class="col-lg-{{ 12 - master_div_width}} col-md-{{ 12 - master_div_width}} container">
         {{ lib.panel_begin(view.list_title) }}
         <div>
-            {{ widgets.get('related_views')[loop.index - 1](pk = pk)|safe }}
+            {% if loop.index0 < widget_related_views|length %}
+                {{ widget_related_views[loop.index0](pk=pk)|safe }}
+            {% endif %}
         </div>
         {{ lib.panel_end() }}
     </div>

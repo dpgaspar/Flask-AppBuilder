@@ -11,9 +11,12 @@
 
 {% block related_views %}
     {% if related_views is defined %}
+        {% set widget_related_views = widgets.get('related_views') %}
         {% for view in related_views %}
             {% call lib.accordion_tag(view.__class__.__name__,view.title, False) %}
-                {{ widgets.get('related_views')[loop.index - 1](pk = pk)|safe }}
+                {% if loop.index0 < widget_related_views|length %}
+                    {{ widget_related_views[loop.index0](pk=pk)|safe }}
+                {% endif %}
             {% endcall %} 
         {% endfor %}
     {% endif %}
