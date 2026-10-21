@@ -18,6 +18,9 @@ logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
 log = logging.getLogger(__name__)
 
+STAFF_GROUP_DN = "cn=staff,ou=groups,dc=example,dc=org"
+READERS_GROUP_DN = "cn=readers,ou=groups,dc=example,dc=org"
+
 
 class LDAPSearchTestCase(unittest.TestCase):
     def setUp(self):
@@ -48,6 +51,11 @@ class LDAPSearchTestCase(unittest.TestCase):
             if user_natalie:
                 self.appbuilder.session.delete(user_natalie)
                 self.appbuilder.session.commit()
+            # Remove test groups
+            for group_name in (STAFF_GROUP_DN, READERS_GROUP_DN):
+                group = self.appbuilder.sm.find_group(group_name)
+                if group:
+                    self.appbuilder.sm.delete_group(group)
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()
@@ -876,6 +884,153 @@ class LDAPSearchTestCase(unittest.TestCase):
 
             # validate - user was given the correct roles
             self.assertUserContainsRoles(user, ["Admin", "User"])
+
+    # ---------------------------------
+    # Callable AUTH_ROLES_MAPPING tests
+    # ---------------------------------
+    def test__direct_bind__registered__callable_roles_mapping(self):
+        """
+        LDAP: test that a callable role mapping is resolved on every login,
+              so the mapping can change without an application restart
+        """
+        mapping = {STAFF_GROUP_DN: ["Admin"]}
+        self.app.config["AUTH_ROLES_MAPPING"] = lambda: mapping
+        self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
+        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = (
+            "cn=%s,ou=users,dc=example,dc=org"
+        )
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_role("User")
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+            )
+
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
+            self.assertUserContainsRoles(user, ["Admin"])
+
+            # change the mapping, without re-creating the application
+            mapping[STAFF_GROUP_DN] = ["User"]
+
+            # attempt login again
+            user = sm.auth_user_ldap("alice", "alice_password")
+            self.assertUserContainsRoles(user, ["User"])
+
+    # -------------------
+    # Group mapping tests
+    # -------------------
+    def test__direct_bind__unregistered__group_sync(self):
+        """
+        LDAP: test login flow for - direct bind - unregistered user - group sync
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        self.app.config["AUTH_USER_REGISTRATION"] = True
+        self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
+        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = (
+            "cn=%s,ou=users,dc=example,dc=org"
+        )
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            # a group bound to the Admin role, as an administrator would create
+            sm.add_group(STAFF_GROUP_DN, "Staff", "", roles=[sm.find_role("Admin")])
+
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
+
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
+
+            # validate - only the known group was attached
+            self.assertListEqual([g.name for g in user.groups], [STAFF_GROUP_DN])
+
+            # validate - the group roles are part of the user's effective roles
+            self.assertIn(sm.find_role("Admin"), sm.get_user_roles(user))
+
+    def test__direct_bind__registered__group_sync__auto_create_groups(self):
+        """
+        LDAP: test login flow for - direct bind - registered user
+                                  - group sync with AUTH_AUTO_CREATE_GROUPS
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        self.app.config["AUTH_AUTO_CREATE_GROUPS"] = True
+        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = (
+            "cn=%s,ou=users,dc=example,dc=org"
+        )
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+            )
+
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
+
+            # validate - the LDAP groups were created and attached
+            self.assertListEqual(
+                sorted(g.name for g in user.groups),
+                sorted([READERS_GROUP_DN, STAFF_GROUP_DN]),
+            )
+
+            # validate - the created groups hold no roles yet
+            self.assertListEqual(sm.find_group(STAFF_GROUP_DN).roles, [])
+
+    def test__direct_bind__registered__no_group_sync(self):
+        """
+        LDAP: test that groups are left untouched when group sync is disabled
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = False
+        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = (
+            "cn=%s,ou=users,dc=example,dc=org"
+        )
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_group(STAFF_GROUP_DN, "Staff", "", roles=[sm.find_role("Admin")])
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+            )
+
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
+
+            # validate - no groups were attached
+            self.assertListEqual(user.groups, [])
 
     def test__indirect_bind__unregistered__single_role(self):
         """

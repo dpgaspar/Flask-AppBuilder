@@ -73,6 +73,12 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
                 self.appbuilder.session.delete(user_alice)
                 self.appbuilder.session.commit()
 
+            # Remove test groups
+            for group_name in ("GROUP_1", "GROUP_2"):
+                group = self.appbuilder.sm.find_group(group_name)
+                if group:
+                    self.appbuilder.sm.delete_group(group)
+
         # stop Flask
         self.app = None
         # stop Flask-AppBuilder
@@ -506,6 +512,314 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
 
             # validate - user was given the correct roles
             self.assertListEqual(user.roles, [sm.find_role("User")])
+
+    # ---------------------------------
+    # Callable AUTH_ROLES_MAPPING tests
+    # ---------------------------------
+    def test__unregistered__callable_roles_mapping(self):
+        """
+        OAUTH: test login flow for - unregistered user - callable role mapping
+        """
+        self.app.config["AUTH_ROLES_MAPPING"] = lambda: {"GROUP_1": ["Admin", "User"]}
+        self.app.config["AUTH_USER_REGISTRATION"] = True
+        self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            # add User role
+            sm.add_role("User")
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
+
+            # validate - the callable was resolved to build the roles
+            self.assertSetEqual(
+                set(user.roles),
+                {sm.find_role("Admin"), sm.find_role("User"), sm.find_role("Public")},
+            )
+
+    def test__registered__callable_roles_mapping__with_role_sync(self):
+        """
+        OAUTH: test that a callable role mapping is resolved on every login,
+               so the mapping can change without an application restart
+        """
+        mapping = {"GROUP_1": ["Admin"]}
+        self.app.config["AUTH_ROLES_MAPPING"] = lambda: mapping
+        self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            # add User role
+            sm.add_role("User")
+
+            # register a user with no roles
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+            self.assertListEqual(user.roles, [sm.find_role("Admin")])
+
+            # change the mapping, without re-creating the application
+            mapping["GROUP_1"] = ["User"]
+
+            # attempt login again
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - the new mapping took effect
+            self.assertListEqual(user.roles, [sm.find_role("User")])
+
+    def test__registered__callable_roles_mapping__invalid_return(self):
+        """
+        OAUTH: test login flow for - registered user
+                                   - callable role mapping returning a non dict
+        """
+        self.app.config["AUTH_ROLES_MAPPING"] = lambda: ["GROUP_1"]
+        self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[sm.find_role("Admin")],
+            )
+
+            # attempt login
+            with self.assertLogs(
+                "flask_appbuilder.security.manager", level="ERROR"
+            ) as log_mock:
+                user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - login succeeded but no roles were mapped
+            self.assertIsInstance(user, sm.user_model)
+            self.assertListEqual(user.roles, [])
+            self.assertIn(
+                "AUTH_ROLES_MAPPING callable must return a dict", log_mock.output[0]
+            )
+
+    # -------------------
+    # Group mapping tests
+    # -------------------
+    def test__unregistered__group_sync(self):
+        """
+        OAUTH: test login flow for - unregistered user - group sync
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        self.app.config["AUTH_USER_REGISTRATION"] = True
+        self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            # a group bound to the Admin role, as an administrator would create
+            sm.add_group("GROUP_1", "Group 1", "", roles=[sm.find_role("Admin")])
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
+
+            # validate - only the known group was attached
+            self.assertListEqual([g.name for g in user.groups], ["GROUP_1"])
+
+            # validate - the group roles are part of the user's effective roles
+            self.assertIn(sm.find_role("Admin"), sm.get_user_roles(user))
+
+    def test__unregistered__group_sync__auto_create_groups(self):
+        """
+        OAUTH: test login flow for - unregistered user
+                                   - group sync with AUTH_AUTO_CREATE_GROUPS
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        self.app.config["AUTH_AUTO_CREATE_GROUPS"] = True
+        self.app.config["AUTH_USER_REGISTRATION"] = True
+        self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - both unknown groups were created and attached
+            self.assertListEqual(
+                sorted(g.name for g in user.groups), ["GROUP_1", "GROUP_2"]
+            )
+
+            # validate - the created groups hold no roles yet
+            self.assertListEqual(sm.find_group("GROUP_1").roles, [])
+
+    def test__registered__group_sync__role_change_without_restart(self):
+        """
+        OAUTH: test that changing a group's roles takes effect on the next
+               login, without an application restart
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_role("User")
+            group = sm.add_group("GROUP_1", "Group 1", "", roles=[sm.find_role("User")])
+
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+            self.assertListEqual(sm.get_user_roles(user), [sm.find_role("User")])
+
+            # an administrator binds the Admin role to the group at runtime
+            group.roles = [sm.find_role("Admin")]
+            self.appbuilder.session.commit()
+
+            # attempt login again
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - the new group roles took effect
+            self.assertListEqual(sm.get_user_roles(user), [sm.find_role("Admin")])
+
+    def test__registered__no_group_sync(self):
+        """
+        OAUTH: test that groups are left untouched when group sync is disabled
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = False
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_group("GROUP_1", "Group 1", "", roles=[sm.find_role("Admin")])
+
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - no groups were attached
+            self.assertListEqual(user.groups, [])
+
+    # ------------------------------
+    # Backwards compatibility tests
+    # ------------------------------
+    def test__registered__overridden_roles_mapping_property(self):
+        """
+        OAUTH: test that a security manager overriding the
+               `auth_roles_mapping` property is still honoured
+        """
+        from flask_appbuilder.security.sqla.manager import SecurityManager
+
+        class MySecurityManager(SecurityManager):
+            @property
+            def auth_roles_mapping(self):
+                # mapping computed by the security manager, AUTH_ROLES_MAPPING
+                # is left empty on purpose
+                return {"GROUP_1": ["Admin"]}
+
+        self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(
+                self.app, db.session, security_manager_class=MySecurityManager
+            )
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - the overridden mapping was used
+            self.assertListEqual(user.roles, [sm.find_role("Admin")])
+
+    def test__unregistered__add_user_without_groups_argument(self):
+        """
+        OAUTH: test that a security manager overriding `add_user` without a
+               `groups` argument still works when group sync is disabled
+        """
+        from flask_appbuilder.security.sqla.manager import SecurityManager
+
+        class MySecurityManager(SecurityManager):
+            def add_user(self, username, first_name, last_name, email, role):
+                return super().add_user(
+                    username=username,
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    role=role,
+                )
+
+        self.app.config["AUTH_USER_REGISTRATION"] = True
+        self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(
+                self.app, db.session, security_manager_class=MySecurityManager
+            )
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            # attempt login - must not fail with an unexpected keyword argument
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - user was registered
+            self.assertIsInstance(user, sm.user_model)
+            self.assertListEqual(user.roles, [sm.find_role("Public")])
 
     def test_oauth_user_info_getter(self):
         with self.app.app_context():

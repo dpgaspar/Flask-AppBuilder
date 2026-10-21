@@ -571,6 +571,72 @@ You can also use JMESPath expressions for dynamic role assignment::
 Take a look at the `SAML example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/saml>`_
 
 
+.. _dynamic-role-mapping:
+
+Dynamic role mapping
+--------------------
+
+``AUTH_ROLES_MAPPING`` is normally a static dict, which means that mapping a newly created
+role to an identity provider group requires a configuration change and an application restart.
+Flask-AppBuilder offers two ways of keeping that mapping dynamic, both of which work for
+LDAP, OAuth and SAML.
+
+Using a callable
+~~~~~~~~~~~~~~~~
+
+``AUTH_ROLES_MAPPING`` can be a callable taking no arguments and returning the mapping dict.
+It is resolved on every authentication, so the mapping can be stored anywhere you like
+(your own database table, a remote service, a file) and changed at runtime::
+
+    def get_roles_mapping():
+        # fetch the mapping from wherever you keep it
+        return {
+            "admin-group": ["Admin"],
+            "user-group": ["User"],
+        }
+
+    AUTH_ROLES_MAPPING = get_roles_mapping
+
+Combine it with ``AUTH_ROLES_SYNC_AT_LOGIN = True`` so that existing users pick up the new
+mapping on their next login.
+
+.. note:: If the callable does not return a dict, an error is logged and no roles are mapped.
+          Keep the callable cheap: it runs on every authentication, and may be called more
+          than once per authentication.
+
+Using groups
+~~~~~~~~~~~~
+
+Flask-AppBuilder groups already hold a list of roles, and a user's effective roles are the
+union of their own roles and the roles of all their groups. Setting
+``AUTH_GROUPS_SYNC_AT_LOGIN = True`` makes FAB match the identity provider's group names
+against the FAB group names on every login, and update the user's groups accordingly::
+
+    AUTH_GROUPS_SYNC_AT_LOGIN = True
+
+With this enabled, the group to role relationship lives entirely on the database. An
+administrator can bind a brand new role to a group from the UI or the API, and it takes
+effect on the next login, with no configuration change and no restart.
+
+The group names are read from:
+
+- LDAP: the user attribute set by ``AUTH_LDAP_GROUP_FIELD`` (default ``memberOf``), the same
+  source used by ``AUTH_ROLES_MAPPING``
+- OAuth and SAML: the ``groups`` key of the userinfo payload, falling back to ``role_keys``
+  when ``groups`` is not set, so providers already exposing their groups for
+  ``AUTH_ROLES_MAPPING`` work unchanged
+
+Identity provider groups with no matching FAB group are ignored, and a warning is logged.
+To have them created automatically, set::
+
+    AUTH_AUTO_CREATE_GROUPS = True
+
+They are created without any role, so logging in once makes the group show up in the UI
+ready for an administrator to bind roles to it.
+
+.. note:: ``AUTH_GROUPS_SYNC_AT_LOGIN`` and ``AUTH_ROLES_MAPPING`` are independent and can be
+          used together. Groups are also assigned when a user is registered for the first time.
+
 Authentication: Rate limiting
 -----------------------------
 
