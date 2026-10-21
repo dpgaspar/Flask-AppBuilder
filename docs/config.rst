@@ -23,7 +23,7 @@ Use config.py to configure the following parameters. By default it will use SQLL
     - Description: Set to True to enable user self-registration
     - Mandatory: No
 - AUTH_USERNAME_CI
-    - Description: Make auth login CI of not defaults to true
+    - Description: Make auth login username or email case-insensitive. If not provided defaults to true
     - Mandatory: No
 - AUTH_USER_REGISTRATION_ROLE
     - Description: Set role name, to be assigned when a user registers himself. This role must already exist. Mandatory when using user registration
