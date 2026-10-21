@@ -238,6 +238,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Role Mapping
         current_app.config.setdefault("AUTH_ROLES_MAPPING", {})
         current_app.config.setdefault("AUTH_ROLES_SYNC_AT_LOGIN", False)
+        # Group Mapping
+        current_app.config.setdefault("AUTH_GROUPS_SYNC_AT_LOGIN", False)
+        current_app.config.setdefault("AUTH_AUTO_CREATE_GROUPS", False)
         current_app.config.setdefault("AUTH_API_LOGIN_ALLOW_MULTIPLE_PROVIDERS", False)
 
         # Werkzeug prior to 3.0.0 does not support scrypt
@@ -380,6 +383,46 @@ class BaseSecurityManager(AbstractSecurityManager):
                         )
         return _roles
 
+    def get_groups_from_keys(self, group_keys: List[str]) -> List[group_model]:
+        """
+        Construct a list of FAB group objects, from a list of keys.
+
+        NOTE:
+        - keys are things like: "LDAP group DNs" or "OAUTH group names"
+        - keys are matched against the FAB group name, so the group to role
+          relationship is kept on the database and can be changed at runtime
+        - unknown keys are created as empty groups when AUTH_AUTO_CREATE_GROUPS
+          is enabled, so an administrator can bind roles to them afterwards
+
+        :param group_keys: the list of identity provider group keys
+        :return: a list of group models
+        """
+        _groups = []
+        for group_key in sorted(set(group_keys)):
+            group = self.find_group(group_key)
+            if group is None and self.auth_auto_create_groups:
+                group = self.add_group(name=group_key, label=group_key, description="")
+            if group:
+                _groups.append(group)
+            else:
+                log.warning(
+                    "Can't find group from the identity provider: %s", group_key
+                )
+        return _groups
+
+    def _calculate_user_groups(self, userinfo: Dict[str, Any]) -> List[group_model]:
+        """
+        Calculate the FAB groups for a user, from an OAuth/SAML payload.
+
+        Group keys are read from the "groups" key, falling back to "role_keys",
+        so that providers already exposing their groups for AUTH_ROLES_MAPPING
+        work without any change.
+        """
+        group_keys = userinfo.get("groups")
+        if group_keys is None:
+            group_keys = userinfo.get("role_keys", [])
+        return self.get_groups_from_keys(group_keys)
+
     @property
     def auth_type_provider_name(self) -> Optional[str]:
         provider_to_auth_type = {AUTH_DB: "db", AUTH_LDAP: "ldap"}
@@ -450,11 +493,37 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     @property
     def auth_roles_mapping(self) -> Dict[str, List[str]]:
-        return current_app.config["AUTH_ROLES_MAPPING"]
+        """
+        The mapping from identity provider keys to FAB role names.
+
+        ``AUTH_ROLES_MAPPING`` can either be a dict or a callable returning a
+        dict. A callable is resolved on every authentication, which allows the
+        mapping to be changed at runtime (for example by storing it on the
+        database) without restarting the application. It may be resolved more
+        than once per authentication, so it should be kept cheap.
+        """
+        mapping = current_app.config["AUTH_ROLES_MAPPING"]
+        if callable(mapping):
+            mapping = mapping()
+            if not isinstance(mapping, dict):
+                log.error(
+                    "AUTH_ROLES_MAPPING callable must return a dict, got: %s",
+                    type(mapping).__name__,
+                )
+                return {}
+        return mapping
 
     @property
     def auth_roles_sync_at_login(self) -> bool:
         return current_app.config["AUTH_ROLES_SYNC_AT_LOGIN"]
+
+    @property
+    def auth_groups_sync_at_login(self) -> bool:
+        return current_app.config["AUTH_GROUPS_SYNC_AT_LOGIN"]
+
+    @property
+    def auth_auto_create_groups(self) -> bool:
+        return current_app.config["AUTH_AUTO_CREATE_GROUPS"]
 
     @property
     def auth_ldap_search(self):
@@ -1109,7 +1178,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             self.auth_ldap_lastname_field,
             self.auth_ldap_email_field,
         ]
-        if len(self.auth_roles_mapping) > 0:
+        if len(self.auth_roles_mapping) > 0 or self.auth_groups_sync_at_login:
             request_fields.append(self.auth_ldap_group_field)
 
         # perform the LDAP search
@@ -1176,6 +1245,12 @@ class BaseSecurityManager(AbstractSecurityManager):
                 )
 
         return list(user_role_objects)
+
+    def _ldap_calculate_user_groups(
+        self, user_attributes: Dict[str, bytes]
+    ) -> List[group_model]:
+        group_keys = self.ldap_extract_list(user_attributes, self.auth_ldap_group_field)
+        return self.get_groups_from_keys(group_keys)
 
     def _ldap_bind_indirect(self, ldap, con) -> None:
         """
@@ -1381,8 +1456,23 @@ class BaseSecurityManager(AbstractSecurityManager):
                     "Calculated new roles for user='%s' as: %s", user_dn, user.roles
                 )
 
+            # Sync the user's groups
+            if user and user_attributes and self.auth_groups_sync_at_login:
+                user.groups = self._ldap_calculate_user_groups(user_attributes)
+                log.debug(
+                    "Calculated new groups for user='%s' as: %s", user_dn, user.groups
+                )
+
             # If the user is new, register them
             if (not user) and user_attributes and self.auth_user_registration:
+                # Only pass `groups` when group sync is enabled, so that
+                # custom security managers overriding `add_user` without a
+                # `groups` argument keep working
+                add_user_kwargs = {}
+                if self.auth_groups_sync_at_login:
+                    add_user_kwargs["groups"] = self._ldap_calculate_user_groups(
+                        user_attributes
+                    )
                 user = self.add_user(
                     username=username,
                     first_name=self.ldap_extract(
@@ -1397,6 +1487,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                         f"{username}@email.notfound",
                     ),
                     role=self._ldap_calculate_user_roles(user_attributes),
+                    **add_user_kwargs,
                 )
                 log.debug("New user registered: %s", user)
 
@@ -1521,14 +1612,28 @@ class BaseSecurityManager(AbstractSecurityManager):
             user.roles = self._oauth_calculate_user_roles(userinfo)
             log.debug("Calculated new roles for user='%s' as: %s", username, user.roles)
 
+        # Sync the user's groups
+        if user and self.auth_groups_sync_at_login:
+            user.groups = self._calculate_user_groups(userinfo)
+            log.debug(
+                "Calculated new groups for user='%s' as: %s", username, user.groups
+            )
+
         # If the user is new, register them
         if (not user) and self.auth_user_registration:
+            # Only pass `groups` when group sync is enabled, so that custom
+            # security managers overriding `add_user` without a `groups`
+            # argument keep working
+            add_user_kwargs = {}
+            if self.auth_groups_sync_at_login:
+                add_user_kwargs["groups"] = self._calculate_user_groups(userinfo)
             user = self.add_user(
                 username=username,
                 first_name=userinfo.get("first_name", ""),
                 last_name=userinfo.get("last_name", ""),
                 email=userinfo.get("email", "") or f"{username}@email.notfound",
                 role=self._oauth_calculate_user_roles(userinfo),
+                **add_user_kwargs,
             )
             log.debug("New user registered: %s", user)
 
@@ -1744,6 +1849,17 @@ class BaseSecurityManager(AbstractSecurityManager):
                         user.roles,
                     )
 
+            if self.auth_groups_sync_at_login:
+                new_groups = self._calculate_user_groups(userinfo)
+                if new_groups:
+                    user.groups = new_groups
+                    updated = True
+                    log.debug(
+                        "Calculated new groups for user='%s' as: %s",
+                        username,
+                        user.groups,
+                    )
+
             # Update user info from SAML assertion
             for field in ("first_name", "last_name", "email"):
                 new_val = userinfo.get(field)
@@ -1756,12 +1872,19 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         # If the user is new, register them
         if (not user) and self.auth_user_registration:
+            # Only pass `groups` when group sync is enabled, so that custom
+            # security managers overriding `add_user` without a `groups`
+            # argument keep working
+            add_user_kwargs = {}
+            if self.auth_groups_sync_at_login:
+                add_user_kwargs["groups"] = self._calculate_user_groups(userinfo)
             user = self.add_user(
                 username=username,
                 first_name=userinfo.get("first_name", ""),
                 last_name=userinfo.get("last_name", ""),
                 email=userinfo.get("email", "") or f"{username}@email.notfound",
                 role=self._saml_calculate_user_roles(userinfo),
+                **add_user_kwargs,
             )
             log.debug("New SAML user registered: %s", user)
 
