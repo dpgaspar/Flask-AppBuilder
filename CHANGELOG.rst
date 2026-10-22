@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.3.0rc1
+-----------------------------------
+
+- feat: dynamic group/role mapping for LDAP, OAuth and SAML (#2486) [Daniel Vaz Gaspar]
+- fix: assign an unusable password to users created without one (#2485) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 5.2.3
 -----------------------------------
 
