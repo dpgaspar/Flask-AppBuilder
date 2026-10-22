@@ -1254,7 +1254,6 @@ class BaseCRUDView(BaseModelView):
                         flash(self.add_row_message, "success")
                     except Exception as e:
                         flash(str(e))
-                finally:
                     return None
             else:
                 is_valid_form = False
@@ -1301,7 +1300,6 @@ class BaseCRUDView(BaseModelView):
                         flash(self.edit_row_message, "success")
                     except Exception:
                         flash(self.database_error_message, "danger")
-                finally:
                     return None
             else:
                 is_valid_form = False

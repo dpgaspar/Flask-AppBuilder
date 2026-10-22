@@ -26,7 +26,7 @@ class FileManager(object):
         namegen=None,
         allowed_extensions=None,
         permission=0o755,
-        **kwargs
+        **kwargs,
     ):
         if "UPLOAD_FOLDER" in current_app.config and not base_path:
             base_path = current_app.config["UPLOAD_FOLDER"]
@@ -91,7 +91,7 @@ class ImageManager(FileManager):
         thumbgen=None,
         thumbnail_size=None,
         permission=0o755,
-        **kwargs
+        **kwargs,
     ):
         # Check if PIL is installed
         if Image is None:
@@ -123,7 +123,7 @@ class ImageManager(FileManager):
             namegen=namegen,
             allowed_extensions=allowed_extensions,
             permission=permission,
-            **kwargs
+            **kwargs,
         )
 
     def get_url(self, filename):
