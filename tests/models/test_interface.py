@@ -15,6 +15,7 @@ from flask_appbuilder.security.sqla.models import (
 from flask_appbuilder.utils.legacy import get_sqla_class
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
+
 from tests.base import FABTestCase
 from tests.const import USERNAME_ADMIN, USERNAME_READONLY
 
@@ -23,9 +24,7 @@ from tests.const import USERNAME_ADMIN, USERNAME_READONLY
 def assert_no_queries(engine: Engine):
     queries = []
 
-    def before_cursor_execute(
-        conn, cursor, statement, parameters, context, executemany
-    ):
+    def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
         queries.append(statement)
 
     event.listen(engine, "before_cursor_execute", before_cursor_execute)
@@ -190,3 +189,33 @@ class SQLAInterfaceTestCase(FABTestCase):
             ],
         )
         self.assertEqual(count, 2)
+
+
+class SQLAInterfaceOuterDefaultLoadTestCase(FABTestCase):
+    def setUp(self):
+        self.app = Flask(__name__)
+        self.app.config.from_object("tests.config_api")
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
+
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+        self.create_default_users(self.appbuilder)
+
+    def tearDown(self):
+        self.db.session.remove()
+        self.ctx.pop()
+
+    def test_query_passes_outer_default_load_true(self):
+        datamodel = SQLAInterface(User, self.db.session)
+        filters = datamodel.get_filters()
+        count, results = datamodel.query(filters=filters, outer_default_load=True)
+        self.assertGreaterEqual(count, 1)
+
+    def test_query_passes_outer_default_load_false(self):
+        datamodel = SQLAInterface(User, self.db.session)
+        filters = datamodel.get_filters()
+        count, results = datamodel.query(filters=filters, outer_default_load=False)
+        self.assertGreaterEqual(count, 1)

@@ -74,9 +74,7 @@ def set_value_to_type(datamodel, column_name, value):
             return parser.parse(value).date()
         except Exception:
             return None
-    elif datamodel.is_datetime(column_name) and not isinstance(
-        value, datetime.datetime
-    ):
+    elif datamodel.is_datetime(column_name) and not isinstance(value, datetime.datetime):
         try:
             return parser.parse(value)
         except Exception:

@@ -172,13 +172,9 @@ class Filters:
         self.filters.append(filter_instance)
         self.values.append(values)
 
-    def add_filter_index(
-        self, column_name: str, filter_instance_index: int, value: Any
-    ):
+    def add_filter_index(self, column_name: str, filter_instance_index: int, value: Any):
         if column_name in self._all_filters.keys():
-            self._add_filter(
-                self._all_filters[column_name][filter_instance_index], value
-            )
+            self._add_filter(self._all_filters[column_name][filter_instance_index], value)
 
     def rest_add_filters(self, data: List[Dict]) -> None:
         """
