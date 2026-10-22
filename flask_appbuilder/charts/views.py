@@ -158,7 +158,7 @@ class GroupByChartView(BaseChartView):
         direct=None,
         height=None,
         definition="",
-        **args
+        **args,
     ):
         height = height or self.height
         widgets = widgets or dict()
@@ -186,7 +186,7 @@ class GroupByChartView(BaseChartView):
             height=height,
             value_columns=value_columns,
             modelview_name=self.__class__.__name__,
-            **args
+            **args,
         )
         return widgets
 
@@ -290,7 +290,7 @@ class BaseSimpleGroupByChartView(BaseChartView):  # pragma: no cover
         widgets=None,
         group_by=None,
         height=None,
-        **args
+        **args,
     ):
         height = height or self.height
         widgets = widgets or dict()
@@ -308,7 +308,7 @@ class BaseSimpleGroupByChartView(BaseChartView):  # pragma: no cover
             height=height,
             value_columns=value_columns,
             modelview_name=self.__class__.__name__,
-            **args
+            **args,
         )
         return widgets
 
@@ -344,7 +344,7 @@ class BaseSimpleDirectChartView(BaseChartView):  # pragma: no cover
         widgets=None,
         direct=None,
         height=None,
-        **args
+        **args,
     ):
         height = height or self.height
         widgets = widgets or dict()
@@ -367,7 +367,7 @@ class BaseSimpleDirectChartView(BaseChartView):  # pragma: no cover
             height=height,
             value_columns=value_columns,
             modelview_name=self.__class__.__name__,
-            **args
+            **args,
         )
         return widgets
 
@@ -427,7 +427,7 @@ class TimeChartView(BaseSimpleGroupByChartView):  # pragma: no cover
         group_by=None,
         period=None,
         height=None,
-        **args
+        **args,
     ):
         height = height or self.height
         widgets = widgets or dict()
@@ -451,7 +451,7 @@ class TimeChartView(BaseSimpleGroupByChartView):  # pragma: no cover
             height=height,
             value_columns=value_columns,
             modelview_name=self.__class__.__name__,
-            **args
+            **args,
         )
         return widgets
 

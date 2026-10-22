@@ -66,7 +66,7 @@ class TemplateFilters(object):
             args["_od_" + modelview_name] = "asc"
         return url_for(
             request.endpoint,
-            **dict(list(new_args.items()) + list(args.to_dict().items()))
+            **dict(list(new_args.items()) + list(args.to_dict().items())),
         )
 
     @app_template_filter("link_page")
@@ -79,7 +79,7 @@ class TemplateFilters(object):
         args["page_" + modelview_name] = page
         return url_for(
             request.endpoint,
-            **dict(list(new_args.items()) + list(args.to_dict().items()))
+            **dict(list(new_args.items()) + list(args.to_dict().items())),
         )
 
     @app_template_filter("link_page_size")
@@ -92,7 +92,7 @@ class TemplateFilters(object):
         args["psize_" + modelview_name] = page_size
         return url_for(
             request.endpoint,
-            **dict(list(new_args.items()) + list(args.to_dict().items()))
+            **dict(list(new_args.items()) + list(args.to_dict().items())),
         )
 
     @app_template_filter("get_link_next")
