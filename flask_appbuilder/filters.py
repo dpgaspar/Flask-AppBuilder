@@ -1,4 +1,5 @@
 from flask import current_app, request, url_for
+from jinja2 import pass_context
 
 from .const import PERMISSION_PREFIX
 
@@ -13,6 +14,12 @@ def app_template_filter(filter_name=""):
 
 
 class TemplateFilters(object):
+    # Every filter whose result depends on the request or on the current user
+    # must be marked with @pass_context. Jinja constant-folds calls to
+    # unmarked filters when all arguments are literals, which bakes the first
+    # render's result into the compiled template for the lifetime of the
+    # process: a permission check would then answer with the first user's
+    # permissions, and a link would keep the first request's query string.
     security_manager = None
 
     def __init__(self, app, security_manager):
@@ -23,32 +30,42 @@ class TemplateFilters(object):
                 app.jinja_env.filters[attr._filter] = attr
 
     @app_template_filter("get_actions_on_list")
-    def get_actions_on_list(self, actions, modelview_name):
+    @pass_context
+    def get_actions_on_list(self, context, actions, modelview_name):
         res_actions = dict()
         for action_key in actions:
             action = actions[action_key]
-            if self.is_item_visible(action.name, modelview_name) and action.multiple:
+            if (
+                self.is_item_visible(context, action.name, modelview_name)
+                and action.multiple
+            ):
                 res_actions[action_key] = action
         return res_actions
 
     @app_template_filter("get_actions_on_show")
-    def get_actions_on_show(self, actions, modelview_name):
+    @pass_context
+    def get_actions_on_show(self, context, actions, modelview_name):
         res_actions = dict()
         for action_key in actions:
             action = actions[action_key]
-            if self.is_item_visible(action.name, modelview_name) and action.single:
+            if (
+                self.is_item_visible(context, action.name, modelview_name)
+                and action.single
+            ):
                 res_actions[action_key] = action
         return res_actions
 
     @app_template_filter("safe_url_for")
-    def safe_url_for(self, endpoint, **values):
+    @pass_context
+    def safe_url_for(self, context, endpoint, **values):
         try:
             return url_for(endpoint, **values)
         except Exception:
             return None
 
     @app_template_filter("link_order")
-    def link_order_filter(self, column, modelview_name):
+    @pass_context
+    def link_order_filter(self, context, column, modelview_name):
         """
         Arguments are passed like:
             _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
@@ -70,7 +87,8 @@ class TemplateFilters(object):
         )
 
     @app_template_filter("link_page")
-    def link_page_filter(self, page, modelview_name):
+    @pass_context
+    def link_page_filter(self, context, page, modelview_name):
         """
         Arguments are passed like: page_<VIEW_NAME>=<PAGE_NUMBER>
         """
@@ -83,7 +101,8 @@ class TemplateFilters(object):
         )
 
     @app_template_filter("link_page_size")
-    def link_page_size_filter(self, page_size, modelview_name):
+    @pass_context
+    def link_page_size_filter(self, context, page_size, modelview_name):
         """
         Arguments are passed like: psize_<VIEW_NAME>=<PAGE_NUMBER>
         """
@@ -96,11 +115,13 @@ class TemplateFilters(object):
         )
 
     @app_template_filter("get_link_next")
-    def get_link_next_filter(self, s):
+    @pass_context
+    def get_link_next_filter(self, context, s):
         return request.args.get("next")
 
     @app_template_filter("get_link_back")
-    def get_link_back_filter(self, request):
+    @pass_context
+    def get_link_back_filter(self, context, request):
         return request.args.get("next") or request.referrer
 
     # TODO improve this
@@ -116,7 +137,8 @@ class TemplateFilters(object):
         return lnkstr
 
     @app_template_filter("get_link_order")
-    def get_link_order_filter(self, column, modelview_name):
+    @pass_context
+    def get_link_order_filter(self, context, column, modelview_name):
         if request.args.get("_oc_" + modelview_name) == column:
             if request.args.get("_od_" + modelview_name) == "asc":
                 return 2
@@ -130,7 +152,8 @@ class TemplateFilters(object):
         return getattr(obj, item)
 
     @app_template_filter("is_menu_visible")
-    def is_menu_visible(self, item):
+    @pass_context
+    def is_menu_visible(self, context, item):
         return self.security_manager.has_access("menu_access", item.name)
 
     @staticmethod
@@ -140,7 +163,8 @@ class TemplateFilters(object):
                 return view
 
     @app_template_filter("is_item_visible")
-    def is_item_visible(self, permission: str, item: str) -> bool:
+    @pass_context
+    def is_item_visible(self, context, permission: str, item: str) -> bool:
         """
         Check if an item is visible on the template
         this changed with permission mapping feature.
