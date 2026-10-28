@@ -1,6 +1,6 @@
 import logging
 from app import appbuilder, db
-from app.models import ContactGroup, Gender, Contact, Company, MyUser
+from app.models import ContactGroup, Gender, Contact, Company
 import random
 from datetime import datetime
 
