@@ -705,6 +705,96 @@ class SAMLRegistrationRoleTestCase(unittest.TestCase):
 
             self.assertListEqual(user.groups, [])
 
+    def test__registered__group_sync__empty_groups(self):
+        """
+        SAML: test that group sync clears groups when the assertion has none
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            group = sm.add_group(
+                "GROUP_1", "Group 1", "", roles=[sm.find_role("Admin")]
+            )
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+                groups=[group],
+            )
+
+            # the assertion no longer carries any group
+            user = sm.auth_user_saml({**self.userinfo_alice, "role_keys": []})
+
+            # validate - the group and the role it granted are both gone
+            self.assertListEqual(user.groups, [])
+            self.assertNotIn(sm.find_role("Admin"), sm.get_user_roles(user))
+
+    def test__registered__group_sync__unknown_groups(self):
+        """
+        SAML: test that group sync clears groups when no group key resolves
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            group = sm.add_group(
+                "GROUP_1", "Group 1", "", roles=[sm.find_role("Admin")]
+            )
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+                groups=[group],
+            )
+
+            # the assertion only carries groups that do not exist in FAB
+            user = sm.auth_user_saml(
+                {**self.userinfo_alice, "role_keys": ["UNKNOWN_GROUP"]}
+            )
+
+            self.assertListEqual(user.groups, [])
+            self.assertNotIn(sm.find_role("Admin"), sm.get_user_roles(user))
+
+    def test__registered__role_sync__empty_roles(self):
+        """
+        SAML: test that role sync clears roles when the assertion has none
+        """
+        self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
+        self.app.config["AUTH_USER_REGISTRATION"] = False
+        self.app.config["AUTH_ROLES_MAPPING"] = {"GROUP_1": ["Admin"]}
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[sm.find_role("Admin")],
+            )
+
+            # the assertion no longer carries any mapped role
+            user = sm.auth_user_saml({**self.userinfo_alice, "role_keys": []})
+
+            self.assertListEqual(user.roles, [])
+
     def test__find_user_by_email(self):
         """
         SAML: test login flow for - existing user found by email when username differs
