@@ -69,6 +69,29 @@ class MVCOAuthTestCase(FABTestCase):
             self.assertEqual(current_user.email, "user1@fab.org")
             self.assertEqual(response.location, "/")
 
+    def test_oauth_login_azure_post_response(self):
+        """
+        OAuth: Test login with Microsoft Entra ID with response_mode=form_post and the
+        callback from Microsoft is via a POST request.
+        """
+        self.appbuilder.sm.oauth_remotes = {"azure": OAuthRemoteMock()}
+
+        raw_state = {}
+        state = jwt.encode(raw_state, "random_state", algorithm="HS256")
+
+        @self.appbuilder.sm.oauth_user_info_getter
+        def user_info_getter(sm, provider, response):
+            return {"email": "user1@fab.org"}
+
+        with self.app.test_client() as client:
+            with client.session_transaction() as session_:
+                session_["oauth_state"] = "random_state"
+            # With response_mode=form_post, state is sent in the POST body
+            response = client.post("/oauth-authorized/azure", data={"state": state})
+            self.assertLess(response.status_code, 400)
+            self.assertEqual(current_user.email, "user1@fab.org")
+            self.assertEqual(response.location, "/")
+
     def test_oauth_login_invalid_state(self):
         """
         OAuth: Test login invalid state
