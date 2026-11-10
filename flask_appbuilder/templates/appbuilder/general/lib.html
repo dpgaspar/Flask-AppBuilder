@@ -91,11 +91,13 @@
     $(document).ready(function() {
     {% for action_key in actions %}
         {% set action = actions.get(action_key) %}
+        {% set endpoint = modelview_name + '.action_post' %}
+        {% set path = endpoint | safe_url_for %}
         $('.{{action.name}}_menu_item').on('click', function(){
             {% if action.confirmation %}
-                return modelActions.execute_multiple('{{action.name}}','{{action.confirmation}}');
+                return modelActions.execute_multiple('{{action.name}}','{{action.confirmation}}', '{{path}}');
             {% else %}
-                return modelActions.execute_multiple('{{action.name}}', false);
+                return modelActions.execute_multiple('{{action.name}}', false, '{{path}}');
             {% endif %}
         })
     {% endfor %}
