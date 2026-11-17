@@ -745,6 +745,37 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
             # validate - no groups were attached
             self.assertListEqual(user.groups, [])
 
+    def test__registered__group_sync__empty_groups(self):
+        """
+        OAUTH: test that group sync clears groups when the payload has none
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            group = sm.add_group(
+                "GROUP_1", "Group 1", "", roles=[sm.find_role("Admin")]
+            )
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+                groups=[group],
+            )
+
+            # the payload no longer carries any group
+            user = sm.auth_user_oauth({**self.userinfo_alice, "role_keys": []})
+
+            # validate - the group and the role it granted are both gone
+            self.assertListEqual(user.groups, [])
+            self.assertNotIn(sm.find_role("Admin"), sm.get_user_roles(user))
+
     # ------------------------------
     # Backwards compatibility tests
     # ------------------------------
