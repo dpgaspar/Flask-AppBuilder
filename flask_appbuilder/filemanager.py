@@ -155,6 +155,7 @@ class ImageManager(FileManager):
         :param filename: Filename with full path
 
         """
+        filename = secure_filename(filename)
         max_size = size or self.max_size
         thumbnail_size = thumbnail_size or self.thumbnail_size
         if data and isinstance(data, FileStorage):
