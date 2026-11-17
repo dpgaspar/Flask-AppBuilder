@@ -129,3 +129,52 @@ class FileManagerTestCase(unittest.TestCase):
                 "uploads/" + filename.replace(".png", "_thumb.png"),
             ],
         )
+
+    def test_get_path(self):
+        """FileManager: get path for a file name"""
+        fm = FileManager()
+
+        self.assertEqual(
+            fm.get_path("uuid_sep_doc.txt"),
+            op.join(self.upload_folder, "uuid_sep_doc.txt"),
+        )
+        self.assertEqual(
+            fm.get_path(op.join("sub", "uuid_sep_doc.txt")),
+            op.join(self.upload_folder, "sub", "uuid_sep_doc.txt"),
+        )
+
+    def test_get_path_outside_base_path(self):
+        """FileManager: get path for a file name outside the upload folder"""
+        fm = FileManager()
+
+        for filename in (
+            "../static/logo.png",
+            "uuid_sep_../../../static/logo.png",
+            op.join(self.outside_folder, "logo.png"),
+        ):
+            with self.assertRaises(ValueError):
+                fm.get_path(filename)
+
+    def test_delete_file_outside_base_path(self):
+        """FileManager: delete a file name outside the upload folder"""
+        existing = op.join(self.outside_folder, "logo.png")
+        with open(existing, "wb") as fp:
+            fp.write(b"ORIGINAL")
+
+        fm = FileManager()
+        with self.assertRaises(ValueError):
+            fm.delete_file("uuid_sep_../../../static/logo.png")
+
+        self.assertTrue(op.exists(existing))
+
+    def test_image_manager_delete_file_outside_base_path(self):
+        """ImageManager: delete a file name outside the upload folder"""
+        existing = op.join(self.outside_folder, "logo.png")
+        with open(existing, "wb") as fp:
+            fp.write(b"ORIGINAL")
+
+        im = ImageManager()
+        with self.assertRaises(ValueError):
+            im.delete_file("uuid_sep_../../../static/logo.png")
+
+        self.assertTrue(op.exists(existing))
