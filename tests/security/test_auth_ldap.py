@@ -1001,6 +1001,44 @@ class LDAPSearchTestCase(unittest.TestCase):
             # validate - the created groups hold no roles yet
             self.assertListEqual(sm.find_group(STAFF_GROUP_DN).roles, [])
 
+    def test__direct_bind__registered__group_sync__empty_groups(self):
+        """
+        LDAP: test that group sync clears groups when the directory
+              reports none for the user
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        # the user carries no value for the configured group attribute
+        self.app.config["AUTH_LDAP_GROUP_FIELD"] = "departmentNumber"
+        self.app.config["AUTH_LDAP_USERNAME_FORMAT"] = (
+            "cn=%s,ou=users,dc=example,dc=org"
+        )
+        self.app.config["AUTH_LDAP_SEARCH"] = "ou=users,dc=example,dc=org"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            group = sm.add_group(
+                STAFF_GROUP_DN, "Staff", "", roles=[sm.find_role("Admin")]
+            )
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.org",
+                role=[],
+                groups=[group],
+            )
+
+            # attempt login
+            user = sm.auth_user_ldap("alice", "alice_password")
+
+            # validate - the group and the role it granted are both gone
+            self.assertListEqual(user.groups, [])
+            self.assertNotIn(sm.find_role("Admin"), sm.get_user_roles(user))
+
     def test__direct_bind__registered__no_group_sync(self):
         """
         LDAP: test that groups are left untouched when group sync is disabled
