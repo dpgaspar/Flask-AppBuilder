@@ -10,7 +10,7 @@ from flask_appbuilder.forms import FieldConverter, GeneralModelConverter
 from flask_appbuilder.models.sqla.filters import SQLAFilterConverter
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.utils.legacy import get_sqla_class
-from sqlalchemy import Column, Integer, JSON, String
+from sqlalchemy import JSON, Column, Integer, String
 from wtforms import TextAreaField
 from wtforms.fields.core import UnboundField
 
@@ -263,9 +263,7 @@ class JSONValidationTestCase(JSONColumnTestCase):
 
         with self.app.app_context():
             # Capture log messages
-            with self.assertLogs(
-                "flask_appbuilder.forms", level="ERROR"
-            ) as log_context:
+            with self.assertLogs("flask_appbuilder.forms", level="ERROR") as log_context:
                 interface = SQLAInterface(self.TestJSONModel, self.db.session)
                 converter = GeneralModelConverter(interface)
 
@@ -329,9 +327,7 @@ class JSONIntegrationTestCase(JSONColumnTestCase):
             )  # Allow for test isolation issues
 
             # Find our test record
-            test_record = next(
-                (r for r in all_records if r.name == "Test Record"), None
-            )
+            test_record = next((r for r in all_records if r.name == "Test Record"), None)
             self.assertIsNotNone(test_record, "Test record not found")
 
             self.assertEqual(test_record.config["theme"], "dark")

@@ -1,10 +1,12 @@
 import glob
+from io import BytesIO
 import json
 import logging
 import os
 import tempfile
 from typing import List
 from unittest.mock import ANY, patch
+from zipfile import ZipFile
 
 from click.testing import CliRunner
 from flask import Flask
@@ -21,6 +23,7 @@ from flask_appbuilder.cli import (
     # reset_password,
 )
 from flask_appbuilder.utils.legacy import get_sqla_class
+
 from tests.base import FABTestCase
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
@@ -63,7 +66,7 @@ class FlaskTestCase(FABTestCase):
                 create_app,
                 [
                     f"--name={APP_DIR}",
-                    f"--secret-key={10*'SECRET'}",
+                    f"--secret-key={10 * 'SECRET'}",
                 ],
             )
             self.assertIn("Downloaded the skeleton app, good coding!", result.output)
@@ -130,6 +133,31 @@ class FlaskTestCase(FABTestCase):
 
         for input, expected_output in scenarii.items():
             self.assertEqual(cast_int_like_to_int(input), expected_output)
+
+    def test_create_addon_from_skeleton(self):
+        from flask_appbuilder.cli import create_addon
+
+        archive = BytesIO()
+        with ZipFile(archive, "w") as zip_file:
+            zip_file.writestr(
+                "Flask-AppBuilder-Skeleton-AddOn-master/fab_addon/__init__.py",
+                "",
+            )
+
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            with patch(
+                "flask_appbuilder.cli.urlopen", return_value=BytesIO(archive.getvalue())
+            ):
+                result = runner.invoke(create_addon, ["--name=example"])
+
+            self.assertEqual(result.exit_code, 0)
+            self.assertIn("Downloaded the skeleton addon", result.output)
+            self.assertTrue(
+                os.path.isfile("fab_addon_example/fab_addon_example/__init__.py")
+            )
+            with open("fab_addon_example/config.py") as config:
+                self.assertIn("ADDON_NAME='example'", config.read())
 
 
 class SQLAlchemyImportExportTestCase(FABTestCase):
