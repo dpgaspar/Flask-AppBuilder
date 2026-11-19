@@ -1,9 +1,22 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.3.0
+-----------------------------------
+
+- feat: dynamic group/role mapping for LDAP, OAuth and SAML (#2486) [Daniel Vaz Gaspar]
+- fix: assign an unusable password to users created without one (#2485) [Daniel Vaz Gaspar]
+
+Improvements and Bug fixes on 5.2.3
+-----------------------------------
+
+- fix: distinguish authentication from authorization redirects (#2479) [Amin Ghadersohi]
+- fix: bump pinned dependencies to address vulnerabilities (#2474) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 5.2.2
 -----------------------------------
 
+- fix: preserve safe login redirects for authenticated users and return 403 on authorization failures
 - fix: anchor OAuth email whitelist regex to end of string (#2470) [Daniel Vaz Gaspar]
 - fix: switch from uuid1 to uuid4 for better randomness (#2435) [Rin]
 - fix: escape special characters in LDAP search filter username (#2469) [Daniel Vaz Gaspar]

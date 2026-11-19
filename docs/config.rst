@@ -38,7 +38,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
     - Description: Sets if user's roles are replaced each login with those received from LDAP/OAUTH. Default: False
     - Mandatory: No
 - AUTH_ROLES_MAPPING
-    - Description: A mapping from LDAP/OAUTH group names to FAB roles. See example under AUTH_LDAP_GROUP_FIELD
+    - Description: A mapping from LDAP/OAUTH/SAML group names to FAB roles. Can also be a callable returning that mapping, which is resolved on every authentication, so the mapping can change without restarting the application. See example under AUTH_LDAP_GROUP_FIELD and :ref:`dynamic-role-mapping`
+    - Mandatory: No
+- AUTH_GROUPS_SYNC_AT_LOGIN
+    - Description: Sets if user's groups are replaced each login with those received from LDAP/OAUTH/SAML. Identity provider group names are matched against the FAB group name, and the roles bound to those groups are added to the user's effective roles. Default: False
+    - Mandatory: No
+- AUTH_AUTO_CREATE_GROUPS
+    - Description: When AUTH_GROUPS_SYNC_AT_LOGIN is enabled, creates FAB groups for identity provider groups that do not exist yet. The groups are created without any role, so an administrator can bind roles to them afterwards. Default: False
     - Mandatory: No
 - AUTH_LDAP_SERVER
     - Description: Define your ldap server when AUTH_TYPE=2. For example, AUTH_TYPE = 2, AUTH_LDAP_SERVER = "ldap://ldapserver.new". For using LDAP over TLS, set the protocol scheme to "ldaps" and set "AUTH_LDAP_USE_TLS = False"

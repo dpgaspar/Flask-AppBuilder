@@ -57,7 +57,11 @@ class FileManager(object):
     def get_path(self, filename):
         if not self.base_path:
             raise ValueError("FileUploadField field requires base_path to be set.")
-        return op.join(self.base_path, filename)
+        path = op.join(self.base_path, filename)
+        base_path = op.abspath(self.base_path)
+        if op.commonpath([op.abspath(path), base_path]) != base_path:
+            raise ValueError("File name is not allowed: %s" % filename)
+        return path
 
     def delete_file(self, filename):
         path = self.get_path(filename)
@@ -155,6 +159,7 @@ class ImageManager(FileManager):
         :param filename: Filename with full path
 
         """
+        filename = secure_filename(filename)
         max_size = size or self.max_size
         thumbnail_size = thumbnail_size or self.thumbnail_size
         if data and isinstance(data, FileStorage):
