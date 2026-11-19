@@ -33,7 +33,7 @@ class AJAXSelectField(Field):
         datamodel=None,
         col_name=None,
         is_related=True,
-        **kwargs
+        **kwargs,
     ):
         super(AJAXSelectField, self).__init__(label, validators, **kwargs)
         self.datamodel = datamodel
@@ -95,7 +95,7 @@ class QuerySelectField(SelectFieldBase):
         get_label=None,
         allow_blank=False,
         blank_text="",
-        **kwargs
+        **kwargs,
     ):
         super(QuerySelectField, self).__init__(label, validators, **kwargs)
         self.query_func = query_func
@@ -281,7 +281,7 @@ class EnumField(SelectField):
             default=default,
             coerce=coerce,
             choices=choices,
-            **kwargs
+            **kwargs,
         )
 
     def pre_validate(self, form):
