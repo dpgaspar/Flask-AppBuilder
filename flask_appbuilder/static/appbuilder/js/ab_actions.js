@@ -6,7 +6,7 @@
 //------------------------------------------------------
 // AdminActions holds methods to handle UI for actions
 //------------------------------------------------------
-var AdminActions = function() {
+var AdminActions = function(form_id) {
 
     var chkAllFlag = true;
     var multiple = false;
@@ -37,7 +37,7 @@ var AdminActions = function() {
     };
 
     function single_form_submit() {
-        form = $('#action_form');
+        form = $('#' + form_id);
         $(form).attr('action', action_url);
         form.trigger("submit");
         return false;
@@ -66,7 +66,7 @@ var AdminActions = function() {
 
     function form_submit() {
         // Update hidden form and submit it
-        var form = $('#action_form');
+        var form = $('#' + form_id);
         $('#action', form).val(action_name);
 
         $('input.action_check', form).remove();
@@ -110,13 +110,8 @@ var AdminActions = function() {
         }
         // POST for delete endpoint necessary to send CSRF token from list view
         if (single_delete) {
-            var form = undefined;
-            if ( $('#action_form').length ) {
-                form = $('#action_form');
-            }
-            else {
-                form = $('#delete_form');
-            }            $(form).attr('action', action_url);
+            form = $('#' + form_id);
+            $(form).attr('action', action_url);
             form.trigger('submit');
             return false;
         }
