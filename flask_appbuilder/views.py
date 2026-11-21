@@ -221,7 +221,7 @@ class ModelView(BaseCRUDView):
             pk=pk,
             title=self.show_title,
             widgets=widgets,
-            related_views=self._related_views,
+            related_views=self.allowed_related_views,
         )
 
     """
@@ -259,7 +259,7 @@ class ModelView(BaseCRUDView):
                 self.edit_template,
                 title=self.edit_title,
                 widgets=widgets,
-                related_views=self._related_views,
+                related_views=self.allowed_related_views,
             )
 
     """
@@ -381,7 +381,7 @@ class MasterDetailView(BaseCRUDView):
             widgets = self._get_related_views_widgets(
                 item, orders=orders, pages=pages, page_sizes=page_sizes, widgets=widgets
             )
-            related_views = self._related_views
+            related_views = self.allowed_related_views
         else:
             related_views = []
 
