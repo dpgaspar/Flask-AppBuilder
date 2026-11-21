@@ -23,6 +23,9 @@ READERS_GROUP_DN = "cn=readers,ou=groups,dc=example,dc=org"
 
 
 class LDAPSearchTestCase(unittest.TestCase):
+
+    ldap = True
+
     def setUp(self):
         # start MockLdap
         # start Flask
