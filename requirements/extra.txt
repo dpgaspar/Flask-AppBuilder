@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements/extra.in
 #
-authlib==1.6.12
+authlib==1.9.1
     # via -r requirements/extra.in
 certifi==2024.2.2
     # via requests
@@ -20,6 +20,8 @@ idna==3.6
     # via requests
 jmespath==1.0.1
     # via -r requirements/extra.in
+joserfc==1.8.0
+    # via authlib
 mysqlclient==2.0.1
     # via -r requirements/extra.in
 pillow==12.2.0
