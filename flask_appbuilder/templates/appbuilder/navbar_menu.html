@@ -1,5 +1,5 @@
 {% macro menu_item(item) %}
-    <a tabindex="-1" href="{{item.get_url()}}">
+    <a tabindex="-1" href="{{item.get_url()}}" target="{{item.get_target()}}">
        {% if item.icon %}
         <i class="fa fa-fw {{item.icon}}"></i>&nbsp;
     {% endif %}

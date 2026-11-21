@@ -113,6 +113,8 @@ By default menu is constructed based on your classes and in a reversed navbar. L
                             category="Others", category_label=lazy_gettext('Other'), category_label='fa-envelope')
             # Add a link
             appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
+            # Add a link that opens in a new tab
+            appbuilder.add_link("Flask documentation", href="https://flask-appbuilder.readthedocs.io", icon="fa-book", target="_blank")
 		
 	- Add separators::
 
