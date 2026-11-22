@@ -57,7 +57,7 @@ setup(
         "jsonschema>=3, <5",
         "marshmallow>=3.18.0, <5",
         "marshmallow-sqlalchemy>=0.22.0, <3.0.0",
-        "python-dateutil>=2.3, <3",
+        "python-dateutil>=2.3, <5",
         "prison>=0.2.1, <1.0.0",
         "PyJWT>=2.0.0, <3.0.0",
         "SQLAlchemy>=1.4.0, <3",
