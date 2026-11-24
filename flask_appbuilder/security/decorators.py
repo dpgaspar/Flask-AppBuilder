@@ -3,6 +3,7 @@ import logging
 from typing import Callable, List, Optional, TypeVar, Union
 
 from flask import (
+    abort,
     current_app,
     flash,
     jsonify,
@@ -172,6 +173,8 @@ def has_access(f):
             log.warning(
                 LOGMSG_ERR_SEC_ACCESS_DENIED, permission_str, self.__class__.__name__
             )
+            if current_user.is_authenticated and current_user.is_active:
+                abort(403)
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
         return redirect(
             url_for(

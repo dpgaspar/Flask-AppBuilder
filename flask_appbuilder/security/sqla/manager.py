@@ -429,16 +429,21 @@ class SecurityManager(BaseSecurityManager):
             user.active = True
             user.roles = roles
             user.groups = groups or []
-            if hashed_password:
-                user.password = hashed_password
-            else:
-                user.password = generate_password_hash(
+            if not hashed_password:
+                # When no password is supplied (e.g. users provisioned through
+                # a non-database auth backend), fall back to a random secret so
+                # the stored hash is never derived from a predictable value and
+                # the account cannot be authenticated via the database path.
+                if not password:
+                    password = secrets.token_urlsafe(32)
+                hashed_password = generate_password_hash(
                     password=password,
                     method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
                     salt_length=current_app.config.get(
                         "FAB_PASSWORD_HASH_SALT_LENGTH", 16
                     ),
                 )
+            user.password = hashed_password
             self.session.add(user)
 
             # Flush to get the user ID before emitting pre-commit signal
