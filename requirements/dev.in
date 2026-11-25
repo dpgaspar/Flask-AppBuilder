@@ -1,0 +1,11 @@
+-r tests.in
+
+black
+coverage
+flake8-import-order
+flake8
+mypy
+mypy-extensions
+pip-tools
+tox
+types-PyYAML

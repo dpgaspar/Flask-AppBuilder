@@ -517,6 +517,28 @@ methods::
     class ExampleApi(BaseApi):
         base_permissions = ['can_private']
 
+API Key Authentication
+~~~~~~~~~~~~~~~~~~~~~~
+
+In addition to JWT tokens, FAB supports API key authentication. API keys are long-lived
+Bearer tokens useful for service-to-service communication or automation scripts.
+
+To enable API key authentication, set ``FAB_API_KEY_ENABLED = True`` in your config.
+
+Once enabled, you can use an API key in the same way as a JWT token::
+
+    $ curl http://localhost:8080/api/v1/example/private \
+      -H "Authorization: Bearer sst_<YOUR_API_KEY>"
+
+API keys are distinguished from JWT tokens by their prefix (default: ``sst_``). When the
+``protect()`` decorator receives a request with an API key:
+
+- If the key is **invalid**, the endpoint returns HTTP **401 Unauthorized**.
+- If the key is valid but the user **lacks permission**, the endpoint returns HTTP **403 Forbidden**.
+- If the key is valid and the user **has permission**, the request proceeds normally.
+
+The OpenAPI spec for protected endpoints lists both ``jwt`` and ``api_key`` as valid security
+schemes, so clients can choose either authentication method.
 
 You can create an alternate JWT user loader, this can be useful if you want
 to use an external Authentication provider and map the JWT identity to your

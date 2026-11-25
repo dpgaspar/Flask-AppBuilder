@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - '*'
+  - package-ecosystem: pip
+    directory: /requirements/
+    schedule:
+      interval: weekly
+    groups:
+      python-requirements:
+        patterns:
+          - '*'
+  - package-ecosystem: npm
+    directory: /requirements-fe/
+    schedule:
+      interval: weekly

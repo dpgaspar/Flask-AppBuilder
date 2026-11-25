@@ -1,6 +1,6 @@
 
 {% macro locale_menu(languages) %}
-{% set locale = session['locale'] %}
+{% set locale = session.get('locale') %}
 {% if not locale %}
     {% set locale = 'en' %}
 {% endif %}

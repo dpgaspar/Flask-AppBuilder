@@ -238,5 +238,5 @@ class MenuApi(BaseApi):
 
 class MenuApiManager(BaseManager):
     def register_views(self):
-        if self.appbuilder.app.config.get("FAB_ADD_MENU_API", True):
+        if current_app.config.get("FAB_ADD_MENU_API", True):
             self.appbuilder.add_api(MenuApi)

@@ -4,17 +4,10 @@ import os.path as op
 import re
 import uuid
 
-from flask.globals import _request_ctx_stack
+from flask import current_app
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from wtforms import ValidationError
-
-try:
-    from flask import _app_ctx_stack
-except ImportError:
-    _app_ctx_stack = None
-
-app_stack = _app_ctx_stack or _request_ctx_stack
 
 log = logging.getLogger(__name__)
 
@@ -35,18 +28,16 @@ class FileManager(object):
         permission=0o755,
         **kwargs
     ):
-        ctx = app_stack.top
-
-        if "UPLOAD_FOLDER" in ctx.app.config and not base_path:
-            base_path = ctx.app.config["UPLOAD_FOLDER"]
+        if "UPLOAD_FOLDER" in current_app.config and not base_path:
+            base_path = current_app.config["UPLOAD_FOLDER"]
         if not base_path:
             raise Exception("Config key UPLOAD_FOLDER is mandatory")
 
         self.base_path = base_path
         self.relative_path = relative_path
         self.namegen = namegen or uuid_namegen
-        if not allowed_extensions and "FILE_ALLOWED_EXTENSIONS" in ctx.app.config:
-            self.allowed_extensions = ctx.app.config["FILE_ALLOWED_EXTENSIONS"]
+        if not allowed_extensions and "FILE_ALLOWED_EXTENSIONS" in current_app.config:
+            self.allowed_extensions = current_app.config["FILE_ALLOWED_EXTENSIONS"]
         else:
             self.allowed_extensions = allowed_extensions
         self.permission = permission
@@ -66,7 +57,11 @@ class FileManager(object):
     def get_path(self, filename):
         if not self.base_path:
             raise ValueError("FileUploadField field requires base_path to be set.")
-        return op.join(self.base_path, filename)
+        path = op.join(self.base_path, filename)
+        base_path = op.abspath(self.base_path)
+        if op.commonpath([op.abspath(path), base_path]) != base_path:
+            raise ValueError("File name is not allowed: %s" % filename)
+        return path
 
     def delete_file(self, filename):
         path = self.get_path(filename)
@@ -106,17 +101,16 @@ class ImageManager(FileManager):
         if Image is None:
             raise Exception("PIL library was not found")
 
-        ctx = app_stack.top
-        if "IMG_SIZE" in ctx.app.config and not max_size:
-            self.max_size = ctx.app.config["IMG_SIZE"]
+        if "IMG_SIZE" in current_app.config and not max_size:
+            self.max_size = current_app.config["IMG_SIZE"]
 
-        if "IMG_UPLOAD_URL" in ctx.app.config and not relative_path:
-            relative_path = ctx.app.config["IMG_UPLOAD_URL"]
+        if "IMG_UPLOAD_URL" in current_app.config and not relative_path:
+            relative_path = current_app.config["IMG_UPLOAD_URL"]
         if not relative_path:
             raise Exception("Config key IMG_UPLOAD_URL is mandatory")
 
-        if "IMG_UPLOAD_FOLDER" in ctx.app.config and not base_path:
-            base_path = ctx.app.config["IMG_UPLOAD_FOLDER"]
+        if "IMG_UPLOAD_FOLDER" in current_app.config and not base_path:
+            base_path = current_app.config["IMG_UPLOAD_FOLDER"]
         if not base_path:
             raise Exception("Config key IMG_UPLOAD_FOLDER is mandatory")
 
@@ -165,6 +159,7 @@ class ImageManager(FileManager):
         :param filename: Filename with full path
 
         """
+        filename = secure_filename(filename)
         max_size = size or self.max_size
         thumbnail_size = thumbnail_size or self.thumbnail_size
         if data and isinstance(data, FileStorage):
@@ -204,17 +199,17 @@ class ImageManager(FileManager):
         """
         Resizes the image
 
-        :param image: The image object
-        :param size: size is PIL tuple (width, heigth, force) ex: (200,100,True)
+            :param image: The image object
+            :param size: size is PIL tuple (width, height, force) ex: (200,100,True)
         """
-        (width, height, force) = size
+        width, height, force = size
 
         if image.size[0] > width or image.size[1] > height:
             if force:
-                return ImageOps.fit(self.image, (width, height), Image.ANTIALIAS)
+                return ImageOps.fit(self.image, (width, height), Image.LANCZOS)
             else:
                 thumb = self.image.copy()
-                thumb.thumbnail((width, height), Image.ANTIALIAS)
+                thumb.thumbnail((width, height), Image.LANCZOS)
                 return thumb
 
         return image
@@ -234,7 +229,7 @@ class ImageManager(FileManager):
 
 
 def uuid_namegen(file_data):
-    return str(uuid.uuid1()) + "_sep_" + file_data.filename
+    return str(uuid.uuid4()) + "_sep_" + file_data.filename
 
 
 def get_file_original_name(name):

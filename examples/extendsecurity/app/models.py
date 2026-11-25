@@ -24,6 +24,11 @@ class MyUser(User):
     company_id = Column(Integer, ForeignKey("company.id"), nullable=True)
     company = relationship("Company")
 
+    __mapper_args__ = {
+        "polymorphic_identity": "ab_user",
+        'with_polymorphic': '*'
+    }
+
 
 class ContactGroup(Model):
     id = Column(Integer, primary_key=True)

@@ -1,5 +1,6 @@
 import datetime
 
+from flask_sqlalchemy.model import NameMixin
 from flask_appbuilder import Model
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
@@ -7,7 +8,8 @@ from sqlalchemy.orm import relationship
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
-class Item(Model):
+class Item(NameMixin, Model):
+    __tablename__ = "item"
     id = Column(Integer, primary_key=True)
     serial_number = Column(String, unique=True)
     model = Column(String(150), nullable=False)
@@ -16,7 +18,8 @@ class Item(Model):
         return "%s (%s)" % (self.model, self.serial_number)
 
 
-class Datacenter(Model):
+class Datacenter(NameMixin, Model):
+    __tablename__ = "datacenter"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))
@@ -25,7 +28,8 @@ class Datacenter(Model):
         return self.name
 
 
-class Rack(Model):
+class Rack(NameMixin, Model):
+    __tablename__ = "rack"
     num = Column(Integer, primary_key=True)
     datacenter_id = Column(
         Integer, ForeignKey("datacenter.id"), primary_key=True, nullable=False
@@ -36,7 +40,8 @@ class Rack(Model):
         return "%d-%s" % (self.num, self.datacenter)
 
 
-class Inventory(Model):
+class Inventory(NameMixin, Model):
+    __tablename__ = "inventory"
     item_id = Column(Integer, ForeignKey("item.id"), primary_key=True, nullable=False)
     item = relationship("Item")
     rack_num = Column(Integer, ForeignKey("rack.num"), primary_key=True, nullable=False)

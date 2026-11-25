@@ -2,13 +2,17 @@ import os
 import unittest
 from unittest.mock import MagicMock
 
+from authlib.jose.errors import BadSignatureError
 from flask import Flask
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.const import AUTH_OAUTH
+from flask_appbuilder.exceptions import InvalidLoginAttempt
 from flask_appbuilder.exceptions import OAuthProviderUnknown
+from flask_appbuilder.utils.legacy import get_sqla_class
 import jinja2
 import jwt
-from tests.const import USERNAME_ADMIN, USERNAME_READONLY
+from tests.const import USERNAME_ADMIN
+from tests.const import USERNAME_READONLY
 from tests.fixtures.users import create_default_users
 
 
@@ -61,25 +65,24 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
             },
         ]
 
-        # start Database
-        self.db = SQLA(self.app)
-
     def tearDown(self):
         # Remove test user
-        user_alice = self.appbuilder.sm.find_user("alice")
-        if user_alice:
-            self.db.session.delete(user_alice)
-            self.db.session.commit()
+        with self.app.app_context():
+            user_alice = self.appbuilder.sm.find_user("alice")
+            if user_alice:
+                self.appbuilder.session.delete(user_alice)
+                self.appbuilder.session.commit()
+
+            # Remove test groups
+            for group_name in ("GROUP_1", "GROUP_2"):
+                group = self.appbuilder.sm.find_group(group_name)
+                if group:
+                    self.appbuilder.sm.delete_group(group)
 
         # stop Flask
         self.app = None
-
         # stop Flask-AppBuilder
         self.appbuilder = None
-
-        # stop Database
-        self.db.session.remove()
-        self.db = None
 
     def assertOnlyDefaultUsers(self):
         users = self.appbuilder.sm.get_all_users()
@@ -104,56 +107,66 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         """
         OAUTH: test login flow for - inactive user
         """
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            users = self.appbuilder.session.query(sm.user_model).all()
+            for user in users:
+                self.appbuilder.session.delete(user)
+            self.appbuilder.session.commit()
+            create_default_users(self.appbuilder.session)
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.com",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # set user inactive
-        new_user.active = False
+            # set user inactive
+            new_user.active = False
 
-        # attempt login
-        user = sm.auth_user_oauth(self.userinfo_alice)
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
 
-        # validate - user was not allowed to log in
-        self.assertIsNone(user)
+            # validate - user was not allowed to log in
+            self.assertIsNone(user)
 
     def test__missing_username(self):
         """
         OAUTH: test login flow for - missing credentials
         """
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # create userinfo with missing info
-        userinfo_missing = self.userinfo_alice.copy()
-        userinfo_missing["username"] = ""
+            # create userinfo with missing info
+            userinfo_missing = self.userinfo_alice.copy()
+            userinfo_missing["username"] = ""
 
-        # attempt login
-        user = sm.auth_user_oauth(userinfo_missing)
+            # attempt login
+            user = sm.auth_user_oauth(userinfo_missing)
 
-        # validate - login failure (missing username)
-        self.assertIsNone(user)
+            # validate - login failure (missing username)
+            self.assertIsNone(user)
 
-        # validate - no users were created
-        self.assertOnlyDefaultUsers()
+            # validate - no users were created
+            self.assertOnlyDefaultUsers()
 
     def test__unregistered(self):
         """
@@ -161,50 +174,56 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         """
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_oauth(self.userinfo_alice)
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # validate - user was given the AUTH_USER_REGISTRATION_ROLE role
-        self.assertEqual(user.roles, [sm.find_role("Public")])
+            # validate - user was given the AUTH_USER_REGISTRATION_ROLE role
+            self.assertEqual(user.roles, [sm.find_role("Public")])
 
-        # validate - user was given the correct attributes
-        self.assertEqual(user.first_name, "Alice")
-        self.assertEqual(user.last_name, "Doe")
-        self.assertEqual(user.email, "alice@example.com")
+            # validate - user was given the correct attributes
+            self.assertEqual(user.first_name, "Alice")
+            self.assertEqual(user.last_name, "Doe")
+            self.assertEqual(user.email, "alice@example.com")
 
     def test__unregistered__no_self_register(self):
         """
         OAUTH: test login flow for - unregistered user - no self-registration
         """
         self.app.config["AUTH_USER_REGISTRATION"] = False
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_oauth(self.userinfo_alice)
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
 
-        # validate - user was not allowed to log in
-        self.assertIsNone(user)
+            # validate - user was not allowed to log in
+            self.assertIsNone(user)
 
-        # validate - no users were registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users were registered
+            self.assertOnlyDefaultUsers()
 
     def test__unregistered__single_role(self):
         """
@@ -217,34 +236,37 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         }
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_oauth(self.userinfo_alice)
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # validate - user was given the correct roles
-        self.assertIn(sm.find_role("Admin"), user.roles)
-        self.assertIn(sm.find_role("User"), user.roles)
-        self.assertIn(sm.find_role("Public"), user.roles)
+            # validate - user was given the correct roles
+            self.assertIn(sm.find_role("Admin"), user.roles)
+            self.assertIn(sm.find_role("User"), user.roles)
+            self.assertIn(sm.find_role("Public"), user.roles)
 
-        # validate - user was given the correct attributes (read from LDAP)
-        self.assertEqual(user.first_name, "Alice")
-        self.assertEqual(user.last_name, "Doe")
-        self.assertEqual(user.email, "alice@example.com")
+            # validate - user was given the correct attributes (read from LDAP)
+            self.assertEqual(user.first_name, "Alice")
+            self.assertEqual(user.last_name, "Doe")
+            self.assertEqual(user.email, "alice@example.com")
 
     def test__unregistered__multi_role(self):
         """
@@ -253,69 +275,75 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         self.app.config["AUTH_ROLES_MAPPING"] = {"GROUP_1": ["Admin", "User"]}
         self.app.config["AUTH_USER_REGISTRATION"] = True
         self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_oauth(self.userinfo_alice)
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # validate - user was given the correct roles
-        self.assertIn(sm.find_role("Admin"), user.roles)
-        self.assertIn(sm.find_role("Public"), user.roles)
-        self.assertIn(sm.find_role("User"), user.roles)
+            # validate - user was given the correct roles
+            self.assertIn(sm.find_role("Admin"), user.roles)
+            self.assertIn(sm.find_role("Public"), user.roles)
+            self.assertIn(sm.find_role("User"), user.roles)
 
-        # validate - user was given the correct attributes (read from LDAP)
-        self.assertEqual(user.first_name, "Alice")
-        self.assertEqual(user.last_name, "Doe")
-        self.assertEqual(user.email, "alice@example.com")
+            # validate - user was given the correct attributes (read from LDAP)
+            self.assertEqual(user.first_name, "Alice")
+            self.assertEqual(user.last_name, "Doe")
+            self.assertEqual(user.email, "alice@example.com")
 
     def test__unregistered__jmespath_role(self):
         """
         OAUTH: test login flow for - unregistered user - jmespath registration role
         """
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
+        )
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # attempt login
-        user = sm.auth_user_oauth(self.userinfo_alice)
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # validate - user was given the correct roles
-        self.assertListEqual(user.roles, [sm.find_role("User")])
+            # validate - user was given the correct roles
+            self.assertListEqual(user.roles, [sm.find_role("User")])
 
-        # validate - user was given the correct attributes (read from LDAP)
-        self.assertEqual(user.first_name, "Alice")
-        self.assertEqual(user.last_name, "Doe")
-        self.assertEqual(user.email, "alice@example.com")
+            # validate - user was given the correct attributes (read from LDAP)
+            self.assertEqual(user.first_name, "Alice")
+            self.assertEqual(user.last_name, "Doe")
+            self.assertEqual(user.email, "alice@example.com")
 
     def test__registered__multi_role__no_role_sync(self):
         """
@@ -323,36 +351,39 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         """  # noqa
         self.app.config["AUTH_ROLES_MAPPING"] = {"GROUP_1": ["Admin", "User"]}
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = False
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.com",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # attempt login
-        user = sm.auth_user_oauth(self.userinfo_alice)
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was given no roles
-        self.assertListEqual(user.roles, [])
+            # validate - user was given no roles
+            self.assertListEqual(user.roles, [])
 
     def test__registered__multi_role__with_role_sync(self):
         """
@@ -360,38 +391,41 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         """  # noqa
         self.app.config["AUTH_ROLES_MAPPING"] = {"GROUP_1": ["Admin", "User"]}
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # add User role
-        sm.add_role("User")
+            # add User role
+            sm.add_role("User")
 
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.com",
-            role=[],
-        )
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
 
-        # attempt login
-        user = sm.auth_user_oauth(self.userinfo_alice)
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
 
-        # validate - user was given the correct roles
-        self.assertSetEqual(
-            set(user.roles), {sm.find_role("Admin"), sm.find_role("User")}
-        )
+            # validate - user was given the correct roles
+            self.assertSetEqual(
+                set(user.roles), {sm.find_role("Admin"), sm.find_role("User")}
+            )
 
     def test__registered__jmespath_role__no_role_sync(self):
         """
@@ -399,39 +433,42 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         """  # noqa
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = False
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
-
-        # add User role
-        sm.add_role("User")
-
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
-
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.com",
-            role=[],
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
         )
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # add User role
+            sm.add_role("User")
 
-        # attempt login
-        user = sm.auth_user_oauth(self.userinfo_alice)
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
 
-        # validate - user was given no roles
-        self.assertListEqual(user.roles, [])
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
+
+            # validate - user was given no roles
+            self.assertListEqual(user.roles, [])
 
     def test__registered__jmespath_role__with_role_sync(self):
         """
@@ -439,128 +476,509 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
         """  # noqa
         self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
         self.app.config["AUTH_USER_REGISTRATION"] = True
-        self.app.config[
-            "AUTH_USER_REGISTRATION_ROLE_JMESPATH"
-        ] = "contains(['alice'], username) && 'User' || 'Public'"
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        sm = self.appbuilder.sm
-        create_default_users(self.appbuilder.session)
-
-        # add User role
-        sm.add_role("User")
-
-        # validate - no users are registered
-        self.assertOnlyDefaultUsers()
-
-        # register a user
-        new_user = sm.add_user(  # noqa
-            username="alice",
-            first_name="Alice",
-            last_name="Doe",
-            email="alice@example.com",
-            role=[],
+        self.app.config["AUTH_USER_REGISTRATION_ROLE_JMESPATH"] = (
+            "contains(['alice'], username) && 'User' || 'Public'"
         )
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
 
-        # validate - user was registered
-        self.assertEqual(len(sm.get_all_users()), 3)
+            # add User role
+            sm.add_role("User")
 
-        # attempt login
-        user = sm.auth_user_oauth(self.userinfo_alice)
+            # validate - no users are registered
+            self.assertOnlyDefaultUsers()
 
-        # validate - user was allowed to log in
-        self.assertIsInstance(user, sm.user_model)
+            # register a user
+            new_user = sm.add_user(  # noqa
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
 
-        # validate - user was given the correct roles
-        self.assertListEqual(user.roles, [sm.find_role("User")])
+            # validate - user was registered
+            self.assertEqual(len(sm.get_all_users()), 3)
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
+
+            # validate - user was given the correct roles
+            self.assertListEqual(user.roles, [sm.find_role("User")])
+
+    # ---------------------------------
+    # Callable AUTH_ROLES_MAPPING tests
+    # ---------------------------------
+    def test__unregistered__callable_roles_mapping(self):
+        """
+        OAUTH: test login flow for - unregistered user - callable role mapping
+        """
+        self.app.config["AUTH_ROLES_MAPPING"] = lambda: {"GROUP_1": ["Admin", "User"]}
+        self.app.config["AUTH_USER_REGISTRATION"] = True
+        self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            # add User role
+            sm.add_role("User")
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
+
+            # validate - the callable was resolved to build the roles
+            self.assertSetEqual(
+                set(user.roles),
+                {sm.find_role("Admin"), sm.find_role("User"), sm.find_role("Public")},
+            )
+
+    def test__registered__callable_roles_mapping__with_role_sync(self):
+        """
+        OAUTH: test that a callable role mapping is resolved on every login,
+               so the mapping can change without an application restart
+        """
+        mapping = {"GROUP_1": ["Admin"]}
+        self.app.config["AUTH_ROLES_MAPPING"] = lambda: mapping
+        self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            # add User role
+            sm.add_role("User")
+
+            # register a user with no roles
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+            self.assertListEqual(user.roles, [sm.find_role("Admin")])
+
+            # change the mapping, without re-creating the application
+            mapping["GROUP_1"] = ["User"]
+
+            # attempt login again
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - the new mapping took effect
+            self.assertListEqual(user.roles, [sm.find_role("User")])
+
+    def test__registered__callable_roles_mapping__invalid_return(self):
+        """
+        OAUTH: test login flow for - registered user
+                                   - callable role mapping returning a non dict
+        """
+        self.app.config["AUTH_ROLES_MAPPING"] = lambda: ["GROUP_1"]
+        self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[sm.find_role("Admin")],
+            )
+
+            # attempt login
+            with self.assertLogs(
+                "flask_appbuilder.security.manager", level="ERROR"
+            ) as log_mock:
+                user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - login succeeded but no roles were mapped
+            self.assertIsInstance(user, sm.user_model)
+            self.assertListEqual(user.roles, [])
+            self.assertIn(
+                "AUTH_ROLES_MAPPING callable must return a dict", log_mock.output[0]
+            )
+
+    # -------------------
+    # Group mapping tests
+    # -------------------
+    def test__unregistered__group_sync(self):
+        """
+        OAUTH: test login flow for - unregistered user - group sync
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        self.app.config["AUTH_USER_REGISTRATION"] = True
+        self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            # a group bound to the Admin role, as an administrator would create
+            sm.add_group("GROUP_1", "Group 1", "", roles=[sm.find_role("Admin")])
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - user was allowed to log in
+            self.assertIsInstance(user, sm.user_model)
+
+            # validate - only the known group was attached
+            self.assertListEqual([g.name for g in user.groups], ["GROUP_1"])
+
+            # validate - the group roles are part of the user's effective roles
+            self.assertIn(sm.find_role("Admin"), sm.get_user_roles(user))
+
+    def test__unregistered__group_sync__auto_create_groups(self):
+        """
+        OAUTH: test login flow for - unregistered user
+                                   - group sync with AUTH_AUTO_CREATE_GROUPS
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        self.app.config["AUTH_AUTO_CREATE_GROUPS"] = True
+        self.app.config["AUTH_USER_REGISTRATION"] = True
+        self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - both unknown groups were created and attached
+            self.assertListEqual(
+                sorted(g.name for g in user.groups), ["GROUP_1", "GROUP_2"]
+            )
+
+            # validate - the created groups hold no roles yet
+            self.assertListEqual(sm.find_group("GROUP_1").roles, [])
+
+    def test__registered__group_sync__role_change_without_restart(self):
+        """
+        OAUTH: test that changing a group's roles takes effect on the next
+               login, without an application restart
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_role("User")
+            group = sm.add_group("GROUP_1", "Group 1", "", roles=[sm.find_role("User")])
+
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+            self.assertListEqual(sm.get_user_roles(user), [sm.find_role("User")])
+
+            # an administrator binds the Admin role to the group at runtime
+            group.roles = [sm.find_role("Admin")]
+            self.appbuilder.session.commit()
+
+            # attempt login again
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - the new group roles took effect
+            self.assertListEqual(sm.get_user_roles(user), [sm.find_role("Admin")])
+
+    def test__registered__no_group_sync(self):
+        """
+        OAUTH: test that groups are left untouched when group sync is disabled
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = False
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_group("GROUP_1", "Group 1", "", roles=[sm.find_role("Admin")])
+
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - no groups were attached
+            self.assertListEqual(user.groups, [])
+
+    def test__registered__group_sync__empty_groups(self):
+        """
+        OAUTH: test that group sync clears groups when the payload has none
+        """
+        self.app.config["AUTH_GROUPS_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            group = sm.add_group(
+                "GROUP_1", "Group 1", "", roles=[sm.find_role("Admin")]
+            )
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+                groups=[group],
+            )
+
+            # the payload no longer carries any group
+            user = sm.auth_user_oauth({**self.userinfo_alice, "role_keys": []})
+
+            # validate - the group and the role it granted are both gone
+            self.assertListEqual(user.groups, [])
+            self.assertNotIn(sm.find_role("Admin"), sm.get_user_roles(user))
+
+    # ------------------------------
+    # Backwards compatibility tests
+    # ------------------------------
+    def test__registered__overridden_roles_mapping_property(self):
+        """
+        OAUTH: test that a security manager overriding the
+               `auth_roles_mapping` property is still honoured
+        """
+        from flask_appbuilder.security.sqla.manager import SecurityManager
+
+        class MySecurityManager(SecurityManager):
+            @property
+            def auth_roles_mapping(self):
+                # mapping computed by the security manager, AUTH_ROLES_MAPPING
+                # is left empty on purpose
+                return {"GROUP_1": ["Admin"]}
+
+        self.app.config["AUTH_ROLES_SYNC_AT_LOGIN"] = True
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(
+                self.app, db.session, security_manager_class=MySecurityManager
+            )
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            sm.add_user(
+                username="alice",
+                first_name="Alice",
+                last_name="Doe",
+                email="alice@example.com",
+                role=[],
+            )
+
+            # attempt login
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - the overridden mapping was used
+            self.assertListEqual(user.roles, [sm.find_role("Admin")])
+
+    def test__unregistered__add_user_without_groups_argument(self):
+        """
+        OAUTH: test that a security manager overriding `add_user` without a
+               `groups` argument still works when group sync is disabled
+        """
+        from flask_appbuilder.security.sqla.manager import SecurityManager
+
+        class MySecurityManager(SecurityManager):
+            def add_user(self, username, first_name, last_name, email, role):
+                return super().add_user(
+                    username=username,
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    role=role,
+                )
+
+        self.app.config["AUTH_USER_REGISTRATION"] = True
+        self.app.config["AUTH_USER_REGISTRATION_ROLE"] = "Public"
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(
+                self.app, db.session, security_manager_class=MySecurityManager
+            )
+            sm = self.appbuilder.sm
+            create_default_users(self.appbuilder.session)
+
+            # attempt login - must not fail with an unexpected keyword argument
+            user = sm.auth_user_oauth(self.userinfo_alice)
+
+            # validate - user was registered
+            self.assertIsInstance(user, sm.user_model)
+            self.assertListEqual(user.roles, [sm.find_role("Public")])
 
     def test_oauth_user_info_getter(self):
-        self.appbuilder = AppBuilder(self.app, self.db.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
 
-        @self.appbuilder.sm.oauth_user_info_getter
-        def user_info_getter(sm, provider, response):
-            return {"username": "test"}
+            @self.appbuilder.sm.oauth_user_info_getter
+            def user_info_getter(sm, provider, response):
+                return {"username": "test"}
 
-        self.assertEqual(self.appbuilder.sm.oauth_user_info, user_info_getter)
-        self.assertEqual(
-            self.appbuilder.sm.oauth_user_info("azure", {"claim": 1}),
-            {"username": "test"},
-        )
+            self.assertEqual(self.appbuilder.sm.oauth_user_info, user_info_getter)
+            self.assertEqual(
+                self.appbuilder.sm.oauth_user_info("azure", {"claim": 1}),
+                {"username": "test"},
+            )
 
     def test_oauth_user_info_unknown_provider(self):
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        with self.assertRaises(OAuthProviderUnknown):
-            self.appbuilder.sm.oauth_user_info("unknown", {})
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            with self.assertRaises(OAuthProviderUnknown):
+                self.appbuilder.sm.oauth_user_info("unknown", {})
 
     def test_oauth_user_info_azure_email_upn(self):
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        claims = {
-            "aud": "test-aud",
-            "iss": "https://sts.windows.net/test/",
-            "iat": 7282182129,
-            "nbf": 7282182129,
-            "exp": 1000000000,
-            "amr": ["pwd"],
-            "email": "test@gmail.com",
-            "upn": "test@upn.com",
-            "family_name": "user",
-            "given_name": "test",
-            "idp": "live.com",
-            "name": "Test user",
-            "oid": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
-            "unique_name": "live.com#test@gmail.com",
-            "ver": "1.0",
-        }
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            claims = {
+                "aud": "test-aud",
+                "iss": "https://sts.windows.net/test/",
+                "iat": 7282182129,
+                "nbf": 7282182129,
+                "exp": 1000000000,
+                "amr": ["pwd"],
+                "email": "test@gmail.com",
+                "upn": "test@upn.com",
+                "family_name": "user",
+                "given_name": "test",
+                "idp": "live.com",
+                "name": "Test user",
+                "oid": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+                "unique_name": "live.com#test@gmail.com",
+                "ver": "1.0",
+            }
 
-        # Create an unsigned JWT
-        unsigned_jwt = jwt.encode(claims, key=None, algorithm="none")
-        user_info = self.appbuilder.sm.get_oauth_user_info(
-            "azure", {"access_token": "", "id_token": unsigned_jwt}
-        )
-        self.assertEqual(
-            user_info,
-            {
-                "email": "test@upn.com",
-                "first_name": "test",
-                "last_name": "user",
-                "role_keys": [],
-                "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
-            },
-        )
+            # Create an unsigned JWT
+            unsigned_jwt = jwt.encode(claims, key=None, algorithm="none")
+            user_info = self.appbuilder.sm.get_oauth_user_info(
+                "azure", {"access_token": "", "id_token": unsigned_jwt}
+            )
+            self.assertEqual(
+                user_info,
+                {
+                    "email": "test@upn.com",
+                    "first_name": "test",
+                    "last_name": "user",
+                    "role_keys": [],
+                    "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+                },
+            )
 
     def test_oauth_user_info_azure(self):
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        claims = {
-            "aud": "test-aud",
-            "iss": "https://sts.windows.net/test/",
-            "iat": 7282182129,
-            "nbf": 7282182129,
-            "exp": 1000000000,
-            "amr": ["pwd"],
-            "email": "test@gmail.com",
-            "family_name": "user",
-            "given_name": "test",
-            "idp": "live.com",
-            "name": "Test user",
-            "oid": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
-            "unique_name": "live.com#test@gmail.com",
-            "ver": "1.0",
-        }
-
-        # Create an unsigned JWT
-        unsigned_jwt = jwt.encode(claims, key=None, algorithm="none")
-        user_info = self.appbuilder.sm.get_oauth_user_info(
-            "azure", {"access_token": "", "id_token": unsigned_jwt}
-        )
-        self.assertEqual(
-            user_info,
-            {
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            claims = {
+                "aud": "test-aud",
+                "iss": "https://sts.windows.net/test/",
+                "iat": 7282182129,
+                "nbf": 7282182129,
+                "exp": 1000000000,
+                "amr": ["pwd"],
                 "email": "test@gmail.com",
-                "first_name": "test",
-                "last_name": "user",
-                "role_keys": [],
-                "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
-            },
-        )
+                "family_name": "user",
+                "given_name": "test",
+                "idp": "live.com",
+                "name": "Test user",
+                "oid": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+                "unique_name": "live.com#test@gmail.com",
+                "ver": "1.0",
+            }
+
+            # Create an unsigned JWT
+            unsigned_jwt = jwt.encode(claims, key=None, algorithm="none")
+            user_info = self.appbuilder.sm.get_oauth_user_info(
+                "azure", {"access_token": "", "id_token": unsigned_jwt}
+            )
+            self.assertEqual(
+                user_info,
+                {
+                    "email": "test@gmail.com",
+                    "first_name": "test",
+                    "last_name": "user",
+                    "role_keys": [],
+                    "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+                },
+            )
+
+    def test_oauth_user_info_azure_no_verify_signature_warning(self):
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            claims = {
+                "aud": "test-aud",
+                "iss": "https://sts.windows.net/test/",
+                "iat": 7282182129,
+                "nbf": 7282182129,
+                "exp": 1000000000,
+                "email": "test@gmail.com",
+                "family_name": "user",
+                "given_name": "test",
+                "oid": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+            }
+            unsigned_jwt = jwt.encode(claims, key=None, algorithm="none")
+            with self.assertLogs(
+                "flask_appbuilder.security.manager", level="WARNING"
+            ) as cm:
+                self.appbuilder.sm.get_oauth_user_info(
+                    "azure", {"access_token": "", "id_token": unsigned_jwt}
+                )
+            self.assertTrue(
+                any("signature verification is disabled" in msg for msg in cm.output)
+            )
 
     def test_oauth_user_info_azure_with_jwt_validation(self):
         self.app.config["OAUTH_PROVIDERS"] = [
@@ -587,27 +1005,29 @@ class OAuthRegistrationRoleTestCase(unittest.TestCase):
                 },
             }
         ]
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            claims = {
+                "aud": "test-aud",
+                "iss": "https://sts.windows.net/test/",
+                "iat": 1696601585,
+                "nbf": 1696601585,
+                "exp": 7282182129,  # 100 years from now ;)
+                "amr": ["pwd"],
+                "email": "test@gmail.com",
+                "family_name": "user",
+                "given_name": "test",
+                "idp": "live.com",
+                "name": "Test user",
+                "oid": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+                "unique_name": "live.com#test@gmail.com",
+                "ver": "1.0",
+            }
+            from unittest.mock import MagicMock
 
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-        claims = {
-            "aud": "test-aud",
-            "iss": "https://sts.windows.net/test/",
-            "iat": 1696601585,
-            "nbf": 1696601585,
-            "exp": 7282182129,  # 100 years from now ;)
-            "amr": ["pwd"],
-            "email": "test@gmail.com",
-            "family_name": "user",
-            "given_name": "test",
-            "idp": "live.com",
-            "name": "Test user",
-            "oid": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
-            "unique_name": "live.com#test@gmail.com",
-            "ver": "1.0",
-        }
-        from unittest.mock import MagicMock
-
-        private_key = """-----BEGIN PRIVATE KEY-----
+            private_key = """-----BEGIN PRIVATE KEY-----
 MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALeDojEka93XZ/J8
 bDGgn2MIHykafgCx2D6wTZgmmhzpRH7/k7J/WSsqG6eSFg38mGJukPCa4dcG8dCL
 meajEf2g4IoaYiE55yXs0ou/tixBJI8wRY+NfCluxgIcHdKhZISVO6CkR5r7diN/
@@ -623,70 +1043,449 @@ NdfEhgmVSJLRI+wf7LfxzrLnRBPbkE+334ZYjEPOEeahpS1AhrPv4QJAHpap1I+v
 8m+N5G/MppasppHLJmXhnFeQsnBX7XcdYiCqHikuBlIzoQ0Cj5xbkfgMMCVORO64
 r9+EFRsxA5GNYA==
 -----END PRIVATE KEY-----"""
-        # Create an unsigned JWT
-        unsigned_jwt = jwt.encode(
-            claims, key=private_key, algorithm="RS256", headers={"kid": "1"}
-        )
-        self.appbuilder.sm._get_microsoft_jwks = MagicMock(
-            return_value={
-                "keys": [
-                    {
-                        "alg": "RS256",
-                        "e": "AQAB",
-                        "kid": "1",
-                        "kty": "RSA",
-                        "n": "t4OiMSRr3ddn8nxsMaCfYwgfKRp-ALHYPrBNmCaaHOlEfv-"
-                        "Tsn9ZKyobp5IWDfyYYm6Q8Jrh1wbx0IuZ5qMR_aDgihpiITnnJezSi7-"
-                        "2LEEkjzBFj418KW7GAhwd0qFkhJU7oKRHmvt2I39Isc-wWcN3RSIwnlz"
-                        "jxSwnCTxPlPs",
-                        "use": "sig",
-                        "x5c": [
-                            "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3g6IxJGvd12fyfGwxoJ9"
-                            "jCB8pGn4Asdg+sE2YJpoc6UR+/5Oyf1krKhunkhYN/JhibpDwmuHXBvHQi5n"
-                            "moxH9oOCKGmIhOecl7NKLv7YsQSSPMEWPjXwpbsYCHB3SoWSElTugpEea+3Y"
-                            "jf0ixz7BZw3dFIjCeXOPFLCcJPE+U+wIDAQAB"
-                        ],
-                    }
-                ]
-            }
-        )
-        user_info = self.appbuilder.sm.get_oauth_user_info(
-            "azure", {"access_token": "", "id_token": unsigned_jwt}
-        )
-        self.assertEqual(
-            user_info,
-            {
-                "email": "test@gmail.com",
-                "first_name": "test",
-                "last_name": "user",
-                "role_keys": [],
-                "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
-            },
-        )
+            # Create an unsigned JWT
+            unsigned_jwt = jwt.encode(
+                claims, key=private_key, algorithm="RS256", headers={"kid": "1"}
+            )
+            self.appbuilder.sm._get_microsoft_jwks = MagicMock(
+                return_value={
+                    "keys": [
+                        {
+                            "alg": "RS256",
+                            "e": "AQAB",
+                            "kid": "1",
+                            "kty": "RSA",
+                            "n": "t4OiMSRr3ddn8nxsMaCfYwgfKRp-ALHYPrBNmCaaHOlEfv-"
+                            "Tsn9ZKyobp5IWDfyYYm6Q8Jrh1wbx0IuZ5qMR_aDgihpiITnnJezSi7-"
+                            "2LEEkjzBFj418KW7GAhwd0qFkhJU7oKRHmvt2I39Isc-wWcN3RSIwnlz"
+                            "jxSwnCTxPlPs",
+                            "use": "sig",
+                            "x5c": [
+                                "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3g6IxJGvd12fyfGwx"
+                                "oJ9jCB8pGn4Asdg+sE2YJpoc6UR+/5Oyf1krKhunkhYN/JhibpDwmuHX"
+                                "BvHQi5nmoxH9oOCKGmIhOecl7NKLv7YsQSSPMEWPjXwpbsYCHB3SoWSE"
+                                "lTugpEea+3Yjf0ixz7BZw3dFIjCeXOPFLCcJPE+U+wIDAQAB"
+                            ],
+                        }
+                    ]
+                }
+            )
+            user_info = self.appbuilder.sm.get_oauth_user_info(
+                "azure", {"access_token": "", "id_token": unsigned_jwt}
+            )
+            self.assertEqual(
+                user_info,
+                {
+                    "email": "test@gmail.com",
+                    "first_name": "test",
+                    "last_name": "user",
+                    "role_keys": [],
+                    "username": "b1a54a40-8dfa-4a6d-a2b8-f90b84d4b1df",
+                },
+            )
 
     def test_oauth_user_info_auth0(self):
-        self.appbuilder = AppBuilder(self.app, self.db.session)
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
 
-        self.appbuilder.sm.oauth_remotes["auth0"].userinfo = MagicMock(
-            return_value={
-                "email": "test@gmail.com",
-                "given_name": "test",
-                "family_name": "user",
-                "role_keys": [],
-                "sub": "test-sub",
-            }
-        )
+            self.appbuilder.sm.oauth_remotes["auth0"].userinfo = MagicMock(
+                return_value={
+                    "email": "test@gmail.com",
+                    "given_name": "test",
+                    "family_name": "user",
+                    "role_keys": [],
+                    "sub": "test-sub",
+                }
+            )
 
-        user_info = self.appbuilder.sm.get_oauth_user_info(
-            "auth0", {"access_token": "", "id_token": ""}
+            user_info = self.appbuilder.sm.get_oauth_user_info(
+                "auth0", {"access_token": "", "id_token": ""}
+            )
+            self.assertEqual(
+                user_info,
+                {
+                    "email": "test@gmail.com",
+                    "first_name": "test",
+                    "last_name": "user",
+                    "role_keys": [],
+                    "username": "auth0_test-sub",
+                },
+            )
+
+    def test_reset_password_view_not_registered_with_oauth(self):
+        """
+        OAUTH: test that ResetMyPasswordView is not registered when using OAuth
+        authentication
+        """
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+
+            for view in self.appbuilder.baseviews:
+                if view.__class__.__name__ == "ResetMyPasswordView":
+                    self.fail(
+                        "ResetMyPasswordView should not be registered when using OAuth "
+                        "authentication"
+                    )
+
+            # Also verify that the view is not accessible via URL
+            with self.app.test_client() as client:
+                response = client.get("/resetmypassword/form")
+                # Should return 404 since the view is not registered
+                self.assertEqual(response.status_code, 404)
+
+
+class OAuthAuthentikTestCase(unittest.TestCase):
+    def setUp(self):
+        # start Flask
+        self.app = Flask(__name__)
+        self.app.jinja_env.undefined = jinja2.StrictUndefined
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+            "SQLALCHEMY_DATABASE_URI", "sqlite:///"
         )
-        self.assertEqual(
-            user_info,
+        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config["AUTH_TYPE"] = AUTH_OAUTH
+        self.app.config["OAUTH_PROVIDERS"] = [
             {
-                "email": "test@gmail.com",
-                "first_name": "test",
-                "last_name": "user",
-                "role_keys": [],
-                "username": "auth0_test-sub",
+                "name": "authentik",
+                "token_key": "access_token",
+                "icon": "fa-fingerprint",
+                "remote_app": {
+                    "api_base_url": "https://authentik.mydomain.com",
+                    "client_kwargs": {
+                        "scope": "email profile",
+                        "verify_signature": False,
+                    },
+                    "access_token_url": (
+                        "https://authentik.mydomain.com" "/application/o/token/"
+                    ),
+                    "authorize_url": (
+                        "https://authentik.mydomain.com/" "application/o/authorize/"
+                    ),
+                    "request_token_url": None,
+                    "client_id": "CLIENT_ID",
+                    "client_secret": "CLIENT_SECRET",
+                },
             },
-        )
+        ]
+
+    def tearDown(self):
+        # Remove test user
+        with self.app.app_context():
+            user_alice = self.appbuilder.sm.find_user("alice")
+            if user_alice:
+                self.appbuilder.session.delete(user_alice)
+                self.appbuilder.session.commit()
+
+    # ----------------
+    # Unit Tests
+    # ----------------
+    def test_oauth_user_info_authentik(self):
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            claims = {
+                "iss": "https://authentik.mydomain.com/application/o/"
+                "flask-appbuilder-test/",
+                "sub": "2ac1102e7cf5a4b1cb2dd5adbe4761c551691ecd88991f78d0195d4d3d0cfcfa",
+                "aud": "CLIENT_ID",
+                "exp": 1703257941,
+                "iat": 1700665941,
+                "auth_time": 7282182129,  # 100 years from now ;)
+                "acr": "goauthentik.io/providers/oauth2/default",
+                "at_hash": "cAydO2DJMi_ZL6opx3eUdw",
+                "email": "alice@example.com",
+                "email_verified": True,
+                "name": "Alice",
+                "given_name": "Alice Doe",
+                "preferred_username": "alice@example.com",
+                "nickname": "alice",
+                "groups": ["GROUP_1", "GROUP_2"],
+            }
+
+            # Create an unsigned JWT
+            unsigned_jwt = jwt.encode(claims, key=None, algorithm="none")
+            user_info = self.appbuilder.sm.get_oauth_user_info(
+                "authentik", {"access_token": "", "id_token": unsigned_jwt}
+            )
+            self.assertEqual(
+                user_info,
+                {
+                    "email": "alice@example.com",
+                    "first_name": "Alice Doe",
+                    "role_keys": ["GROUP_1", "GROUP_2"],
+                    "username": "alice",
+                },
+            )
+
+    def test_oauth_user_info_authentik_with_jwt_validation(self):
+        self.app.config["OAUTH_PROVIDERS"] = [
+            {
+                "name": "authentik",
+                "token_key": "access_token",
+                "icon": "fa-fingerprint",
+                "remote_app": {
+                    "api_base_url": "https://authentik.mydomain.com",
+                    "client_kwargs": {
+                        "scope": "email profile",
+                        "verify_signature": True,
+                    },
+                    "access_token_url": (
+                        "https://authentik.mydomain.com" "/application/o/token/"
+                    ),
+                    "authorize_url": (
+                        "https://authentik.mydomain.com/" "application/o/authorize/"
+                    ),
+                    "request_token_url": None,
+                    "client_id": "CLIENT_ID",
+                    "client_secret": "CLIENT_SECRET",
+                    "jwks_uri": (
+                        "https://authentik.mydomain.com/"
+                        "application/o/APPLICATION_NAME/jwks/"
+                    ),
+                },
+            },
+        ]
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            claims = {
+                "iss": "https://authentik.mydomain.com/application/o/"
+                "flask-appbuilder-test/",
+                "sub": "2ac1102e7cf5a4b1cb2dd5adbe4761c551691ecd88991f78d0195d4d3d0cfcfa",
+                "aud": "CLIENT_ID",
+                "exp": 3203257941,
+                "iat": 1700665941,
+                "auth_time": 7282182129,  # 100 years from now ;)
+                "acr": "goauthentik.io/providers/oauth2/default",
+                "at_hash": "cAydO2DJMi_ZL6opx3eUdw",
+                "email": "alice@example.com",
+                "email_verified": True,
+                "name": "Alice",
+                "given_name": "Alice Doe",
+                "preferred_username": "alice@example.com",
+                "nickname": "alice",
+                "groups": ["GROUP_1", "GROUP_2"],
+            }
+            from unittest.mock import MagicMock
+
+            private_key = """-----BEGIN PRIVATE KEY-----
+MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALeDojEka93XZ/J8
+bDGgn2MIHykafgCx2D6wTZgmmhzpRH7/k7J/WSsqG6eSFg38mGJukPCa4dcG8dCL
+meajEf2g4IoaYiE55yXs0ou/tixBJI8wRY+NfCluxgIcHdKhZISVO6CkR5r7diN/
+SLHPsFnDd0UiMJ5c48UsJwk8T5T7AgMBAAECgYEAqalrVB+mEi1KDud1Z9RmRzqF
+BI1XnPDPSfXZZyeZJ82J5BgJxubx23RMqPnopfm4MJikK64lyZTED9hg6tgskk1X
+J9pc7iyU4PQf+tx4tvElyOL4OSqGss/tQHtHz76hNOR1kxeCcJsJG+WS8P0/Kmj1
+0IoYKLFlb5AHr6KqDGECQQDZ0qKIzxdmZj3gSsNldc4oOQOKJgd1QSDGCOqR9p7f
+oj7nuOPRVgnztqXALhNhpZXYJq8dWmpGYFi+EC1piRUDAkEA162gPgGzUJAIyhUM
+sA6Uy9v64nqBnlygVpofhdvyznSf/KUsmWQZv7gpMMXnIGAQP+rqM1gJvuRtodml
+hUeSqQJAHJH4J6GiHBhE/WpQ/rnY9IWl5TTfvY1xUwhQXBzQ8dxCC/rARvDWFVVb
+oD1q5V/mq5dHWL5HOjvg5+0PR8xnKQJAMOdBik3AZugB1jBnrBPiUUcT3/5/HXVL
+NdfEhgmVSJLRI+wf7LfxzrLnRBPbkE+334ZYjEPOEeahpS1AhrPv4QJAHpap1I+v
+8m+N5G/MppasppHLJmXhnFeQsnBX7XcdYiCqHikuBlIzoQ0Cj5xbkfgMMCVORO64
+r9+EFRsxA5GNYA==
+-----END PRIVATE KEY-----"""
+            # Create a signed JWT
+            signed_jwt = jwt.encode(
+                claims, key=private_key, algorithm="RS256", headers={"kid": "1"}
+            )
+            self.appbuilder.sm._get_authentik_jwks = MagicMock(
+                return_value={
+                    "keys": [
+                        {
+                            "alg": "RS256",
+                            "e": "AQAB",
+                            "kid": "1",
+                            "kty": "RSA",
+                            "n": "t4OiMSRr3ddn8nxsMaCfYwgfKRp-ALHYPrBNmCaaHOlEfv-"
+                            "Tsn9ZKyobp5IWDfyYYm6Q8Jrh1wbx0IuZ5qMR_aDgihpiITnnJezSi7-"
+                            "2LEEkjzBFj418KW7GAhwd0qFkhJU7oKRHmvt2I39Isc-wWcN3RSIwnlz"
+                            "jxSwnCTxPlPs",
+                            "use": "sig",
+                            "x5c": [
+                                "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3g6IxJGvd12fyfGwx"
+                                "oJ9jCB8pGn4Asdg+sE2YJpoc6UR+/5Oyf1krKhunkhYN/JhibpDwmuHX"
+                                "BvHQi5nmoxH9oOCKGmIhOecl7NKLv7YsQSSPMEWPjXwpbsYCHB3SoWSE"
+                                "lTugpEea+3Yjf0ixz7BZw3dFIjCeXOPFLCcJPE+U+wIDAQAB"
+                            ],
+                        }
+                    ]
+                }
+            )
+            user_info = self.appbuilder.sm.get_oauth_user_info(
+                "authentik", {"access_token": "", "id_token": signed_jwt}
+            )
+            self.assertEqual(
+                user_info,
+                {
+                    "email": "alice@example.com",
+                    "first_name": "Alice Doe",
+                    "role_keys": ["GROUP_1", "GROUP_2"],
+                    "username": "alice",
+                },
+            )
+
+    def test_oauth_user_info_authentik_with_jwt_validation_wrong_signature(self):
+        """
+        Tests if the get_user_info raises an exception
+        if the token is signed by a different JKWS
+        """
+        self.app.config["OAUTH_PROVIDERS"] = [
+            {
+                "name": "authentik",
+                "token_key": "access_token",
+                "icon": "fa-fingerprint",
+                "remote_app": {
+                    "api_base_url": "https://authentik.mydomain.com",
+                    "client_kwargs": {
+                        "scope": "email profile",
+                        "verify_signature": True,
+                    },
+                    "access_token_url": (
+                        "https://authentik.mydomain.com" "/application/o/token/"
+                    ),
+                    "authorize_url": (
+                        "https://authentik.mydomain.com/" "application/o/authorize/"
+                    ),
+                    "request_token_url": None,
+                    "client_id": "CLIENT_ID",
+                    "client_secret": "CLIENT_SECRET",
+                    "jwks_uri": (
+                        "https://authentik.mydomain.com/"
+                        "application/o/APPLICATION_NAME/jwks/"
+                    ),
+                },
+            },
+        ]
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            claims = {
+                "iss": "https://authentik.mydomain.com/application/o/"
+                "flask-appbuilder-test/",
+                "sub": "2ac1102e7cf5a4b1cb2dd5adbe4761c551691ecd88991f78d0195d4d3d0cfcfa",
+                "aud": "CLIENT_ID",
+                "exp": 1703257941,
+                "iat": 1700665941,
+                "auth_time": 7282182129,  # 100 years from now ;)
+                "acr": "goauthentik.io/providers/oauth2/default",
+                "at_hash": "cAydO2DJMi_ZL6opx3eUdw",
+                "email": "alice@example.com",
+                "email_verified": True,
+                "name": "Alice",
+                "given_name": "Alice Doe",
+                "preferred_username": "alice@example.com",
+                "nickname": "alice",
+                "groups": ["GROUP_1", "GROUP_2"],
+            }
+            from unittest.mock import MagicMock
+
+            private_key = """-----BEGIN PRIVATE KEY-----
+MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAqPfgaTEWEP3S9w0t
+gsicURfo+nLW09/0KfOPinhYZ4ouzU+3xC4pSlEp8Ut9FgL0AgqNslNaK34Kq+NZ
+jO9DAQIDAQABAkAgkuLEHLaqkWhLgNKagSajeobLS3rPT0Agm0f7k55FXVt743hw
+Ngkp98bMNrzy9AQ1mJGbQZGrpr4c8ZAx3aRNAiEAoxK/MgGeeLui385KJ7ZOYktj
+hLBNAB69fKwTZFsUNh0CIQEJQRpFCcydunv2bENcN/oBTRw39E8GNv2pIcNxZkcb
+NQIgbYSzn3Py6AasNj6nEtCfB+i1p3F35TK/87DlPSrmAgkCIQDJLhFoj1gbwRbH
+/bDRPrtlRUDDx44wHoEhSDRdy77eiQIgE6z/k6I+ChN1LLttwX0galITxmAYrOBh
+BVl433tgTTQ=
+-----END PRIVATE KEY-----"""
+            # Create a signed JWT
+            wrong_signed_jwt = jwt.encode(
+                claims, key=private_key, algorithm="RS256", headers={"kid": "1"}
+            )
+            self.appbuilder.sm._get_authentik_jwks = MagicMock(
+                return_value={
+                    "keys": [
+                        {
+                            "alg": "RS256",
+                            "e": "AQAB",
+                            "kid": "1",
+                            "kty": "RSA",
+                            "n": "t4OiMSRr3ddn8nxsMaCfYwgfKRp-ALHYPrBNmCaaHOlEfv-"
+                            "Tsn9ZKyobp5IWDfyYYm6Q8Jrh1wbx0IuZ5qMR_aDgihpiITnnJezSi7-"
+                            "2LEEkjzBFj418KW7GAhwd0qFkhJU7oKRHmvt2I39Isc-wWcN3RSIwnlz"
+                            "jxSwnCTxPlPs",
+                            "use": "sig",
+                            "x5c": [
+                                "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3g6IxJGvd12fyfGwx"
+                                "oJ9jCB8pGn4Asdg+sE2YJpoc6UR+/5Oyf1krKhunkhYN/JhibpDwmuHX"
+                                "BvHQi5nmoxH9oOCKGmIhOecl7NKLv7YsQSSPMEWPjXwpbsYCHB3SoWSE"
+                                "lTugpEea+3Yjf0ixz7BZw3dFIjCeXOPFLCcJPE+U+wIDAQAB"
+                            ],
+                        }
+                    ]
+                }
+            )
+            with self.assertRaises(BadSignatureError):
+                self.appbuilder.sm.get_oauth_user_info(
+                    "authentik", {"access_token": "", "id_token": wrong_signed_jwt}
+                )
+
+    def test_oauth_user_info_authentik_with_jwt_validation_without_signature(self):
+        """
+        Tests if an unsigned token raises an error if verify_signature is set to True
+        """
+        self.app.config["OAUTH_PROVIDERS"] = [
+            {
+                "name": "authentik",
+                "token_key": "access_token",
+                "icon": "fa-fingerprint",
+                "remote_app": {
+                    "api_base_url": "https://authentik.mydomain.com",
+                    "client_kwargs": {
+                        "scope": "email profile",
+                        "verify_signature": True,
+                    },
+                    "access_token_url": (
+                        "https://authentik.mydomain.com" "/application/o/token/"
+                    ),
+                    "authorize_url": (
+                        "https://authentik.mydomain.com/" "application/o/authorize/"
+                    ),
+                    "request_token_url": None,
+                    "client_id": "CLIENT_ID",
+                    "client_secret": "CLIENT_SECRET",
+                    "jwks_uri": (
+                        "https://authentik.mydomain.com/"
+                        "application/o/APPLICATION_NAME/jwks/"
+                    ),
+                },
+            },
+        ]
+        with self.app.app_context():
+            SQLA = get_sqla_class()
+            db = SQLA(self.app)
+            self.appbuilder = AppBuilder(self.app, db.session)
+            claims = {
+                "iss": "https://authentik.mydomain.com/application/o/"
+                "flask-appbuilder-test/",
+                "sub": "2ac1102e7cf5a4b1cb2dd5adbe4761c551691ecd88991f78d0195d4d3d0cfcfa",
+                "aud": "CLIENT_ID",
+                "exp": 1703257941,
+                "iat": 1700665941,
+                "auth_time": 7282182129,  # 100 years from now ;)
+                "acr": "goauthentik.io/providers/oauth2/default",
+                "at_hash": "cAydO2DJMi_ZL6opx3eUdw",
+                "email": "alice@example.com",
+                "email_verified": True,
+                "name": "Alice",
+                "given_name": "Alice Doe",
+                "preferred_username": "alice@example.com",
+                "nickname": "alice",
+                "groups": ["GROUP_1", "GROUP_2"],
+            }
+            from unittest.mock import MagicMock
+
+            unsigned_jwt = jwt.encode(claims, key=None, algorithm="none")
+            self.appbuilder.sm._get_authentik_jwks = MagicMock(return_value={})
+            with self.assertRaises(InvalidLoginAttempt):
+                self.appbuilder.sm.get_oauth_user_info(
+                    "authentik", {"access_token": "", "id_token": unsigned_jwt}
+                )

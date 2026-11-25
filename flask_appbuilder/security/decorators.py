@@ -3,6 +3,7 @@ import logging
 from typing import Callable, List, Optional, TypeVar, Union
 
 from flask import (
+    abort,
     current_app,
     flash,
     jsonify,
@@ -20,7 +21,7 @@ from flask_appbuilder.const import (
 )
 from flask_appbuilder.utils.limit import Limit
 from flask_jwt_extended import verify_jwt_in_request
-from flask_limiter.wrappers import RequestLimit
+from flask_limiter import RequestLimit
 from flask_login import current_user
 from typing_extensions import ParamSpec
 
@@ -28,6 +29,20 @@ log = logging.getLogger(__name__)
 
 R = TypeVar("R")
 P = ParamSpec("P")
+
+
+def no_cache(view: Callable[..., Response]) -> Callable[..., Response]:
+    @functools.wraps(view)
+    def wrapped_view(*args, **kwargs) -> Response:
+        response = make_response(view(*args, **kwargs))
+        response.headers["Cache-Control"] = (
+            "no-store, no-cache, must-revalidate, max-age=0"
+        )
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
+
+    return wrapped_view
 
 
 def response_unauthorized_mvc(status_code: int) -> Response:
@@ -85,6 +100,25 @@ def protect(allow_browser_login=False):
                 permission_str, class_permission_name
             ):
                 return f(self, *args, **kwargs)
+            # Check API key authentication (before JWT)
+            if current_app.config.get("FAB_API_KEY_ENABLED", False):
+                api_key_string = (
+                    current_app.appbuilder.sm.extract_api_key_from_request()
+                )
+                if api_key_string is not None:
+                    user = current_app.appbuilder.sm.validate_api_key(api_key_string)
+                    if not user:
+                        return self.response_401()
+                    if current_app.appbuilder.sm.has_access(
+                        permission_str, class_permission_name
+                    ):
+                        return f(self, *args, **kwargs)
+                    log.warning(
+                        LOGMSG_ERR_SEC_ACCESS_DENIED,
+                        permission_str,
+                        class_permission_name,
+                    )
+                    return self.response_403()
             # if no browser login then verify JWT
             if not (self.allow_browser_login or allow_browser_login):
                 verify_jwt_in_request()
@@ -139,6 +173,8 @@ def has_access(f):
             log.warning(
                 LOGMSG_ERR_SEC_ACCESS_DENIED, permission_str, self.__class__.__name__
             )
+            if current_user.is_authenticated and current_user.is_active:
+                abort(403)
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
         return redirect(
             url_for(

@@ -1,0 +1,1015 @@
+# Turkish translations for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-04-26 22:56+0100\n"
+"PO-Revision-Date: 2024-02-06 16:31+0300\n"
+"Last-Translator: \n"
+"Language-Team: tr <LL@li.org>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: build/lib/flask_appbuilder/const.py:111 flask_appbuilder/const.py:111
+msgid "Access is Denied"
+msgstr "Giriş Reddedildi"
+
+#: build/lib/flask_appbuilder/fields.py:131
+#: build/lib/flask_appbuilder/fields.py:133
+#: build/lib/flask_appbuilder/fields.py:185
+#: build/lib/flask_appbuilder/fields.py:192
+#: build/lib/flask_appbuilder/fields.py:242 flask_appbuilder/fields.py:131
+#: flask_appbuilder/fields.py:133 flask_appbuilder/fields.py:185
+#: flask_appbuilder/fields.py:192 flask_appbuilder/fields.py:242
+msgid "Not a valid choice"
+msgstr "Geçerli bir seçim değil"
+
+#: build/lib/flask_appbuilder/fieldwidgets.py:153
+#: build/lib/flask_appbuilder/fieldwidgets.py:172
+#: flask_appbuilder/fieldwidgets.py:153 flask_appbuilder/fieldwidgets.py:172
+msgid "Select Value"
+msgstr "Değer Seçin"
+
+#: build/lib/flask_appbuilder/messages.py:9
+#: build/lib/flask_appbuilder/templates/appbuilder/general/charts/chart.html:8
+#: build/lib/flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:10
+#: build/lib/flask_appbuilder/templates/appbuilder/general/charts/jsonchart.html:8
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:303
+#: build/lib/flask_appbuilder/templates/appbuilder/general/model/list.html:8
+#: flask_appbuilder/messages.py:9
+#: flask_appbuilder/templates/appbuilder/general/charts/chart.html:8
+#: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:10
+#: flask_appbuilder/templates/appbuilder/general/charts/jsonchart.html:8
+#: flask_appbuilder/templates/appbuilder/general/lib.html:303
+#: flask_appbuilder/templates/appbuilder/general/model/list.html:8
+msgid "Search"
+msgstr "Arama"
+
+#: build/lib/flask_appbuilder/messages.py:10
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:310
+#: examples/quickhowto2/app/templates/widgets/list_override.html:9
+#: flask_appbuilder/messages.py:10
+#: flask_appbuilder/templates/appbuilder/general/lib.html:310
+msgid "Back"
+msgstr "Geri"
+
+#: build/lib/flask_appbuilder/messages.py:11
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:263
+#: flask_appbuilder/messages.py:11
+#: flask_appbuilder/templates/appbuilder/general/lib.html:263
+msgid "Save"
+msgstr "Kaydet"
+
+#: build/lib/flask_appbuilder/messages.py:12 flask_appbuilder/messages.py:12
+msgid "This field is required."
+msgstr "Bu alan gereklidir."
+
+#: build/lib/flask_appbuilder/messages.py:13 flask_appbuilder/messages.py:13
+msgid "Not a valid date value"
+msgstr "Geçerli bir tarih değeri değil"
+
+#: build/lib/flask_appbuilder/messages.py:14
+#: build/lib/flask_appbuilder/templates/appbuilder/general/widgets/base_list.html:36
+#: build/lib/flask_appbuilder/templates/appbuilder/general/widgets/list_carousel.html:50
+#: build/lib/flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:17
+#: examples/issue_169/app/templates/widgets/list.html:70
+#: examples/quickhowto2/app/templates/widgets/list.html:70
+#: flask_appbuilder/messages.py:14
+#: flask_appbuilder/templates/appbuilder/general/widgets/base_list.html:36
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_carousel.html:50
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:17
+msgid "No records found"
+msgstr "Kayıt bulunamadı"
+
+#: build/lib/flask_appbuilder/upload.py:159
+#: build/lib/flask_appbuilder/upload.py:211 flask_appbuilder/upload.py:159
+#: flask_appbuilder/upload.py:211
+msgid "Invalid file extension"
+msgstr "Geçersiz dosya uzantısı"
+
+#: build/lib/flask_appbuilder/validators.py:31
+#: flask_appbuilder/validators.py:31
+msgid "Already exists."
+msgstr "Zaten mevcut."
+
+#: build/lib/flask_appbuilder/charts/views.py:32
+#: flask_appbuilder/charts/views.py:32
+msgid "Group by"
+msgstr "Gruplandırma"
+
+#: build/lib/flask_appbuilder/models/base.py:27
+#: flask_appbuilder/models/base.py:27
+msgid "Added Row"
+msgstr "Eklenen Satır"
+
+#: build/lib/flask_appbuilder/models/base.py:28
+#: flask_appbuilder/models/base.py:28
+msgid "Changed Row"
+msgstr "Değiştirilen Satır"
+
+#: build/lib/flask_appbuilder/models/base.py:29
+#: flask_appbuilder/models/base.py:29
+msgid "Deleted Row"
+msgstr "Silinen Satır"
+
+#: build/lib/flask_appbuilder/models/base.py:30
+#: flask_appbuilder/models/base.py:30
+msgid "Associated data exists, please delete them first"
+msgstr "İlgili veriler mevcut, lütfen önce bunları silin"
+
+#: build/lib/flask_appbuilder/models/base.py:31
+#: build/lib/flask_appbuilder/models/base.py:32
+#: flask_appbuilder/models/base.py:31 flask_appbuilder/models/base.py:32
+msgid "Integrity error, probably unique constraint"
+msgstr "Bütünlük hatası, muhtemelen benzersiz kısıtlama"
+
+#: build/lib/flask_appbuilder/models/base.py:33
+#: flask_appbuilder/models/base.py:33
+msgid "General Error"
+msgstr "Genel hata"
+
+#: build/lib/flask_appbuilder/models/group.py:26
+#: flask_appbuilder/models/group.py:26
+msgid "Count of"
+msgstr "Sayısı"
+
+#: build/lib/flask_appbuilder/models/group.py:35
+#: flask_appbuilder/models/group.py:35
+msgid "Sum of"
+msgstr "Toplamı"
+
+#: build/lib/flask_appbuilder/models/group.py:44
+#: flask_appbuilder/models/group.py:44
+msgid "Avg. of"
+msgstr "Ortalaması"
+
+#: build/lib/flask_appbuilder/models/generic/filters.py:10
+#: build/lib/flask_appbuilder/models/mongoengine/filters.py:66
+#: build/lib/flask_appbuilder/models/sqla/filters.py:92
+#: flask_appbuilder/models/generic/filters.py:10
+#: flask_appbuilder/models/mongoengine/filters.py:66
+#: flask_appbuilder/models/sqla/filters.py:92
+msgid "Contains"
+msgstr "İçerir"
+
+#: build/lib/flask_appbuilder/models/generic/filters.py:19
+#: flask_appbuilder/models/generic/filters.py:19
+msgid "Contains (insensitive)"
+msgstr "İçerir (duyarsız)"
+
+#: build/lib/flask_appbuilder/models/generic/filters.py:25
+#: build/lib/flask_appbuilder/models/mongoengine/filters.py:74
+#: build/lib/flask_appbuilder/models/sqla/filters.py:100
+#: flask_appbuilder/models/generic/filters.py:25
+#: flask_appbuilder/models/mongoengine/filters.py:74
+#: flask_appbuilder/models/sqla/filters.py:100
+msgid "Not Contains"
+msgstr "İçermiyor"
+
+#: build/lib/flask_appbuilder/models/generic/filters.py:31
+#: build/lib/flask_appbuilder/models/mongoengine/filters.py:12
+#: build/lib/flask_appbuilder/models/sqla/filters.py:108
+#: flask_appbuilder/models/generic/filters.py:31
+#: flask_appbuilder/models/mongoengine/filters.py:12
+#: flask_appbuilder/models/sqla/filters.py:108
+msgid "Equal to"
+msgstr "Eşittir"
+
+#: build/lib/flask_appbuilder/models/generic/filters.py:37
+#: build/lib/flask_appbuilder/models/mongoengine/filters.py:23
+#: build/lib/flask_appbuilder/models/sqla/filters.py:117
+#: flask_appbuilder/models/generic/filters.py:37
+#: flask_appbuilder/models/mongoengine/filters.py:23
+#: flask_appbuilder/models/sqla/filters.py:117
+msgid "Not Equal to"
+msgstr "Eşit değil"
+
+#: build/lib/flask_appbuilder/models/generic/filters.py:43
+#: build/lib/flask_appbuilder/models/mongoengine/filters.py:34
+#: build/lib/flask_appbuilder/models/sqla/filters.py:126
+#: flask_appbuilder/models/generic/filters.py:43
+#: flask_appbuilder/models/mongoengine/filters.py:34
+#: flask_appbuilder/models/sqla/filters.py:126
+msgid "Greater than"
+msgstr "Büyüktür"
+
+#: build/lib/flask_appbuilder/models/generic/filters.py:49
+#: build/lib/flask_appbuilder/models/mongoengine/filters.py:42
+#: build/lib/flask_appbuilder/models/sqla/filters.py:135
+#: flask_appbuilder/models/generic/filters.py:49
+#: flask_appbuilder/models/mongoengine/filters.py:42
+#: flask_appbuilder/models/sqla/filters.py:135
+msgid "Smaller than"
+msgstr "Küçüktür"
+
+#: build/lib/flask_appbuilder/models/generic/filters.py:55
+#: flask_appbuilder/models/generic/filters.py:55
+msgid "Start with"
+msgstr "İle başla"
+
+#: build/lib/flask_appbuilder/models/mongoengine/filters.py:50
+#: build/lib/flask_appbuilder/models/sqla/filters.py:60
+#: flask_appbuilder/models/mongoengine/filters.py:50
+#: flask_appbuilder/models/sqla/filters.py:60
+msgid "Starts with"
+msgstr "İle başlar"
+
+#: build/lib/flask_appbuilder/models/mongoengine/filters.py:58
+#: build/lib/flask_appbuilder/models/sqla/filters.py:68
+#: flask_appbuilder/models/mongoengine/filters.py:58
+#: flask_appbuilder/models/sqla/filters.py:68
+msgid "Not Starts with"
+msgstr "Bununla başlayamaz:"
+
+#: build/lib/flask_appbuilder/models/mongoengine/filters.py:82
+#: build/lib/flask_appbuilder/models/sqla/filters.py:144
+#: flask_appbuilder/models/mongoengine/filters.py:82
+#: flask_appbuilder/models/sqla/filters.py:144
+msgid "Relation"
+msgstr "İlişki"
+
+#: build/lib/flask_appbuilder/models/mongoengine/filters.py:91
+#: build/lib/flask_appbuilder/models/sqla/filters.py:162
+#: flask_appbuilder/models/mongoengine/filters.py:91
+#: flask_appbuilder/models/sqla/filters.py:162
+msgid "Relation as Many"
+msgstr "Çok Sayıda İlişki"
+
+#: build/lib/flask_appbuilder/models/sqla/filters.py:76
+#: flask_appbuilder/models/sqla/filters.py:76
+msgid "Ends with"
+msgstr "Şununla biter:"
+
+#: build/lib/flask_appbuilder/models/sqla/filters.py:84
+#: flask_appbuilder/models/sqla/filters.py:84
+msgid "Not Ends with"
+msgstr "Bununla bitemez:"
+
+#: build/lib/flask_appbuilder/models/sqla/filters.py:153
+#: flask_appbuilder/models/sqla/filters.py:153
+msgid "No Relation"
+msgstr "İlişki Yok"
+
+#: build/lib/flask_appbuilder/security/forms.py:10
+#: flask_appbuilder/security/forms.py:10
+msgid "OpenID"
+msgstr "OpenID"
+
+#: build/lib/flask_appbuilder/security/forms.py:11
+#: build/lib/flask_appbuilder/security/forms.py:16
+#: build/lib/flask_appbuilder/security/forms.py:40
+#: build/lib/flask_appbuilder/security/forms.py:57
+#: build/lib/flask_appbuilder/security/views.py:125
+#: build/lib/flask_appbuilder/security/views.py:298
+#: flask_appbuilder/security/forms.py:11 flask_appbuilder/security/forms.py:16
+#: flask_appbuilder/security/forms.py:40 flask_appbuilder/security/forms.py:57
+#: flask_appbuilder/security/views.py:125
+#: flask_appbuilder/security/views.py:298
+msgid "User Name"
+msgstr "Kullanıcı adı"
+
+#: build/lib/flask_appbuilder/security/forms.py:12
+#: flask_appbuilder/security/forms.py:12
+msgid "Remember me"
+msgstr "Beni hatırla"
+
+#: build/lib/flask_appbuilder/security/forms.py:17
+#: build/lib/flask_appbuilder/security/forms.py:28
+#: build/lib/flask_appbuilder/security/forms.py:44
+#: build/lib/flask_appbuilder/security/views.py:126
+#: build/lib/flask_appbuilder/security/views.py:233
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_db.html:30
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:27
+#: flask_appbuilder/security/forms.py:17 flask_appbuilder/security/forms.py:28
+#: flask_appbuilder/security/forms.py:44 flask_appbuilder/security/views.py:126
+#: flask_appbuilder/security/views.py:233
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:30
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:27
+msgid "Password"
+msgstr "Şifre"
+
+#: build/lib/flask_appbuilder/security/forms.py:21
+#: build/lib/flask_appbuilder/security/forms.py:41
+#: build/lib/flask_appbuilder/security/forms.py:58
+#: build/lib/flask_appbuilder/security/views.py:123
+#: examples/extendsecurity/app/sec_forms.py:10
+#: examples/extendsecurity2/app/sec_forms.py:10
+#: flask_appbuilder/security/forms.py:21 flask_appbuilder/security/forms.py:41
+#: flask_appbuilder/security/forms.py:58 flask_appbuilder/security/views.py:123
+msgid "First Name"
+msgstr "İsim"
+
+#: build/lib/flask_appbuilder/security/forms.py:22
+#: build/lib/flask_appbuilder/security/views.py:138
+#: examples/extendsecurity/app/sec_forms.py:11
+#: examples/extendsecurity2/app/sec_forms.py:11
+#: flask_appbuilder/security/forms.py:22 flask_appbuilder/security/views.py:138
+msgid "Write the user first name or names"
+msgstr "Kullanıcının ismini yazın"
+
+#: build/lib/flask_appbuilder/security/forms.py:23
+#: build/lib/flask_appbuilder/security/forms.py:42
+#: build/lib/flask_appbuilder/security/forms.py:59
+#: build/lib/flask_appbuilder/security/views.py:124
+#: examples/extendsecurity/app/sec_forms.py:12
+#: examples/extendsecurity2/app/sec_forms.py:12
+#: flask_appbuilder/security/forms.py:23 flask_appbuilder/security/forms.py:42
+#: flask_appbuilder/security/forms.py:59 flask_appbuilder/security/views.py:124
+msgid "Last Name"
+msgstr "Soyisim"
+
+#: build/lib/flask_appbuilder/security/forms.py:24
+#: build/lib/flask_appbuilder/security/views.py:139
+#: examples/extendsecurity/app/sec_forms.py:13
+#: examples/extendsecurity2/app/sec_forms.py:13
+#: flask_appbuilder/security/forms.py:24 flask_appbuilder/security/views.py:139
+msgid "Write the user last name"
+msgstr "Kullanıcının soyismini yazın"
+
+#: build/lib/flask_appbuilder/security/forms.py:29
+#: build/lib/flask_appbuilder/security/forms.py:45
+#: build/lib/flask_appbuilder/security/views.py:142
+#: build/lib/flask_appbuilder/security/views.py:234
+#: flask_appbuilder/security/forms.py:29 flask_appbuilder/security/forms.py:45
+#: flask_appbuilder/security/views.py:142
+#: flask_appbuilder/security/views.py:234
+msgid "Please use a good password policy, this application does not check this for you"
+msgstr "Lütfen güçlü bir şifre belirleyin, bu uygulama bunu sizin için kontrol etmez"
+
+#: build/lib/flask_appbuilder/security/forms.py:33
+#: build/lib/flask_appbuilder/security/forms.py:49
+#: build/lib/flask_appbuilder/security/views.py:238
+#: flask_appbuilder/security/forms.py:33 flask_appbuilder/security/forms.py:49
+#: flask_appbuilder/security/views.py:238
+msgid "Confirm Password"
+msgstr "Şifreyi Onayla"
+
+#: build/lib/flask_appbuilder/security/forms.py:34
+#: build/lib/flask_appbuilder/security/forms.py:50
+#: flask_appbuilder/security/forms.py:34 flask_appbuilder/security/forms.py:50
+msgid "Please rewrite the password to confirm"
+msgstr "Lütfen onaylamak için şifreyi yeniden yazın"
+
+#: build/lib/flask_appbuilder/security/forms.py:35
+#: build/lib/flask_appbuilder/security/forms.py:51
+#: build/lib/flask_appbuilder/security/views.py:241
+#: flask_appbuilder/security/forms.py:35 flask_appbuilder/security/forms.py:51
+#: flask_appbuilder/security/views.py:241
+msgid "Passwords must match"
+msgstr "Şifreler aynı olmalıdır"
+
+#: build/lib/flask_appbuilder/security/forms.py:43
+#: build/lib/flask_appbuilder/security/forms.py:60
+#: build/lib/flask_appbuilder/security/views.py:128
+#: flask_appbuilder/security/forms.py:43 flask_appbuilder/security/forms.py:60
+#: flask_appbuilder/security/views.py:128
+msgid "Email"
+msgstr "E-posta"
+
+#: build/lib/flask_appbuilder/security/manager.py:487
+#: build/lib/flask_appbuilder/security/views.py:117
+#: flask_appbuilder/security/manager.py:487
+#: flask_appbuilder/security/views.py:117
+msgid "List Users"
+msgstr "Kullanıcıları Listele"
+
+#: build/lib/flask_appbuilder/security/manager.py:489
+#: flask_appbuilder/security/manager.py:489
+msgid "Security"
+msgstr "Güvenlik"
+
+#: build/lib/flask_appbuilder/security/manager.py:492
+#: build/lib/flask_appbuilder/security/views.py:323
+#: flask_appbuilder/security/manager.py:492
+#: flask_appbuilder/security/views.py:323
+msgid "List Roles"
+msgstr "Rolleri Listele"
+
+#: build/lib/flask_appbuilder/security/manager.py:498
+#: flask_appbuilder/security/manager.py:498
+msgid "User's Statistics"
+msgstr "Kullanıcı İstatistikleri"
+
+#: build/lib/flask_appbuilder/security/manager.py:504
+#: flask_appbuilder/security/manager.py:504
+msgid "User Registrations"
+msgstr "Kullanıcı Kayıtları"
+
+#: build/lib/flask_appbuilder/security/manager.py:510
+#: flask_appbuilder/security/manager.py:510
+msgid "Base Permissions"
+msgstr "Temel İzinler"
+
+#: build/lib/flask_appbuilder/security/manager.py:513
+#: flask_appbuilder/security/manager.py:513
+msgid "Views/Menus"
+msgstr "Görünümler/Menüler"
+
+#: build/lib/flask_appbuilder/security/manager.py:516
+#: flask_appbuilder/security/manager.py:516
+msgid "Permission on Views/Menus"
+msgstr "Görünümler/Menüler için İzin"
+
+#: build/lib/flask_appbuilder/security/registerviews.py:51
+#: flask_appbuilder/security/registerviews.py:51
+msgid "Account activation"
+msgstr "Hesap Aktivasyonu"
+
+#: build/lib/flask_appbuilder/security/registerviews.py:55
+#: flask_appbuilder/security/registerviews.py:55
+msgid "Registration sent to your email"
+msgstr "Kayıt e-postanıza gönderildi"
+
+#: build/lib/flask_appbuilder/security/registerviews.py:57
+#: flask_appbuilder/security/registerviews.py:57
+msgid "Not possible to register you at the moment, try again later"
+msgstr "Şu anda kaydolmanız mümkün değil, daha sonra tekrar deneyin"
+
+#: build/lib/flask_appbuilder/security/registerviews.py:59
+#: flask_appbuilder/security/registerviews.py:59
+msgid "Registration not found"
+msgstr "Kayıt bulunamadı"
+
+#: build/lib/flask_appbuilder/security/registerviews.py:61
+#: flask_appbuilder/security/registerviews.py:61
+msgid "Fill out the registration form"
+msgstr "Kayıt formunu doldurun"
+
+#: build/lib/flask_appbuilder/security/views.py:28
+#: flask_appbuilder/security/views.py:28
+msgid "List Base Permissions"
+msgstr "Temel İzinleri Listeleme"
+
+#: build/lib/flask_appbuilder/security/views.py:29
+#: flask_appbuilder/security/views.py:29
+msgid "Show Base Permission"
+msgstr "Temel İzni Göster"
+
+#: build/lib/flask_appbuilder/security/views.py:30
+#: flask_appbuilder/security/views.py:30
+msgid "Add Base Permission"
+msgstr "Temel İzin Ekle"
+
+#: build/lib/flask_appbuilder/security/views.py:31
+#: flask_appbuilder/security/views.py:31
+msgid "Edit Base Permission"
+msgstr "Temel İzni Düzenle"
+
+#: build/lib/flask_appbuilder/security/views.py:33
+#: build/lib/flask_appbuilder/security/views.py:45
+#: build/lib/flask_appbuilder/security/views.py:328
+#: flask_appbuilder/security/views.py:33 flask_appbuilder/security/views.py:45
+#: flask_appbuilder/security/views.py:328
+msgid "Name"
+msgstr "İsim"
+
+#: build/lib/flask_appbuilder/security/views.py:40
+#: flask_appbuilder/security/views.py:40
+msgid "List View Menus"
+msgstr "Liste Görünümü Menüleri"
+
+#: build/lib/flask_appbuilder/security/views.py:41
+#: flask_appbuilder/security/views.py:41
+msgid "Show View Menu"
+msgstr "Görünüm Menüsünü Göster"
+
+#: build/lib/flask_appbuilder/security/views.py:42
+#: flask_appbuilder/security/views.py:42
+msgid "Add View Menu"
+msgstr "Görünüm Menüsünü Ekle"
+
+#: build/lib/flask_appbuilder/security/views.py:43
+#: flask_appbuilder/security/views.py:43
+msgid "Edit View Menu"
+msgstr "Görünüm Menüsünü Düzenle"
+
+#: build/lib/flask_appbuilder/security/views.py:52
+#: flask_appbuilder/security/views.py:52
+msgid "List Permissions on Views/Menus"
+msgstr "Görünümlerde/Menülerde İzinleri Listeleme"
+
+#: build/lib/flask_appbuilder/security/views.py:53
+#: flask_appbuilder/security/views.py:53
+msgid "Show Permission on Views/Menus"
+msgstr "Görünümlerde/Menülerde İzni Göster"
+
+#: build/lib/flask_appbuilder/security/views.py:54
+#: flask_appbuilder/security/views.py:54
+msgid "Add Permission on Views/Menus"
+msgstr "Görünümlere/Menülere İzin Ekle"
+
+#: build/lib/flask_appbuilder/security/views.py:55
+#: flask_appbuilder/security/views.py:55
+msgid "Edit Permission on Views/Menus"
+msgstr "Görünümlerde/Menülerde İzni Düzenle"
+
+#: build/lib/flask_appbuilder/security/views.py:57
+#: flask_appbuilder/security/views.py:57
+msgid "Permission"
+msgstr "İzin"
+
+#: build/lib/flask_appbuilder/security/views.py:57
+#: flask_appbuilder/security/views.py:57
+msgid "View/Menu"
+msgstr "Görünüm/Menü"
+
+#: build/lib/flask_appbuilder/security/views.py:67
+#: build/lib/flask_appbuilder/security/views.py:82
+#: flask_appbuilder/security/views.py:67 flask_appbuilder/security/views.py:82
+msgid "Reset Password Form"
+msgstr "Şifre Formunu Sıfırla"
+
+#: build/lib/flask_appbuilder/security/views.py:69
+#: build/lib/flask_appbuilder/security/views.py:84
+#: flask_appbuilder/security/views.py:69 flask_appbuilder/security/views.py:84
+msgid "Password Changed"
+msgstr "Şifre Değiştirildi"
+
+#: build/lib/flask_appbuilder/security/views.py:94
+#: flask_appbuilder/security/views.py:94
+msgid "Edit User Information"
+msgstr "Kullanıcı Bilgilerini Düzenle"
+
+#: build/lib/flask_appbuilder/security/views.py:96
+#: flask_appbuilder/security/views.py:96
+msgid "User information changed"
+msgstr "Kullanıcı bilgileri değiştirildi"
+
+#: build/lib/flask_appbuilder/security/views.py:118
+#: flask_appbuilder/security/views.py:118
+msgid "Show User"
+msgstr "Kullanıcıyı Göster"
+
+#: build/lib/flask_appbuilder/security/views.py:119
+#: flask_appbuilder/security/views.py:119
+msgid "Add User"
+msgstr "Kullanıcı Ekle"
+
+#: build/lib/flask_appbuilder/security/views.py:120
+#: build/lib/flask_appbuilder/security/views.py:186
+#: flask_appbuilder/security/views.py:120
+#: flask_appbuilder/security/views.py:186
+msgid "Edit User"
+msgstr "Kullanıcıyı Düzenle"
+
+#: build/lib/flask_appbuilder/security/views.py:122
+#: flask_appbuilder/security/views.py:122
+msgid "Full Name"
+msgstr "İsim Soyisim"
+
+#: build/lib/flask_appbuilder/security/views.py:127
+#: flask_appbuilder/security/views.py:127
+msgid "Is Active?"
+msgstr "Aktif mi?"
+
+#: build/lib/flask_appbuilder/security/views.py:129
+#: flask_appbuilder/security/views.py:129
+msgid "Role"
+msgstr "Rol"
+
+#: build/lib/flask_appbuilder/security/views.py:130
+#: flask_appbuilder/security/views.py:130
+msgid "Last login"
+msgstr "Son giriş"
+
+#: build/lib/flask_appbuilder/security/views.py:131
+#: build/lib/flask_appbuilder/security/views.py:299
+#: flask_appbuilder/security/views.py:131
+#: flask_appbuilder/security/views.py:299
+msgid "Login count"
+msgstr "Giriş sayısı"
+
+#: build/lib/flask_appbuilder/security/views.py:132
+#: build/lib/flask_appbuilder/security/views.py:300
+#: flask_appbuilder/security/views.py:132
+#: flask_appbuilder/security/views.py:300
+msgid "Failed login count"
+msgstr "Başarısız giriş sayısı"
+
+#: build/lib/flask_appbuilder/security/views.py:133
+#: flask_appbuilder/security/views.py:133
+msgid "Created on"
+msgstr "Oluşturulma tarihi"
+
+#: build/lib/flask_appbuilder/security/views.py:134
+#: flask_appbuilder/security/views.py:134
+msgid "Created by"
+msgstr "Tarafından oluşturuldu"
+
+#: build/lib/flask_appbuilder/security/views.py:135
+#: flask_appbuilder/security/views.py:135
+msgid "Changed on"
+msgstr "Değiştirilme tarihi"
+
+#: build/lib/flask_appbuilder/security/views.py:136
+#: flask_appbuilder/security/views.py:136
+msgid "Changed by"
+msgstr "Tarafından değiştirildi"
+
+#: build/lib/flask_appbuilder/security/views.py:140
+#: flask_appbuilder/security/views.py:140
+msgid "Username valid for authentication on DB or LDAP, unused for OID auth"
+msgstr "DB veya LDAP'de kimlik doğrulama için geçerli, OID kimlik doğrulaması için kullanılmayan kullanıcı adı"
+
+#: build/lib/flask_appbuilder/security/views.py:144
+#: flask_appbuilder/security/views.py:144
+msgid "It's not a good policy to remove a user, just make it inactive"
+msgstr "Bir kullanıcıyı kaldırmak iyi bir politika değildir, sadece onu pasif hale getirin"
+
+#: build/lib/flask_appbuilder/security/views.py:145
+#: flask_appbuilder/security/views.py:145
+msgid "The user's email, this will also be used for OID auth"
+msgstr "Kullanıcının e-posta adresi, aynı zamanda OID kimlik doğrulaması için de kullanılacaktır"
+
+#: build/lib/flask_appbuilder/security/views.py:146
+#: flask_appbuilder/security/views.py:146
+msgid "The user role on the application, this will associate with a list of permissions"
+msgstr "Uygulamadaki kullanıcı rolü; bu, bir izin listesiyle ilişkilendirilecektir"
+
+#: build/lib/flask_appbuilder/security/views.py:148
+#: build/lib/flask_appbuilder/security/views.py:239
+#: flask_appbuilder/security/views.py:148
+#: flask_appbuilder/security/views.py:239
+msgid "Please rewrite the user's password to confirm"
+msgstr "Lütfen onaylamak için kullanıcının şifresini yeniden yazın"
+
+#: build/lib/flask_appbuilder/security/views.py:153
+#: build/lib/flask_appbuilder/security/views.py:163
+#: examples/extendsecurity/app/sec_views.py:12
+#: examples/extendsecurity/app/sec_views.py:22
+#: examples/extendsecurity2/app/sec_views.py:12
+#: examples/extendsecurity2/app/sec_views.py:22
+#: examples/issue_169/app/sec_views.py:12
+#: examples/issue_169/app/sec_views.py:22
+#: examples/mongo_extendedsecurity/app/mysecurity.py:28
+#: examples/mongo_extendedsecurity/app/mysecurity.py:38
+#: examples/quickhowto2/app/sec_views.py:13
+#: examples/quickhowto2/app/sec_views.py:23
+#: flask_appbuilder/security/views.py:153
+#: flask_appbuilder/security/views.py:163
+msgid "User info"
+msgstr "Kullanıcı bilgisi"
+
+#: build/lib/flask_appbuilder/security/views.py:155
+#: build/lib/flask_appbuilder/security/views.py:165
+#: examples/extendsecurity/app/sec_views.py:14
+#: examples/extendsecurity/app/sec_views.py:24
+#: examples/extendsecurity2/app/sec_views.py:14
+#: examples/extendsecurity2/app/sec_views.py:24
+#: examples/issue_169/app/sec_views.py:14
+#: examples/issue_169/app/sec_views.py:24
+#: examples/mongo_extendedsecurity/app/mysecurity.py:30
+#: examples/mongo_extendedsecurity/app/mysecurity.py:40
+#: examples/quickhowto2/app/sec_views.py:15
+#: examples/quickhowto2/app/sec_views.py:25
+#: flask_appbuilder/security/views.py:155
+#: flask_appbuilder/security/views.py:165
+msgid "Personal Info"
+msgstr "Kişisel Bilgi"
+
+#: build/lib/flask_appbuilder/security/views.py:157
+#: examples/extendsecurity/app/sec_views.py:16
+#: examples/extendsecurity2/app/sec_views.py:16
+#: examples/issue_169/app/sec_views.py:16
+#: examples/mongo_extendedsecurity/app/mysecurity.py:32
+#: examples/quickhowto2/app/sec_views.py:17
+#: flask_appbuilder/security/views.py:157
+msgid "Audit Info"
+msgstr "Denetim Bilgileri"
+
+#: build/lib/flask_appbuilder/security/views.py:173
+#: flask_appbuilder/security/views.py:173
+msgid "Your user information"
+msgstr "Kullanıcı bilgileriniz"
+
+#: build/lib/flask_appbuilder/security/views.py:280
+#: flask_appbuilder/security/views.py:280
+msgid "Reset my password"
+msgstr "Şifremi sıfırlamak"
+
+#: build/lib/flask_appbuilder/security/views.py:284
+#: flask_appbuilder/security/views.py:284
+msgid "Reset Password"
+msgstr "Şifreyi yenile"
+
+#: build/lib/flask_appbuilder/security/views.py:297
+#: flask_appbuilder/security/views.py:297
+msgid "User Statistics"
+msgstr "Kullanıcı İstatistikleri"
+
+#: build/lib/flask_appbuilder/security/views.py:324
+#: flask_appbuilder/security/views.py:324
+msgid "Show Role"
+msgstr "Rolü Göster"
+
+#: build/lib/flask_appbuilder/security/views.py:325
+#: flask_appbuilder/security/views.py:325
+msgid "Add Role"
+msgstr "Rol Ekle"
+
+#: build/lib/flask_appbuilder/security/views.py:326
+#: flask_appbuilder/security/views.py:326
+msgid "Edit Role"
+msgstr "Rol Düzenle"
+
+#: build/lib/flask_appbuilder/security/views.py:328
+#: flask_appbuilder/security/views.py:328
+msgid "Permissions"
+msgstr "İzinler"
+
+#: build/lib/flask_appbuilder/security/views.py:332
+#: flask_appbuilder/security/views.py:332
+msgid "Copy Role"
+msgstr "Rolü Kopyala"
+
+#: build/lib/flask_appbuilder/security/views.py:332
+#: flask_appbuilder/security/views.py:332
+msgid "Copy the selected roles?"
+msgstr "Seçilen roller kopyalansın mı?"
+
+#: build/lib/flask_appbuilder/security/views.py:347
+#: flask_appbuilder/security/views.py:347
+msgid "List of Registration Requests"
+msgstr "Kayıt Talepleri Listesi"
+
+#: build/lib/flask_appbuilder/security/views.py:348
+#: flask_appbuilder/security/views.py:348
+msgid "Show Registration"
+msgstr "Kaydı Göster"
+
+#: build/lib/flask_appbuilder/security/views.py:358
+#: flask_appbuilder/security/views.py:358
+msgid "Invalid login. Please try again."
+msgstr "Geçersiz giriş. Lütfen tekrar deneyin."
+
+#: build/lib/flask_appbuilder/security/views.py:360
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_db.html:46
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:40
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:56
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_oid.html:118
+#: flask_appbuilder/security/views.py:360
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:46
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:40
+#: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:56
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:118
+msgid "Sign In"
+msgstr "Oturum Aç"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/baselib.html:115
+#: build/lib/flask_appbuilder/templates/appbuilder/navbar_right.html:37
+#: flask_appbuilder/templates/appbuilder/baselib.html:115
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:37
+msgid "Profile"
+msgstr "Profil"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/baselib.html:116
+#: build/lib/flask_appbuilder/templates/appbuilder/navbar_right.html:38
+#: examples/quicktemplates/app/templates/mybase.html:42
+#: flask_appbuilder/templates/appbuilder/baselib.html:116
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:38
+msgid "Logout"
+msgstr "Çıkış Yap"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/baselib.html:122
+#: build/lib/flask_appbuilder/templates/appbuilder/navbar_right.html:43
+#: examples/quicktemplates/app/templates/mybase.html:47
+#: flask_appbuilder/templates/appbuilder/baselib.html:122
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:43
+msgid "Login"
+msgstr "Giriş"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/activation.html:5
+#: build/lib/flask_appbuilder/templates/appbuilder/index.html:4
+#: flask_appbuilder/templates/appbuilder/general/security/activation.html:5
+#: flask_appbuilder/templates/appbuilder/index.html:4
+msgid "Welcome"
+msgstr "Hoş geldiniz"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/confirm.html:6
+#: flask_appbuilder/templates/appbuilder/general/confirm.html:6
+msgid "User confirmation needed"
+msgstr "Kullanıcı onayı gerekiyor"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:40
+#: flask_appbuilder/templates/appbuilder/general/lib.html:40
+msgid "Actions"
+msgstr "Hareketler"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:65
+#: examples/issue_169/app/templates/list_angulajs.html:55
+#: examples/issue_169/app/templates/list_angulajs.html:105
+#: examples/issue_169/app/templates/list_angulajs.html:184
+#: examples/quickhowto2/app/templates/list_angulajs.html:55
+#: examples/quickhowto2/app/templates/list_angulajs.html:105
+#: examples/quickhowto2/app/templates/list_angulajs.html:184
+#: flask_appbuilder/templates/appbuilder/general/lib.html:65
+msgid "Page size"
+msgstr "Sayfa boyutu"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:83
+#: flask_appbuilder/templates/appbuilder/general/lib.html:83
+msgid "Order by"
+msgstr "Sırala"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:280
+#: examples/issue_169/app/templates/list_angulajs.html:54
+#: examples/issue_169/app/templates/list_angulajs.html:110
+#: examples/issue_169/app/templates/list_angulajs.html:189
+#: examples/quickhowto2/app/templates/list_angulajs.html:54
+#: examples/quickhowto2/app/templates/list_angulajs.html:110
+#: examples/quickhowto2/app/templates/list_angulajs.html:189
+#: flask_appbuilder/templates/appbuilder/general/lib.html:280
+msgid "Record Count"
+msgstr "Kayıt Sayısı"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:318
+#: examples/issue_169/app/templates/list_angulajs.html:50
+#: examples/issue_169/app/templates/list_angulajs.html:108
+#: examples/issue_169/app/templates/list_angulajs.html:187
+#: examples/quickhowto2/app/templates/list_angulajs.html:50
+#: examples/quickhowto2/app/templates/list_angulajs.html:108
+#: examples/quickhowto2/app/templates/list_angulajs.html:187
+#: flask_appbuilder/templates/appbuilder/general/lib.html:318
+msgid "Add a new record"
+msgstr "Yeni bir kayıt ekle"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:325
+#: examples/issue_169/app/templates/list_angulajs.html:52
+#: examples/issue_169/app/templates/list_angulajs.html:132
+#: examples/issue_169/app/templates/list_angulajs.html:211
+#: examples/quickhowto2/app/templates/list_angulajs.html:52
+#: examples/quickhowto2/app/templates/list_angulajs.html:132
+#: examples/quickhowto2/app/templates/list_angulajs.html:211
+#: flask_appbuilder/templates/appbuilder/general/lib.html:325
+msgid "Edit record"
+msgstr "Kaydı düzenle"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:332
+#: examples/issue_169/app/templates/list_angulajs.html:51
+#: examples/issue_169/app/templates/list_angulajs.html:131
+#: examples/issue_169/app/templates/list_angulajs.html:210
+#: examples/quickhowto2/app/templates/list_angulajs.html:51
+#: examples/quickhowto2/app/templates/list_angulajs.html:131
+#: examples/quickhowto2/app/templates/list_angulajs.html:210
+#: flask_appbuilder/templates/appbuilder/general/lib.html:332
+msgid "Show record"
+msgstr "Kaydı göster"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:338
+#: flask_appbuilder/templates/appbuilder/general/lib.html:338
+msgid "You sure you want to delete this item?"
+msgstr "Bu öğeyi silmek istediğinizden emin misiniz?"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:339
+#: examples/issue_169/app/templates/list_angulajs.html:53
+#: examples/issue_169/app/templates/list_angulajs.html:133
+#: examples/issue_169/app/templates/list_angulajs.html:212
+#: examples/quickhowto2/app/templates/list_angulajs.html:53
+#: examples/quickhowto2/app/templates/list_angulajs.html:133
+#: examples/quickhowto2/app/templates/list_angulajs.html:212
+#: flask_appbuilder/templates/appbuilder/general/lib.html:339
+msgid "Delete record"
+msgstr "Kaydı sil"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:17
+#: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:17
+msgid "Group by fields"
+msgstr "Alanlara göre gruplandır"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/model/edit.html:9
+#: build/lib/flask_appbuilder/templates/appbuilder/general/model/show.html:9
+#: flask_appbuilder/templates/appbuilder/general/model/edit.html:9
+#: flask_appbuilder/templates/appbuilder/general/model/show.html:9
+msgid "Detail"
+msgstr "Detay"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/activation.html:7
+#: flask_appbuilder/templates/appbuilder/general/security/activation.html:7
+msgid "Your user is activated you can now proceed to login"
+msgstr "Kullanıcınız etkinleştirildi, şimdi giriş yapmaya devam edebilirsiniz"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_db.html:18
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:16
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:18
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:16
+msgid "Enter your login and password below"
+msgstr "Kullanıcı adınızı ve şifrenizi aşağıya girin"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_db.html:20
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:18
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:20
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:18
+msgid "Username"
+msgstr "Kullanıcı adı"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_db.html:49
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:59
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_oid.html:121
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:49
+#: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:59
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:121
+msgid "If you are not already a user, please register"
+msgstr "Henüz kullanıcı değilseniz lütfen kayıt olun"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_db.html:50
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:60
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_oid.html:122
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:50
+#: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:60
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:122
+msgid "Register"
+msgstr "Kayıt olun"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:44
+#: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:44
+msgid "Please choose one of the following providers:"
+msgstr "Lütfen aşağıdaki sağlayıcılardan birini seçin:"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_oid.html:89
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:89
+msgid "Click on your OpenID provider below"
+msgstr "Aşağıda OpenID sağlayıcınıza tıklayın"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_oid.html:101
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:101
+msgid "Or enter your OpenID here"
+msgstr "Veya OpenID'nizi buraya girin"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_oid.html:105
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:105
+msgid "Please choose a provider"
+msgstr "Lütfen bir sağlayıcı seçin"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/login_oid.html:107
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:107
+msgid "Enter your OpenID Username"
+msgstr "OpenID Kullanıcı Adınızı girin"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/security/register_oauth.html:15
+#: flask_appbuilder/templates/appbuilder/general/security/register_oauth.html:15
+msgid "Sign in using:"
+msgstr "Şunu kullanarak oturum açın:"
+
+#: build/lib/flask_appbuilder/templates/appbuilder/general/widgets/search.html:7
+#: examples/issue_169/app/templates/list_angulajs.html:67
+#: examples/issue_169/app/templates/list_angulajs.html:149
+#: examples/quickhowto2/app/templates/list_angulajs.html:67
+#: examples/quickhowto2/app/templates/list_angulajs.html:149
+#: flask_appbuilder/templates/appbuilder/general/widgets/search.html:7
+msgid "Add Filter"
+msgstr "Filtre Ekle"
+
+#: examples/extendsecurity/app/sec_forms.py:14
+#: examples/extendsecurity2/app/sec_forms.py:14
+msgid "Emp. Number"
+msgstr "Emp. Sayı"
+
+#: examples/extendsecurity/app/sec_forms.py:15
+#: examples/extendsecurity2/app/sec_forms.py:15
+msgid "Employee Number"
+msgstr "Çalışan sayısı"
+
+#: examples/issue_169/app/forms.py:9 examples/issue_169/app/forms.py:10
+#: examples/quickhowto2/app/forms.py:9 examples/quickhowto2/app/forms.py:10
+msgid "Test Field One"
+msgstr "Test Alanı Bir"
+
+#: examples/masterdetail/app/views.py:62 examples/quickhowto3/app/views.py:69
+msgid "List Groups"
+msgstr "Grupları Listele"
+
+#: examples/masterdetail/app/views.py:63
+msgid "Manage Groups"
+msgstr "Grupları Yönet"
+
+#: examples/masterdetail/app/views.py:64 examples/quickhowto3/app/views.py:70
+msgid "List Contacts"
+msgstr "Kişileri Listele"
+
+#: examples/masterdetail/app/views.py:65 examples/quickhowto3/app/views.py:71
+msgid "Contacts Chart"
+msgstr "Kişi Tablosu"
+
+#: examples/masterdetail/app/views.py:66 examples/quickhowto3/app/views.py:72
+msgid "Contacts Birth Chart"
+msgstr "Kişiler Doğum Tablosu"
+
+#: examples/oauth/app/forms.py:9
+msgid "Tweet message"
+msgstr "Tweet mesajı"
+
+#: examples/simpleform/app/views.py:20
+msgid "My form View"
+msgstr "Form Görünümüm"
+
+#: examples/simpleform/app/templates/404.html:4
+msgid "Page not found"
+msgstr "Sayfa bulunamadı"

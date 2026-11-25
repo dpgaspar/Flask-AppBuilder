@@ -12,7 +12,7 @@ Setup you dev environment
 
     $ python -m venv venv
     $ source venv/bin/activate
-    $ pip install -r requirements.txt -r requirements-dev.txt -r requirements-extra.txt
+    $ pip install -r requirements/base.txt -r requirements/dev.txt -r requirements/extra.txt
 
 2 - Install `docker` and `docker-compose`
 

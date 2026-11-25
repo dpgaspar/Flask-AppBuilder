@@ -33,7 +33,7 @@ Take a quick look to the current possibilities. (The bold ones require app conte
 
   - **create-user** - Create user with arbitrary role
 
-  - create-app - Create a Skeleton application (SQLAlchemy or MongoEngine).
+  - create-app - Create a Skeleton application.
 
   - create-addon - Create a Skeleton AddOn.
 
@@ -69,15 +69,13 @@ Command Line uses the excellent click package, so you can have a detailed help f
     Options:
     --name TEXT                     Your application name, directory will have
                                   this name
-    --engine [SQLAlchemy|MongoEngine]
-                                  Write your engine type
     --help                          Show this message and exit.
 
 
 **create-app** - Create new Applications
 ----------------------------------------
 
-To create a ready to dev skeleton application, you can use this command for SQLAlchemy engine and MongoEngine (MongoDB).
+To create a ready to dev skeleton application.
 This commands needs an internet connection to **github.com**, because it will download a zip version of the skeleton repos.
 
 **create-admin** - Create an admin user

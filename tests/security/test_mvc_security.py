@@ -4,7 +4,7 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.exceptions import PasswordComplexityValidationError
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.security.sqla.models import User
+from flask_appbuilder.security.sqla.models import Group, User
 from tests.base import BaseMVCTestCase
 from tests.const import (
     INVALID_LOGIN_STRING,
@@ -15,6 +15,7 @@ from tests.const import (
 )
 from tests.fixtures.data_models import model1_data
 from tests.sqla.models import Model1, Model2
+from werkzeug.security import check_password_hash
 
 PASSWORD_COMPLEXITY_ERROR = (
     "Must have at least two capital letters, "
@@ -63,6 +64,19 @@ class MVCSecurityTestCase(BaseMVCTestCase):
 
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
 
+    def test_sec_login_no_cache(self):
+        """
+        Test Security Login, no cache directives
+        """
+        rv = self.client.get("/login/")
+        assert rv.status_code == 200
+        assert (
+            rv.headers.get("Cache-Control")
+            == "no-store, no-cache, must-revalidate, max-age=0"
+        )
+        assert rv.headers["Pragma"] == "no-cache"
+        assert rv.headers["Expires"] == "0"
+
     def test_sec_login(self):
         """
         Test Security Login, Logout, invalid login, invalid access
@@ -97,6 +111,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         """
         Test Security Login, Logout, invalid login, invalid access
         """
+        self.browser_logout(self.client)
         test_username = "testuser"
         test_password = "password"
         test_user = self.create_user(
@@ -116,13 +131,80 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         # Using the same session make sure the user is not allowed to access when
         # the user is deactivated
         test_user.active = False
-        self.db.session.merge(test_user)
-        self.db.session.commit()
+        self.appbuilder.session.merge(test_user)
+        self.appbuilder.session.commit()
         rv = self.client.get("/model1view/list/")
         self.assertEqual(rv.status_code, 302)
 
-        self.db.session.delete(test_user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(test_user)
+        self.appbuilder.session.commit()
+
+    def test_add_user_without_password_is_unusable(self):
+        """
+        Test Security add_user without a password stores an unusable credential
+        """
+        self.browser_logout(self.client)
+        username = "provisioned_user"
+        existing = self.appbuilder.sm.find_user(username=username)
+        if existing:
+            self.appbuilder.session.delete(existing)
+            self.appbuilder.session.commit()
+
+        # Provision a user the way non-DB auth backends do: no password supplied
+        user = self.appbuilder.sm.add_user(
+            username=username,
+            first_name="provisioned",
+            last_name="user",
+            email="provisioned@fab.org",
+            role=self.appbuilder.sm.find_role("Admin"),
+        )
+        self.assertTrue(user)
+        # The stored hash must not match an empty or NUL-only password
+        self.assertFalse(check_password_hash(user.password, ""))
+        self.assertFalse(check_password_hash(user.password, "\x00"))
+        self.assertFalse(check_password_hash(user.password, "\x00\x00"))
+
+        # And such a user cannot log in through the database auth path
+        self.browser_login(self.client, username, "\x00")
+        rv = self.client.get("/model1view/list/")
+        self.assertEqual(rv.status_code, 302)
+
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
+
+    def test_db_login_rejects_null_password(self):
+        """
+        Test Security auth_user_db rejects empty and NUL-only passwords
+        """
+        username = "testuser_null_pw"
+        test_user = self.create_user(
+            self.appbuilder,
+            username,
+            "password",
+            "Admin",
+            "user",
+            "user",
+            "testuser_null_pw@fab.org",
+        )
+        try:
+            self.assertIsNone(self.appbuilder.sm.auth_user_db(username, ""))
+            self.assertIsNone(self.appbuilder.sm.auth_user_db(username, "\x00"))
+            self.assertIsNone(self.appbuilder.sm.auth_user_db(username, "\x00\x00"))
+            # A correct password still authenticates
+            self.assertIsNotNone(self.appbuilder.sm.auth_user_db(username, "password"))
+        finally:
+            self.appbuilder.session.delete(test_user)
+            self.appbuilder.session.commit()
+
+    def test_db_login_null_password_rejected_over_http(self):
+        """
+        Test Security HTTP login rejects a NUL-only password
+        """
+        self.browser_logout(self.client)
+        rv = self.browser_login(self.client, USERNAME_ADMIN, "\x00")
+        self.assertIn(INVALID_LOGIN_STRING, rv.data.decode("utf-8"))
+        rv = self.client.get("/model1view/list/")
+        self.assertEqual(rv.status_code, 302)
 
     def test_db_login_no_next_url(self):
         """
@@ -147,6 +229,25 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             follow_redirects=False,
         )
         assert response.location == "/users/list/"
+
+    def test_authenticated_db_login_valid_next_url(self):
+        """An authenticated login request retains a safe next URL."""
+        self.browser_login(self.client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        response = self.client.get("/login/?next=/users/list/", follow_redirects=False)
+
+        assert response.status_code == 302
+        assert response.location == "/users/list/"
+
+    def test_authenticated_access_denial_returns_forbidden(self):
+        """A logged-in user lacking permission is not sent back to login."""
+        self.browser_login(self.client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        with patch.object(self.appbuilder.sm, "has_access", return_value=False):
+            response = self.client.get("/model1view/list/", follow_redirects=False)
+
+        assert response.status_code == 403
+        assert response.location is None
 
     def test_db_login_valid_http_scheme_url(self):
         """
@@ -232,6 +333,102 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         assert response.location == "/"
 
+    def test_login_next_url_spoofed_host_header_disallowed(self):
+        """
+        Ensure a spoofed Host header does not allow redirection to an untrusted domain
+        """
+        self.app.config["FAB_SAFE_REDIRECT_HOSTS"] = ["localhost"]  # trusted dev host
+        self.browser_logout(self.client)
+
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://example.com/",
+            follow_redirects=False,
+            headers={"Host": "example.com"},
+        )
+
+        assert response.status_code == 302
+        assert response.location == "/"
+
+    def test_login_next_url_spoofed_host_header_allowed_config(self):
+        """
+        Ensure a spoofed Host header does not allow redirection to an untrusted domain
+        """
+        self.app.config["FAB_SAFE_REDIRECT_HOSTS"] = ["localhost"]  # trusted dev host
+        self.browser_logout(self.client)
+
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://localhost/something",
+            follow_redirects=False,
+            headers={"Host": "example.com"},
+        )
+
+        assert response.status_code == 302
+        assert response.location == "https://localhost/something"
+
+    def test_back_redirect_untrusted_history_entry_disallowed(self):
+        """
+        Ensure /back does not redirect off-site when page_history holds an
+        off-origin entry.
+
+        Entries are pushed from request.url, which is derived from the Host
+        header, so a deployment behind a proxy that rewrites Host can end up
+        with an absolute off-origin URL in a user's history.
+        """
+        self.app.config["FAB_SAFE_REDIRECT_HOSTS"] = ["localhost"]  # trusted dev host
+        self.browser_logout(self.client)
+        self.browser_login(self.client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        with self.client.session_transaction() as sess:
+            sess["page_history"] = ["https://example.com/", "https://example.com/"]
+
+        response = self.client.get("/back", follow_redirects=False)
+
+        assert response.status_code == 302
+        assert "example.com" not in response.location
+
+    def test_login_next_url_allowed_config_wildcard(self):
+        """
+        Ensure a spoofed Host header does not allow redirection to an untrusted domain
+        """
+        self.app.config["FAB_SAFE_REDIRECT_HOSTS"] = ["*.localhost"]  # trusted dev host
+        self.browser_logout(self.client)
+
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://example.localhost/something",
+            follow_redirects=False,
+            headers={"Host": "example.localhost"},
+        )
+
+        assert response.status_code == 302
+        assert response.location == "https://example.localhost/something"
+
+    def test_login_next_url_spoofed_host_header_allowed(self):
+        """
+        Ensure a spoofed Host header does not allow redirection to an untrusted domain
+        """
+        self.browser_logout(self.client)
+
+        response = self.browser_login(
+            self.client,
+            USERNAME_ADMIN,
+            PASSWORD_ADMIN,
+            next_url="https://example.com/",
+            follow_redirects=False,
+            headers={"Host": "example.com"},
+        )
+
+        assert response.status_code == 302
+        assert response.location == "https://example.com/"
+
     def test_db_login_invalid_control_characters_next_url(self):
         """
         Test Security invalid next URL with control characters
@@ -282,10 +479,10 @@ class MVCSecurityTestCase(BaseMVCTestCase):
             self.assertEqual(rv.status_code, 200)
             # Test unauthorized EDIT
             rv = client.get(f"/model1view/edit/{model_id}")
-            self.assertEqual(rv.status_code, 302)
+            self.assertEqual(rv.status_code, 403)
             # Test unauthorized DELETE
             rv = client.get(f"/model1view/delete/{model_id}")
-            self.assertEqual(rv.status_code, 302)
+            self.assertEqual(rv.status_code, 403)
 
     def test_sec_reset_password(self):
         """
@@ -407,9 +604,9 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         self.browser_logout(client)
 
-    def test_register_user(self):
+    def test_register_user_with_role(self):
         """
-        Test register user
+        Test register user with role
         """
         client = self.app.test_client()
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -426,6 +623,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
                 username="from test 1-1",
                 email="test1@fromtest1.com",
                 roles=[1],
+                groups=[],
                 password="password",
                 conf_password="password",
             ),
@@ -433,8 +631,59 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         data = rv.data.decode("utf-8")
         self.assertIn("Added Row", data)
+        user = (
+            self.appbuilder.session.query(User)
+            .filter(User.username == "from test 1-1")
+            .one_or_none()
+        )
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
-        # don't set roles
+    def test_register_user_with_group(self):
+        """
+        Test register user with group
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        group = self.create_group(self.appbuilder)
+
+        # use all required params
+        rv = client.get("/users/add", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Add User", data)
+        rv = client.post(
+            "/users/add",
+            data=dict(
+                first_name="first",
+                last_name="last",
+                username="from test 1-1",
+                email="test1@fromtest1.com",
+                roles=[],
+                groups=[group.id],
+                password="password",
+                conf_password="password",
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Added Row", data)
+        user = (
+            self.appbuilder.session.query(User)
+            .filter(User.username == "from test 1-1")
+            .one_or_none()
+        )
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
+
+    def test_register_user_missing_roles_or_groups(self):
+        """
+        Test register user with missing roles or groups
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # don't set roles or groups
         rv = client.get("/users/add", follow_redirects=True)
         data = rv.data.decode("utf-8")
         self.assertIn("Add User", data)
@@ -446,6 +695,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
                 username="from test 2-1",
                 email="test2@fromtest2.com",
                 roles=[],
+                groups=[],
                 password="password",
                 conf_password="password",
             ),
@@ -453,20 +703,12 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         )
         data = rv.data.decode("utf-8")
         self.assertNotIn("Added Row", data)
-        self.assertIn("This field is required", data)
+        self.assertIn("Either select a role or a group", data)
         self.browser_logout(client)
 
-        user = (
-            self.db.session.query(User)
-            .filter(User.username == "from test 1-1")
-            .one_or_none()
-        )
-        self.db.session.delete(user)
-        self.db.session.commit()
-
-    def test_edit_user(self):
+    def test_edit_user_with_role(self):
         """
-        Test edit user
+        Test edit user with role
         """
         client = self.app.test_client()
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -501,14 +743,60 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         self.assertIn("Changed Row", data)
 
         user = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == _tmp_user.username)
             .one_or_none()
         )
 
         assert user.email == "changed@changed.org"
-        self.db.session.delete(user)
-        self.db.session.commit()
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
+
+    def test_edit_user_with_group(self):
+        """
+        Test edit user with group
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        _tmp_user = self.create_user(
+            self.appbuilder,
+            "tmp_user",
+            "password1",
+            "",
+            first_name="tmp",
+            last_name="user",
+            email="tmp@fab.org",
+            role_names=["Admin"],
+        )
+
+        # use all required params
+        rv = client.get(f"/users/edit/{_tmp_user.id}", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Edit User", data)
+        rv = client.post(
+            f"/users/edit/{_tmp_user.id}",
+            data=dict(
+                first_name=_tmp_user.first_name,
+                last_name=_tmp_user.last_name,
+                username=_tmp_user.username,
+                email="changed@changed.org",
+                roles=_tmp_user.roles[0].id,
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Changed Row", data)
+
+        user = (
+            self.appbuilder.session.query(User)
+            .filter(User.username == _tmp_user.username)
+            .one_or_none()
+        )
+
+        assert user.email == "changed@changed.org"
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.commit()
 
     def test_edit_user_email_validation(self):
         """
@@ -518,7 +806,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         read_ony_user: User = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == USERNAME_READONLY)
             .one_or_none()
         )
@@ -549,7 +837,7 @@ class MVCSecurityTestCase(BaseMVCTestCase):
         _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         read_ony_user: User = (
-            self.db.session.query(User)
+            self.appbuilder.session.query(User)
             .filter(User.username == USERNAME_READONLY)
             .one_or_none()
         )
@@ -577,3 +865,103 @@ class MVCSecurityTestCase(BaseMVCTestCase):
 
                 data = rv.data.decode("utf-8")
                 self.assertIn("Database Error", data)
+
+    def test_add_group(self):
+        """
+        Test add group
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # use all required params
+        rv = client.get("/groups/add", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Add Group", data)
+        rv = client.post(
+            "/groups/add",
+            data=dict(
+                name="group1",
+                label="group1",
+                description="some description",
+                roles=[1],
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Added Row", data)
+        group = (
+            self.appbuilder.session.query(Group)
+            .filter(Group.name == "group1")
+            .one_or_none()
+        )
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
+
+    def test_add_group_unique_name(self):
+        """
+        Test add group unique name
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        group = self.create_group(self.appbuilder)
+        self.appbuilder.session.refresh(group)
+        rv = client.get("/groups/add", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Add Group", data)
+        rv = client.post(
+            "/groups/add",
+            data=dict(
+                name=group.name,
+                label="group1",
+                description="some description",
+                roles=[1],
+            ),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Already exists.", data)
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()
+
+    def test_delete_group(self):
+        """
+        Test delete group
+        """
+        client = self.app.test_client()
+        _ = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        group = self.create_group(self.appbuilder)
+        rv = client.post(
+            f"/groups/delete/{group.id}",
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("Deleted Row", data)
+        assert self.appbuilder.sm.find_group(name="group1") is None
+
+    def test_delete_group_with_users(self):
+        """
+        Test delete group with users
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        group = self.create_group(self.appbuilder)
+        user = self.create_user(
+            self.appbuilder,
+            "test_user",
+            "password",
+            None,
+            first_name="test",
+            last_name="user",
+            email="test_user@fab.org",
+            group_names=["group1"],
+        )
+        rv = client.post(
+            f"/groups/delete/{group.id}",
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertIn("User(s) exists in the group, cannot delete", data)
+        assert self.appbuilder.sm.find_group(name="group1") is not None
+        self.appbuilder.session.delete(user)
+        self.appbuilder.session.delete(group)
+        self.appbuilder.session.commit()

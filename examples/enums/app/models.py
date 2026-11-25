@@ -8,6 +8,7 @@ mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
 class ContactGroup(Model):
+    __tablename__ = "contact_group"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -16,6 +17,7 @@ class ContactGroup(Model):
 
 
 class Contact(Model):
+    __tablename__ = "contact"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))

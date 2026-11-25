@@ -1,0 +1,45 @@
+<!-- extend base layout -->
+{% extends "appbuilder/base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="panel-title">{{ title }}</div>
+            </div>
+            <div style="padding-top:30px" class="panel-body">
+                <div>
+                    {% for provider in providers %}
+                    <a
+                        id="btn-signin-{{provider.name}}"
+                        class="btn btn-primary btn-block"
+                        type="submit"
+                    >
+                        {{_('Sign In with ')}}{{ provider.name }}
+                        <i id="{{provider.name}}" class="provider-select fa {{provider.get('icon', 'fa-sign-in')}} fa-1x"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script nonce="{{ baselib.get_nonce() }}">
+    var baseLoginUrl = {{ appbuilder.get_url_for_login | tojson }};
+    var nextParam = {{ request.args.get('next', '') | urlencode | tojson }};
+    var next = nextParam ? "?next=" + nextParam : "";
+
+    function signin(provider) {
+        window.location.href = baseLoginUrl + provider + next;
+    }
+
+    {% for provider in providers %}
+        document.getElementById({{ ("btn-signin-" ~ provider.name) | tojson }})
+            .addEventListener("click", function () { signin({{ provider.name | tojson }}) })
+    {% endfor %}
+
+</script>
+{% endblock %}

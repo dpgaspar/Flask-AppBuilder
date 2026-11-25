@@ -26,7 +26,7 @@ class Unique:
     a specified table field.
     """
 
-    field_flags = ("unique",)
+    field_flags = {"unique": True}
 
     def __init__(
         self, datamodel: BaseInterface, col_name: str, message: Optional[str] = None

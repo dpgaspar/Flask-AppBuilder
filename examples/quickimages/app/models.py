@@ -7,6 +7,7 @@ from sqlalchemy.orm import relationship
 
 
 class PersonGroup(Model):
+    __tablename__ = "person_group"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
     address = Column(String(264))
@@ -20,6 +21,7 @@ class PersonGroup(Model):
 
 
 class Person(Model):
+    __tablename__ = "person"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))

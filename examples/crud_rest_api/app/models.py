@@ -1,20 +1,45 @@
 import datetime
 import enum
+from typing import Optional, List
 
 from flask_appbuilder import Model
-from sqlalchemy import Column, Date, ForeignKey, Integer, String, Enum
-from sqlalchemy.orm import relationship, backref
+from flask_appbuilder.models.mixins import AuditMixin
+from sqlalchemy import Column, Date, ForeignKey, Integer, String, Enum, Table
+from sqlalchemy.orm import relationship, backref, Mapped, mapped_column
+
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
-class ContactGroup(Model):
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique=True, nullable=False)
+class ContactGroup(AuditMixin, Model):
+    __tablename__ = "contact_group"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
 
     def __repr__(self):
         return self.name
 
+
+class ContactGroupTag(Model):
+    __tablename__ = "contact_group_tag"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
+    group_id: Mapped[Optional[int]] = mapped_column(
+        Integer, ForeignKey("contact_group.id"), nullable=True
+    )
+    groups: Mapped[List[ContactGroup]] = relationship(
+        ContactGroup,
+        backref=backref("tags"),
+        secondary="group_tag_association"
+    )
+
+# Association Table for N-N Relationship
+group_tag_association = Table(
+    'group_tag_association',
+    Model.metadata,
+    Column('group_id', Integer, ForeignKey('contact_group.id')),
+    Column('tag_id', Integer, ForeignKey('contact_group_tag.id'))
+)
 
 class Gender(enum.Enum):
     Female = 1
@@ -22,6 +47,7 @@ class Gender(enum.Enum):
 
 
 class Contact(Model):
+    __tablename__ = "contact"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))
@@ -51,6 +77,7 @@ class ModelOMParent(Model):
 
 
 class ModelOMChild(Model):
+    __tablename__ = "model_om_child"
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     parent_id = Column(Integer, ForeignKey("model_om_parent.id"))

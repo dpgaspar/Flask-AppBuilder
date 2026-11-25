@@ -2,7 +2,6 @@ __author__ = "dpgaspar"
 
 from datetime import date, datetime
 import operator
-import os
 
 from ..._compat import with_metaclass
 
@@ -378,53 +377,3 @@ class GenericSession(object):
         if not cls_list:
             self.store[model_cls_name] = []
         self.store[model_cls_name].append(model)
-
-
-# -------------------------------------
-#   Example of an Generic Data Source
-# -------------------------------------
-class PSModel(GenericModel):
-    UID = GenericColumn(str)
-    PID = GenericColumn(int, primary_key=True)
-    PPID = GenericColumn(int)
-    C = GenericColumn(int)
-    STIME = GenericColumn(str)
-    TTY = GenericColumn(str)
-    TIME = GenericColumn(str)
-    CMD = GenericColumn(str)
-
-
-class PSSession(GenericSession):
-    regexp = (
-        r"(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n"
-    )
-
-    def add_object(self, line):
-        import re
-
-        group = re.findall(self.regexp, line)
-        if group:
-            model = PSModel()
-            model.UID = group[0][0]
-            model.PID = int(group[0][1])
-            model.PPID = int(group[0][2])
-            model.C = int(group[0][3])
-            model.STIME = group[0][4]
-            model.TTY = group[0][5]
-            model.TIME = group[0][6]
-            model.CMD = group[0][7]
-            self.add(model)
-
-    def get(self, pk):
-        self.delete_all(PSModel())
-        out = os.popen("ps -p {0} -f".format(pk))
-        for line in out.readlines():
-            self.add_object(line)
-        return super(PSSession, self).get(pk)
-
-    def all(self):
-        self.delete_all(PSModel())
-        out = os.popen("ps -ef")
-        for line in out.readlines():
-            self.add_object(line)
-        return super(PSSession, self).all()

@@ -1,31 +1,33 @@
 import logging
 from flask import Flask
-from flask_appbuilder import AppBuilder
-from flask_sqlalchemy import SQLAlchemy
-from flask_appbuilder import SQLA
 from sqlalchemy import event
+from .extensions import appbuilder, db
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
 
-app = Flask(__name__)
-app.config.from_object("config")
-db = SQLA(app)
-session = db.session
-appbuilder = AppBuilder(app, session)
 
-"""
-Only include this for SQLLite constraints
+def create_app() -> Flask:
+    app = Flask(__name__)
+    app.config.from_object("config")
+    with app.app_context():
+        db.init_app(app)
+        appbuilder.init_app(app, db.session)
+        
+        """
+        Only include this for SQLLite constraints
+        
+        @event.listens_for(Engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
+        """
+        from app.models import *  # noqa
+        db.create_all()
+        from app import views  # noqa
+    return app
 
-@event.listens_for(Engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
-"""
-from app.models import *
 
-
-db.create_all()
-
-from app import views
+# For backward compatibility
+app = create_app()

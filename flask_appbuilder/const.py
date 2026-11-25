@@ -24,6 +24,8 @@ LOGMSG_ERR_SEC_CREATE_DB = "DB Creation and initialization failed: %s"
 """ security models creation fails, format with error message """
 LOGMSG_ERR_SEC_ADD_ROLE = "Add Role: %s"
 """ Error adding role, format with err message """
+LOGMSG_ERR_SEC_ADD_GROUP = "Add Group: %s"
+""" Error adding group, format with err message """
 LOGMSG_ERR_SEC_ADD_PERMISSION = "Add Permission: %s"
 """ Error adding permission, format with err message """
 LOGMSG_ERR_SEC_ADD_VIEWMENU = "Add View Menu Error: %s"
@@ -83,8 +85,24 @@ LOGMSG_INF_SEC_ADD_USER = "Added user %s"
 """ User added, format with username """
 LOGMSG_INF_SEC_UPD_USER = "Updated user %s"
 """ User updated, format with username """
+LOGMSG_INF_SEC_DEL_USER = "Deleted user %s"
+""" User deleted, format with user id """
+LOGMSG_ERR_SEC_DEL_USER = "Error deleting user: %s"
+""" Error deleting user, format with err message """
 LOGMSG_INF_SEC_UPD_ROLE = "Updated role %s"
 """ Role updated, format with role name """
+LOGMSG_INF_SEC_DEL_ROLE = "Deleted role %s"
+""" Role deleted, format with role id """
+LOGMSG_ERR_SEC_DEL_ROLE = "Error deleting role: %s"
+""" Error deleting role, format with err message """
+LOGMSG_INF_SEC_ADD_GROUP = "Added group %s"
+""" Group added, format with group name """
+LOGMSG_INF_SEC_UPD_GROUP = "Updated group %s"
+""" Group updated, format with group name """
+LOGMSG_INF_SEC_DEL_GROUP = "Deleted group %s"
+""" Group deleted, format with group id """
+LOGMSG_ERR_SEC_DEL_GROUP = "Error deleting group: %s"
+""" Error deleting group, format with err message """
 LOGMSG_ERR_SEC_UPD_ROLE = "An error occurred updating role %s"
 """ Role updated Error, format with role name """
 
@@ -102,12 +120,6 @@ LOGMSG_ERR_FAB_ADD_PERMISSION_MENU = "Add Permission on Menu Error: %s"
 LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW = "Add Permission on View Error: %s"
 """ Error when adding a permission to a menu, format with err """
 
-LOGMSG_ERR_DBI_ADD_GENERIC = "Add record error: %s"
-""" Database add generic error, format with err message """
-LOGMSG_ERR_DBI_EDIT_GENERIC = "Edit record error: %s"
-""" Database edit generic error, format with err message """
-LOGMSG_ERR_DBI_DEL_GENERIC = "Delete record error: %s"
-""" Database delete generic error, format with err message """
 LOGMSG_WAR_DBI_AVG_ZERODIV = "Zero division on aggregate_avg"
 
 LOGMSG_WAR_FAB_VIEW_EXISTS = "View already exists %s ignoring"
@@ -130,11 +142,11 @@ FLAMSG_ERR_SEC_ACCESS_DENIED = lazy_gettext("Access is Denied")
 PERMISSION_PREFIX = "can_"
 """ Prefix to be concatenated to permission names, and inserted in the backend """
 
-AUTH_OID = 0
 AUTH_DB = 1
 AUTH_LDAP = 2
 AUTH_REMOTE_USER = 3
 AUTH_OAUTH = 4
+AUTH_SAML = 5
 """ Constants for supported authentication types """
 
 # -----------------------------------
@@ -181,6 +193,7 @@ API_DESCRIPTION_COLUMNS_RIS_KEY = "description_columns"
 API_FILTERS_RIS_KEY = "filters"
 API_PERMISSIONS_RIS_KEY = "permissions"
 API_SELECT_COLUMNS_RIS_KEY = "columns"
+API_SELECT_SEL_COLUMNS_RIS_KEY = "select_columns"
 API_SELECT_KEYS_RIS_KEY = "keys"
 API_ORDER_COLUMN_RIS_KEY = "order_column"
 API_ORDER_DIRECTION_RIS_KEY = "order_direction"

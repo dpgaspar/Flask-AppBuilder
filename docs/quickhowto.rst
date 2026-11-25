@@ -34,9 +34,6 @@ Let's create a very simple contacts application.
 F.A.B uses the excellent SQLAlchemy ORM package, and its Flask extension.
 you should be familiar with its declarative syntax to define your database models on F.A.B.
 
-.. note:: Since 1.3.0 there is partial support for **MongoDB** using MongoEngine. You can declare any *normalized*
-   database schema, just like on SQLAlchemy, and use ModelView and CharView's exactly the same way. Next releases
-   will gradually support non normalized schemas for MongoDB.
 
 On our example application we are going to define two tables,
 a *Contacts* table that will hold the contact's detailed information,

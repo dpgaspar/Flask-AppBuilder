@@ -15,20 +15,24 @@ from flask import (
     session,
     url_for,
 )
-
-from ._compat import as_unicode
-from .actions import ActionItem
-from .const import PERMISSION_PREFIX
-from .forms import GeneralModelConverter
-from .hooks import get_before_request_hooks, wrap_route_handler_with_hooks
-from .urltools import (
+from flask_appbuilder._compat import as_unicode
+from flask_appbuilder.actions import ActionItem
+from flask_appbuilder.const import PERMISSION_PREFIX
+from flask_appbuilder.forms import GeneralModelConverter
+from flask_appbuilder.hooks import (
+    get_before_request_hooks,
+    wrap_route_handler_with_hooks,
+)
+from flask_appbuilder.urltools import (
     get_filter_args,
     get_order_args,
     get_page_args,
     get_page_size_args,
     Stack,
 )
-from .widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
+from flask_appbuilder.utils.base import get_safe_redirect
+from flask_appbuilder.widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
+from flask_babel import lazy_gettext
 
 if TYPE_CHECKING:
     from flask_appbuilder.base import AppBuilder
@@ -73,8 +77,8 @@ def expose_api(name="", url="", methods=("GET",), description=""):
 class AbstractViewApi:
     appbuilder: "AppBuilder"
     base_permissions: Optional[List[str]]
-    class_permission_name: str
-    endpoint: str
+    class_permission_name: Optional[str]
+    endpoint: Optional[str]
     default_view: str
 
     def create_blueprint(
@@ -83,7 +87,7 @@ class AbstractViewApi:
         endpoint: Optional[str] = None,
         static_folder: Optional[str] = None,
     ):
-        ...
+        pass
 
     def get_uninit_inner_views(self):
         """
@@ -307,7 +311,7 @@ class BaseView(AbstractViewApi):
             ):
                 continue
             if attr_name in self.exclude_route_methods:
-                log.info(
+                log.debug(
                     "Not registering route for method %s.%s",
                     self.__class__.__name__,
                     attr_name,
@@ -316,7 +320,7 @@ class BaseView(AbstractViewApi):
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
-                    log.info(
+                    log.debug(
                         "Registering route %s%s %s",
                         self.blueprint.url_prefix,
                         url,
@@ -339,6 +343,7 @@ class BaseView(AbstractViewApi):
         """
         kwargs["base_template"] = self.appbuilder.base_template
         kwargs["appbuilder"] = self.appbuilder
+        kwargs["current_app"] = current_app
         return render_template(
             template, **dict(list(kwargs.items()) + list(self.extra_args.items()))
         )
@@ -385,7 +390,9 @@ class BaseView(AbstractViewApi):
             return index_url
         session["page_history"] = page_history.to_json()
         url = page_history.pop() or index_url
-        return url
+        # page_history entries come from request.url, which is built from the Host
+        # header, so run them through the same check the next= parameter gets.
+        return get_safe_redirect(url)
 
     @classmethod
     def get_default_url(cls, **kwargs):
@@ -666,6 +673,21 @@ class BaseCRUDView(BaseModelView):
     The base class for ModelView, all properties are inherited
     Customize ModelView overriding this properties
     """
+
+    """ Messages to display on CRUD Events """
+    add_row_message = lazy_gettext("Added Row")
+    edit_row_message = lazy_gettext("Changed Row")
+    delete_row_message = lazy_gettext("Deleted Row")
+    delete_integrity_error_message = lazy_gettext(
+        "Associated data exists, please delete them first"
+    )
+    add_integrity_error_message = lazy_gettext(
+        "Integrity error, probably unique constraint"
+    )
+    edit_integrity_error_message = lazy_gettext(
+        "Integrity error, probably unique constraint"
+    )
+    database_error_message = lazy_gettext("Database Error")
 
     related_views = None
     """
@@ -1066,7 +1088,7 @@ class BaseCRUDView(BaseModelView):
         page=None,
         page_size=None,
         widgets=None,
-        **args,
+        **kwargs,
     ):
         """get joined base filter and current active filter for query"""
         widgets = widgets or {}
@@ -1100,6 +1122,7 @@ class BaseCRUDView(BaseModelView):
             actions=actions,
             filters=filters,
             modelview_name=self.__class__.__name__,
+            **kwargs,
         )
         return widgets
 
@@ -1162,7 +1185,7 @@ class BaseCRUDView(BaseModelView):
     -----------------------------------------------------
     """
 
-    def _list(self):
+    def _list(self, **kwargs):
         """
         list function logic, override to implement different logic
         returns list and search widget
@@ -1182,6 +1205,7 @@ class BaseCRUDView(BaseModelView):
             order_direction=order_direction,
             page=page,
             page_size=page_size,
+            **kwargs,
         )
         form = self.search_form.refresh()
         self.update_redirect()
@@ -1227,9 +1251,12 @@ class BaseCRUDView(BaseModelView):
                 except Exception as e:
                     flash(str(e), "danger")
                 else:
-                    if self.datamodel.add(item):
+                    try:
+                        self.datamodel.add(item)
                         self.post_add(item)
-                    flash(*self.datamodel.message)
+                        flash(self.add_row_message, "success")
+                    except Exception as e:
+                        flash(str(e))
                 finally:
                     return None
             else:
@@ -1271,9 +1298,12 @@ class BaseCRUDView(BaseModelView):
                 except Exception as e:
                     flash(str(e), "danger")
                 else:
-                    if self.datamodel.edit(item):
+                    try:
+                        self.datamodel.edit(item)
                         self.post_update(item)
-                    flash(*self.datamodel.message)
+                        flash(self.edit_row_message, "success")
+                    except Exception:
+                        flash(self.database_error_message, "danger")
                 finally:
                     return None
             else:
@@ -1313,9 +1343,12 @@ class BaseCRUDView(BaseModelView):
         except Exception as e:
             flash(str(e), "danger")
         else:
-            if self.datamodel.delete(item):
+            try:
+                self.datamodel.delete(item)
                 self.post_delete(item)
-            flash(*self.datamodel.message)
+                flash(self.delete_row_message, "success")
+            except Exception as e:
+                flash(str(e))
             self.update_redirect()
 
     """
@@ -1376,9 +1409,7 @@ class BaseCRUDView(BaseModelView):
         """
         if current_app.config.get("FAB_ALLOW_GET_UNSAFE_MUTATIONS", False):
             return True
-        return not (
-            request.method == "GET" and self.appbuilder.app.extensions.get("csrf")
-        )
+        return not (request.method == "GET" and current_app.extensions.get("csrf"))
 
     def prefill_form(self, form, pk):
         """

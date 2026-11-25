@@ -2,10 +2,10 @@ __author__ = "Daniel Gaspar"
 
 import logging
 
-from flask import flash, redirect, request, session, url_for
+from flask import current_app, flash, redirect, request, url_for
 from flask_babel import lazy_gettext
 
-from .forms import LoginForm_oid, RegisterUserDBForm, RegisterUserOIDForm
+from .forms import RegisterUserDBForm
 from .. import const as c
 from .._compat import as_unicode
 from ..validators import Unique
@@ -26,7 +26,7 @@ class BaseRegisterUser(PublicFormView):
     """
     Make your own user registration view and inherit from this class if you
     want to implement a completely different registration process. If not,
-    just inherit from RegisterUserDBView or RegisterUserOIDView depending on
+    just inherit from RegisterUserDBView or RegisterUserOAuthView depending on
     your authentication method.
     then override SecurityManager property that defines the class to use::
 
@@ -76,7 +76,7 @@ class BaseRegisterUser(PublicFormView):
         except Exception:
             log.error("Install Flask-Mail to use User registration")
             return False
-        mail = Mail(self.appbuilder.get_app)
+        mail = Mail(current_app)
         msg = Message()
         msg.subject = self.email_subject
         url = url_for(
@@ -185,95 +185,12 @@ class RegisterUserDBView(BaseRegisterUser):
         )
 
 
-class RegisterUserOIDView(BaseRegisterUser):
-    """
-    View for Registering a new user, auth OID mode
-    """
-
-    route_base = "/register"
-
-    form = RegisterUserOIDForm
-    default_view = "form_oid_post"
-
-    @expose("/formoidone", methods=["GET", "POST"])
-    def form_oid_post(self, flag=True):
-        if flag:
-            self.oid_login_handler(self.form_oid_post, self.appbuilder.sm.oid)
-        form = LoginForm_oid()
-        if form.validate_on_submit():
-            session["remember_me"] = form.remember_me.data
-            return self.appbuilder.sm.oid.try_login(
-                form.openid.data, ask_for=["email", "fullname"]
-            )
-        resp = session.pop("oid_resp", None)
-        if resp:
-            self._init_vars()
-            form = self.form.refresh()
-            self.form_get(form)
-            form.username.data = resp.email
-            first_name, last_name = get_first_last_name(resp.fullname)
-            form.first_name.data = first_name
-            form.last_name.data = last_name
-            form.email.data = resp.email
-            widgets = self._get_edit_widget(form=form)
-            # self.update_redirect()
-            return self.render_template(
-                self.form_template,
-                title=self.form_title,
-                widgets=widgets,
-                form_action="form",
-                appbuilder=self.appbuilder,
-            )
-        else:
-            flash(as_unicode(self.error_message), "warning")
-            return redirect(self.get_redirect())
-
-    def oid_login_handler(self, f, oid):
-        """
-        Hackish method to make use of oid.login_handler decorator.
-        """
-        from flask_openid import OpenIDResponse, SessionWrapper
-        from openid.consumer.consumer import CANCEL, Consumer, SUCCESS
-
-        if request.args.get("openid_complete") != "yes":
-            return f(False)
-        consumer = Consumer(SessionWrapper(self), oid.store_factory())
-        openid_response = consumer.complete(
-            request.args.to_dict(), oid.get_current_url()
-        )
-        if openid_response.status == SUCCESS:
-            return self.after_login(OpenIDResponse(openid_response, []))
-        elif openid_response.status == CANCEL:
-            oid.signal_error("The request was cancelled")
-            return redirect(oid.get_current_url())
-        oid.signal_error("OpenID authentication error")
-        return redirect(oid.get_current_url())
-
-    def after_login(self, resp):
-        """
-        Method that adds the return OpenID response object on the session
-        this session key will be deleted
-        """
-        session["oid_resp"] = resp
-
-    def form_get(self, form):
-        self.add_form_unique_validations(form)
-
-    def form_post(self, form):
-        self.add_registration(
-            username=form.username.data,
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
-            email=form.email.data,
-        )
-
-
 class RegisterUserOAuthView(BaseRegisterUser):
     """
-    View for Registering a new user, auth OID mode
+    View for Registering a new user, auth OAuth mode
     """
 
-    form = RegisterUserOIDForm
+    form = RegisterUserDBForm
 
     def form_get(self, form):
         self.add_form_unique_validations(form)

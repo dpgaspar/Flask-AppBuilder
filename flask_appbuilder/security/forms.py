@@ -1,7 +1,7 @@
 from flask_babel import lazy_gettext
 from flask_wtf.recaptcha import RecaptchaField
-from wtforms import BooleanField, PasswordField, StringField
-from wtforms.validators import DataRequired, Email, EqualTo
+from wtforms import PasswordField, StringField
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 
 from ..fieldwidgets import BS3PasswordFieldWidget, BS3TextFieldWidget
 from ..forms import DynamicForm
@@ -18,13 +18,12 @@ class SelectDataRequired(DataRequired):
     select fields
     """
 
-    field_flags = ()
+    field_flags = {}
 
 
-class LoginForm_oid(DynamicForm):
-    openid = StringField(lazy_gettext("OpenID"), validators=[DataRequired()])
-    username = StringField(lazy_gettext("User Name"))
-    remember_me = BooleanField(lazy_gettext("Remember me"), default=False)
+def roles_or_groups_required(form, field):
+    if not form["roles"].data and not form["groups"].data:
+        raise ValidationError(lazy_gettext("Either select a role or a group"))
 
 
 class LoginForm_db(DynamicForm):
@@ -106,29 +105,5 @@ class RegisterUserDBForm(DynamicForm):
             EqualTo("password", message=lazy_gettext("Passwords must match")),
         ],
         widget=BS3PasswordFieldWidget(),
-    )
-    recaptcha = RecaptchaField()
-
-
-class RegisterUserOIDForm(DynamicForm):
-    username = StringField(
-        lazy_gettext("User Name"),
-        validators=[DataRequired()],
-        widget=BS3TextFieldWidget(),
-    )
-    first_name = StringField(
-        lazy_gettext("First Name"),
-        validators=[DataRequired()],
-        widget=BS3TextFieldWidget(),
-    )
-    last_name = StringField(
-        lazy_gettext("Last Name"),
-        validators=[DataRequired()],
-        widget=BS3TextFieldWidget(),
-    )
-    email = StringField(
-        lazy_gettext("Email"),
-        validators=[DataRequired(), Email()],
-        widget=BS3TextFieldWidget(),
     )
     recaptcha = RecaptchaField()

@@ -1,0 +1,9 @@
+Pillow
+cython
+mysqlclient
+psycopg2-binary
+pyodbc
+requests
+Authlib
+python-ldap
+jmespath

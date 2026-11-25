@@ -28,6 +28,13 @@ class SecurityApi(BaseApi):
         jwt_scheme = {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
         api_spec.components.security_scheme("jwt", jwt_scheme)
         api_spec.components.security_scheme("jwt_refresh", jwt_scheme)
+        api_key_scheme = {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "API Key",
+            "description": "API key authentication using Bearer token",
+        }
+        api_spec.components.security_scheme("api_key", api_key_scheme)
 
     @expose("/login", methods=["POST"])
     @safe
@@ -105,11 +112,11 @@ class SecurityApi(BaseApi):
         # Identity can be any data that is json serializable
         resp = dict()
         resp[API_SECURITY_ACCESS_TOKEN_KEY] = create_access_token(
-            identity=user.id, fresh=True
+            identity=str(user.id), fresh=True
         )
         if "refresh" in login_payload and login_payload["refresh"]:
             resp[API_SECURITY_REFRESH_TOKEN_KEY] = create_refresh_token(
-                identity=user.id
+                identity=str(user.id)
             )
         return self.response(200, **resp)
 

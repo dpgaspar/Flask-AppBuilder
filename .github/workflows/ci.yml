@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: ["3.10"]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -25,14 +25,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          pip install -r requirements/dev.txt
       - name: black
         run: black --check setup.py flask_appbuilder
       - name: flake8
         run: flake8 flask_appbuilder
       - name: mypy
-        run: mypy flask_appbuilder
+        run: mypy flask_appbuilder/**/*.py
       - name: black
         run: black --check tests
       - name: flake8
@@ -42,7 +41,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     env:
       SQLALCHEMY_DATABASE_URI:
         postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
@@ -56,34 +55,100 @@ jobs:
         ports:
           - 15432:5432
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
         run: |
-          docker run -d \
-            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
-            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
-            -e LDAP_URI=ldap://openldap:1389 \
-            -e LDAP_BASE=dc=example,dc=org \
-            -e LDAP_ADMIN_USERNAME=admin \
-            -e LDAP_ADMIN_PASSWORD=admin_password \
-            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
-            -p 1389:1389 \
-            bitnami/openldap:2.6.4
+          for attempt in 1 2 3; do
+            if docker run -d \
+              -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+              -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+              -e LDAP_URI=ldap://openldap:1389 \
+              -e LDAP_BASE=dc=example,dc=org \
+              -e LDAP_ADMIN_USERNAME=admin \
+              -e LDAP_ADMIN_PASSWORD=admin_password \
+              -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+              -p 1389:1389 \
+              bitnamilegacy/openldap:2.6; then
+              break
+            fi
+            if [ "${attempt}" -eq 3 ]; then
+              exit 1
+            fi
+            sleep 5
+          done
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
       - name: Run tests
         run: |
-          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo' tests
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
+      - name: Upload code coverage
+        run: |
+          bash <(curl -s https://codecov.io/bash) -cF python
+
+  test-postgres-sqlalchemy1:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+    env:
+      SQLALCHEMY_DATABASE_URI:
+        postgresql+psycopg2://pguser:pguserpassword@127.0.0.1:15432/app
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_USER: pguser
+          POSTGRES_PASSWORD: pguserpassword
+          POSTGRES_DB: app
+        ports:
+          - 15432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run openldap
+        run: |
+          for attempt in 1 2 3; do
+            if docker run -d \
+              -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+              -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+              -e LDAP_URI=ldap://openldap:1389 \
+              -e LDAP_BASE=dc=example,dc=org \
+              -e LDAP_ADMIN_USERNAME=admin \
+              -e LDAP_ADMIN_PASSWORD=admin_password \
+              -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+              -p 1389:1389 \
+              bitnamilegacy/openldap:2.6; then
+              break
+            fi
+            if [ "${attempt}" -eq 3 ]; then
+              exit 1
+            fi
+            sleep 5
+          done
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
+          pip install --upgrade pip
+          pip install -r requirements/base_legacy.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
+      - name: Run tests
+        run: |
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -92,7 +157,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     env:
       SQLALCHEMY_DATABASE_URI: |
         mysql+mysqldb://mysqluser:mysqluserpassword@127.0.0.1:13306/app?charset=utf8mb4&binary_prefix=true
@@ -107,34 +172,42 @@ jobs:
         ports:
           - 13306:3306
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
         run: |
-          docker run -d \
-            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
-            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
-            -e LDAP_URI=ldap://openldap:1389 \
-            -e LDAP_BASE=dc=example,dc=org \
-            -e LDAP_ADMIN_USERNAME=admin \
-            -e LDAP_ADMIN_PASSWORD=admin_password \
-            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
-            -p 1389:1389 \
-            bitnami/openldap:2.6.4
+          for attempt in 1 2 3; do
+            if docker run -d \
+              -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+              -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+              -e LDAP_URI=ldap://openldap:1389 \
+              -e LDAP_BASE=dc=example,dc=org \
+              -e LDAP_ADMIN_USERNAME=admin \
+              -e LDAP_ADMIN_PASSWORD=admin_password \
+              -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+              -p 1389:1389 \
+              bitnamilegacy/openldap:2.6; then
+              break
+            fi
+            if [ "${attempt}" -eq 3 ]; then
+              exit 1
+            fi
+            sleep 5
+          done
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
       - name: Run tests
         run: |
-          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo' tests
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid' tests
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
@@ -143,92 +216,56 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     env:
       SQLALCHEMY_DATABASE_URI: |
         mssql+pyodbc://sa:Password_123@localhost:11433/master?driver=FreeTDS
     services:
       mssql:
-        image: mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
+        image: mcr.microsoft.com/mssql/server:2022-latest
         env:
           SA_PASSWORD: Password_123
           ACCEPT_EULA: Y
         ports:
           - 11433:1433
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run openldap
         run: |
-          docker run -d \
-            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
-            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
-            -e LDAP_URI=ldap://openldap:1389 \
-            -e LDAP_BASE=dc=example,dc=org \
-            -e LDAP_ADMIN_USERNAME=admin \
-            -e LDAP_ADMIN_PASSWORD=admin_password \
-            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
-            -p 1389:1389 \
-            bitnami/openldap:2.6.4
+          for attempt in 1 2 3; do
+            if docker run -d \
+              -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
+              -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
+              -e LDAP_URI=ldap://openldap:1389 \
+              -e LDAP_BASE=dc=example,dc=org \
+              -e LDAP_ADMIN_USERNAME=admin \
+              -e LDAP_ADMIN_PASSWORD=admin_password \
+              -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
+              -p 1389:1389 \
+              bitnamilegacy/openldap:2.6; then
+              break
+            fi
+            if [ "${attempt}" -eq 3 ]; then
+              exit 1
+            fi
+            sleep 5
+          done
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev freetds-bin unixodbc-dev tdsodbc
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev freetds-bin freetds-dev unixodbc-dev tdsodbc
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
+          pip install -r requirements/base.txt
+          pip install -r requirements/tests.txt
+          pip install -r requirements/extra.txt
           sudo cp .github/workflows/odbcinst.ini /etc/odbcinst.ini
       - name: Run tests
         run: |
-          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo' tests
-      - name: Upload code coverage
-        run: |
-          bash <(curl -s https://codecov.io/bash) -cF python
-
-  test-mongodb:
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        python-version: [3.8]
-    services:
-      mongo:
-        image: mongo:4.4.1-bionic
-        ports:
-          - 27017:27017
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Run openldap
-        run: |
-          docker run -d \
-            -v '${{ github.workspace }}/docker/openldap/ldifs:/ldifs' \
-            -v '${{ github.workspace }}/docker/openldap/schemas/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif' \
-            -e LDAP_URI=ldap://openldap:1389 \
-            -e LDAP_BASE=dc=example,dc=org \
-            -e LDAP_ADMIN_USERNAME=admin \
-            -e LDAP_ADMIN_PASSWORD=admin_password \
-            -e LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof \
-            -p 1389:1389 \
-            bitnami/openldap:2.6.4
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install -r requirements-extra.txt
-          pip install -r requirements-mongodb.txt
-      - name: Run tests
-        run: |
-          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A 'mongo' tests
+          nose2 -c setup.cfg -F -v --with-coverage --coverage flask_appbuilder -A '!mongo,!openid'
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python

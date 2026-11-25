@@ -11,6 +11,7 @@ mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
 class ContactGroup(Model):
+    __tablename__ = "contact_group"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -26,6 +27,7 @@ class ContactGroup(Model):
 
 
 class ProductManufacturer(Model):
+    __tablename__ = "product_manufacturer"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -34,6 +36,7 @@ class ProductManufacturer(Model):
 
 
 class ProductModel(Model):
+    __tablename__ = "product_model"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
     product_manufacturer_id = Column(
@@ -46,6 +49,7 @@ class ProductModel(Model):
 
 
 class Product(Model):
+    __tablename__ = "product"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
     product_manufacturer_id = Column(
@@ -60,6 +64,7 @@ class Product(Model):
 
 
 class Gender(Model):
+    __tablename__ = "gender"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 
@@ -72,6 +77,7 @@ def test():
 
 
 class FloatModel(Model):
+    __tablename__ = "float_model"
     id = Column(Integer, primary_key=True)
     value = Column(Float, nullable=False, default=test)
     value_numeric = Column(Numeric, nullable=False, default=test)
@@ -81,6 +87,7 @@ class FloatModel(Model):
 
 
 class Contact(Model):
+    __tablename__ = "contact"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))

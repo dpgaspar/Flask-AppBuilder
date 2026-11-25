@@ -1,5 +1,5 @@
 from flask_appbuilder.security.sqla.models import User
-from marshmallow import fields, Schema
+from marshmallow import fields, Schema, validates_schema, ValidationError
 from marshmallow.validate import Length
 
 from .validator import PasswordComplexityValidator
@@ -34,8 +34,12 @@ class UserPostSchema(Schema):
     )
     roles = fields.List(
         fields.Integer,
-        required=True,
-        validate=[Length(1)],
+        required=False,
+        metadata={"description": roles_description},
+    )
+    groups = fields.List(
+        fields.Integer,
+        required=False,
         metadata={"description": roles_description},
     )
     username = fields.String(
@@ -43,6 +47,19 @@ class UserPostSchema(Schema):
         validate=[Length(1, 250)],
         metadata={"description": username_description},
     )
+
+    @validates_schema
+    def validate_roles_or_groups_present(self, data, **kwargs):
+        """
+        Ensure at least one of 'roles' or 'groups' is present and non-empty.
+        """
+        roles = data.get("roles") or []
+        groups = data.get("groups") or []
+
+        if not roles and not groups:
+            raise ValidationError(
+                "At least one of 'roles' or 'groups' must be provided and non-empty."
+            )
 
 
 class UserPutSchema(Schema):
@@ -66,7 +83,11 @@ class UserPutSchema(Schema):
     roles = fields.List(
         fields.Integer,
         required=False,
-        validate=[Length(1)],
+        metadata={"description": roles_description},
+    )
+    groups = fields.List(
+        fields.Integer,
+        required=False,
         metadata={"description": roles_description},
     )
     username = fields.String(

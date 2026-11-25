@@ -4,9 +4,9 @@ import logging
 from typing import Any, Dict, List, Optional, Set
 import unittest
 
-from flask import Flask, Response
+from flask import Flask
 from flask.testing import FlaskClient
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
 from flask_appbuilder.const import (
     API_SECURITY_PASSWORD_KEY,
     API_SECURITY_PROVIDER_KEY,
@@ -14,7 +14,8 @@ from flask_appbuilder.const import (
     API_SECURITY_USERNAME_KEY,
     API_SECURITY_VERSION,
 )
-from flask_appbuilder.security.sqla.models import User
+from flask_appbuilder.security.sqla.models import Group, User
+from flask_appbuilder.utils.legacy import get_sqla_class
 from hiro import Timeline
 import jinja2
 from tests.const import (
@@ -23,6 +24,7 @@ from tests.const import (
     USERNAME_ADMIN,
     USERNAME_READONLY,
 )
+from werkzeug.test import TestResponse
 
 
 class FABTestCase(unittest.TestCase):
@@ -75,7 +77,8 @@ class FABTestCase(unittest.TestCase):
         password: str,
         next_url: Optional[str] = None,
         follow_redirects: bool = True,
-    ) -> Response:
+        headers: Optional[dict] = None,
+    ) -> TestResponse:
         login_url = "/login/"
         if next_url:
             login_url = f"{login_url}?next={next_url}"
@@ -83,6 +86,7 @@ class FABTestCase(unittest.TestCase):
             login_url,
             data=dict(username=username, password=password),
             follow_redirects=follow_redirects,
+            headers=headers or {},
         )
 
     def assert_response(
@@ -105,11 +109,9 @@ class FABTestCase(unittest.TestCase):
 
     def create_default_users(self, appbuilder) -> None:
         with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
-            self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        with Timeline(start=datetime(2020, 1, 1), scale=0).freeze():
+            self.create_admin_user(appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
             self.create_user(
-                self.appbuilder,
+                appbuilder,
                 USERNAME_READONLY,
                 PASSWORD_READONLY,
                 "ReadOnly",
@@ -122,6 +124,19 @@ class FABTestCase(unittest.TestCase):
         self.create_user(appbuilder, username, password, "Admin")
 
     @staticmethod
+    def create_group(
+        appbuilder: AppBuilder,
+        name: str = "group1",
+        label: str = "group1",
+        description: str = "group1",
+    ):
+        group = Group(name=name, label=label, description=description)
+        appbuilder.session.add(group)
+        appbuilder.session.flush()
+        appbuilder.session.commit()
+        return group
+
+    @staticmethod
     def create_user(
         appbuilder,
         username,
@@ -131,18 +146,31 @@ class FABTestCase(unittest.TestCase):
         last_name="user",
         email="admin@fab.org",
         role_names=None,
+        group_names=None,
     ) -> User:
         user = appbuilder.sm.find_user(username=username)
         if user:
             appbuilder.session.delete(user)
             appbuilder.session.commit()
-        roles = (
-            [appbuilder.sm.find_role(role_name) for role_name in role_names]
-            if role_names
-            else [appbuilder.sm.find_role(role_name)]
+        if role_name:
+            roles = [appbuilder.sm.find_role(role_name)]
+        else:
+            roles = [
+                appbuilder.sm.find_role(role_name) for role_name in (role_names or [])
+            ]
+        groups = (
+            [appbuilder.sm.find_group(group_name) for group_name in group_names]
+            if group_names
+            else []
         )
         return appbuilder.sm.add_user(
-            username, first_name, last_name, email, roles, password
+            username,
+            first_name,
+            last_name,
+            email,
+            role=roles,
+            password=password,
+            groups=groups,
         )
 
 
@@ -153,9 +181,18 @@ class BaseMVCTestCase(FABTestCase):
         self.app.config.from_object("tests.config_api")
         logging.basicConfig(level=logging.ERROR)
 
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+        SQLA = get_sqla_class()
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
         self.create_default_users(self.appbuilder)
+
+    def tearDown(self):
+        self.ctx.pop()
+        self.appbuilder = None
+        self.ctx = None
+        self.app = None
 
     @property
     def registered_endpoints(self) -> Set:

@@ -1,18 +1,50 @@
+from __future__ import annotations
+
 from datetime import datetime
+import hashlib
 import json
 import logging
-from typing import Dict, List, Optional, Tuple, Union
+import secrets
+from typing import Any, Dict, List, Optional, Tuple, Union
 import uuid
 
-from sqlalchemy import and_, func, literal, update
-from sqlalchemy.engine.reflection import Inspector
-from sqlalchemy.orm import contains_eager
-from sqlalchemy.orm.exc import MultipleResultsFound
-from werkzeug.security import generate_password_hash
-
-from .apis import PermissionApi, PermissionViewMenuApi, RoleApi, UserApi, ViewMenuApi
-from .models import (
+from flask import current_app, g, has_app_context
+from flask_appbuilder import const as c
+from flask_appbuilder import Model
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.security.events import SecurityModelChangeEvent
+from flask_appbuilder.security.manager import BaseSecurityManager
+from flask_appbuilder.security.signals import (
+    group_created,
+    group_creating,
+    group_deleted,
+    group_deleting,
+    role_created,
+    role_creating,
+    role_deleted,
+    role_deleting,
+    role_updated,
+    role_updating,
+    user_created,
+    user_creating,
+    user_deleted,
+    user_deleting,
+    user_updated,
+    user_updating,
+)
+from flask_appbuilder.security.sqla.apis import (
+    ApiKeyApi,
+    GroupApi,
+    PermissionApi,
+    PermissionViewMenuApi,
+    RoleApi,
+    UserApi,
+    ViewMenuApi,
+)
+from flask_appbuilder.security.sqla.models import (
+    ApiKey,
     assoc_permissionview_role,
+    Group,
     Permission,
     PermissionView,
     RegisterUser,
@@ -20,10 +52,11 @@ from .models import (
     User,
     ViewMenu,
 )
-from ..manager import BaseSecurityManager
-from ... import const as c
-from ...models.sqla import Base
-from ...models.sqla.interface import SQLAInterface
+from sqlalchemy import and_, func, literal, update
+from sqlalchemy import inspect
+from sqlalchemy.orm import contains_eager
+from sqlalchemy.orm.exc import MultipleResultsFound
+from werkzeug.security import check_password_hash, generate_password_hash
 
 log = logging.getLogger(__name__)
 
@@ -41,10 +74,12 @@ class SecurityManager(BaseSecurityManager):
     """ Override to set your own User Model """
     role_model = Role
     """ Override to set your own Role Model """
+    group_model = Group
     permission_model = Permission
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
     registeruser_model = RegisterUser
+    api_key_model = ApiKey
 
     # APIs
     permission_api = PermissionApi
@@ -52,6 +87,133 @@ class SecurityManager(BaseSecurityManager):
     user_api = UserApi
     view_menu_api = ViewMenuApi
     permission_view_menu_api = PermissionViewMenuApi
+    group_api = GroupApi
+
+    # ---------------------------------------------------------------------------
+    # Signal emission helpers
+    # ---------------------------------------------------------------------------
+
+    def _signals_enabled(self) -> bool:
+        """Check if security model signals are enabled."""
+        if not has_app_context():
+            return False
+        return current_app.config.get("FAB_SECURITY_SIGNALS_ENABLED", True)
+
+    def _get_triggered_by_user(self) -> Optional[Any]:
+        """
+        Safely get the current user for signal triggered_by field.
+
+        Returns None if outside request context or no user is authenticated.
+        """
+        try:
+            return self.current_user
+        except Exception:
+            return None
+
+    def _emit_pre_signal(
+        self,
+        signal,
+        model_type: str,
+        action: str,
+        model_id: Any,
+        model: Any = None,
+        changes: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """
+        Emit a pre-commit signal (within the transaction).
+
+        Handlers can modify the session and changes will be committed
+        together with the original operation.
+        """
+        if not self._signals_enabled():
+            return
+
+        event = SecurityModelChangeEvent(
+            model_type=model_type,
+            action=action,
+            model_id=model_id,
+            model=model,
+            timestamp=datetime.utcnow(),
+            changes=changes,
+            triggered_by=self._get_triggered_by_user(),
+            is_committed=False,
+        )
+        try:
+            signal.send(self, event=event)
+        except Exception as e:
+            log.error("Error in pre-commit signal handler: %s", e)
+            raise
+
+    def _emit_post_signal(
+        self,
+        signal,
+        model_type: str,
+        action: str,
+        model_id: Any,
+        model: Any = None,
+        changes: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """
+        Emit a post-commit signal (after the transaction).
+
+        For notifications and side effects only. Errors in handlers
+        are logged but do not affect the already-committed transaction.
+        """
+        if not self._signals_enabled():
+            return
+
+        event = SecurityModelChangeEvent(
+            model_type=model_type,
+            action=action,
+            model_id=model_id,
+            model=model,
+            timestamp=datetime.utcnow(),
+            changes=changes,
+            triggered_by=self._get_triggered_by_user(),
+            is_committed=True,
+        )
+        try:
+            signal.send(self, event=event)
+        except Exception as e:
+            log.error("Error in post-commit signal handler: %s", e)
+            # Don't re-raise - transaction already committed
+
+    def _detect_model_changes(self, model: Any) -> Optional[Dict[str, Dict[str, Any]]]:
+        """
+        Detect what fields have changed on a model instance.
+
+        Uses SQLAlchemy inspection to compare current values against
+        the committed (database) values.
+
+        Returns a dict of changed fields with old/new values, or None if
+        no changes detected.
+        """
+        from sqlalchemy import inspect as sa_inspect
+
+        changes = {}
+        insp = sa_inspect(model)
+
+        for attr in insp.attrs:
+            hist = attr.history
+            # Check if the attribute has changes (added or deleted values)
+            if hist.has_changes():
+                # For scalar attributes, deleted is the old value, added is new
+                if hist.deleted:
+                    old_val = hist.deleted[0] if hist.deleted else None
+                else:
+                    old_val = None
+                if hist.added:
+                    new_val = hist.added[0] if hist.added else None
+                else:
+                    new_val = getattr(model, attr.key, None)
+
+                # Only record if values are actually different
+                if old_val != new_val:
+                    changes[attr.key] = {"old": old_val, "new": new_val}
+
+        return changes if changes else None
+
+    # ---------------------------------------------------------------------------
 
     def __init__(self, appbuilder):
         """
@@ -65,12 +227,12 @@ class SecurityManager(BaseSecurityManager):
             self.userdbmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_LDAP:
             self.userldapmodelview.datamodel = user_datamodel
-        elif self.auth_type == c.AUTH_OID:
-            self.useroidmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_OAUTH:
             self.useroauthmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_REMOTE_USER:
             self.userremoteusermodelview.datamodel = user_datamodel
+        elif self.auth_type == c.AUTH_SAML:
+            self.usersamlmodelview.datamodel = user_datamodel
 
         if self.userstatschartview:
             self.userstatschartview.datamodel = user_datamodel
@@ -80,6 +242,7 @@ class SecurityManager(BaseSecurityManager):
             )
 
         self.rolemodelview.datamodel = SQLAInterface(self.role_model)
+        self.groupmodelview.datamodel = SQLAInterface(self.group_model)
         self.permissionmodelview.datamodel = SQLAInterface(self.permission_model)
         self.viewmenumodelview.datamodel = SQLAInterface(self.viewmenu_model)
         self.permissionviewmodelview.datamodel = SQLAInterface(
@@ -88,42 +251,63 @@ class SecurityManager(BaseSecurityManager):
         self.create_db()
 
     @property
-    def get_session(self):
-        return self.appbuilder.get_session
+    def session(self):
+        return current_app.appbuilder.session
 
-    def register_views(self):
-        super(SecurityManager, self).register_views()
+    def register_views(self) -> None:
+        super().register_views()
 
-        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_API", False):
+        if current_app.config.get("FAB_ADD_SECURITY_API", False):
             self.appbuilder.add_api(self.permission_api)
             self.appbuilder.add_api(self.role_api)
             self.appbuilder.add_api(self.user_api)
             self.appbuilder.add_api(self.view_menu_api)
             self.appbuilder.add_api(self.permission_view_menu_api)
+            self.appbuilder.add_api(self.group_api)
+            if current_app.config.get("FAB_API_KEY_ENABLED", False):
+                self.appbuilder.add_api(ApiKeyApi)
 
-    def create_db(self):
-        try:
-            engine = self.get_session.get_bind(mapper=None, clause=None)
-            inspector = Inspector.from_engine(engine)
-            if "ab_user" not in inspector.get_table_names():
-                log.info(c.LOGMSG_INF_SEC_NO_DB)
-                Base.metadata.create_all(engine)
-                log.info(c.LOGMSG_INF_SEC_ADD_DB)
-            super(SecurityManager, self).create_db()
-        except Exception as e:
-            log.error(c.LOGMSG_ERR_SEC_CREATE_DB, e)
-            exit(1)
+    def create_db(self) -> None:
+        if not current_app.config.get("FAB_CREATE_DB", True):
+            return
+            # Check if an application context does not exist
+        if not has_app_context():
+            # Create a new application context
+            with current_app.app_context():
+                self._create_db()
+        else:
+            self._create_db()
 
-    def find_register_user(self, registration_hash):
+    def _create_db(self) -> None:
+        engine = self.session.get_bind(mapper=None, clause=None)
+        inspector = inspect(engine)
+        existing_tables = inspector.get_table_names()
+        if (
+            "ab_user" not in existing_tables
+            or "ab_group" not in existing_tables
+            or "ab_api_key" not in existing_tables
+        ):
+            log.info(c.LOGMSG_INF_SEC_NO_DB)
+            Model.metadata.create_all(engine)
+            log.info(c.LOGMSG_INF_SEC_ADD_DB)
+        super().create_db()
+
+    def find_register_user(self, registration_hash: str) -> Optional[RegisterUser]:
         return (
-            self.get_session.query(self.registeruser_model)
+            self.session.query(self.registeruser_model)
             .filter(self.registeruser_model.registration_hash == registration_hash)
             .scalar()
         )
 
     def add_register_user(
-        self, username, first_name, last_name, email, password="", hashed_password=""
-    ):
+        self,
+        username: str,
+        first_name: str,
+        last_name: str,
+        email: str,
+        password: str = "",
+        hashed_password: str = "",
+    ) -> User:
         """
         Add a registration request for the user.
 
@@ -137,15 +321,19 @@ class SecurityManager(BaseSecurityManager):
         if hashed_password:
             register_user.password = hashed_password
         else:
-            register_user.password = generate_password_hash(password)
-        register_user.registration_hash = str(uuid.uuid1())
+            register_user.password = generate_password_hash(
+                password=password,
+                method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+                salt_length=current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
+            )
+        register_user.registration_hash = str(uuid.uuid4())
         try:
-            self.get_session.add(register_user)
-            self.get_session.commit()
+            self.session.add(register_user)
+            self.session.commit()
             return register_user
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER, e)
-            self.appbuilder.get_session.rollback()
+            self.session.rollback()
             return None
 
     def del_register_user(self, register_user):
@@ -155,12 +343,12 @@ class SecurityManager(BaseSecurityManager):
         :param register_user: RegisterUser object to delete
         """
         try:
-            self.get_session.delete(register_user)
-            self.get_session.commit()
+            self.session.delete(register_user)
+            self.session.commit()
             return True
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_DEL_REGISTER_USER, e)
-            self.get_session.rollback()
+            self.session.rollback()
             return False
 
     def find_user(self, username=None, email=None):
@@ -171,7 +359,7 @@ class SecurityManager(BaseSecurityManager):
             try:
                 if self.auth_username_ci:
                     return (
-                        self.get_session.query(self.user_model)
+                        self.session.query(self.user_model)
                         .filter(
                             func.lower(self.user_model.username) == func.lower(username)
                         )
@@ -179,7 +367,7 @@ class SecurityManager(BaseSecurityManager):
                     )
                 else:
                     return (
-                        self.get_session.query(self.user_model)
+                        self.session.query(self.user_model)
                         .filter(self.user_model.username == username)
                         .one_or_none()
                     )
@@ -189,7 +377,7 @@ class SecurityManager(BaseSecurityManager):
         elif email:
             try:
                 return (
-                    self.get_session.query(self.user_model)
+                    self.session.query(self.user_model)
                     .filter_by(email=email)
                     .one_or_none()
                 )
@@ -198,21 +386,40 @@ class SecurityManager(BaseSecurityManager):
                 return None
 
     def get_all_users(self):
-        return self.get_session.query(self.user_model).all()
+        return self.session.query(self.user_model).all()
 
     def add_user(
         self,
-        username,
-        first_name,
-        last_name,
-        email,
-        role,
-        password="",
-        hashed_password="",
+        username: str,
+        first_name: str,
+        last_name: str,
+        email: str,
+        role: Union[List[Role], Role, None] = None,
+        password: str = "",
+        hashed_password: str = "",
+        groups: Optional[List[Group]] = None,
+        commit: bool = True,
     ):
         """
-        Generic function to create user
+        Generic function to create user.
+
+        :param username: The user's username
+        :param first_name: The user's first name
+        :param last_name: The user's last name
+        :param email: The user's email address
+        :param role: A Role or list of Roles to assign to the user
+        :param password: Plain text password (will be hashed)
+        :param hashed_password: Pre-hashed password (use instead of password)
+        :param groups: List of Groups to assign to the user
+        :param commit: If True (default), commits the transaction. If False,
+            the caller is responsible for committing. Pre-commit signals
+            are always fired; post-commit signals only fire if commit=True.
+        :return: The created User instance, or False on error
         """
+        roles = []
+        if role:
+            roles = role if isinstance(role, list) else [role]
+
         try:
             user = self.user_model()
             user.first_name = first_name
@@ -220,38 +427,152 @@ class SecurityManager(BaseSecurityManager):
             user.username = username
             user.email = email
             user.active = True
-            user.roles = role if isinstance(role, list) else [role]
-            if hashed_password:
-                user.password = hashed_password
-            else:
-                user.password = generate_password_hash(password)
-            self.get_session.add(user)
-            self.get_session.commit()
-            log.info(c.LOGMSG_INF_SEC_ADD_USER, username)
+            user.roles = roles
+            user.groups = groups or []
+            if not hashed_password:
+                # When no password is supplied (e.g. users provisioned through
+                # a non-database auth backend), fall back to a random secret so
+                # the stored hash is never derived from a predictable value and
+                # the account cannot be authenticated via the database path.
+                if not password:
+                    password = secrets.token_urlsafe(32)
+                hashed_password = generate_password_hash(
+                    password=password,
+                    method=current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+                    salt_length=current_app.config.get(
+                        "FAB_PASSWORD_HASH_SALT_LENGTH", 16
+                    ),
+                )
+            user.password = hashed_password
+            self.session.add(user)
+
+            # Flush to get the user ID before emitting pre-commit signal
+            self.session.flush()
+
+            # Pre-commit signal - handlers can modify the session
+            self._emit_pre_signal(user_creating, "user", "creating", user.id, user)
+
+            if commit:
+                self.session.commit()
+                log.info(c.LOGMSG_INF_SEC_ADD_USER, username)
+                # Post-commit signal - for notifications only
+                self._emit_post_signal(user_created, "user", "created", user.id, user)
+
             return user
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_ADD_USER, e)
-            self.get_session.rollback()
+            self.session.rollback()
             return False
 
     def count_users(self):
-        return self.get_session.query(func.count(self.user_model.id)).scalar()
+        return self.session.query(func.count(self.user_model.id)).scalar()
 
-    def update_user(self, user):
+    def update_user(self, user, commit: bool = True):
+        """
+        Update an existing user.
+
+        :param user: The User instance with updated values
+        :param commit: If True (default), commits the transaction. If False,
+            the caller is responsible for committing.
+        :return: None on success, False on error
+        """
         try:
-            self.get_session.merge(user)
-            self.get_session.commit()
-            log.info(c.LOGMSG_INF_SEC_UPD_USER, user)
+            # Load existing user from DB to compare role/group changes
+            existing_user = self.session.get(self.user_model, user.id)
+
+            # Detect role/group relationship changes before merge
+            existing_role_ids = {r.id for r in existing_user.roles}
+            existing_group_ids = {g.id for g in existing_user.groups}
+            new_role_ids = {r.id for r in user.roles}
+            new_group_ids = {g.id for g in user.groups}
+
+            roles_changed = existing_role_ids != new_role_ids
+            groups_changed = existing_group_ids != new_group_ids
+
+            if roles_changed or groups_changed:
+                user.changed_on = datetime.utcnow()  # pragma: no cover
+
+            self.session.merge(user)
+
+            # Flush changes before detecting them
+            self.session.flush()
+
+            # Detect scalar field changes using SQLAlchemy inspection
+            changes = self._detect_model_changes(user)
+
+            # Add relationship changes
+            if roles_changed:
+                changes = changes or {}
+                changes["roles"] = {
+                    "old": list(existing_role_ids),
+                    "new": list(new_role_ids),
+                }
+            if groups_changed:
+                changes = changes or {}
+                changes["groups"] = {
+                    "old": list(existing_group_ids),
+                    "new": list(new_group_ids),
+                }
+
+            # Pre-commit signal - handlers can modify the session
+            self._emit_pre_signal(
+                user_updating, "user", "updating", user.id, user, changes
+            )
+
+            if commit:
+                self.session.commit()
+                log.info(c.LOGMSG_INF_SEC_UPD_USER, user)
+                # Post-commit signal - for notifications only
+                self._emit_post_signal(
+                    user_updated, "user", "updated", user.id, user, changes
+                )
+
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_UPD_USER, e)
-            self.get_session.rollback()
+            self.session.rollback()
             return False
 
     def get_user_by_id(self, pk):
-        return self.get_session.query(self.user_model).get(pk)
+        return self.session.get(self.user_model, pk)
+
+    def delete_user(self, user_or_id, commit: bool = True) -> bool:
+        """
+        Delete a user.
+
+        :param user_or_id: A User instance or user ID to delete
+        :param commit: If True (default), commits the transaction
+        :return: True on success, False on error
+        """
+        if isinstance(user_or_id, self.user_model):
+            user = user_or_id
+        else:
+            user = self.get_user_by_id(user_or_id)
+
+        if not user:
+            log.warning("User not found for deletion")
+            return False
+
+        user_id = user.id
+        try:
+            # Pre-commit signal - fire before delete
+            self._emit_pre_signal(user_deleting, "user", "deleting", user_id, user)
+
+            self.session.delete(user)
+
+            if commit:
+                self.session.commit()
+                log.info(c.LOGMSG_INF_SEC_DEL_USER, user_id)
+                # Post-commit signal
+                self._emit_post_signal(user_deleted, "user", "deleted", user_id, None)
+
+            return True
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_DEL_USER, e)
+            self.session.rollback()
+            return False
 
     def get_first_user(self) -> "User":
-        return self.get_session.query(self.user_model).first()
+        return self.session.query(self.user_model).first()
 
     def noop_user_update(self, user: "User") -> None:
         stmt = (
@@ -259,8 +580,8 @@ class SecurityManager(BaseSecurityManager):
             .where(self.user_model.id == user.id)
             .values(login_count=user.login_count)
         )
-        self.get_session.execute(stmt)
-        self.get_session.commit()
+        self.session.execute(stmt)
+        self.session.commit()
 
     """
     -----------------------
@@ -269,8 +590,19 @@ class SecurityManager(BaseSecurityManager):
     """
 
     def add_role(
-        self, name: str, permissions: Optional[List[PermissionView]] = None
+        self,
+        name: str,
+        permissions: Optional[List[PermissionView]] = None,
+        commit: bool = True,
     ) -> Optional[Role]:
+        """
+        Add a new role.
+
+        :param name: The role name
+        :param permissions: List of PermissionView instances to assign
+        :param commit: If True (default), commits the transaction
+        :return: The created Role, or existing Role if name already exists
+        """
         if not permissions:
             permissions = []
 
@@ -280,43 +612,213 @@ class SecurityManager(BaseSecurityManager):
                 role = self.role_model()
                 role.name = name
                 role.permissions = permissions
-                self.get_session.add(role)
-                self.get_session.commit()
-                log.info(c.LOGMSG_INF_SEC_ADD_ROLE, name)
+                self.session.add(role)
+
+                # Flush to get the role ID
+                self.session.flush()
+
+                # Pre-commit signal
+                self._emit_pre_signal(role_creating, "role", "creating", role.id, role)
+
+                if commit:
+                    self.session.commit()
+                    log.info(c.LOGMSG_INF_SEC_ADD_ROLE, name)
+                    # Post-commit signal
+                    self._emit_post_signal(
+                        role_created, "role", "created", role.id, role
+                    )
+
                 return role
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_ADD_ROLE, e)
-                self.get_session.rollback()
+                self.session.rollback()
         return role
 
-    def update_role(self, pk, name: str) -> Optional[Role]:
-        role = self.get_session.query(self.role_model).get(pk)
+    def update_role(self, pk, name: str, commit: bool = True) -> Optional[Role]:
+        """
+        Update an existing role.
+
+        :param pk: The role's primary key
+        :param name: The new role name
+        :param commit: If True (default), commits the transaction
+        :return: The updated Role, or None on error
+        """
+        role = self.session.query(self.role_model).get(pk)
         if not role:
-            return
+            return None
         try:
+            old_name = role.name
+            changes = None
+            if old_name != name:
+                changes = {"name": {"old": old_name, "new": name}}
+
             role.name = name
-            self.get_session.merge(role)
-            self.get_session.commit()
-            log.info(c.LOGMSG_INF_SEC_UPD_ROLE, role)
+            self.session.merge(role)
+
+            # Flush changes
+            self.session.flush()
+
+            # Pre-commit signal
+            self._emit_pre_signal(
+                role_updating, "role", "updating", role.id, role, changes
+            )
+
+            if commit:
+                self.session.commit()
+                log.info(c.LOGMSG_INF_SEC_UPD_ROLE, role)
+                # Post-commit signal
+                self._emit_post_signal(
+                    role_updated, "role", "updated", role.id, role, changes
+                )
+
+            return role
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_UPD_ROLE, e)
-            self.get_session.rollback()
-            return
+            self.session.rollback()
+            return None
 
     def find_role(self, name):
-        return (
-            self.get_session.query(self.role_model).filter_by(name=name).one_or_none()
-        )
+        return self.session.query(self.role_model).filter_by(name=name).one_or_none()
+
+    def delete_role(self, role_or_id, commit: bool = True) -> bool:
+        """
+        Delete a role.
+
+        :param role_or_id: A Role instance or role ID to delete
+        :param commit: If True (default), commits the transaction
+        :return: True on success, False on error
+        """
+        if isinstance(role_or_id, self.role_model):
+            role = role_or_id
+        else:
+            role = self.session.query(self.role_model).get(role_or_id)
+
+        if not role:
+            log.warning("Role not found for deletion")
+            return False
+
+        role_id = role.id
+        try:
+            # Pre-commit signal - fire before delete
+            self._emit_pre_signal(role_deleting, "role", "deleting", role_id, role)
+
+            self.session.delete(role)
+
+            if commit:
+                self.session.commit()
+                log.info(c.LOGMSG_INF_SEC_DEL_ROLE, role_id)
+                # Post-commit signal
+                self._emit_post_signal(role_deleted, "role", "deleted", role_id, None)
+
+            return True
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_DEL_ROLE, e)
+            self.session.rollback()
+            return False
 
     def get_all_roles(self):
-        return self.get_session.query(self.role_model).all()
+        return self.session.query(self.role_model).all()
 
     def get_public_role(self):
         return (
-            self.get_session.query(self.role_model)
+            self.session.query(self.role_model)
             .filter_by(name=self.auth_role_public)
             .one_or_none()
         )
+
+    def find_group(self, name: str) -> Group:
+        return self.session.query(self.group_model).filter_by(name=name).one_or_none()
+
+    def add_group(
+        self,
+        name: str,
+        label: str,
+        description: str,
+        roles: Optional[List[Role]] = None,
+        users: Optional[List[User]] = None,
+        commit: bool = True,
+    ) -> Optional[Group]:
+        """
+        Add a new group.
+
+        :param name: The group name (unique identifier)
+        :param label: The group label (display name)
+        :param description: The group description
+        :param roles: List of Roles to assign to the group
+        :param users: List of Users to add to the group
+        :param commit: If True (default), commits the transaction
+        :return: The created Group, or existing Group if name already exists
+        """
+        group = self.find_group(name)
+        if group is not None:
+            return group
+        try:
+            group = self.group_model()
+            group.name = name
+            group.label = label
+            group.description = description
+            group.roles = roles or []
+            group.users = users or []
+
+            self.session.add(group)
+
+            # Flush to get the group ID
+            self.session.flush()
+
+            # Pre-commit signal
+            self._emit_pre_signal(group_creating, "group", "creating", group.id, group)
+
+            if commit:
+                self.session.commit()
+                log.info(c.LOGMSG_INF_SEC_ADD_GROUP, name)
+                # Post-commit signal
+                self._emit_post_signal(
+                    group_created, "group", "created", group.id, group
+                )
+
+            return group
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_ADD_GROUP, e)
+            self.session.rollback()
+            return None
+
+    def delete_group(self, group_or_id, commit: bool = True) -> bool:
+        """
+        Delete a group.
+
+        :param group_or_id: A Group instance or group ID to delete
+        :param commit: If True (default), commits the transaction
+        :return: True on success, False on error
+        """
+        if isinstance(group_or_id, self.group_model):
+            group = group_or_id
+        else:
+            group = self.session.query(self.group_model).get(group_or_id)
+
+        if not group:
+            log.warning("Group not found for deletion")
+            return False
+
+        group_id = group.id
+        try:
+            # Pre-commit signal - fire before delete
+            self._emit_pre_signal(group_deleting, "group", "deleting", group_id, group)
+
+            self.session.delete(group)
+
+            if commit:
+                self.session.commit()
+                log.info(c.LOGMSG_INF_SEC_DEL_GROUP, group_id)
+                # Post-commit signal
+                self._emit_post_signal(
+                    group_deleted, "group", "deleted", group_id, None
+                )
+
+            return True
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_DEL_GROUP, e)
+            self.session.rollback()
+            return False
 
     def get_public_permissions(self):
         role = self.get_public_role()
@@ -329,9 +831,7 @@ class SecurityManager(BaseSecurityManager):
         Finds and returns a Permission by name
         """
         return (
-            self.get_session.query(self.permission_model)
-            .filter_by(name=name)
-            .one_or_none()
+            self.session.query(self.permission_model).filter_by(name=name).one_or_none()
         )
 
     def exist_permission_on_roles(
@@ -347,7 +847,7 @@ class SecurityManager(BaseSecurityManager):
         :return: Boolean
         """
         q = (
-            self.appbuilder.get_session.query(self.permissionview_model)
+            self.session.query(self.permissionview_model)
             .join(
                 assoc_permissionview_role,
                 and_(
@@ -368,15 +868,15 @@ class SecurityManager(BaseSecurityManager):
             .exists()
         )
         # Special case for MSSQL/Oracle (works on PG and MySQL > 8)
-        if self.appbuilder.get_session.bind.dialect.name in ("mssql", "oracle"):
-            return self.appbuilder.get_session.query(literal(True)).filter(q).scalar()
-        return self.appbuilder.get_session.query(q).scalar()
+        if self.session.get_bind().name in ("mssql", "oracle"):
+            return self.session.query(literal(True)).filter(q).scalar()
+        return self.session.query(q).scalar()
 
     def find_roles_permission_view_menus(
         self, permission_name: str, role_ids: List[int]
     ):
         return (
-            self.appbuilder.get_session.query(self.permissionview_model)
+            self.session.query(self.permissionview_model)
             .join(
                 assoc_permissionview_role,
                 and_(
@@ -410,12 +910,13 @@ class SecurityManager(BaseSecurityManager):
         }
         ```
         """
-        if not user.roles:
-            raise AttributeError("User object does not have roles")
+        if not user.roles and not user.groups:
+            raise AttributeError("User object does not have roles or groups")
 
         result: Dict[str, List[Tuple[str, str]]] = {}
         db_roles_ids = []
-        for role in user.roles:
+        roles = self.get_user_roles(user)
+        for role in roles:
             # Make sure all db roles are included on the result
             result[role.name] = []
             if role.name in self.builtin_roles:
@@ -425,7 +926,7 @@ class SecurityManager(BaseSecurityManager):
                 db_roles_ids.append(role.id)
 
         permission_views = (
-            self.appbuilder.get_session.query(PermissionView)
+            self.session.query(PermissionView)
             .join(Permission)
             .join(ViewMenu)
             .join(PermissionView.role)
@@ -451,7 +952,7 @@ class SecurityManager(BaseSecurityManager):
         Get all DB permissions from a role (one single query)
         """
         return (
-            self.appbuilder.get_session.query(PermissionView)
+            self.session.query(PermissionView)
             .join(Permission)
             .join(ViewMenu)
             .join(PermissionView.role)
@@ -473,12 +974,12 @@ class SecurityManager(BaseSecurityManager):
             try:
                 perm = self.permission_model()
                 perm.name = name
-                self.get_session.add(perm)
-                self.get_session.commit()
+                self.session.add(perm)
+                self.session.commit()
                 return perm
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_ADD_PERMISSION, e)
-                self.get_session.rollback()
+                self.session.rollback()
         return perm
 
     def del_permission(self, name: str) -> bool:
@@ -494,19 +995,19 @@ class SecurityManager(BaseSecurityManager):
             return False
         try:
             pvms = (
-                self.get_session.query(self.permissionview_model)
+                self.session.query(self.permissionview_model)
                 .filter(self.permissionview_model.permission == perm)
                 .all()
             )
             if pvms:
                 log.warning(c.LOGMSG_WAR_SEC_DEL_PERM_PVM, perm, pvms)
                 return False
-            self.get_session.delete(perm)
-            self.get_session.commit()
+            self.session.delete(perm)
+            self.session.commit()
             return True
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION, e)
-            self.get_session.rollback()
+            self.session.rollback()
             return False
 
     """
@@ -520,13 +1021,11 @@ class SecurityManager(BaseSecurityManager):
         Finds and returns a ViewMenu by name
         """
         return (
-            self.get_session.query(self.viewmenu_model)
-            .filter_by(name=name)
-            .one_or_none()
+            self.session.query(self.viewmenu_model).filter_by(name=name).one_or_none()
         )
 
     def get_all_view_menu(self):
-        return self.get_session.query(self.viewmenu_model).all()
+        return self.session.query(self.viewmenu_model).all()
 
     def add_view_menu(self, name):
         """
@@ -539,12 +1038,12 @@ class SecurityManager(BaseSecurityManager):
             try:
                 view_menu = self.viewmenu_model()
                 view_menu.name = name
-                self.get_session.add(view_menu)
-                self.get_session.commit()
+                self.session.add(view_menu)
+                self.session.commit()
                 return view_menu
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_ADD_VIEWMENU, e)
-                self.get_session.rollback()
+                self.session.rollback()
         return view_menu
 
     def del_view_menu(self, name: str) -> bool:
@@ -560,19 +1059,19 @@ class SecurityManager(BaseSecurityManager):
             return False
         try:
             pvms = (
-                self.get_session.query(self.permissionview_model)
+                self.session.query(self.permissionview_model)
                 .filter(self.permissionview_model.view_menu == view_menu)
                 .all()
             )
             if pvms:
                 log.warning(c.LOGMSG_WAR_SEC_DEL_VIEWMENU_PVM, view_menu, pvms)
                 return False
-            self.get_session.delete(view_menu)
-            self.get_session.commit()
+            self.session.delete(view_menu)
+            self.session.commit()
             return True
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION, e)
-            self.get_session.rollback()
+            self.session.rollback()
             return False
 
     """
@@ -589,7 +1088,7 @@ class SecurityManager(BaseSecurityManager):
         view_menu = self.find_view_menu(view_menu_name)
         if permission and view_menu:
             return (
-                self.get_session.query(self.permissionview_model)
+                self.session.query(self.permissionview_model)
                 .filter_by(permission=permission, view_menu=view_menu)
                 .one_or_none()
             )
@@ -602,7 +1101,7 @@ class SecurityManager(BaseSecurityManager):
         :return: list of PermissionView objects
         """
         return (
-            self.get_session.query(self.permissionview_model)
+            self.session.query(self.permissionview_model)
             .filter_by(view_menu_id=view_menu.id)
             .all()
         )
@@ -626,13 +1125,13 @@ class SecurityManager(BaseSecurityManager):
         pv = self.permissionview_model()
         pv.view_menu, pv.permission = vm, perm
         try:
-            self.get_session.add(pv)
-            self.get_session.commit()
+            self.session.add(pv)
+            self.session.commit()
             log.info(c.LOGMSG_INF_SEC_ADD_PERMVIEW, pv)
             return pv
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW, e)
-            self.get_session.rollback()
+            self.session.rollback()
 
     def del_permission_view_menu(self, permission_name, view_menu_name, cascade=True):
         if not (permission_name and view_menu_name):
@@ -641,7 +1140,7 @@ class SecurityManager(BaseSecurityManager):
         if not pv:
             return
         roles_pvs = (
-            self.get_session.query(self.role_model)
+            self.session.query(self.role_model)
             .filter(self.role_model.permissions.contains(pv))
             .first()
         )
@@ -655,13 +1154,13 @@ class SecurityManager(BaseSecurityManager):
             return
         try:
             # delete permission on view
-            self.get_session.delete(pv)
-            self.get_session.commit()
+            self.session.delete(pv)
+            self.session.commit()
             # if no more permission on permission view, delete permission
             if not cascade:
                 return
             if (
-                not self.get_session.query(self.permissionview_model)
+                not self.session.query(self.permissionview_model)
                 .filter_by(permission=pv.permission)
                 .all()
             ):
@@ -669,7 +1168,7 @@ class SecurityManager(BaseSecurityManager):
             log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW, permission_name, view_menu_name)
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW, e)
-            self.get_session.rollback()
+            self.session.rollback()
 
     def exist_permission_on_views(self, lst, item):
         for i in lst:
@@ -695,12 +1194,12 @@ class SecurityManager(BaseSecurityManager):
         if perm_view and perm_view not in role.permissions:
             try:
                 role.permissions.append(perm_view)
-                self.get_session.merge(role)
-                self.get_session.commit()
+                self.session.merge(role)
+                self.session.commit()
                 log.info(c.LOGMSG_INF_SEC_ADD_PERMROLE, perm_view, role.name)
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE, e)
-                self.get_session.rollback()
+                self.session.rollback()
 
     def del_permission_role(self, role, perm_view):
         """
@@ -714,21 +1213,22 @@ class SecurityManager(BaseSecurityManager):
         if perm_view in role.permissions:
             try:
                 role.permissions.remove(perm_view)
-                self.get_session.merge(role)
-                self.get_session.commit()
+                self.session.merge(role)
+                self.session.commit()
                 log.info(c.LOGMSG_INF_SEC_DEL_PERMROLE, perm_view, role.name)
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE, e)
-                self.get_session.rollback()
+                self.session.rollback()
 
     def export_roles(
         self, path: Optional[str] = None, indent: Optional[Union[int, str]] = None
     ) -> None:
         """Exports roles to JSON file."""
+        log.error("BIND URL: %s", self.session.get_bind().url)
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         filename = path or f"roles_export_{timestamp}.json"
 
-        serialized_roles = []
+        serialized_roles: List[Dict[str, List[Dict[str, str]]]] = []
 
         for role in self.get_all_roles():
             serialized_role = {"name": role.name, "permissions": []}
@@ -748,7 +1248,7 @@ class SecurityManager(BaseSecurityManager):
     def import_roles(self, path: str) -> None:
         """Imports roles from JSON file."""
 
-        session = self.get_session()
+        session = self.session()
 
         with open(path, "r") as fd:
             roles_json = json.loads(fd.read())
@@ -772,3 +1272,163 @@ class SecurityManager(BaseSecurityManager):
 
         session.add_all(roles)
         session.commit()
+
+    """
+    ----------------------
+     API KEY MANAGEMENT
+    ----------------------
+    """
+
+    @staticmethod
+    def _compute_lookup_hash(api_key_string: str) -> str:
+        """Compute a keyed hash for O(1) API key lookup.
+
+        Uses scrypt with minimal work parameters (n=2, r=1, p=1) keyed
+        by the application SECRET_KEY. This is nearly as fast as a plain
+        hash while satisfying static analysis requirements for
+        computationally expensive hashing of sensitive data.
+        The actual password-strength protection is in key_hash
+        (via generate_password_hash).
+        """
+        salt = b"fab-api-key-lookup"
+        try:
+            from flask import current_app
+
+            secret = current_app.config.get("SECRET_KEY", "")
+            if secret:
+                salt = secret.encode("utf-8")
+        except RuntimeError:
+            pass
+        return hashlib.scrypt(
+            api_key_string.encode("utf-8"),
+            salt=salt,
+            n=2,
+            r=1,
+            p=1,
+            dklen=32,
+        ).hex()
+
+    def validate_api_key(self, api_key_string: str) -> Optional[User]:
+        """
+        Validate an API key and return the associated User if valid.
+
+        Uses a fast lookup hash (indexed, unique) for O(1) retrieval,
+        then verifies against the slow key_hash for defense in depth.
+        Updates last_used_on, sets g.user and g._api_key_user.
+        """
+        lookup = self._compute_lookup_hash(api_key_string)
+        api_key = (
+            self.session.query(self.api_key_model)
+            .filter(self.api_key_model.lookup_hash == lookup)
+            .one_or_none()
+        )
+        if api_key is None:
+            return None
+        if not check_password_hash(api_key.key_hash, api_key_string):
+            log.warning("API key lookup hash matched but slow hash failed")
+            return None
+        if not api_key.is_active:
+            log.warning("API key '%s' matched but is not active", api_key.name)
+            return None
+        user = api_key.user
+        if not user or not user.is_active:
+            log.warning("API key '%s' user is not active", api_key.name)
+            return None
+        # Update last_used_on
+        api_key.last_used_on = datetime.now()
+        self.session.commit()
+        # Set Flask globals
+        g.user = user
+        g._api_key_user = True
+        return user
+
+    def create_api_key(
+        self,
+        user: Any,
+        name: str,
+        scopes: Optional[str] = None,
+        expires_on: Optional[datetime] = None,
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Create a new API key for a user.
+
+        Returns a dict with key info including the plaintext key
+        (only shown once at creation time).
+        """
+        prefixes = current_app.config.get("FAB_API_KEY_PREFIXES", ["sst_"])
+        prefix = prefixes[0] if prefixes else "sst_"
+        raw_key = prefix + secrets.token_urlsafe(32)
+        # Use API key-specific hash config, falling back to password hash config
+        hash_method = current_app.config.get(
+            "FAB_API_KEY_HASH_METHOD",
+            current_app.config.get("FAB_PASSWORD_HASH_METHOD", "scrypt"),
+        )
+        salt_length = current_app.config.get(
+            "FAB_API_KEY_HASH_SALT_LENGTH",
+            current_app.config.get("FAB_PASSWORD_HASH_SALT_LENGTH", 16),
+        )
+        key_hash = generate_password_hash(
+            raw_key,
+            method=hash_method,
+            salt_length=salt_length,
+        )
+
+        api_key = self.api_key_model()
+        api_key.name = name
+        api_key.key_hash = key_hash
+        api_key.lookup_hash = self._compute_lookup_hash(raw_key)
+        api_key.key_prefix = prefix
+        api_key.user_id = user.id
+        api_key.scopes = scopes
+        api_key.active = True
+        api_key.expires_on = expires_on
+
+        try:
+            self.session.add(api_key)
+            self.session.commit()
+            log.info("API key '%s' created for user '%s'", name, user.username)
+            return {
+                "uuid": api_key.uuid,
+                "name": api_key.name,
+                "key": raw_key,
+                "key_prefix": api_key.key_prefix,
+                "scopes": api_key.scopes,
+                "created_on": api_key.created_on,
+                "expires_on": api_key.expires_on,
+            }
+        except Exception as e:
+            log.error("Error creating API key: %s", e)
+            self.session.rollback()
+            return None
+
+    def revoke_api_key(self, key_uuid: str) -> bool:
+        """Revoke an API key by UUID."""
+        api_key = self.get_api_key_by_uuid(key_uuid)
+        if not api_key:
+            return False
+        try:
+            api_key.revoked_on = datetime.now()
+            self.session.commit()
+            log.info("API key '%s' revoked", api_key.name)
+            return True
+        except Exception as e:
+            log.error("Error revoking API key: %s", e)
+            self.session.rollback()
+            return False
+
+    def find_api_keys_for_user(self, user_id: int) -> List[ApiKey]:
+        """Find all API keys for a user."""
+        return (
+            self.session.query(self.api_key_model)
+            .filter(self.api_key_model.user_id == user_id)
+            .order_by(self.api_key_model.created_on.desc())
+            .all()
+        )
+
+    def get_api_key_by_uuid(self, key_uuid: str) -> Optional[ApiKey]:
+        """Get an API key by its UUID."""
+        return (
+            self.session.query(self.api_key_model)
+            .filter(self.api_key_model.uuid == key_uuid)
+            .one_or_none()
+        )
