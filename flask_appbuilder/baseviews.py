@@ -30,6 +30,7 @@ from flask_appbuilder.urltools import (
     get_page_size_args,
     Stack,
 )
+from flask_appbuilder.utils.base import get_safe_redirect
 from flask_appbuilder.widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
 from flask_babel import lazy_gettext
 
@@ -389,7 +390,9 @@ class BaseView(AbstractViewApi):
             return index_url
         session["page_history"] = page_history.to_json()
         url = page_history.pop() or index_url
-        return url
+        # page_history entries come from request.url, which is built from the Host
+        # header, so run them through the same check the next= parameter gets.
+        return get_safe_redirect(url)
 
     @classmethod
     def get_default_url(cls, **kwargs):

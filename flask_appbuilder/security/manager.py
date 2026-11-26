@@ -1839,26 +1839,22 @@ class BaseSecurityManager(AbstractSecurityManager):
             updated = False
 
             if self.auth_roles_sync_at_login:
-                new_roles = self._saml_calculate_user_roles(userinfo)
-                if new_roles:
-                    user.roles = new_roles
-                    updated = True
-                    log.debug(
-                        "Calculated new roles for user='%s' as: %s",
-                        username,
-                        user.roles,
-                    )
+                user.roles = self._saml_calculate_user_roles(userinfo)
+                updated = True
+                log.debug(
+                    "Calculated new roles for user='%s' as: %s",
+                    username,
+                    user.roles,
+                )
 
             if self.auth_groups_sync_at_login:
-                new_groups = self._calculate_user_groups(userinfo)
-                if new_groups:
-                    user.groups = new_groups
-                    updated = True
-                    log.debug(
-                        "Calculated new groups for user='%s' as: %s",
-                        username,
-                        user.groups,
-                    )
+                user.groups = self._calculate_user_groups(userinfo)
+                updated = True
+                log.debug(
+                    "Calculated new groups for user='%s' as: %s",
+                    username,
+                    user.groups,
+                )
 
             # Update user info from SAML assertion
             for field in ("first_name", "last_name", "email"):
