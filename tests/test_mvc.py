@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 from typing import Set
+from urllib.parse import parse_qs, urlparse
 
 from flask import Flask, make_response, redirect, session
 from flask_appbuilder import AppBuilder
@@ -256,6 +257,37 @@ class ListFilterTestCase(BaseMVCTestCase):
             self.assertEqual(rv.status_code, 200)
             data = rv.data.decode("utf-8")
             self.assertNotIn("admin@fab.org", data)
+
+    def test_list_links_keep_multiple_arguments(self):
+        """
+        MVC: Test page, page size and order links keep repeated filter arguments
+        """
+        filters = self.app.jinja_env.filters
+        view_name = "UserDBModelView"
+        with self.app.test_request_context(
+            "/users/list/?_flt_2_email=a&_flt_2_email=b&_flt_0_active=y"
+        ):
+            links = {
+                "link_page": filters["link_page"](1, view_name),
+                "link_page_size": filters["link_page_size"](25, view_name),
+                "link_order": filters["link_order"]("email", view_name),
+            }
+        for filter_name, link in links.items():
+            with self.subTest(filter_name=filter_name):
+                args = parse_qs(urlparse(link).query)
+                self.assertEqual(urlparse(link).path, "/users/list/")
+                self.assertEqual(args["_flt_2_email"], ["a", "b"])
+                self.assertEqual(args["_flt_0_active"], ["y"])
+        self.assertEqual(
+            parse_qs(urlparse(links["link_page"]).query)[f"page_{view_name}"], ["1"]
+        )
+        self.assertEqual(
+            parse_qs(urlparse(links["link_page_size"]).query)[f"psize_{view_name}"],
+            ["25"],
+        )
+        order_args = parse_qs(urlparse(links["link_order"]).query)
+        self.assertEqual(order_args[f"_oc_{view_name}"], ["email"])
+        self.assertEqual(order_args[f"_od_{view_name}"], ["asc"])
 
 
 class MVCCSRFTestCase(BaseMVCTestCase):

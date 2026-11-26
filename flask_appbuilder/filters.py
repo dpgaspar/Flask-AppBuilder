@@ -22,6 +22,22 @@ class TemplateFilters(object):
                 attr = getattr(self, attr_name)
                 app.jinja_env.filters[attr._filter] = attr
 
+    @staticmethod
+    def _get_url_params(args):
+        """
+        Merges the current view arguments with the given query arguments,
+        keeping every value of repeated query arguments (e.g. multiple
+        filters of the same type on the same column)
+        """
+        params = request.view_args.copy()
+        params.update(
+            {
+                key: values[0] if len(values) == 1 else values
+                for key, values in args.lists()
+            }
+        )
+        return params
+
     @app_template_filter("get_actions_on_list")
     def get_actions_on_list(self, actions, modelview_name):
         res_actions = dict()
@@ -53,7 +69,6 @@ class TemplateFilters(object):
         Arguments are passed like:
             _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
         """
-        new_args = request.view_args.copy()
         args = request.args.copy()
         if ("_oc_" + modelview_name) in args:
             args["_oc_" + modelview_name] = column
@@ -64,36 +79,25 @@ class TemplateFilters(object):
         else:
             args["_oc_" + modelview_name] = column
             args["_od_" + modelview_name] = "asc"
-        return url_for(
-            request.endpoint,
-            **dict(list(new_args.items()) + list(args.to_dict().items()))
-        )
+        return url_for(request.endpoint, **self._get_url_params(args))
 
     @app_template_filter("link_page")
     def link_page_filter(self, page, modelview_name):
         """
         Arguments are passed like: page_<VIEW_NAME>=<PAGE_NUMBER>
         """
-        new_args = request.view_args.copy()
         args = request.args.copy()
         args["page_" + modelview_name] = page
-        return url_for(
-            request.endpoint,
-            **dict(list(new_args.items()) + list(args.to_dict().items()))
-        )
+        return url_for(request.endpoint, **self._get_url_params(args))
 
     @app_template_filter("link_page_size")
     def link_page_size_filter(self, page_size, modelview_name):
         """
         Arguments are passed like: psize_<VIEW_NAME>=<PAGE_NUMBER>
         """
-        new_args = request.view_args.copy()
         args = request.args.copy()
         args["psize_" + modelview_name] = page_size
-        return url_for(
-            request.endpoint,
-            **dict(list(new_args.items()) + list(args.to_dict().items()))
-        )
+        return url_for(request.endpoint, **self._get_url_params(args))
 
     @app_template_filter("get_link_next")
     def get_link_next_filter(self, s):
