@@ -1,6 +1,13 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 5.3.1rc1
+-----------------------------------
+
+- fix: Validate the /back redirect target against FAB_SAFE_REDIRECT_HOSTS (#2475) [Arpit Jain]
+- fix: normalize and confine file manager upload paths (#2495) [Daniel Vaz Gaspar]
+- fix: SAML role and group sync assignment at login (#2492) [Daniel Vaz Gaspar]
+
 Improvements and Bug fixes on 5.3.0
 -----------------------------------
 
