@@ -3,6 +3,7 @@ import logging
 from typing import Callable, List, Optional, TypeVar, Union
 
 from flask import (
+    Response,
     abort,
     current_app,
     flash,
@@ -10,7 +11,6 @@ from flask import (
     make_response,
     redirect,
     request,
-    Response,
     url_for,
 )
 from flask_appbuilder._compat import as_unicode
@@ -102,9 +102,7 @@ def protect(allow_browser_login=False):
                 return f(self, *args, **kwargs)
             # Check API key authentication (before JWT)
             if current_app.config.get("FAB_API_KEY_ENABLED", False):
-                api_key_string = (
-                    current_app.appbuilder.sm.extract_api_key_from_request()
-                )
+                api_key_string = current_app.appbuilder.sm.extract_api_key_from_request()
                 if api_key_string is not None:
                     user = current_app.appbuilder.sm.validate_api_key(api_key_string)
                     if not user:

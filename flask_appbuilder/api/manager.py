@@ -2,8 +2,7 @@ from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec.ext.marshmallow.common import resolve_schema_cls
 from flask import current_app, request
-from flask_appbuilder.api import BaseApi
-from flask_appbuilder.api import expose, protect, safe
+from flask_appbuilder.api import BaseApi, expose, protect, safe
 from flask_appbuilder.basemanager import BaseManager
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.security.decorators import has_access

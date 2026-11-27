@@ -5,6 +5,7 @@ from flask_appbuilder import AppBuilder
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.urltools import get_filter_args
 from flask_appbuilder.utils.legacy import get_sqla_class
+
 from tests.base import FABTestCase
 from tests.sqla.models import Model1
 

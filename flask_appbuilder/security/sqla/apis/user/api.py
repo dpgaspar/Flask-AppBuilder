@@ -229,14 +229,18 @@ class UserApi(ModelRestApi):
 
             if item_roles == [] and (item_groups is None and not model.groups):
                 return self.response_400(
-                    message=("Cannot clear all roles unless at least one group is \
-                             assigned!")
+                    message=(
+                        "Cannot clear all roles unless at least one group is \
+                             assigned!"
+                    )
                 )
 
             if item_groups == [] and (item_roles is None and not model.roles):
                 return self.response_400(
-                    message=("Cannot clear all groups unless at least one role is \
-                             assigned!")
+                    message=(
+                        "Cannot clear all groups unless at least one role is \
+                             assigned!"
+                    )
                 )
 
             for key, value in item.items():

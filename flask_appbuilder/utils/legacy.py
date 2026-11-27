@@ -1,5 +1,5 @@
 from importlib.metadata import PackageNotFoundError, version
-from typing import Type, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Type, Union
 
 if TYPE_CHECKING:
     from flask_appbuilder.models.sqla.base import SQLA as SQLA

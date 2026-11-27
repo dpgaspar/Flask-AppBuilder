@@ -2,6 +2,7 @@ import logging
 import os
 
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+
 from tests.base import FABTestCase
 from tests.const import MAX_PAGE_SIZE, PASSWORD_ADMIN, USERNAME_ADMIN
 from tests.sqla.models import Model1
@@ -92,9 +93,7 @@ class FlaskTestCase(FABTestCase):
         role = self.appbuilder.sm.add_role(limited_role)
         pvm = self.appbuilder.sm.find_permission_view_menu("menu_access", "Model1")
         self.appbuilder.sm.add_permission_role(role, pvm)
-        pvm = self.appbuilder.sm.find_permission_view_menu(
-            "menu_access", "Model1Dynamic"
-        )
+        pvm = self.appbuilder.sm.find_permission_view_menu("menu_access", "Model1Dynamic")
         self.appbuilder.sm.add_permission_role(role, pvm)
         pvm = self.appbuilder.sm.find_permission_view_menu("can_get", "MenuApi")
         self.appbuilder.sm.add_permission_role(role, pvm)
@@ -143,9 +142,7 @@ class FlaskTestCase(FABTestCase):
         role = self.appbuilder.sm.find_role("Public")
         pvm = self.appbuilder.sm.find_permission_view_menu("menu_access", "Model1")
         self.appbuilder.sm.add_permission_role(role, pvm)
-        pvm = self.appbuilder.sm.find_permission_view_menu(
-            "menu_access", "Model1Dynamic"
-        )
+        pvm = self.appbuilder.sm.find_permission_view_menu("menu_access", "Model1Dynamic")
         self.appbuilder.sm.add_permission_role(role, pvm)
         pvm = self.appbuilder.sm.find_permission_view_menu("can_get", "MenuApi")
         self.appbuilder.sm.add_permission_role(role, pvm)

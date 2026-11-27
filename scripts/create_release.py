@@ -3,7 +3,6 @@ import subprocess
 import click
 from flask_appbuilder import __version__
 
-
 CHANGELOG_TEMPLATE = """Improvements and Bug fixes on {version}
 -----------------------------------
 
